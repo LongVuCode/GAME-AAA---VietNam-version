@@ -39,6 +39,11 @@
 - Mỗi quyết định lớn được ghi vào `docs/DECISION_LOG.md`. Mỗi rủi ro mới được ghi vào `docs/RISK_REGISTER.md`.
 - Chỉ hỏi Product Owner khi gặp quyết định lớn. Mỗi lần gom tối đa 5 câu, kèm đề xuất mặc định.
 
+## 6b. Đội agent
+- Vai trò được định nghĩa trong `.claude/agents/`, quy trình ở `docs/AGENT_TEAM.md`.
+- Người viết ≠ người duyệt: nội dung lore/sử phải qua `historian-verifier`, code phải qua `qa-lead`.
+- Agent không commit/push trừ khi phiên điều phối giao việc đó. Chỉ phiên điều phối mới mở pull request.
+
 ## 7. Lệnh hữu ích
 ```
 python3 tools/research_tool.py lint      # kiểm tra nhãn, nguồn, luật in_game

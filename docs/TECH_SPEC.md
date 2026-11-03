@@ -68,6 +68,15 @@ tools/              # Pipeline Python: research lint, codex export, benchmark pa
 - **Ngân sách VRAM**: Thấp ≤ 4.5GB, Cao ≤ 8GB, Cực cao ≤ 12GB (giả định).
 - Kết quả benchmark lưu ở `reports/bench/<date>_<gpu>_<preset>.csv`, kèm commit hash.
 
+## 5b. Máy phát triển của dự án (D-010): RTX 5050, 8 GB VRAM
+- **Làm được trên máy này:** chạy UE5 Editor (Nanite/Lumen), build và cook bản Windows, đo preset Thấp → Cao ở 1080p/1440p, thử DLSS SR/DLAA/FG/Reflex trên phần cứng NVIDIA thế hệ mới. *Việc hỗ trợ Multi Frame Generation trên RTX 5050 cần xác nhận lại trên trang NVIDIA.*
+- **8 GB VRAM là giới hạn thật** cho cả Editor lẫn game:
+  - Ngân sách preset "Cao" nên giữ ≤ 7 GB.
+  - Đặt World Partition cell nhỏ, giới hạn texture streaming pool.
+  - Dùng Lumen phần mềm làm mặc định.
+- **KHÔNG chứng minh được trên máy này:** 4K Cực cao, GPU AMD/Intel (FSR/XeSS vẫn chạy được trên NVIDIA nhưng không đại diện cho phần cứng của hãng khác), máy yếu hơn mức tối thiểu. Phương án: thuê GPU cloud theo giờ để đo, hoặc nhờ tester ngoài, hoặc dùng Steam Playtest. Bảng chỉ tiêu §4 sẽ ghi "chưa đo" cho những cấu hình này.
+- **Cần hỏi thêm khi bắt đầu GĐ1:** CPU, RAM (khuyến nghị ≥ 32 GB cho UE5) và dung lượng SSD trống (Engine và DerivedDataCache cần hàng trăm GB).
+
 ## 6. Build, CI, kiểm thử
 - Git + LFS (file lock cho `.uasset`/`.umap`). Nhánh `main` được bảo vệ.
 - **CI**:

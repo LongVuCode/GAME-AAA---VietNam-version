@@ -13,6 +13,8 @@
 - Asset AI tạo sinh trong bản phát hành.
 
 ## Bảng đăng ký
-| ID | Asset | Loại | Nguồn / URL | License | Ngày | Dùng ở đâu | Tag | Ghi chú |
-|---|---|---|---|---|---|---|---|---|
-| — | (chưa có asset nào ở GĐ0) | | | | | | | |
+| ID | Asset | Loại | Nguồn / URL | License | Ngày | Dùng ở đâu | AI tạo? | Tag | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|
+| — | (chưa có asset nào ở GĐ0) | | | | | | | | |
+
+> Cột "AI tạo?" phục vụ việc khai báo nội dung AI với Steam (xem `COMMERCIAL_RELEASE.md`).
