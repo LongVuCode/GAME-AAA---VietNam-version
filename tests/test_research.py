@@ -76,10 +76,9 @@ class LintRules(unittest.TestCase):
         rep = self.run_lint([], [item(label="HUYỀN THOẠI", worshipped="yes", player_can_wield=False)])
         self.assertTrue(any("boolean" in e for e in rep.errors))
 
-    def test_myth_missing_worship_fields_warns(self):
+    def test_myth_missing_worship_fields_is_error(self):
         rep = self.run_lint([], [item(label="HUYỀN THOẠI")])
-        self.assertEqual(rep.errors, [])
-        self.assertTrue(any("missing" in w for w in rep.warnings))
+        self.assertTrue(any("missing" in e for e in rep.errors))
 
 
 class RealData(unittest.TestCase):

@@ -79,7 +79,7 @@ def check_item(item: dict, sources: dict[str, dict], rep: Report, is_myth: bool 
     if is_myth:
         missing = [k for k in ("worshipped", "player_can_wield") if k not in item]
         if missing:
-            rep.warnings.append(f"{iid}: missing {missing}")
+            rep.errors.append(f"{iid}: missing {missing}")
 
     if label in HISTORICAL:
         lineages = {sources[s]["lineage"] for s in srcs if s in sources} - NON_EVIDENTIAL
@@ -140,6 +140,11 @@ def render(base: Path = DATA, out: Path = OUT) -> list[Path]:
         lines.append(f"## {m['id']} — {m['title']} [{m['label']}]")
         lines.append(f"- **Vùng:** {m['region']} · **Nhạy cảm:** {m['sensitivity']} · "
                      f"**Dùng:** {m['game_use']} · **Xác minh:** {m['verification']}")
+        sites = ", ".join(m.get("worship_sites") or []) or "—"
+        lines.append(f"- **Được thờ:** {'có' if m.get('worshipped') else 'không'} · "
+                     f"**Người chơi được cầm vật:** {'có' if m.get('player_can_wield') else 'không'} · "
+                     f"**Văn bản sớm nhất:** {m.get('earliest_text_century', '—')}")
+        lines.append(f"- **Nơi thờ / lễ hội:** {sites}")
         lines.append(f"- **Tóm tắt:** {m['summary']}")
         if m.get("variants"):
             lines.append("- **Dị bản:**")
