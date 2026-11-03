@@ -39,6 +39,8 @@ Cả ba giám khảo cùng chọn **H**. Hai giám khảo cảnh báo có hiện
   - Có một phản diện xuyên suốt [SÁNG TẠO], ví dụ Thuồng luồng chúa (gốc M028), bị người chơi hạ ở chương cuối.
   - Boss huyền thoại (Hồ Tinh, Ngư Tinh) theo mô hình "người chơi phá Thế, thần kết liễu". Mô hình này phải qua playtest với câu hỏi bác bỏ: "có thấy bị cướp công không?".
 
+> **Sửa đổi (PO chốt, D-017):** phần "phản diện xuyên suốt [SÁNG TẠO]... bị người chơi hạ ở chương cuối" ở trên được thay bằng: *nguồn ác xuyên suốt (Khoen Thuần) được hóa giải ở chương cuối; Game 1 không có trận đánh người*. Xem `../villain_debate/VERDICT.md`.
+
 ## 4. Điều kiện bắt buộc (tổng hợp, chưa đạt thì H vẫn ở trạng thái KHÔNG ĐẠT)
 | # | Điều kiện | Nguồn |
 |---|---|---|
