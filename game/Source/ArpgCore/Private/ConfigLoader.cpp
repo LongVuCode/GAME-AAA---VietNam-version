@@ -4,7 +4,14 @@
 // NOTE: key names follow ArpgCore's fixture format and will be aligned with the designer schema.
 #include "ArpgCore/ConfigLoader.h"
 
+// Inside Unreal, silence engine warning policies (e.g. undefined-macro checks) for third-party code.
+#if defined(THIRD_PARTY_INCLUDES_START)
+THIRD_PARTY_INCLUDES_START
+#endif
 #include <nlohmann/json.hpp>
+#if defined(THIRD_PARTY_INCLUDES_END)
+THIRD_PARTY_INCLUDES_END
+#endif
 
 #include <cmath>
 #include <exception>

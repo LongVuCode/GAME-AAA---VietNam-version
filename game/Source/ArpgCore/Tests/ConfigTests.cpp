@@ -257,6 +257,16 @@ TEST_SUITE("ConfigLoader")
 		CHECK(HasError(Missing.GetErrors(), "crafting.materials[0].category: missing required string"));
 		CHECK(HasError(Missing.GetErrors(), "bosses[0].id: missing required string"));
 
+		const TResult<FArpgConfig> Typed = LoadConfigFromJson(
+			R"({"weapons": [{"id": 7}], "lineage": {"max_family_movesets": -1}, "crafting": {"materials": [{"id": "m", "category": 3}]}})");
+		REQUIRE_FALSE(Typed.IsOk());
+		CHECK(HasError(Typed.GetErrors(), "weapons[0].id: expected string"));
+		CHECK(HasError(Typed.GetErrors(), "crafting.materials[0].category: expected string"));
+		const TResult<FArpgConfig> Negative = LoadConfigFromJson(R"({"lineage": {"max_family_movesets": -1}})");
+		CHECK(HasError(Negative.GetErrors(), "lineage.max_family_movesets: must be >= 0")); // parsed, then rejected
+		const TResult<FArpgConfig> BadCategory = LoadConfigFromJson(R"({"crafting": {"materials": [{"id": "m", "category": "gold"}]}})");
+		CHECK(HasError(BadCategory.GetErrors(), "unknown value 'gold' (allowed: boss_part, bronze, regional, shackle_fragment, other)"));
+
 		const TResult<FArpgConfig> Unsigned = LoadConfigFromJson(R"({"drum": {"notches": 6}, "schema_version": 1})");
 		REQUIRE(Unsigned.IsOk());
 		CHECK(Unsigned.GetValue().Drum.Notches == 6);
