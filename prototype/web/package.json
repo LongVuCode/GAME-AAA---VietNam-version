@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "node build.mjs",
-    "test": "node --test test/",
+    "test": "node --test test/*.test.mjs",
     "smoke": "node build.mjs && node test/smoke.mjs"
   },
   "devDependencies": {

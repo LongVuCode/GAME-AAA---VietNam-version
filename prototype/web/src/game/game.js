@@ -72,7 +72,7 @@ export class Game {
     if (this.secret) this.secret.hintsEnabled = !!s.hints;
     this.ui?.applySettings(s);
   }
-  setLang(l) { this.settings.lang = l; this.i18n.setLang(l); this.saveSettings(); }
+  setLang(l) { this.settings.lang = l; this.i18n.setLang(l); this.saveSettings(); if (this.mode !== 'title' && this.player) this.updateHud(); }
 
   // ------------------------------------------------------------------ boot
   boot() {
@@ -231,14 +231,16 @@ export class Game {
   // ------------------------------------------------------------------ frame
   frame() {
     const now = performance.now();
-    const realDt = Math.min(0.1, Math.max(0, (now - this.lastNow) / 1000));
+    const rawDt = Math.max(0, (now - this.lastNow) / 1000);
+    const realDt = Math.min(0.1, rawDt);   // simulation step (clamped)
+    const wallDt = Math.min(0.5, rawDt);   // wall clock: timers, pry rhythm, UI
     this.frameStart = this.lastNow; this.lastNow = now;
     this.fpsFrames.push(now); while (this.fpsFrames.length && now - this.fpsFrames[0] > 1000) this.fpsFrames.shift();
     this.fps = this.fpsFrames.length;
     this.input.pollGamepad();
-    if (this.mode === 'playing') this.update(realDt, now / 1000);
+    if (this.mode === 'playing') this.update(realDt, now / 1000, wallDt);
     else this.handleMenuKeys();
-    this.ui.tick(realDt);
+    this.ui.tick(wallDt);
     this.render(realDt);
     this.input.endFrame();
   }
@@ -249,11 +251,11 @@ export class Game {
       || (i.pressed('journal') && this.ui.screenName === 'journal') || (i.pressed('skills') && this.ui.screenName === 'skills'))) this.resume();
   }
 
-  update(realDt, nowS) {
+  update(realDt, nowS, wallDt = realDt) {
     const i = this.input;
-    this.playTime += realDt;
+    this.playTime += wallDt;
     // timers (real time)
-    for (const t of this.timers) t.t -= realDt;
+    for (const t of this.timers) t.t -= wallDt;
     const due = this.timers.filter((t) => t.t <= 0); this.timers = this.timers.filter((t) => t.t > 0);
     for (const t of due) t.fn();
     if (this.mode !== 'playing') return;
@@ -267,14 +269,14 @@ export class Game {
     this.gameNow = (this.gameNow ?? 0) + dt;
     const p = this.player;
     this.updateLock(i);
-    if (this.pry) this.updatePry(realDt, i);
+    if (this.pry) this.updatePry(wallDt, i);
     p.update(dt, this.gameNow, i);
     if ((i.pressed('slot1') || i.pressed('slot2')) && !this.locked) this.swapWeapon(i.pressed('slot1') ? 0 : 1);
     this.tokens.tick(dt);
     for (const e of this.enemies) e.update(dt);
     for (const e of this.practiceEnemies ?? []) e.update(dt);
     this.updateZone();
-    if (!this.locked) this.updateInteractions(realDt, i);
+    if (!this.locked) this.updateInteractions(realDt, i); else this.ui.prompt(null);
     this.updatePractice();
     this.updateCamera(realDt, i);
     this.updateHud();
@@ -728,7 +730,7 @@ export class Game {
       if (ev.type === 'drum') this.sfx.drum(true);
       if (ev.type === 'hit') {
         this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'pry_beat')); this.sfx.crackSnap();
-        this.player.pryLever = -0.5 * ev.beat; this.shake('medium');
+        this.player.pryLever = -0.18 * ev.beat; this.shake('medium');
         boss.mesh.cracks.forEach((c) => { c.scale.y = 1 + ev.beat * 0.6; });
         this.pry.msg = T('pry_beat_hit'); this.player.drum.gain('pry_beat');
       }
@@ -963,11 +965,11 @@ export class Game {
   debugApi() {
     const g = this;
     const enemyInfo = (e) => ({ uid: e.uid, id: e.def.id, state: e.state, hp: e.hpNow, the: e.posture.accumulated, theMax: e.posture.max,
-      staggered: e.staggered, x: e.x, z: e.z, alive: e.alive });
+      staggered: e.staggered, x: e.x, z: e.z, alive: e.alive, tele: e.telegraphKind, attack: e.attack?.id ?? null });
     return {
       state() {
         const b = g.boss;
-        return { mode: g.mode, era: g.era, character: g.gen.character, zone: g.zone, lang: g.i18n.lang, screen: g.ui.screenName, locked: g.locked,
+        return { lock: g.lockTarget?.uid ?? null, mode: g.mode, era: g.era, character: g.gen.character, zone: g.zone, lang: g.i18n.lang, screen: g.ui.screenName, locked: g.locked,
           player: { x: g.player.x, z: g.player.z, yaw: g.player.yaw, hp: g.player.hp, state: g.player.state, drum: g.player.drum.points, alive: g.player.alive },
           enemies: g.enemies.filter((e) => !e.isBoss).map(enemyInfo), practice: (g.practiceEnemies ?? []).map(enemyInfo),
           boss: { ...enemyInfo(b), cracks: b.enc.khoen.cracks, khoen: b.enc.khoen.state, phase: b.enc.phase.id, canFinish: b.enc.canFinish(), outcome: b.enc.outcome },

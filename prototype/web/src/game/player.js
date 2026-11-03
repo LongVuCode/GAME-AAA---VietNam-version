@@ -286,7 +286,7 @@ export class Player {
       case 'hitstun': lean = -0.3; break;
       case 'guardbreak': lean = -0.4; crouch = 0.25; break;
       case 'heal': armL = -1.6; break;
-      case 'pry': arm = -0.9 + (this.pryLever ?? 0); armL = -0.9; lean = 0.25; break;
+      case 'pry': arm = 0.35 + (this.pryLever ?? 0); armL = -0.6; lean = 0.3; break;
       case 'dead': lean = -1.3; crouch = 0.6; break;
       default: if (this.moving) { bob = Math.sin(t * 12) * 0.05; f.legL.rotation.x = Math.sin(t * 12) * 0.6; f.legR.rotation.x = -Math.sin(t * 12) * 0.6; }
     }

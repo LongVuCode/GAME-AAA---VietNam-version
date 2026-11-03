@@ -50,7 +50,7 @@ button:disabled { opacity: 0.45; cursor: default; }
 #subs { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); width: min(900px, 92vw); text-align: center; }
 #subs .line { display: inline-block; padding: 6px 14px; border-radius: 6px; font-size: var(--sub-size); background: rgba(0,0,0,var(--sub-bg)); white-space: pre-line; text-shadow: 0 1px 2px #000; }
 #subs .speaker { color: var(--focus); font-weight: 600; margin-right: 6px; }
-#toasts { position: absolute; right: 16px; top: 60px; display: grid; gap: 6px; justify-items: end; }
+#toasts { position: absolute; right: 16px; top: 150px; display: grid; gap: 6px; justify-items: end; }
 #toasts .toast { padding: 6px 12px; background: var(--panel); border-left: 3px solid var(--focus); border-radius: 4px; font-size: 14px; animation: fadein 0.2s; }
 #center-msg { position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%); font-size: 30px; text-align: center; text-shadow: 0 2px 6px #000; }
 @keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
@@ -102,6 +102,7 @@ table.controls td { padding: 4px 8px; border-bottom: 1px solid var(--line); }
 .codex .list { display: grid; gap: 6px; align-content: start; }
 .codex .list button { text-align: left; display: flex; gap: 8px; align-items: center; }
 .codex .list button.on { border-color: var(--focus); }
+.codex .list svg { width: 18px; height: 18px; flex: none; }
 .label-badge { display: inline-flex; gap: 6px; align-items: center; padding: 2px 8px; border-radius: 12px; border: 1px solid var(--line); font-size: 13px; background: rgba(255,255,255,0.05); }
 .label-badge svg { width: 16px; height: 16px; }
 textarea.copy { width: 100%; min-height: 110px; font-family: ui-monospace, "DejaVu Sans Mono", monospace; font-size: 12px; color: var(--ink); background: #0c0f12; border: 1px solid var(--line); }

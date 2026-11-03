@@ -31,7 +31,7 @@ export class Enemy {
 
   reset() {
     const d = this.def, tun = this.game.data.combat;
-    this.x = this.spawn.x; this.z = this.spawn.z; this.yaw = Math.PI; // face south (toward the landing)
+    this.x = this.spawn.x; this.z = this.spawn.z; this.yaw = 0; // face +z (south, toward the landing)
     this.state = 'idle'; this.attack = null; this.cooldowns = {}; this.engaged = false;
     this.fleeT = 0; this.flash = 0; this.slowT = 0; this.transitionT = 0; this.walkAway = null;
     if (this.isBoss) {
@@ -150,8 +150,8 @@ export class Enemy {
     const px = g.player.x, pz = g.player.z;
     const dx = px - this.x, dz = pz - this.z, dist = Math.hypot(dx, dz);
     const sameWorld = g.player.alive && Math.abs(px - this.x) < 120;
-    if (!this.engaged && sameWorld && dist < (this.isBoss ? 16 : PROTO.aggroRadiusM)) this.engaged = true;
-    if (this.isBoss && dist > 26) this.engaged = false;
+    if (!this.engaged && sameWorld && dist < (this.isBoss ? PROTO.bossAggroRadiusM : PROTO.aggroRadiusM)) this.engaged = true;
+    if (this.isBoss && dist > PROTO.bossAggroRadiusM + 8) this.engaged = false;
     if (this.slowT > 0) this.slowT -= dt;
 
     if (this.state === 'attack') { this._updateAttack(dt, dx, dz, dist); this._sync(); return; }

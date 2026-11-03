@@ -80,10 +80,14 @@ try {
   await shot('05_enemy_fled.png');
 
   // ---- Boss: bring it to the pry (posture breaks crack the khoen) and complete the 3-beat pry.
-  await D('teleport', 0, -124, Math.PI);
+  await D('teleport', 0, -127, Math.PI);
   await D('setCameraYaw', 0);
-  s = await waitFor((x) => x.boss.state === 'attack', 15000);
-  await sleep(250);
+  await sleep(300);
+  await press('Tab');
+  s = await waitFor((x) => !!x.lock, 3000);
+  check('lock-on (Tab) acquires the boss', s?.lock === s?.boss.uid, s?.lock);
+  s = await waitFor((x) => x.boss.tele === 'unparryable', 25000, 40) ?? await waitFor((x) => !!x.boss.tele, 10000, 40);
+  check('boss telegraph shown (shape + color + sound cue)', !!s, s ? `${s.boss.attack} ${s.boss.tele}` : 'none');
   await shot('06_boss_telegraph.png');
   const bossUid = (await S()).boss.uid;
   for (let k = 1; k <= 3; k++) {

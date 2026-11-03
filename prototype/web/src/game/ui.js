@@ -460,7 +460,7 @@ export class UI {
       const miss = g.recipeMissing(r);
       const ins = r.inputs.map((i) => `${esc(nm(i.item))} × ${i.count} <span class="dim">(${r.type === 'upgrade' && i.item === r.target ? (g.gen.owned[i.item] ? 1 : 0) : g.inv.count(i.item)})</span>`).join(', ');
       return `<div class="card"><b>${esc(nm(r.output.item))}</b>${r.type === 'upgrade' ? ` → +${r.to_level - 1}` : ''}<br><span class="dim">${esc(this.t('craft_inputs'))}:</span> ${ins}
-        <div class="row"><button data-rcp="${r.id}" ${miss.length ? 'disabled' : ''}>${esc(this.t(r.type === 'upgrade' ? 'craft_upgrade' : 'craft_button'))}</button>${miss.length ? `<span class="dim">${esc(this.t('craft_missing'))}</span>` : ''}</div></div>`;
+        <div class="row">${r.type === 'craft' && g.gen.owned[r.output.item] ? `<span>${esc(this.t('skill_owned'))}</span>` : `<button data-rcp="${r.id}" ${miss.length ? 'disabled' : ''}>${esc(this.t(r.type === 'upgrade' ? 'craft_upgrade' : 'craft_button'))}</button>${miss.length ? `<span class="dim">${esc(this.t('craft_missing'))}</span>` : ''}`}</div></div>`;
     }).join('');
     this._screen('craft', `<h2>${esc(this.loc(st.name))}</h2><div class="cards">${cards}</div><div class="row"><button data-act="back">${esc(this.t('btn_close'))}</button></div>`);
     this._bind('[data-rcp]', (e, b) => { g.craftRecipe(b.dataset.rcp); if (this.screenName === 'craft') this.showCraft(); });
