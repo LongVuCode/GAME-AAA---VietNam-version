@@ -13,4 +13,4 @@
 | D-009 | 2026-11-03 | Phát hành thương mại trên Steam và các nền tảng khác | Quyết định của PO | **Đã chốt** (xem `COMMERCIAL_RELEASE.md`) |
 | D-010 | 2026-11-03 | Máy phát triển và đo hiệu năng: RTX 5050, 8 GB VRAM; nhân sự là 1 người | Thông tin từ PO | **Đã chốt**: ảnh hưởng tới TECH_SPEC §7 và phạm vi game |
 | D-011 | 2026-11-03 | Dùng đội AI agent theo vai trò (`.claude/agents/`); mọi sản phẩm phải được agent khác review; mốc quan trọng do PO duyệt | PO yêu cầu; solo dev | **Đã áp dụng** (`AGENT_TEAM.md`) |
-| D-012 | 2026-11-03 | Cấu trúc cốt truyện: kết hợp sử + huyền thoại, tách riêng, hay lai có ranh giới | PO chưa chắc chắn, giao `narrative-researcher` nghiên cứu | **Đang nghiên cứu** → `research/narrative/STORY_STRUCTURE_STUDY.md` |
+| D-012 | 2026-11-03 | Cấu trúc cốt truyện: kết hợp sử + huyền thoại, tách riêng, hay lai có ranh giới | PO chưa chắc chắn, giao `narrative-researcher` nghiên cứu | **Chờ PO chốt**: nghiên cứu khuyến nghị D (92đ); phản biện chấm lại D≈B, ĐẠT CÓ ĐIỀU KIỆN (`STORY_STRUCTURE_REVIEW.md`) |
