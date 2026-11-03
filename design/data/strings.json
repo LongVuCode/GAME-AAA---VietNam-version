@@ -188,7 +188,8 @@
       "text": {
         "vi": "Bến này giữ bằng tay người, con ạ.",
         "en": "This landing is kept by human hands, child."
-      }
+      },
+      "era": "era_lac_long_quan"
     },
     {
       "id": "dlg_02_see_shard",
@@ -198,7 +199,8 @@
       "text": {
         "vi": "Ai trói mày thế này?",
         "en": "Who bound you like this?"
-      }
+      },
+      "era": "era_lac_long_quan"
     },
     {
       "id": "dlg_03_melting",
@@ -208,7 +210,8 @@
       "text": {
         "vi": "Đồng đúc sai thì đúc lại, thành cái cuốc cho ruộng.",
         "en": "Bronze cast wrong gets cast again, into a hoe for the fields."
-      }
+      },
+      "era": "era_lac_long_quan"
     },
     {
       "id": "dlg_04_ve_after_pry",
@@ -219,7 +222,8 @@
       "text": {
         "vi": "Ai đem khoen trói thú rừng\nThú đau hóa dữ, bến chừng chẳng êm\nSào nhà cạy mảnh đêm đêm\nGiữ bến bằng tay, chẳng thèm khoen ai",
         "en": "Who put a collar on the wild beast?\nIn pain it turned fierce, and the landing knew no peace.\nNight after night, the house pole pries the shards away;\nkeep the landing by hand, and want no one's collar."
-      }
+      },
+      "era": "era_lac_long_quan"
     },
     {
       "id": "dlg_05_handoff",
@@ -229,7 +233,8 @@
       "text": {
         "vi": "Nhiều đời trước có người giữ bến này. Giờ đến lượt con.",
         "en": "Many generations ago, someone kept this landing. Now it is your turn."
-      }
+      },
+      "era": "era_hung_vuong_6"
     }
   ]
 }

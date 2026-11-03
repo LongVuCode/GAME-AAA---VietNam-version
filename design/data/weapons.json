@@ -4,34 +4,191 @@
   "weapons": [
     {
       "id": "wp_giao_dong",
-      "name": {"vi": "Giáo đồng", "en": "Bronze Spear"},
-      "description": {"vi": "Mũi giáo đồng lắp cán tre. Tầm xa, ra đòn nhanh, sát thương Thế vừa phải.", "en": "A bronze spearhead on a bamboo shaft. Long reach, quick strikes, moderate Stance damage."},
+      "name": {
+        "vi": "Giáo đồng",
+        "en": "Bronze Spear"
+      },
+      "description": {
+        "vi": "Mũi giáo đồng lắp cán tre. Tầm xa, ra đòn nhanh, sát thương Thế vừa phải.",
+        "en": "A bronze spearhead on a bamboo shaft. Long reach, quick strikes, moderate Stance damage."
+      },
       "label": "SÁNG TẠO",
       "basis": {
         "label": "SỬ LIỆU-TRANH LUẬN",
-        "sources": ["ARC_DS", "LSVN15"],
+        "sources": [
+          "ARC_DS",
+          "LSVN15"
+        ],
         "research_ref": "T002",
-        "note": "Dáng mũi giáo lấy cảm hứng từ hiện vật văn hóa Đông Sơn; chưa đối chiếu bản gốc báo cáo khai quật. Thời truyền thuyết không đồng nhất với một văn hóa khảo cổ (SB-08)."
+        "note": "Dáng mũi giáo lấy cảm hứng từ hiện vật văn hóa Đông Sơn; chưa đối chiếu bản gốc báo cáo khai quật. Thời truyền thuyết không đồng nhất với một văn hóa khảo cổ (SB-08). Mới có 1 dòng nguồn, mức B."
       },
       "era": "era_legendary_hong_bang",
       "owner_character": "chr_coi",
       "slot": 1,
       "codex_ref": "cx_bronze_weapons",
       "moves": [
-        {"id": "sp_l1", "name": {"vi": "Đâm thẳng", "en": "Straight Thrust"}, "input": "L", "chain_index": 1, "damage": 20, "the_damage": 8, "startup_s": 0.18, "active_s": 0.08, "recovery_s": 0.3, "combo_window_s": 0.35, "hit_weight": "light", "range_m": 2.6, "arc_deg": 20},
-        {"id": "sp_l2", "name": {"vi": "Đâm rút", "en": "Draw Thrust"}, "input": "L", "chain_index": 2, "damage": 22, "the_damage": 9, "startup_s": 0.16, "active_s": 0.08, "recovery_s": 0.32, "combo_window_s": 0.35, "hit_weight": "light", "range_m": 2.6, "arc_deg": 20},
-        {"id": "sp_l3", "name": {"vi": "Quét cán", "en": "Shaft Sweep"}, "input": "L", "chain_index": 3, "damage": 26, "the_damage": 14, "startup_s": 0.24, "active_s": 0.12, "recovery_s": 0.4, "combo_window_s": 0.35, "hit_weight": "medium", "range_m": 2.2, "arc_deg": 120},
-        {"id": "sp_l4", "name": {"vi": "Đâm xoáy", "en": "Twisting Thrust"}, "input": "L", "chain_index": 4, "damage": 34, "the_damage": 18, "startup_s": 0.28, "active_s": 0.1, "recovery_s": 0.55, "combo_window_s": 0.0, "hit_weight": "medium", "range_m": 2.8, "arc_deg": 20, "requires_skill": "sk_vo_noi_don"},
-        {"id": "sp_h1", "name": {"vi": "Phóng mũi", "en": "Lunging Point"}, "input": "H", "chain_index": 1, "damage": 40, "the_damage": 28, "startup_s": 0.45, "active_s": 0.1, "recovery_s": 0.6, "combo_window_s": 0.3, "hit_weight": "heavy", "range_m": 3.2, "arc_deg": 15,
-         "charge": {"max_level": 2, "time_per_level_s": 0.6, "damage_mult_per_level": 0.5, "level_2_requires_skill": "sk_vo_gong_suc"}},
-        {"id": "sp_b1", "name": {"vi": "Chống giáo hất", "en": "Vaulting Upswing"}, "input": "L,L,pause,H", "chain_index": 0, "damage": 36, "the_damage": 30, "startup_s": 0.4, "active_s": 0.12, "recovery_s": 0.65, "combo_window_s": 0.0, "hit_weight": "heavy", "range_m": 2.4, "arc_deg": 60},
-        {"id": "sp_d1", "name": {"vi": "Lướt đâm", "en": "Gliding Thrust"}, "input": "dodge,L", "chain_index": 0, "damage": 18, "the_damage": 8, "startup_s": 0.14, "active_s": 0.08, "recovery_s": 0.35, "combo_window_s": 0.3, "hit_weight": "light", "range_m": 2.6, "arc_deg": 20},
-        {"id": "sp_c1", "name": {"vi": "Phản mũi", "en": "Point Riposte"}, "input": "perfect_parry,L", "chain_index": 0, "damage": 30, "the_damage": 35, "startup_s": 0.12, "active_s": 0.08, "recovery_s": 0.4, "combo_window_s": 0.0, "hit_weight": "heavy", "range_m": 2.6, "arc_deg": 30}
+        {
+          "id": "sp_l1",
+          "name": {
+            "vi": "Đâm thẳng",
+            "en": "Straight Thrust"
+          },
+          "input": "L",
+          "chain_index": 1,
+          "damage": 20,
+          "the_damage": 8,
+          "startup_s": 0.18,
+          "active_s": 0.08,
+          "recovery_s": 0.3,
+          "combo_window_s": 0.35,
+          "hit_weight": "light",
+          "range_m": 2.6,
+          "arc_deg": 20
+        },
+        {
+          "id": "sp_l2",
+          "name": {
+            "vi": "Đâm rút",
+            "en": "Draw Thrust"
+          },
+          "input": "L",
+          "chain_index": 2,
+          "damage": 22,
+          "the_damage": 9,
+          "startup_s": 0.16,
+          "active_s": 0.08,
+          "recovery_s": 0.32,
+          "combo_window_s": 0.35,
+          "hit_weight": "light",
+          "range_m": 2.6,
+          "arc_deg": 20
+        },
+        {
+          "id": "sp_l3",
+          "name": {
+            "vi": "Quét cán",
+            "en": "Shaft Sweep"
+          },
+          "input": "L",
+          "chain_index": 3,
+          "damage": 26,
+          "the_damage": 14,
+          "startup_s": 0.24,
+          "active_s": 0.12,
+          "recovery_s": 0.4,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 2.2,
+          "arc_deg": 120
+        },
+        {
+          "id": "sp_l4",
+          "name": {
+            "vi": "Đâm xoáy",
+            "en": "Twisting Thrust"
+          },
+          "input": "L",
+          "chain_index": 4,
+          "damage": 34,
+          "the_damage": 18,
+          "startup_s": 0.28,
+          "active_s": 0.1,
+          "recovery_s": 0.55,
+          "combo_window_s": 0.0,
+          "hit_weight": "medium",
+          "range_m": 2.8,
+          "arc_deg": 20,
+          "requires_skill": "sk_vo_noi_don"
+        },
+        {
+          "id": "sp_h1",
+          "name": {
+            "vi": "Phóng mũi",
+            "en": "Lunging Point"
+          },
+          "input": "H",
+          "chain_index": 1,
+          "damage": 40,
+          "the_damage": 28,
+          "startup_s": 0.45,
+          "active_s": 0.1,
+          "recovery_s": 0.6,
+          "combo_window_s": 0.3,
+          "hit_weight": "heavy",
+          "range_m": 3.2,
+          "arc_deg": 15,
+          "charge": {
+            "max_level": 2,
+            "time_per_level_s": 0.6,
+            "damage_mult_per_level": 0.5,
+            "level_2_requires_skill": "sk_vo_gong_suc"
+          }
+        },
+        {
+          "id": "sp_b1",
+          "name": {
+            "vi": "Chống giáo hất",
+            "en": "Vaulting Upswing"
+          },
+          "input": "L,L,pause,H",
+          "chain_index": 0,
+          "damage": 36,
+          "the_damage": 30,
+          "startup_s": 0.4,
+          "active_s": 0.12,
+          "recovery_s": 0.65,
+          "combo_window_s": 0.0,
+          "hit_weight": "heavy",
+          "range_m": 2.4,
+          "arc_deg": 60
+        },
+        {
+          "id": "sp_d1",
+          "name": {
+            "vi": "Lướt đâm",
+            "en": "Gliding Thrust"
+          },
+          "input": "dodge,L",
+          "chain_index": 0,
+          "damage": 18,
+          "the_damage": 8,
+          "startup_s": 0.14,
+          "active_s": 0.08,
+          "recovery_s": 0.35,
+          "combo_window_s": 0.3,
+          "hit_weight": "light",
+          "range_m": 2.6,
+          "arc_deg": 20
+        },
+        {
+          "id": "sp_c1",
+          "name": {
+            "vi": "Phản mũi",
+            "en": "Point Riposte"
+          },
+          "input": "perfect_parry,L",
+          "chain_index": 0,
+          "damage": 30,
+          "the_damage": 35,
+          "startup_s": 0.12,
+          "active_s": 0.08,
+          "recovery_s": 0.4,
+          "combo_window_s": 0.0,
+          "hit_weight": "heavy",
+          "range_m": 2.6,
+          "arc_deg": 30
+        }
       ],
       "drum_burst": {
         "id": "db_mui_trong_don",
-        "name": {"vi": "Mũi trống dồn", "en": "Drumroll Point"},
-        "description": {"vi": "Bốn mũi đâm theo bốn nhịp trống, mũi cuối dồn hết sức. Đây là kỹ nghệ của người cầm giáo, không phải phép.", "en": "Four thrusts on four drumbeats, the last with full weight. A wielder's craft, not magic."},
+        "name": {
+          "vi": "Mũi trống dồn",
+          "en": "Drumroll Point"
+        },
+        "description": {
+          "vi": "Bốn mũi đâm theo bốn nhịp trống, mũi cuối dồn hết sức. Đây là kỹ nghệ của người cầm giáo, không phải phép.",
+          "en": "Four thrusts on four drumbeats, the last with full weight. A wielder's craft, not magic."
+        },
         "label": "SÁNG TẠO",
         "hits": 4,
         "damage_total": 120,
@@ -44,34 +201,191 @@
     },
     {
       "id": "wp_riu_xeo",
-      "name": {"vi": "Rìu xéo", "en": "Bronze Crescent Axe"},
-      "description": {"vi": "Lưỡi rìu đồng lệch một bên, cán gỗ. Chậm, nặng, phá Thế mạnh.", "en": "An asymmetric bronze axe blade on a wooden haft. Slow and heavy, breaks Stance hard."},
+      "name": {
+        "vi": "Rìu xéo",
+        "en": "Bronze Crescent Axe"
+      },
+      "description": {
+        "vi": "Lưỡi rìu đồng lệch một bên, cán gỗ. Chậm, nặng, phá Thế mạnh.",
+        "en": "An asymmetric bronze axe blade on a wooden haft. Slow and heavy, breaks Stance hard."
+      },
       "label": "SÁNG TẠO",
       "basis": {
         "label": "SỬ LIỆU-TRANH LUẬN",
-        "sources": ["ARC_DS", "LSVN15"],
+        "sources": [
+          "ARC_DS",
+          "LSVN15"
+        ],
         "research_ref": "T002",
-        "note": "Dáng rìu xéo lấy cảm hứng từ hiện vật văn hóa Đông Sơn; chưa đối chiếu bản gốc báo cáo khai quật. Thời truyền thuyết không đồng nhất với một văn hóa khảo cổ (SB-08)."
+        "note": "Dáng rìu xéo lấy cảm hứng từ hiện vật văn hóa Đông Sơn; chưa đối chiếu bản gốc báo cáo khai quật. Thời truyền thuyết không đồng nhất với một văn hóa khảo cổ (SB-08). Mới có 1 dòng nguồn, mức B."
       },
       "era": "era_legendary_hong_bang",
       "owner_character": "chr_buong",
       "slot": 2,
       "codex_ref": "cx_bronze_weapons",
       "moves": [
-        {"id": "ax_l1", "name": {"vi": "Bổ xéo", "en": "Slant Chop"}, "input": "L", "chain_index": 1, "damage": 30, "the_damage": 14, "startup_s": 0.28, "active_s": 0.1, "recovery_s": 0.42, "combo_window_s": 0.35, "hit_weight": "medium", "range_m": 1.8, "arc_deg": 90},
-        {"id": "ax_l2", "name": {"vi": "Bổ ngược", "en": "Back Chop"}, "input": "L", "chain_index": 2, "damage": 32, "the_damage": 15, "startup_s": 0.26, "active_s": 0.1, "recovery_s": 0.45, "combo_window_s": 0.35, "hit_weight": "medium", "range_m": 1.8, "arc_deg": 90},
-        {"id": "ax_l3", "name": {"vi": "Chặt xuống", "en": "Downward Hew"}, "input": "L", "chain_index": 3, "damage": 42, "the_damage": 24, "startup_s": 0.36, "active_s": 0.12, "recovery_s": 0.6, "combo_window_s": 0.35, "hit_weight": "heavy", "range_m": 1.9, "arc_deg": 40},
-        {"id": "ax_l4", "name": {"vi": "Xoay rìu", "en": "Spinning Hew"}, "input": "L", "chain_index": 4, "damage": 48, "the_damage": 26, "startup_s": 0.4, "active_s": 0.2, "recovery_s": 0.7, "combo_window_s": 0.0, "hit_weight": "heavy", "range_m": 1.9, "arc_deg": 360, "requires_skill": "sk_vo_noi_don"},
-        {"id": "ax_h1", "name": {"vi": "Bổ gồng", "en": "Braced Cleave"}, "input": "H", "chain_index": 1, "damage": 60, "the_damage": 45, "startup_s": 0.6, "active_s": 0.12, "recovery_s": 0.75, "combo_window_s": 0.3, "hit_weight": "heavy", "range_m": 2.0, "arc_deg": 40,
-         "charge": {"max_level": 2, "time_per_level_s": 0.7, "damage_mult_per_level": 0.5, "level_2_requires_skill": "sk_vo_gong_suc"}},
-        {"id": "ax_b1", "name": {"vi": "Móc lưỡi", "en": "Blade Hook"}, "input": "L,L,pause,H", "chain_index": 0, "damage": 34, "the_damage": 40, "startup_s": 0.42, "active_s": 0.12, "recovery_s": 0.7, "combo_window_s": 0.0, "hit_weight": "heavy", "range_m": 1.8, "arc_deg": 60},
-        {"id": "ax_d1", "name": {"vi": "Lướt bổ", "en": "Gliding Chop"}, "input": "dodge,L", "chain_index": 0, "damage": 26, "the_damage": 12, "startup_s": 0.2, "active_s": 0.1, "recovery_s": 0.45, "combo_window_s": 0.3, "hit_weight": "medium", "range_m": 1.8, "arc_deg": 90},
-        {"id": "ax_c1", "name": {"vi": "Phản rìu", "en": "Axe Riposte"}, "input": "perfect_parry,L", "chain_index": 0, "damage": 40, "the_damage": 45, "startup_s": 0.18, "active_s": 0.1, "recovery_s": 0.5, "combo_window_s": 0.0, "hit_weight": "heavy", "range_m": 1.8, "arc_deg": 60}
+        {
+          "id": "ax_l1",
+          "name": {
+            "vi": "Bổ xéo",
+            "en": "Slant Chop"
+          },
+          "input": "L",
+          "chain_index": 1,
+          "damage": 30,
+          "the_damage": 14,
+          "startup_s": 0.28,
+          "active_s": 0.1,
+          "recovery_s": 0.42,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 1.8,
+          "arc_deg": 90
+        },
+        {
+          "id": "ax_l2",
+          "name": {
+            "vi": "Bổ ngược",
+            "en": "Back Chop"
+          },
+          "input": "L",
+          "chain_index": 2,
+          "damage": 32,
+          "the_damage": 15,
+          "startup_s": 0.26,
+          "active_s": 0.1,
+          "recovery_s": 0.45,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 1.8,
+          "arc_deg": 90
+        },
+        {
+          "id": "ax_l3",
+          "name": {
+            "vi": "Chặt xuống",
+            "en": "Downward Hew"
+          },
+          "input": "L",
+          "chain_index": 3,
+          "damage": 42,
+          "the_damage": 24,
+          "startup_s": 0.36,
+          "active_s": 0.12,
+          "recovery_s": 0.6,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 1.9,
+          "arc_deg": 40
+        },
+        {
+          "id": "ax_l4",
+          "name": {
+            "vi": "Xoay rìu",
+            "en": "Spinning Hew"
+          },
+          "input": "L",
+          "chain_index": 4,
+          "damage": 48,
+          "the_damage": 26,
+          "startup_s": 0.4,
+          "active_s": 0.2,
+          "recovery_s": 0.7,
+          "combo_window_s": 0.0,
+          "hit_weight": "heavy",
+          "range_m": 1.9,
+          "arc_deg": 360,
+          "requires_skill": "sk_vo_noi_don"
+        },
+        {
+          "id": "ax_h1",
+          "name": {
+            "vi": "Bổ gồng",
+            "en": "Braced Cleave"
+          },
+          "input": "H",
+          "chain_index": 1,
+          "damage": 60,
+          "the_damage": 45,
+          "startup_s": 0.6,
+          "active_s": 0.12,
+          "recovery_s": 0.75,
+          "combo_window_s": 0.3,
+          "hit_weight": "heavy",
+          "range_m": 2.0,
+          "arc_deg": 40,
+          "charge": {
+            "max_level": 2,
+            "time_per_level_s": 0.7,
+            "damage_mult_per_level": 0.5,
+            "level_2_requires_skill": "sk_vo_gong_suc"
+          }
+        },
+        {
+          "id": "ax_b1",
+          "name": {
+            "vi": "Móc lưỡi",
+            "en": "Blade Hook"
+          },
+          "input": "L,L,pause,H",
+          "chain_index": 0,
+          "damage": 34,
+          "the_damage": 40,
+          "startup_s": 0.42,
+          "active_s": 0.12,
+          "recovery_s": 0.7,
+          "combo_window_s": 0.0,
+          "hit_weight": "heavy",
+          "range_m": 1.8,
+          "arc_deg": 60
+        },
+        {
+          "id": "ax_d1",
+          "name": {
+            "vi": "Lướt bổ",
+            "en": "Gliding Chop"
+          },
+          "input": "dodge,L",
+          "chain_index": 0,
+          "damage": 26,
+          "the_damage": 12,
+          "startup_s": 0.2,
+          "active_s": 0.1,
+          "recovery_s": 0.45,
+          "combo_window_s": 0.3,
+          "hit_weight": "medium",
+          "range_m": 1.8,
+          "arc_deg": 90
+        },
+        {
+          "id": "ax_c1",
+          "name": {
+            "vi": "Phản rìu",
+            "en": "Axe Riposte"
+          },
+          "input": "perfect_parry,L",
+          "chain_index": 0,
+          "damage": 40,
+          "the_damage": 45,
+          "startup_s": 0.18,
+          "active_s": 0.1,
+          "recovery_s": 0.5,
+          "combo_window_s": 0.0,
+          "hit_weight": "heavy",
+          "range_m": 1.8,
+          "arc_deg": 60
+        }
       ],
       "drum_burst": {
         "id": "db_bo_trong_ren",
-        "name": {"vi": "Bổ trống rền", "en": "Rolling Drum Cleave"},
-        "description": {"vi": "Ba nhát bổ theo ba nhịp trống, nhát cuối dồn trọng lượng cả thân. Kỹ nghệ, không phải phép.", "en": "Three cleaves on three drumbeats, the last with full body weight. Craft, not magic."},
+        "name": {
+          "vi": "Bổ trống rền",
+          "en": "Rolling Drum Cleave"
+        },
+        "description": {
+          "vi": "Ba nhát bổ theo ba nhịp trống, nhát cuối dồn trọng lượng cả thân. Kỹ nghệ, không phải phép.",
+          "en": "Three cleaves on three drumbeats, the last with full body weight. Craft, not magic."
+        },
         "label": "SÁNG TẠO",
         "hits": 3,
         "damage_total": 150,

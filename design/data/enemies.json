@@ -1,186 +1,105 @@
 {
   "schema_version": 1,
-  "_note": "Kẻ địch Demo 0.1 (ch_longbien), theo Story Bible v1.1 §7: Rái Đầm, Lợn Rừng Non, Bóng Mê; boss Lợn Lòi Đầm. Không có người (kể cả người bị mê), không cáo, không bò sát, không tên giao long/thuồng luồng (D-017, D-018, SB-01, SB-05). Thú hết sức thì bỏ chạy. Mọi con số là giả định, chờ playtest.",
+  "_note": "Kẻ địch Demo 0.1 (ch_longbien): Cua Càng Bùn, Bọ Ngựa Lau, Ụ Bùn (bộ chuẩn theo điều phối) và boss Lợn Lòi Đầm. Không có người (kể cả người bị mê), không cáo, không bò sát, không tên giao long/thuồng luồng (D-017, D-018, SB-01, SB-05). Thú hết sức thì bỏ chạy. Mọi con số là giả định, chờ playtest.",
   "enemies": [
     {
-      "id": "en_rai_dam",
+      "id": "en_cua_cang_bun",
       "name": {
-        "vi": "Rái Đầm",
-        "en": "Marsh Otter"
+        "vi": "Cua Càng Bùn",
+        "en": "Mudclaw Crab"
       },
       "description": {
-        "vi": "Rái cá to, đi từng cặp, lao ra từ mép nước rồi rút về. Hết sức thì chạy mất xuống đầm.",
-        "en": "Large otters that hunt in pairs, darting out from the water's edge and back. When spent, they flee into the marsh."
+        "vi": "Cua đầm to bằng cái nong, mai dày phía trước. Đánh từ bên hông hoặc chờ nó giơ càng rồi Đỡ nhịp. Hết sức thì bò xuống bùn trốn.",
+        "en": "A marsh crab as wide as a winnowing tray, with a thick front shell. Strike its flank, or parry when it raises its claws. When spent, it burrows away into the mud."
       },
       "label": "SÁNG TẠO",
       "type": "beast",
-      "species_family": "otter",
-      "skeleton_family": "quadruped_small",
+      "species_family": "crab",
+      "skeleton_family": "crab_small",
       "rank": "normal",
       "chapter": "ch_longbien",
       "zones": [
         "z_ben_say",
         "z_dam_nong"
       ],
-      "spawn_group_size": 2,
-      "hp": 150,
-      "the_max": 60,
-      "the_regen_per_s": 15,
-      "the_regen_delay_s": 1.2,
-      "stagger_duration_s": 2.0,
-      "interrupt_threshold": 8,
-      "front_damage_mult": 1.0,
-      "respawns_at_checkpoint": true,
-      "defeat_behavior": "flee",
-      "attacks": [
-        {
-          "id": "rai_cap",
-          "name": {
-            "vi": "Cắp",
-            "en": "Snap"
-          },
-          "damage": 14,
-          "player_the_damage": 12,
-          "windup_s": 0.4,
-          "active_s": 0.1,
-          "recovery_s": 0.45,
-          "parryable": true,
-          "guardable": true,
-          "delayed": false,
-          "range_m": 1.4,
-          "cooldown_s": 1.5,
-          "dodge_hint": "back",
-          "telegraph": {
-            "visual": "rụt cổ, nhe răng",
-            "audio": "tiếng chí chí ngắn",
-            "color_cue": "none"
-          }
-        },
-        {
-          "id": "rai_lao",
-          "name": {
-            "vi": "Lao bờ",
-            "en": "Bank Dart"
-          },
-          "damage": 20,
-          "player_the_damage": 20,
-          "windup_s": 0.6,
-          "active_s": 0.3,
-          "recovery_s": 0.8,
-          "parryable": true,
-          "guardable": true,
-          "delayed": false,
-          "range_m": 5.0,
-          "cooldown_s": 4.0,
-          "dodge_hint": "side",
-          "telegraph": {
-            "visual": "nằm rạp, đuôi quẫy nước",
-            "audio": "tiếng nước tóe",
-            "color_cue": "none"
-          }
-        },
-        {
-          "id": "rai_cuon",
-          "name": {
-            "vi": "Cuộn đôi",
-            "en": "Tandem Tumble"
-          },
-          "damage": 24,
-          "player_the_damage": 30,
-          "windup_s": 0.8,
-          "active_s": 0.5,
-          "recovery_s": 1.0,
-          "parryable": false,
-          "guardable": false,
-          "delayed": false,
-          "range_m": 4.0,
-          "cooldown_s": 9.0,
-          "dodge_hint": "side",
-          "requires_pair": true,
-          "telegraph": {
-            "visual": "hai con nhìn nhau rồi chụm đầu",
-            "audio": "hai tiếng huýt gọi nhau",
-            "color_cue": "red_bronze"
-          }
-        }
-      ],
-      "drops": []
-    },
-    {
-      "id": "en_lon_rung_non",
-      "name": {
-        "vi": "Lợn Rừng Non",
-        "en": "Young Wild Boar"
-      },
-      "description": {
-        "vi": "Lợn rừng non hoảng loạn vì bãi lầy bị càn phá. Cách nó cào móng trước khi lao là bài học cho trận lớn hơn. Hết sức thì bỏ chạy.",
-        "en": "A young wild boar panicked by the ravaged mire. The way it paws before charging is a lesson for a bigger fight. When spent, it flees."
-      },
-      "label": "SÁNG TẠO",
-      "type": "beast",
-      "species_family": "boar",
-      "skeleton_family": "quadruped_shared",
-      "rig_note": "rig boss thu nhỏ",
-      "rank": "normal",
-      "chapter": "ch_longbien",
-      "zones": [
-        "z_dam_nong",
-        "z_bai_lau"
-      ],
       "spawn_group_size": 1,
-      "hp": 260,
-      "the_max": 90,
+      "hp": 220,
+      "the_max": 80,
       "the_regen_per_s": 12,
       "the_regen_delay_s": 1.5,
       "stagger_duration_s": 2.5,
-      "interrupt_threshold": 15,
-      "front_damage_mult": 1.0,
+      "interrupt_threshold": 10,
+      "front_damage_mult": 0.6,
       "respawns_at_checkpoint": true,
       "defeat_behavior": "flee",
       "attacks": [
         {
-          "id": "lrn_hat",
+          "id": "cua_kep",
           "name": {
-            "vi": "Hất mõm",
-            "en": "Snout Toss"
+            "vi": "Kẹp càng",
+            "en": "Claw Pinch"
           },
           "damage": 18,
-          "player_the_damage": 18,
+          "player_the_damage": 15,
           "windup_s": 0.55,
           "active_s": 0.12,
           "recovery_s": 0.6,
           "parryable": true,
           "guardable": true,
           "delayed": false,
-          "range_m": 1.8,
-          "cooldown_s": 2.0,
-          "dodge_hint": "side",
+          "range_m": 1.6,
+          "cooldown_s": 1.5,
+          "dodge_hint": "back",
           "telegraph": {
-            "visual": "cúi đầu, hất mõm lên",
-            "audio": "khịt mũi",
+            "visual": "giơ càng phải lên cao",
+            "audio": "tiếng lách cách vỏ",
             "color_cue": "none"
           }
         },
         {
-          "id": "lrn_lao",
+          "id": "cua_kep_doi",
           "name": {
-            "vi": "Lao thẳng",
-            "en": "Straight Charge"
+            "vi": "Kẹp đôi",
+            "en": "Double Pinch"
           },
-          "damage": 26,
+          "damage": 14,
+          "player_the_damage": 12,
+          "windup_s": 0.6,
+          "active_s": 0.25,
+          "recovery_s": 0.7,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 1.6,
+          "cooldown_s": 3.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "dang cả hai càng",
+            "audio": "lách cách hai lần",
+            "color_cue": "none"
+          },
+          "hits": 2
+        },
+        {
+          "id": "cua_ui_ngang",
+          "name": {
+            "vi": "Ủi ngang",
+            "en": "Sidelong Shove"
+          },
+          "damage": 22,
           "player_the_damage": 30,
-          "windup_s": 1.0,
-          "active_s": 0.6,
-          "recovery_s": 1.0,
+          "windup_s": 0.8,
+          "active_s": 0.3,
+          "recovery_s": 0.9,
           "parryable": false,
           "guardable": false,
           "delayed": false,
-          "range_m": 10.0,
+          "range_m": 3.0,
           "cooldown_s": 6.0,
           "dodge_hint": "side",
           "telegraph": {
-            "visual": "cào móng hai lần, hạ đầu",
-            "audio": "tiếng ụt ịt dồn dập",
+            "visual": "hạ thấp mai, chân cào bùn",
+            "audio": "tiếng bùn sục",
             "color_cue": "red_bronze"
           }
         }
@@ -188,81 +107,189 @@
       "drops": []
     },
     {
-      "id": "en_bong_me",
+      "id": "en_bo_ngua_lau",
       "name": {
-        "vi": "Bóng Mê",
-        "en": "Lure Shade"
+        "vi": "Bọ Ngựa Lau",
+        "en": "Reed Mantis"
       },
       "description": {
-        "vi": "Ảo ảnh như làn sương mang dáng bụi lau, vờn quanh người bị mê. Không phải người, không phải cáo. Tan khi người bị mê được gọi tỉnh.",
-        "en": "A mist-like illusion shaped like a clump of reeds, circling an entranced villager. Neither human nor fox. It fades once the villager is called back to their senses."
+        "vi": "Bọ ngựa cao ngang vai người, nấp trong bãi lau. Nhanh, máu mỏng; né đúng lúc để lấy Nhịp. Hết sức thì bay vụt vào lau.",
+        "en": "A shoulder-high mantis that hides in the reeds. Fast and frail; time your dodges to build Rhythm. When spent, it whirs off into the reeds."
       },
       "label": "SÁNG TẠO",
-      "type": "illusion",
-      "species_family": "illusion_mist",
-      "skeleton_family": "none_vfx_mesh",
+      "type": "insect",
+      "species_family": "mantis",
+      "skeleton_family": "insect_mantis",
       "rank": "normal",
       "chapter": "ch_longbien",
       "zones": [
         "z_bai_lau"
       ],
       "spawn_group_size": 2,
-      "hp": 120,
-      "the_max": 50,
-      "the_regen_per_s": 20,
-      "the_regen_delay_s": 1.0,
-      "stagger_duration_s": 1.8,
-      "interrupt_threshold": 5,
+      "hp": 160,
+      "the_max": 60,
+      "the_regen_per_s": 15,
+      "the_regen_delay_s": 1.2,
+      "stagger_duration_s": 2.0,
+      "interrupt_threshold": 6,
+      "front_damage_mult": 1.0,
+      "respawns_at_checkpoint": true,
+      "defeat_behavior": "flee",
+      "attacks": [
+        {
+          "id": "bn_chem_doi",
+          "name": {
+            "vi": "Chém đôi",
+            "en": "Twin Scythe"
+          },
+          "damage": 12,
+          "player_the_damage": 10,
+          "windup_s": 0.4,
+          "active_s": 0.2,
+          "recovery_s": 0.45,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 1.8,
+          "cooldown_s": 1.8,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "dựng hai chân trước",
+            "audio": "tiếng cánh rít ngắn",
+            "color_cue": "none"
+          },
+          "hits": 2
+        },
+        {
+          "id": "bn_vo_phuc",
+          "name": {
+            "vi": "Vồ phục",
+            "en": "Ambush Grab"
+          },
+          "damage": 26,
+          "player_the_damage": 0,
+          "windup_s": 0.7,
+          "active_s": 0.15,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 3.5,
+          "cooldown_s": 8.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "lau rẽ thành vệt, bọ nhô đầu",
+            "audio": "tiếng lau xào xạc gấp",
+            "color_cue": "red_bronze"
+          }
+        },
+        {
+          "id": "bn_rinh",
+          "name": {
+            "vi": "Rình chém",
+            "en": "Lurking Slash"
+          },
+          "damage": 16,
+          "player_the_damage": 14,
+          "windup_s": 0.5,
+          "active_s": 0.1,
+          "recovery_s": 0.5,
+          "parryable": true,
+          "guardable": true,
+          "delayed": true,
+          "range_m": 2.0,
+          "cooldown_s": 4.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "đung đưa thân, dừng khựng rồi chém",
+            "audio": "tiếng rít dừng đột ngột",
+            "color_cue": "none"
+          },
+          "hold_s": 0.35
+        }
+      ],
+      "drops": []
+    },
+    {
+      "id": "en_u_bun",
+      "name": {
+        "vi": "Ụ Bùn",
+        "en": "Mud Mound"
+      },
+      "description": {
+        "vi": "Yêu đầm hư cấu: một ụ bùn và rễ lau tự đứng dậy. Chậm, chịu đòn; dùng đòn nặng để phá Thế. Hết sức thì sụp lại thành bùn.",
+        "en": "A fictional marsh spirit: a mound of mud and reed roots that stands up on its own. Slow and sturdy; use heavy attacks to break its Stance. When spent, it slumps back into mud."
+      },
+      "label": "SÁNG TẠO",
+      "type": "spirit",
+      "species_family": "mud_spirit",
+      "skeleton_family": "blob_biped_nonhuman",
+      "rank": "elite",
+      "chapter": "ch_longbien",
+      "zones": [
+        "z_dam_nong",
+        "z_lo_bo_hoang"
+      ],
+      "spawn_group_size": 1,
+      "hp": 480,
+      "the_max": 160,
+      "the_regen_per_s": 8,
+      "the_regen_delay_s": 2.0,
+      "stagger_duration_s": 3.0,
+      "interrupt_threshold": 25,
       "front_damage_mult": 1.0,
       "respawns_at_checkpoint": true,
       "defeat_behavior": "dissipate",
-      "dispelled_by": "nc_nguoi_bi_me",
       "attacks": [
         {
-          "id": "bm_quat",
+          "id": "ub_dap",
           "name": {
-            "vi": "Quất sương",
-            "en": "Mist Lash"
+            "vi": "Đập bùn",
+            "en": "Mud Slam"
           },
-          "damage": 12,
-          "player_the_damage": 14,
-          "windup_s": 0.5,
+          "damage": 32,
+          "player_the_damage": 30,
+          "windup_s": 0.9,
           "active_s": 0.15,
-          "recovery_s": 0.5,
+          "recovery_s": 1.1,
           "parryable": true,
           "guardable": true,
           "delayed": false,
           "range_m": 2.2,
-          "cooldown_s": 2.0,
-          "dodge_hint": "back",
+          "cooldown_s": 2.5,
+          "dodge_hint": "side",
           "telegraph": {
-            "visual": "bụi lau sương vươn dài một nhánh",
-            "audio": "tiếng gió rít",
+            "visual": "giơ khối bùn lên quá đầu",
+            "audio": "tiếng bùn nhóp nhép",
             "color_cue": "none"
           }
         },
         {
-          "id": "bm_chap_chon",
+          "id": "ub_lan",
           "name": {
-            "vi": "Chập chờn",
-            "en": "Flicker Strike"
+            "vi": "Lan bùn",
+            "en": "Spreading Mire"
           },
-          "damage": 16,
-          "player_the_damage": 16,
-          "windup_s": 0.6,
-          "hold_s": 0.3,
-          "active_s": 0.12,
-          "recovery_s": 0.6,
-          "parryable": true,
-          "guardable": true,
-          "delayed": true,
-          "range_m": 3.0,
-          "cooldown_s": 5.0,
+          "damage": 10,
+          "player_the_damage": 0,
+          "windup_s": 1.2,
+          "active_s": 2.0,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 4.0,
+          "cooldown_s": 10.0,
           "dodge_hint": "back",
           "telegraph": {
-            "visual": "tan đi rồi hiện ra sát bên, khựng một nhịp",
-            "audio": "tiếng chuông gió ngắt quãng",
-            "color_cue": "none"
+            "visual": "ụ bùn lún xuống, vòng sóng bùn trên mặt đất",
+            "audio": "tiếng ục ục dưới bùn",
+            "color_cue": "red_bronze"
+          },
+          "applies": {
+            "status": "slow",
+            "speed_mult": 0.6,
+            "duration_s": 3.0
           }
         }
       ],
@@ -611,8 +638,8 @@
         "en": "Entranced Reed-cutter"
       },
       "description": {
-        "vi": "Một người làng đứng giữa bãi lau, mắt nhìn vào khoảng không. Không đánh được: giữ nút \"Gọi tên\" để gọi người ấy tỉnh.",
-        "en": "A villager stands in the reeds, staring at nothing. Cannot be attacked: hold \"Call by name\" to bring them back."
+        "vi": "Một người làng đứng giữa bãi lau trong làn sương ảo, mắt nhìn vào khoảng không. Không đánh được: giữ nút \"Gọi tên\" để gọi người ấy tỉnh.",
+        "en": "A villager stands in the reeds amid an illusory mist, staring at nothing. Cannot be attacked: hold \"Call by name\" to bring them back."
       },
       "label": "SÁNG TẠO",
       "type": "human_entranced",
@@ -624,12 +651,11 @@
       "hold_s": 2.0,
       "progress_kept_on_interrupt": 0.5,
       "on_success": {
-        "dispels": [
-          "en_bong_me"
-        ],
+        "dispels": [],
         "grants_skill_points": 1,
         "sets_flag": "flag_nguoi_bi_me_saved",
-        "villager_returns_to": "z_ben_say"
+        "villager_returns_to": "z_ben_say",
+        "clears_vfx": "vfx_illusion_mist"
       }
     }
   ]

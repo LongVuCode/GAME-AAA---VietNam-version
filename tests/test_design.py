@@ -166,6 +166,18 @@ class RealData(unittest.TestCase):
         b["lineage"]["thap"]["description"]["vi"] += " Có cả mảnh khoen."
         self.assertTrue(any("SB-02" in e for e in self.errors(b)))
 
+    def test_khoen_in_hung6_dialogue_is_error(self):
+        b = self.fresh()
+        b["strings"]["dialogue"][0]["era"] = "era_hung_vuong_6"
+        b["strings"]["dialogue"][0]["text"]["vi"] = "Mảnh khoen ở đây."
+        self.assertTrue(any("khoen-free era" in e for e in self.errors(b)))
+
+    def test_codex_khoen_must_hide_in_hung6(self):
+        b = self.fresh()
+        cx = next(e for e in b["codex"]["entries"] if e["id"] == "cx_khoen")
+        del cx["hidden_in_eras"]
+        self.assertTrue(any("hidden_in_eras" in e for e in self.errors(b)))
+
     def test_entranced_human_must_be_non_combat(self):
         b = self.fresh()
         b["enemies"]["non_combat_encounters"][0]["combat"] = True

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "combat": {
+    "parry": { "window": 0.1, "perfect_window": 0.2, "duration": 0.4 }
+  },
+  "bosses": [
+    { "id": "boss", "max_health": 100,
+      "shackle": { "beat_interval": 0.5, "beat_half_window": 0.4 },
+      "freed_drops": [ { "material": "khoen_shard", "amount": 1 } ] }
+  ],
+  "crafting": {
+    "materials": [ { "id": "khoen_shard", "category": "shackle_fragment" } ]
+  },
+  "secrets": [
+    { "id": "trap", "nodes": [
+      { "id": "left", "excluded_by": ["right"], "grants_clues": ["key"] },
+      { "id": "right", "excluded_by": ["left"] },
+      { "id": "end", "requires_clues": ["key"], "ending": true }
+    ] }
+  ]
+}

@@ -49,7 +49,7 @@ Nguồn dữ liệu duy nhất cho ArpgCore, prototype web và UE5 (D-020). Ki�
 - `stations[]`: `id`, `name`, `label`, `level`, `npc`.
 
 ## `lineage.json`
-- `eras[] {id, name, label, sources, forbidden_content_tags}`: thời đại; `khoen` trong `forbidden_content_tags` làm validator chặn chữ "khoen" trong mọi văn bản hiện ra ở đời đó (SB-02).
+- `eras[] {id, name, label, sources, chapters[], forbidden_content_tags}`: thời đại; `khoen` trong `forbidden_content_tags` làm validator chặn chữ "khoen"/"collar" trong mọi object có `era` thuộc đời đó hoặc `chapter(s)` thuộc các chương của đời đó, cùng văn bản hiện ra khi bàn giao sang đời đó (Thạp, công cụ, vật kế thừa) (SB-02).
 - `characters[] {id, name, description, label, generation, era, chapters, weapon_slots, start_weapons, …}`.
 - `tools[]` (Mũi Sào): `occupies_weapon_slot` = false, `has_stats` = false.
 - `house_moves[]` (Đòn nhà): `learned_by`, `unlock`, `input`, số liệu đòn, `inheritable`.
@@ -63,7 +63,7 @@ Nguồn dữ liệu duy nhất cho ArpgCore, prototype web và UE5 (D-020). Ki�
 - Ngữ nghĩa: một node làm được khi có đủ manh mối `requires.all` và ít nhất một trong `requires.any`. Manh mối không bao giờ mất. Validator duyệt **toàn bộ** không gian trạng thái (tập node đã xong): mọi node phải tới được từ start, và từ mọi trạng thái tới được vẫn còn đường tới node end.
 
 ## `codex.json` → `entries[]`
-`id`, `title`, `label`, `sources[]` (rỗng nếu `SÁNG TẠO`), `research_refs[]`, `text`, `text_extra?` + `text_extra_unlock?` (→ chuỗi bí mật), `review_status`, `notes?`.
+`id`, `title`, `label`, `sources[]` (rỗng nếu `SÁNG TẠO`), `research_refs[]`, `text`, `text_extra?` + `text_extra_unlock?` (→ chuỗi bí mật), `hidden_in_eras[]` (bắt buộc chứa mọi đời cấm khoen nếu mục nhắc tới khoen), `verification?`, `review_status`, `notes?`.
 
 ## `strings.json`
-`ui {key: {vi, en}}`; `dialogue[] {id, speaker, trigger, label, form?, text}`.
+`ui {key: {vi, en}}`; `dialogue[] {id, speaker, trigger, era, label, form?, text}`.

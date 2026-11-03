@@ -293,6 +293,54 @@ def check_secrets(b: dict, rep: Report, item_ids: set, codex_ids: set) -> set[st
     return chain_ids
 
 
+def loc_texts(obj: Any) -> Iterable[tuple[str, str]]:
+    if isinstance(obj, dict):
+        if is_loc(obj):
+            yield obj["vi"], obj["en"]
+            return
+        for k, v in obj.items():
+            if not k.startswith("_"):
+                yield from loc_texts(v)
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from loc_texts(v)
+
+
+def mentions_khoen(obj: Any) -> bool:
+    return any("khoen" in vi.lower() or "collar" in en.lower() for vi, en in loc_texts(obj))
+
+
+def check_khoen_free_eras(b: dict, rep: Report) -> None:
+    """SB-02 / coordinator rule: no 'khoen' in any content belonging to a khoen-free era."""
+    eras = b["lineage"].get("eras", [])
+    bad_eras = {e["id"] for e in eras if "khoen" in e.get("forbidden_content_tags", [])}
+    bad_chapters = {c for e in eras if e["id"] in bad_eras for c in e.get("chapters", [])}
+    if not bad_eras:
+        return
+
+    def belongs(o: dict) -> bool:
+        chs = o.get("chapters", []) if isinstance(o.get("chapters"), list) else []
+        return (o.get("era") in bad_eras or o.get("chapter") in bad_chapters
+                or any(c in bad_chapters for c in chs))
+
+    def walk(o: Any, path: str) -> None:
+        if isinstance(o, dict):
+            if belongs(o) and mentions_khoen(o):
+                rep.err(f"{path} ({o.get('id', '?')}): mentions khoen in khoen-free era {sorted(bad_eras)} (SB-02)")
+                return
+            for k, v in o.items():
+                walk(v, f"{path}.{k}")
+        elif isinstance(o, list):
+            for i, v in enumerate(o):
+                walk(v, f"{path}[{i}]")
+
+    for name in FILES:
+        walk(b[name], name)
+    for e in b["codex"].get("entries", []):
+        if mentions_khoen(e) and not bad_eras <= set(e.get("hidden_in_eras", [])):
+            rep.err(f"codex.{e.get('id')}: mentions khoen, must set hidden_in_eras {sorted(bad_eras)} (SB-02)")
+
+
 # ---------------------------------------------------------------- main checks
 
 def validate(b: dict, research: dict) -> Report:
@@ -565,6 +613,7 @@ def validate(b: dict, research: dict) -> Report:
             for txt in seen_text:
                 if "khoen" in str(txt.get("vi", "")).lower() or "collar" in str(txt.get("en", "")).lower():
                     rep.err(f"lineage: text shown in era {to_era.get('id')} mentions khoen (SB-02): {txt.get('vi', '')[:40]!r}")
+    check_khoen_free_eras(b, rep)
     for hm in lineage.get("house_moves", []):
         if hm.get("learned_by") not in char_map:
             rep.err(f"lineage.{hm.get('id')}: learned_by unknown")

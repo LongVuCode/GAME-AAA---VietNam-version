@@ -1,35 +1,88 @@
 {
   "schema_version": 1,
-  "_note": "Dòng họ trong Demo 0.1: nhà bến Lau là ba người cách nhau nhiều đời (Story Bible v1.1 §3); demo có Cói và Bương. Không huyết thống thần hay vua (G-02). Mọi con số là giả định.",
+  "_note": "Dòng họ trong Demo 0.1: nhà bến Lau là ba người cách nhau nhiều đời (Story Bible v1.1 §3); demo có Cói và Bương. Không huyết thống thần hay vua (G-02). Mọi con số là giả định. Đời Hùng Vương thứ 6 không có chữ \"khoen\" ở bất kỳ nội dung nào (validator kiểm).",
   "eras": [
-    {"id": "era_lac_long_quan", "name": {"vi": "Thời Lạc Long Quân", "en": "Age of Lạc Long Quân"}, "label": "HUYỀN THOẠI", "sources": ["LNCQ"], "forbidden_content_tags": []},
-    {"id": "era_hung_vuong_6", "name": {"vi": "Đời Hùng Vương thứ 6 (theo nhiều bản kể)", "en": "Reign of the 6th Hùng King (per many tellings)"}, "label": "HUYỀN THOẠI", "sources": ["LNCQ"], "forbidden_content_tags": ["khoen", "bear", "melting"]}
+    {
+      "id": "era_lac_long_quan",
+      "name": {
+        "vi": "Thời Lạc Long Quân",
+        "en": "Age of Lạc Long Quân"
+      },
+      "label": "HUYỀN THOẠI",
+      "sources": [
+        "LNCQ"
+      ],
+      "forbidden_content_tags": [],
+      "chapters": [
+        "ch_longbien",
+        "ch_donghai"
+      ]
+    },
+    {
+      "id": "era_hung_vuong_6",
+      "name": {
+        "vi": "Đời Hùng Vương thứ 6 (theo nhiều bản kể)",
+        "en": "Reign of the 6th Hùng King (per many tellings)"
+      },
+      "label": "HUYỀN THOẠI",
+      "sources": [
+        "LNCQ"
+      ],
+      "forbidden_content_tags": [
+        "khoen",
+        "bear",
+        "melting"
+      ],
+      "chapters": [
+        "ch_phudong"
+      ]
+    }
   ],
   "characters": [
     {
       "id": "chr_coi",
-      "name": {"vi": "Cói", "en": "Cói"},
-      "description": {"vi": "Người lái đò bến Lau. Cầm giáo, chống sào, đi tìm người làng chưa về.", "en": "The ferrywoman of bến Lau. Spear in hand, pole at the ready, searching for a villager who has not come home."},
+      "name": {
+        "vi": "Cói",
+        "en": "Cói"
+      },
+      "description": {
+        "vi": "Người lái đò bến Lau. Cầm giáo, chống sào, đi tìm người làng chưa về.",
+        "en": "The ferrywoman of bến Lau. Spear in hand, pole at the ready, searching for a villager who has not come home."
+      },
       "label": "SÁNG TẠO",
       "generation": 1,
       "era": "era_lac_long_quan",
-      "chapters": ["ch_longbien"],
+      "chapters": [
+        "ch_longbien"
+      ],
       "weapon_slots": 1,
-      "start_weapons": ["wp_giao_dong"],
+      "start_weapons": [
+        "wp_giao_dong"
+      ],
       "start_level": 1,
       "start_skill_points": 2,
       "tattoo": false
     },
     {
       "id": "chr_buong",
-      "name": {"vi": "Bương", "en": "Bương"},
-      "description": {"vi": "Người nhà bến Lau nhiều đời sau. Mở ô vũ khí thứ hai: rìu xéo, cạnh cây giáo kế thừa.", "en": "Of the bến Lau house, many generations later. Opens the second weapon slot: a crescent axe beside the inherited spear."},
+      "name": {
+        "vi": "Bương",
+        "en": "Bương"
+      },
+      "description": {
+        "vi": "Người nhà bến Lau nhiều đời sau. Mở ô vũ khí thứ hai: rìu xéo, cạnh cây giáo kế thừa.",
+        "en": "Of the bến Lau house, many generations later. Opens the second weapon slot: a crescent axe beside the inherited spear."
+      },
       "label": "SÁNG TẠO",
       "generation": 2,
       "era": "era_hung_vuong_6",
-      "chapters": ["ch_phudong"],
+      "chapters": [
+        "ch_phudong"
+      ],
       "weapon_slots": 2,
-      "start_weapons": ["wp_riu_xeo"],
+      "start_weapons": [
+        "wp_riu_xeo"
+      ],
       "bonus_skill_points_on_handoff": 1,
       "tattoo": false
     }
@@ -37,12 +90,21 @@
   "tools": [
     {
       "id": "tool_mui_sao",
-      "name": {"vi": "Mũi Sào", "en": "Pole Tip"},
-      "description": {"vi": "Bịt đồng đầu sào do thợ đúc làng đúc. Mỗi đời lắp cán tre mới. Dùng để chống đò và để cạy; không phải vũ khí.", "en": "A bronze cap for a punting pole, cast by the village caster. Each generation fits a new bamboo shaft. Used to pole the ferry and to pry; not a weapon."},
+      "name": {
+        "vi": "Mũi Sào",
+        "en": "Pole Tip"
+      },
+      "description": {
+        "vi": "Bịt đồng đầu sào do thợ đúc làng đúc. Mỗi đời lắp cán tre mới. Dùng để chống đò và để cạy; không phải vũ khí.",
+        "en": "A bronze cap for a punting pole, cast by the village caster. Each generation fits a new bamboo shaft. Used to pole the ferry and to pry; not a weapon."
+      },
       "label": "SÁNG TẠO",
       "occupies_weapon_slot": false,
       "has_stats": false,
-      "uses": ["pry", "ferry"],
+      "uses": [
+        "pry",
+        "ferry"
+      ],
       "notch_per_freed_beast": true,
       "codex_ref": "cx_mui_sao"
     }
@@ -50,11 +112,20 @@
   "house_moves": [
     {
       "id": "hm_chong_sao",
-      "name": {"vi": "Đòn nhà: Chống sào", "en": "House Move: Pole Brace"},
-      "description": {"vi": "Sau một lần Đỡ nhịp hoàn hảo, bấm đòn nặng để đẩy bật đối thủ như chống đò qua chỗ nước xiết. Dùng được với mọi vũ khí; đời sau thừa hưởng.", "en": "After a perfect parry, press heavy to shove the foe back like poling through a current. Works with any weapon; inherited by later generations."},
+      "name": {
+        "vi": "Đòn nhà: Chống sào",
+        "en": "House Move: Pole Brace"
+      },
+      "description": {
+        "vi": "Sau một lần Đỡ nhịp hoàn hảo, bấm đòn nặng để đẩy bật đối thủ như chống đò qua chỗ nước xiết. Dùng được với mọi vũ khí; đời sau thừa hưởng.",
+        "en": "After a perfect parry, press heavy to shove the foe back like poling through a current. Works with any weapon; inherited by later generations."
+      },
       "label": "SÁNG TẠO",
       "learned_by": "chr_coi",
-      "unlock": {"type": "flag", "flag": "flag_boss_lon_loi_freed"},
+      "unlock": {
+        "type": "flag",
+        "flag": "flag_boss_lon_loi_freed"
+      },
       "input": "perfect_parry,H",
       "damage": 10,
       "the_damage": 55,
@@ -67,36 +138,231 @@
   ],
   "thap": {
     "id": "thap_nha",
-    "name": {"vi": "Thạp nhà", "en": "House Jar"},
-    "description": {"vi": "Thạp gốm đặt trong kho nhà bến Lau. Bảo khí của mỗi đời xếp vào đây; mở thạp thì đọc được lời kể về từng món.", "en": "A pottery jar kept in the bến Lau storehouse. Each generation's keepsakes go inside; opening it shows their stories as text."},
+    "name": {
+      "vi": "Thạp nhà",
+      "en": "House Jar"
+    },
+    "description": {
+      "vi": "Thạp gốm đặt trong kho nhà bến Lau. Bảo khí của mỗi đời xếp vào đây; mở thạp thì đọc được lời kể về từng món.",
+      "en": "A pottery jar kept in the bến Lau storehouse. Each generation's keepsakes go inside; opening it shows their stories as text."
+    },
     "label": "SÁNG TẠO",
     "material": "gom",
     "funerary_reference": false,
-    "stores_categories": ["bao_khi"],
+    "stores_categories": [
+      "bao_khi"
+    ],
     "group_by": "generation",
     "open_shows": "text_only",
     "level": "lvl_hub_ben_lau"
   },
   "skill_tree": {
     "branches": [
-      {"id": "br_vo", "name": {"vi": "Võ", "en": "Arms"}, "label": "SÁNG TẠO", "available_in_demo": true},
-      {"id": "br_trong", "name": {"vi": "Trống (nhịp chiến đấu)", "en": "Drum (combat rhythm)"}, "label": "SÁNG TẠO", "available_in_demo": true},
-      {"id": "br_vay", "name": {"vi": "Vảy", "en": "Scale"}, "label": "SÁNG TẠO", "available_in_demo": false, "unlock_chapter": "ch_phudong"}
+      {
+        "id": "br_vo",
+        "name": {
+          "vi": "Võ",
+          "en": "Arms"
+        },
+        "label": "SÁNG TẠO",
+        "available_in_demo": true
+      },
+      {
+        "id": "br_trong",
+        "name": {
+          "vi": "Trống (nhịp chiến đấu)",
+          "en": "Drum (combat rhythm)"
+        },
+        "label": "SÁNG TẠO",
+        "available_in_demo": true
+      },
+      {
+        "id": "br_vay",
+        "name": {
+          "vi": "Vảy",
+          "en": "Scale"
+        },
+        "label": "SÁNG TẠO",
+        "available_in_demo": false,
+        "unlock_chapter": "ch_phudong"
+      }
     ],
     "nodes": [
-      {"id": "sk_vo_noi_don", "branch": "br_vo", "name": {"vi": "Nối đòn", "en": "Linked Strikes"}, "description": {"vi": "Chuỗi đòn nhẹ có thêm nhịp thứ tư.", "en": "Adds a fourth light attack to the chain."}, "label": "SÁNG TẠO", "cost": 1, "prereqs": [], "effect": {"type": "unlock_move_chain_index", "value": 4}},
-      {"id": "sk_vo_gong_suc", "branch": "br_vo", "name": {"vi": "Gồng sức", "en": "Full Brace"}, "description": {"vi": "Đòn nặng gồng được tới mức 2.", "en": "Heavy attacks can charge to level 2."}, "label": "SÁNG TẠO", "cost": 1, "prereqs": [], "effect": {"type": "heavy_charge_max_level", "value": 2}},
-      {"id": "sk_vo_danh_the", "branch": "br_vo", "name": {"vi": "Đánh vào Thế", "en": "Strike the Stance"}, "description": {"vi": "Mọi đòn gây thêm 10% sát thương Thế.", "en": "All attacks deal 10% more Stance damage."}, "label": "SÁNG TẠO", "cost": 2, "prereqs": ["sk_vo_gong_suc"], "effect": {"type": "the_damage_mult", "value": 0.1}},
-      {"id": "sk_vo_ne_phan", "branch": "br_vo", "name": {"vi": "Né phản", "en": "Dodge Counter"}, "description": {"vi": "Sau khi né hoàn hảo, đòn nhẹ kế tiếp gây gấp đôi sát thương Thế.", "en": "After a perfect dodge, the next light attack deals double Stance damage."}, "label": "SÁNG TẠO", "cost": 1, "prereqs": ["sk_vo_noi_don"], "effect": {"type": "post_perfect_dodge_the_mult", "value": 2.0, "window_s": 1.0}},
-      {"id": "sk_tr_do_dung_nhip", "branch": "br_trong", "name": {"vi": "Đỡ đúng nhịp", "en": "On-beat Parry"}, "description": {"vi": "Đỡ nhịp hoàn hảo cho thêm 15 điểm Nhịp.", "en": "Perfect parries grant 15 extra Rhythm."}, "label": "SÁNG TẠO", "cost": 1, "prereqs": [], "effect": {"type": "drum_gain_bonus", "action": "perfect_parry", "value": 15}},
-      {"id": "sk_tr_giu_nhip", "branch": "br_trong", "name": {"vi": "Giữ nhịp", "en": "Hold the Beat"}, "description": {"vi": "Nhịp bắt đầu tụt chậm hơn 3 giây.", "en": "Rhythm starts decaying 3 seconds later."}, "label": "SÁNG TẠO", "cost": 1, "prereqs": ["sk_tr_do_dung_nhip"], "effect": {"type": "drum_decay_delay_add_s", "value": 3.0}},
-      {"id": "sk_tr_hoi_trong_vang", "branch": "br_trong", "name": {"vi": "Hồi trống vang", "en": "Resounding Drumroll"}, "description": {"vi": "Hồi trống gây thêm 25% sát thương Thế.", "en": "Drum Bursts deal 25% more Stance damage."}, "label": "SÁNG TẠO", "cost": 2, "prereqs": ["sk_tr_giu_nhip"], "effect": {"type": "drum_burst_the_mult", "value": 0.25}},
-      {"id": "sk_tr_tay_sao_vung", "branch": "br_trong", "name": {"vi": "Tay sào vững", "en": "Steady Pole Hand"}, "description": {"vi": "Cửa sổ mỗi nhịp cạy rộng thêm 0,05 giây.", "en": "Each pry beat window widens by 0.05 seconds."}, "label": "SÁNG TẠO", "cost": 1, "prereqs": [], "effect": {"type": "pry_beat_window_add_s", "value": 0.05}}
+      {
+        "id": "sk_vo_noi_don",
+        "branch": "br_vo",
+        "name": {
+          "vi": "Nối đòn",
+          "en": "Linked Strikes"
+        },
+        "description": {
+          "vi": "Chuỗi đòn nhẹ có thêm nhịp thứ tư.",
+          "en": "Adds a fourth light attack to the chain."
+        },
+        "label": "SÁNG TẠO",
+        "cost": 1,
+        "prereqs": [],
+        "effect": {
+          "type": "unlock_move_chain_index",
+          "value": 4
+        }
+      },
+      {
+        "id": "sk_vo_gong_suc",
+        "branch": "br_vo",
+        "name": {
+          "vi": "Gồng sức",
+          "en": "Full Brace"
+        },
+        "description": {
+          "vi": "Đòn nặng gồng được tới mức 2.",
+          "en": "Heavy attacks can charge to level 2."
+        },
+        "label": "SÁNG TẠO",
+        "cost": 1,
+        "prereqs": [],
+        "effect": {
+          "type": "heavy_charge_max_level",
+          "value": 2
+        }
+      },
+      {
+        "id": "sk_vo_danh_the",
+        "branch": "br_vo",
+        "name": {
+          "vi": "Đánh vào Thế",
+          "en": "Strike the Stance"
+        },
+        "description": {
+          "vi": "Mọi đòn gây thêm 10% sát thương Thế.",
+          "en": "All attacks deal 10% more Stance damage."
+        },
+        "label": "SÁNG TẠO",
+        "cost": 2,
+        "prereqs": [
+          "sk_vo_gong_suc"
+        ],
+        "effect": {
+          "type": "the_damage_mult",
+          "value": 0.1
+        }
+      },
+      {
+        "id": "sk_vo_ne_phan",
+        "branch": "br_vo",
+        "name": {
+          "vi": "Né phản",
+          "en": "Dodge Counter"
+        },
+        "description": {
+          "vi": "Sau khi né hoàn hảo, đòn nhẹ kế tiếp gây gấp đôi sát thương Thế.",
+          "en": "After a perfect dodge, the next light attack deals double Stance damage."
+        },
+        "label": "SÁNG TẠO",
+        "cost": 1,
+        "prereqs": [
+          "sk_vo_noi_don"
+        ],
+        "effect": {
+          "type": "post_perfect_dodge_the_mult",
+          "value": 2.0,
+          "window_s": 1.0
+        }
+      },
+      {
+        "id": "sk_tr_do_dung_nhip",
+        "branch": "br_trong",
+        "name": {
+          "vi": "Đỡ đúng nhịp",
+          "en": "On-beat Parry"
+        },
+        "description": {
+          "vi": "Đỡ nhịp hoàn hảo cho thêm 15 điểm Nhịp.",
+          "en": "Perfect parries grant 15 extra Rhythm."
+        },
+        "label": "SÁNG TẠO",
+        "cost": 1,
+        "prereqs": [],
+        "effect": {
+          "type": "drum_gain_bonus",
+          "action": "perfect_parry",
+          "value": 15
+        }
+      },
+      {
+        "id": "sk_tr_giu_nhip",
+        "branch": "br_trong",
+        "name": {
+          "vi": "Giữ nhịp",
+          "en": "Hold the Beat"
+        },
+        "description": {
+          "vi": "Nhịp bắt đầu tụt chậm hơn 3 giây.",
+          "en": "Rhythm starts decaying 3 seconds later."
+        },
+        "label": "SÁNG TẠO",
+        "cost": 1,
+        "prereqs": [
+          "sk_tr_do_dung_nhip"
+        ],
+        "effect": {
+          "type": "drum_decay_delay_add_s",
+          "value": 3.0
+        }
+      },
+      {
+        "id": "sk_tr_hoi_trong_vang",
+        "branch": "br_trong",
+        "name": {
+          "vi": "Hồi trống vang",
+          "en": "Resounding Drumroll"
+        },
+        "description": {
+          "vi": "Hồi trống gây thêm 25% sát thương Thế.",
+          "en": "Drum Bursts deal 25% more Stance damage."
+        },
+        "label": "SÁNG TẠO",
+        "cost": 2,
+        "prereqs": [
+          "sk_tr_giu_nhip"
+        ],
+        "effect": {
+          "type": "drum_burst_the_mult",
+          "value": 0.25
+        }
+      },
+      {
+        "id": "sk_tr_tay_sao_vung",
+        "branch": "br_trong",
+        "name": {
+          "vi": "Tay sào vững",
+          "en": "Steady Pole Hand"
+        },
+        "description": {
+          "vi": "Cửa sổ mỗi nhịp cạy rộng thêm 0,05 giây.",
+          "en": "Each pry beat window widens by 0.05 seconds."
+        },
+        "label": "SÁNG TẠO",
+        "cost": 1,
+        "prereqs": [],
+        "effect": {
+          "type": "pry_beat_window_add_s",
+          "value": 0.05
+        }
+      }
     ]
   },
   "skill_point_sources": [
-    {"id": "sp_nguoi_bi_me", "source": "nc_nguoi_bi_me", "points": 1},
-    {"id": "sp_boss_freed", "source": "flag_boss_lon_loi_freed", "points": 2}
+    {
+      "id": "sp_nguoi_bi_me",
+      "source": "nc_nguoi_bi_me",
+      "points": 1
+    },
+    {
+      "id": "sp_boss_freed",
+      "source": "flag_boss_lon_loi_freed",
+      "points": 2
+    }
   ],
   "inheritance": {
     "skill_tree_carryover_ratio": 1.0,
@@ -105,7 +371,9 @@
     "weapons_carryover": true,
     "thap_carryover": true,
     "bao_khi_equippable_by_later_generations": true,
-    "tool_carryover": ["tool_mui_sao"],
+    "tool_carryover": [
+      "tool_mui_sao"
+    ],
     "secret_state_scope": "lineage"
   },
   "handoff": {
@@ -113,16 +381,70 @@
     "from": "chr_coi",
     "to": "chr_buong",
     "level": "lvl_hub_ben_lau",
-    "trigger": {"type": "interact_confirm", "requires_flags": ["flag_boss_lon_loi_freed"], "warn_if_incomplete": ["sec_lo_bo_hoang", "rcp_nanh_dam"]},
+    "trigger": {
+      "type": "interact_confirm",
+      "requires_flags": [
+        "flag_boss_lon_loi_freed"
+      ],
+      "warn_if_incomplete": [
+        "sec_lo_bo_hoang",
+        "rcp_nanh_dam"
+      ]
+    },
     "steps": [
-      {"id": "ho_01_title", "kind": "title_card", "text": {"vi": "Nhiều đời sau", "en": "Many generations later"}},
-      {"id": "ho_02_line", "kind": "dialogue", "line_ref": "dlg_05_handoff"},
-      {"id": "ho_03_thap", "kind": "open_thap", "ref": "thap_nha"},
-      {"id": "ho_04_tool", "kind": "receive_tool", "ref": "tool_mui_sao"},
-      {"id": "ho_05_skills", "kind": "show_inherited_skills"},
-      {"id": "ho_06_slot2", "kind": "unlock_weapon_slot", "slot": 2, "weapon": "wp_riu_xeo"},
-      {"id": "ho_07_trial", "kind": "practice_fight", "enemies": [{"enemy": "en_rai_dam", "count": 2}], "goal": "swap_weapon_at_least_once", "fail_state": "none_retry_freely"},
-      {"id": "ho_08_end", "kind": "demo_end", "options": ["replay_coi_memory", "quit_to_menu"]}
+      {
+        "id": "ho_01_title",
+        "kind": "title_card",
+        "text": {
+          "vi": "Nhiều đời sau",
+          "en": "Many generations later"
+        }
+      },
+      {
+        "id": "ho_02_line",
+        "kind": "dialogue",
+        "line_ref": "dlg_05_handoff"
+      },
+      {
+        "id": "ho_03_thap",
+        "kind": "open_thap",
+        "ref": "thap_nha"
+      },
+      {
+        "id": "ho_04_tool",
+        "kind": "receive_tool",
+        "ref": "tool_mui_sao"
+      },
+      {
+        "id": "ho_05_skills",
+        "kind": "show_inherited_skills"
+      },
+      {
+        "id": "ho_06_slot2",
+        "kind": "unlock_weapon_slot",
+        "slot": 2,
+        "weapon": "wp_riu_xeo"
+      },
+      {
+        "id": "ho_07_trial",
+        "kind": "practice_fight",
+        "enemies": [
+          {
+            "enemy": "en_cua_cang_bun",
+            "count": 2
+          }
+        ],
+        "goal": "swap_weapon_at_least_once",
+        "fail_state": "none_retry_freely"
+      },
+      {
+        "id": "ho_08_end",
+        "kind": "demo_end",
+        "options": [
+          "replay_coi_memory",
+          "quit_to_menu"
+        ]
+      }
     ]
   }
 }
