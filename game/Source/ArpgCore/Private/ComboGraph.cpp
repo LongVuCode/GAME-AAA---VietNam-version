@@ -26,6 +26,19 @@ const char* InputName(EInputType Type)
 }
 } // namespace
 
+int FComboGraph::SpecialNodeFromName(const std::string& Name)
+{
+	if (Name == "@dodge")
+	{
+		return AfterDodgeNode;
+	}
+	if (Name == "@perfect_parry")
+	{
+		return AfterPerfectParryNode;
+	}
+	return RootNode;
+}
+
 int FComboGraph::AddMove(FComboMove Move)
 {
 	if (Move.Id.empty() || FindMove(Move.Id) != RootNode)
@@ -39,8 +52,9 @@ int FComboGraph::AddMove(FComboMove Move)
 FStatus FComboGraph::AddTransition(const std::string& FromId, EInputType Input, float MinDelay, float MaxDelay,
 	const std::string& ToId)
 {
-	const int From = FromId.empty() ? RootNode : FindMove(FromId);
-	if (!FromId.empty() && From == RootNode)
+	const bool bSpecial = FromId.empty() || FromId[0] == '@';
+	const int From = bSpecial ? SpecialNodeFromName(FromId) : FindMove(FromId);
+	if ((bSpecial && !FromId.empty() && From == RootNode) || (!bSpecial && From == RootNode))
 	{
 		return FStatus::Fail(FError{"from", "unknown move '" + FromId + "'"});
 	}
@@ -73,7 +87,8 @@ int FComboGraph::FindMove(const std::string& Id) const
 	return RootNode;
 }
 
-std::optional<int> FComboGraph::FindNext(int From, EInputType Input, float DelaySincePrevious) const
+std::optional<int> FComboGraph::FindNext(int From, EInputType Input, float DelaySincePrevious,
+	const std::set<std::string>* Unlocked) const
 {
 	for (const FComboTransition& T : Transitions)
 	{
@@ -81,8 +96,13 @@ std::optional<int> FComboGraph::FindNext(int From, EInputType Input, float Delay
 		{
 			continue;
 		}
-		// Root transitions ignore the delay: there is no previous press in the chain.
-		if (From == RootNode || (DelaySincePrevious >= T.MinDelay && DelaySincePrevious <= UpperBound(T.MaxDelay)))
+		const std::string& Required = Moves[static_cast<std::size_t>(T.To)].RequiredUnlock;
+		if (!Required.empty() && Unlocked != nullptr && Unlocked->count(Required) == 0)
+		{
+			continue;
+		}
+		// Root/context transitions ignore the delay: there is no previous move in the chain.
+		if (IsSpecialNode(From) || (DelaySincePrevious >= T.MinDelay && DelaySincePrevious <= UpperBound(T.MaxDelay)))
 		{
 			return T.To;
 		}
@@ -103,11 +123,14 @@ std::vector<FError> FComboGraph::Validate() const
 			{
 				continue;
 			}
-			const bool bOverlap = TA.From == RootNode
+			const bool bOverlap = IsSpecialNode(TA.From)
 				|| (TA.MinDelay <= UpperBound(TB.MaxDelay) && TB.MinDelay <= UpperBound(TA.MaxDelay));
 			if (bOverlap)
 			{
-				const std::string FromName = TA.From == RootNode ? std::string("<root>") : Moves[static_cast<std::size_t>(TA.From)].Id;
+				const std::string FromName = TA.From == RootNode ? std::string("<root>")
+					: TA.From == AfterDodgeNode ? std::string("@dodge")
+					: TA.From == AfterPerfectParryNode ? std::string("@perfect_parry")
+					: Moves[static_cast<std::size_t>(TA.From)].Id;
 				Errors.push_back(FError{"combo", "ambiguous " + std::string(InputName(TA.Input)) + " branches from '" + FromName + "' (overlapping delay ranges)"});
 			}
 		}
@@ -116,6 +139,8 @@ std::vector<FError> FComboGraph::Validate() const
 	std::vector<bool> Reached(Moves.size(), false);
 	std::queue<int> Open;
 	Open.push(RootNode);
+	Open.push(AfterDodgeNode);
+	Open.push(AfterPerfectParryNode);
 	while (!Open.empty())
 	{
 		const int Node = Open.front();
@@ -179,13 +204,29 @@ FComboTickResult FComboRunner::Tick(float DeltaSeconds)
 		TryStartBufferedMove(Result);
 	}
 
-	if (!Timeline.IsRunning() && CurrentMove != FComboGraph::RootNode && (Now - LastFinishTime) > Config.ChainLinkWindow)
+	if (ContextNode != FComboGraph::RootNode && Now > ContextExpiry)
+	{
+		ContextNode = FComboGraph::RootNode;
+	}
+	if (!Timeline.IsRunning() && CurrentMove != FComboGraph::RootNode && (Now - LastFinishTime) > LinkWindowOf(CurrentMove))
 	{
 		CurrentMove = FComboGraph::RootNode;
 		bHasPrevious = false;
 		Result.bComboReset = true;
 	}
 	return Result;
+}
+
+float FComboRunner::LinkWindowOf(int Move) const
+{
+	const float PerMove = Graph->GetMove(Move).ChainLinkWindow;
+	return PerMove < 0.0f ? Config.ChainLinkWindow : PerMove;
+}
+
+void FComboRunner::OpenContext(int Node, float Window)
+{
+	ContextNode = Node;
+	ContextExpiry = Now + Detail::NonNegative(Window);
 }
 
 bool FComboRunner::TryStartBufferedMove(FComboTickResult& Result)
@@ -196,18 +237,20 @@ bool FComboRunner::TryStartBufferedMove(FComboTickResult& Result)
 		return false;
 	}
 
-	int From = FComboGraph::RootNode;
-	if (CurrentMove != FComboGraph::RootNode
-		&& (Timeline.IsRunning() || (Input->Time - LastFinishTime) <= Config.ChainLinkWindow))
+	std::optional<int> Next;
+	if (ContextNode != FComboGraph::RootNode && Input->Time <= ContextExpiry)
 	{
-		From = CurrentMove;
+		Next = Graph->FindNext(ContextNode, Input->Type, 0.0f, &Unlocked);
 	}
-	const float Delay = bHasPrevious ? (Input->Time - LastAcceptedPressTime) : std::numeric_limits<float>::max();
-
-	std::optional<int> Next = Graph->FindNext(From, Input->Type, Delay);
-	if (!Next && From != FComboGraph::RootNode)
+	const float Delay = bHasPrevious ? (Input->Time - LastMoveStartTime) : std::numeric_limits<float>::max();
+	if (!Next && CurrentMove != FComboGraph::RootNode
+		&& (Timeline.IsRunning() || (Input->Time - LastFinishTime) <= LinkWindowOf(CurrentMove)))
 	{
-		Next = Graph->FindNext(FComboGraph::RootNode, Input->Type, Delay);
+		Next = Graph->FindNext(CurrentMove, Input->Type, Delay, &Unlocked);
+	}
+	if (!Next)
+	{
+		Next = Graph->FindNext(FComboGraph::RootNode, Input->Type, Delay, &Unlocked);
 	}
 	if (!Next)
 	{
@@ -216,7 +259,8 @@ bool FComboRunner::TryStartBufferedMove(FComboTickResult& Result)
 
 	Timeline.Start(Graph->GetMove(*Next).Timing);
 	CurrentMove = *Next;
-	LastAcceptedPressTime = Input->Time;
+	ContextNode = FComboGraph::RootNode;
+	LastMoveStartTime = Now;
 	bHasPrevious = true;
 	Result.StartedMove = *Next;
 	return true;
@@ -224,7 +268,9 @@ bool FComboRunner::TryStartBufferedMove(FComboTickResult& Result)
 
 bool FComboRunner::TryCancelForDefense()
 {
-	if (Timeline.IsRunning() && !Timeline.IsInCancelWindow())
+	if (Timeline.IsRunning()
+		&& (!Timeline.IsInCancelWindow()
+			|| Timeline.GetElapsed() < Timeline.GetTiming().GetResolvedCancelStart() + Detail::NonNegative(Config.DefenseCancelDelay)))
 	{
 		return false;
 	}

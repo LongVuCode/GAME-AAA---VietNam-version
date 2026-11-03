@@ -25,6 +25,14 @@ FGeneration MakeFirstGeneration()
 	return G;
 }
 
+FHandoverRequest Req(const char* Heir, const char* Moveset)
+{
+	FHandoverRequest R;
+	R.NextHeirId = Heir;
+	R.NextPrimaryMovesetId = Moveset;
+	return R;
+}
+
 bool HasError(const std::vector<FError>& Errors, const std::string& Needle)
 {
 	for (const FError& E : Errors)
@@ -54,7 +62,7 @@ TEST_SUITE("Lineage")
 	TEST_CASE("handover keeps skills, stores the old moveset and Bảo khí")
 	{
 		const FGeneration First = MakeFirstGeneration();
-		const TResult<FGeneration> Second = Handover(First, FHandoverRequest{"buong", "axe"}, FLineageConfig{});
+		const TResult<FGeneration> Second = Handover(First, Req("buong", "axe"), FLineageConfig{});
 		REQUIRE(Second.IsOk());
 		const FGeneration& G2 = Second.GetValue();
 		CHECK(G2.Index == 2);
@@ -71,7 +79,7 @@ TEST_SUITE("Lineage")
 
 		FGeneration G2Mutable = G2;
 		G2Mutable.Equipped.push_back(FItemInstance{"vong_xuong", ERarity::Rare, 0, 2});
-		const TResult<FGeneration> Third = Handover(G2Mutable, FHandoverRequest{"nua", "twin_knives"}, FLineageConfig{});
+		const TResult<FGeneration> Third = Handover(G2Mutable, Req("nua", "twin_knives"), FLineageConfig{});
 		REQUIRE(Third.IsOk());
 		CHECK(Third.GetValue().FamilyMovesets == std::vector<std::string>{"pole", "axe"});
 		REQUIRE(Third.GetValue().Thap.size() == 2);
@@ -85,13 +93,13 @@ TEST_SUITE("Lineage")
 		G.FamilyMovesets = {"spear", "pole", "axe"};
 		FLineageConfig Config;
 		Config.MaxFamilyMovesets = 2;
-		const TResult<FGeneration> Next = Handover(G, FHandoverRequest{"heir", "axe"}, Config);
+		const TResult<FGeneration> Next = Handover(G, Req("heir", "axe"), Config);
 		REQUIRE(Next.IsOk());
 		// {"spear","pole","axe"} -> move "pole" to the end -> drop "axe" (new primary) -> cap 2.
 		CHECK(Next.GetValue().FamilyMovesets == std::vector<std::string>{"spear", "pole"});
 
 		Config.MaxFamilyMovesets = 0;
-		CHECK(Handover(G, FHandoverRequest{"heir", "axe"}, Config).GetValue().FamilyMovesets.empty());
+		CHECK(Handover(G, Req("heir", "axe"), Config).GetValue().FamilyMovesets.empty());
 	}
 
 	TEST_CASE("retention parameter and keeping equipment")
@@ -99,7 +107,7 @@ TEST_SUITE("Lineage")
 		FLineageConfig Config;
 		Config.SkillRankRetention = 0.5f;
 		Config.bStoreEquippedInThap = false;
-		const TResult<FGeneration> Next = Handover(MakeFirstGeneration(), FHandoverRequest{"heir", "axe"}, Config);
+		const TResult<FGeneration> Next = Handover(MakeFirstGeneration(), Req("heir", "axe"), Config);
 		REQUIRE(Next.IsOk());
 		const std::map<std::string, int> Expected{{"vo_1", 1}, {"trong_1", 1}};
 		CHECK(Next.GetValue().Skills.Ranks == Expected);
@@ -112,7 +120,7 @@ TEST_SUITE("Lineage")
 		FLineageConfig Bad;
 		Bad.SkillRankRetention = 1.5f;
 		Bad.MaxFamilyMovesets = -1;
-		const TResult<FGeneration> R = Handover(MakeFirstGeneration(), FHandoverRequest{"", ""}, Bad);
+		const TResult<FGeneration> R = Handover(MakeFirstGeneration(), Req("", ""), Bad);
 		CHECK_FALSE(R.IsOk());
 		CHECK(R.GetErrors().size() == 4);
 		CHECK(R.ErrorSummary().find("next_heir_id") != std::string::npos);
@@ -120,7 +128,7 @@ TEST_SUITE("Lineage")
 
 	TEST_CASE("take from Thạp")
 	{
-		FGeneration G = Handover(MakeFirstGeneration(), FHandoverRequest{"buong", "axe"}, FLineageConfig{}).GetValue();
+		FGeneration G = Handover(MakeFirstGeneration(), Req("buong", "axe"), FLineageConfig{}).GetValue();
 		CHECK_FALSE(TakeFromThap(G, 5).IsOk());
 		REQUIRE(TakeFromThap(G, 0).IsOk());
 		CHECK(G.Thap.empty());
@@ -310,6 +318,145 @@ TEST_SUITE("Rng")
 		CHECK(R.RangeInt(5, 1) == 5);
 		CHECK_FALSE(R.Roll(0.0f));
 		CHECK(R.Roll(1.0f));
+	}
+}
+TEST_SUITE("Lineage")
+{
+	FSkillTreeDef MakeTree()
+	{
+		FSkillTreeDef T;
+		T.Branches = {{"br_vo", true}, {"br_vay", false}};
+		T.Nodes = {FSkillNodeDef{"vo_a", "br_vo", 1, {}, "x", 1.0f}, FSkillNodeDef{"vo_b", "br_vo", 2, {"vo_a"}, "x", 1.0f},
+			FSkillNodeDef{"vay_a", "br_vay", 1, {}, "x", 1.0f}};
+		return T;
+	}
+
+	TEST_CASE("skill tree: prereqs, points, locked branch, validation")
+	{
+		const FSkillTreeDef T = MakeTree();
+		CHECK(ValidateSkillTree(T).empty());
+		FSkillTree Tree;
+		Tree.UnspentPoints = 3;
+		CHECK_FALSE(CanUnlockSkill(Tree, T, "vo_b")); // prereq missing
+		CHECK_FALSE(UnlockSkill(Tree, T, "vay_a").IsOk()); // branch locked in the demo
+		CHECK_FALSE(UnlockSkill(Tree, T, "ghost").IsOk());
+		REQUIRE(UnlockSkill(Tree, T, "vo_a").IsOk());
+		CHECK_FALSE(CanUnlockSkill(Tree, T, "vo_a")); // already owned
+		REQUIRE(UnlockSkill(Tree, T, "vo_b").IsOk());
+		CHECK(Tree.UnspentPoints == 0);
+		CHECK(Tree.Ranks.size() == 2);
+
+		FSkillTreeDef Bad = MakeTree();
+		Bad.Branches.push_back({"br_vo", true});
+		Bad.Nodes.push_back(FSkillNodeDef{"vo_a", "br_ghost", 0, {"nope"}, "", 0.0f});
+		Bad.Nodes[0].Prereqs = {"vo_b"}; // vo_a <-> vo_b cycle
+		std::vector<FError> E = ValidateSkillTree(Bad);
+		CHECK(HasError(E, "duplicate branch"));
+		CHECK(HasError(E, "duplicate skill 'vo_a'"));
+		CHECK(HasError(E, "unknown branch 'br_ghost'"));
+		CHECK(HasError(E, "cost: must be > 0"));
+		CHECK(HasError(E, "unknown skill 'nope'"));
+		CHECK(HasError(E, "prerequisite cycle"));
+	}
+
+	TEST_CASE("characters: first generation, handover request, weapons and house moves carry over")
+	{
+		FLineageConfig Config;
+		Config.SkillTree = MakeTree();
+		Config.Characters = {FCharacterDef{"coi", 1, 1, {"spear"}, 2, 0}, FCharacterDef{"buong", 2, 2, {"axe"}, 0, 1}};
+		FHouseMoveDef Shove;
+		Shove.Id = "hm_shove";
+		Shove.LearnedBy = "coi";
+		Shove.UnlockFlag = "flag_freed";
+		Config.HouseMoves = {Shove};
+		CHECK(ValidateLineageConfig(Config).empty());
+		CHECK(Config.FindCharacter("ghost") == nullptr);
+
+		FGeneration Coi = MakeFirstGeneration(*Config.FindCharacter("coi"));
+		CHECK(Coi.PrimaryMovesetId == "spear");
+		CHECK(Coi.Skills.UnspentPoints == 2);
+		Coi.HouseMoves.insert("hm_shove");
+		Coi.HouseMoves.insert("hm_secret_local");
+		const TResult<FGeneration> Buong = Handover(Coi, MakeHandoverRequest(*Config.FindCharacter("buong")), Config);
+		REQUIRE(Buong.IsOk());
+		const FGeneration& B = Buong.GetValue();
+		CHECK(B.Weapons == std::vector<std::string>{"spear", "axe"});
+		CHECK(B.WeaponSlots == 2);
+		CHECK(B.PrimaryMovesetId == "axe");
+		CHECK(B.Skills.UnspentPoints == 3); // 2 kept + 1 bonus
+		CHECK(B.HouseMoves.count("hm_shove") == 1);
+
+		Config.HouseMoves[0].bInheritable = false;
+		Config.bCarryWeapons = false;
+		const FGeneration B2 = Handover(Coi, MakeHandoverRequest(*Config.FindCharacter("buong")), Config).GetValue();
+		CHECK(B2.HouseMoves.count("hm_shove") == 0);
+		CHECK(B2.Weapons == std::vector<std::string>{"axe"});
+		Config.bCarryHouseMoves = false;
+		CHECK(Handover(Coi, MakeHandoverRequest(*Config.FindCharacter("buong")), Config).GetValue().HouseMoves.empty());
+
+		FHandoverRequest Neg = MakeHandoverRequest(*Config.FindCharacter("buong"));
+		Neg.BonusSkillPoints = -1;
+		CHECK_FALSE(Handover(Coi, Neg, Config).IsOk());
+
+		FLineageConfig Bad = Config;
+		Bad.Characters.push_back(FCharacterDef{"coi", 1, 0, {"a", "b"}, -1, 0});
+		Bad.HouseMoves.push_back(FHouseMoveDef{});
+		const std::vector<FError> E = ValidateLineageConfig(Bad);
+		CHECK(HasError(E, "duplicate character 'coi'"));
+		CHECK(HasError(E, "weapon_slots"));
+		CHECK(HasError(E, "skill points must be >= 0"));
+		CHECK(HasError(E, "unknown learned_by"));
+		const FGeneration Empty = MakeFirstGeneration(FCharacterDef{});
+		CHECK(Empty.PrimaryMovesetId.empty());
+		CHECK(MakeHandoverRequest(FCharacterDef{}).NextPrimaryMovesetId.empty());
+	}
+}
+
+TEST_SUITE("Crafting")
+{
+	TEST_CASE("item definitions and explicit upgrade recipes (design data model)")
+	{
+		FCraftingDatabase Db = MakeDb();
+		Db.Upgrade.Terms.clear();
+		Db.Items = {FItemDef{"giap_da_lon", EItemCategory::BaoKhi, ERarity::Rare, "crafted", 1, 2, true},
+			FItemDef{"boar_hide", EItemCategory::Material, ERarity::Rare, "shed_after_pry", 0, 0, true}};
+		Db.UpgradeRecipes = {FUpgradeRecipe{"up2", "giap_da_lon", 2, {{"reed", 1}}}};
+		CHECK(ValidateCraftingDatabase(Db).empty());
+		CHECK(Db.FindItem("ghost") == nullptr);
+		CHECK(Db.FindUpgradeRecipe("giap_da_lon", 3) == nullptr);
+
+		FInventory Inv;
+		Inv.Add("boar_hide", 1);
+		Inv.Add("bronze", 2);
+		Inv.Add("reed", 1);
+		FRng Rng(3);
+		TResult<FItemInstance> Item = Craft(Db, "giap_da_lon", Inv, Rng, 1);
+		REQUIRE(Item.IsOk());
+		CHECK(Item.GetValue().UpgradeLevel == 1); // crafted at the item's base level
+		CHECK(GetNextUpgradeCost(Db, Item.GetValue()).size() == 1);
+		REQUIRE(Upgrade(Db, Item.GetValue(), Inv).IsOk());
+		CHECK(Item.GetValue().UpgradeLevel == 2);
+		CHECK(Inv.Count("reed") == 0);
+		CHECK_FALSE(Upgrade(Db, Item.GetValue(), Inv).IsOk()); // max level
+
+		FItemInstance Gap{"giap_da_lon", ERarity::Rare, 0, 1};
+		CHECK(Upgrade(Db, Gap, Inv).ErrorSummary().find("no upgrade recipe") != std::string::npos);
+	}
+
+	TEST_CASE("validation: Bảo khí needs a boss part; upgrade recipe ranges")
+	{
+		FCraftingDatabase Db = MakeDb();
+		Db.Items = {FItemDef{"charm", EItemCategory::BaoKhi, ERarity::Rare, "crafted", 1, 1, true},
+			FItemDef{"charm", EItemCategory::BaoKhi, ERarity::Rare, "crafted", 3, 1, true}};
+		Db.Recipes.push_back(FRecipe{"charm_recipe", "charm", ERarity::Rare, {{"bronze", 1}}, 0.0f});
+		Db.UpgradeRecipes = {FUpgradeRecipe{"u1", "ghost", 2, {}}, FUpgradeRecipe{"u2", "charm", 5, {{"khoen_shard", 1}}}};
+		const std::vector<FError> E = ValidateCraftingDatabase(Db);
+		CHECK(HasError(E, "needs a part shed by a freed boss"));
+		CHECK(HasError(E, "duplicate item 'charm'"));
+		CHECK(HasError(E, "max level below base level"));
+		CHECK(HasError(E, "unknown item 'ghost'"));
+		CHECK(HasError(E, "outside the item's level range"));
+		CHECK(HasError(E, "upgrade_recipes[1].inputs[0]: shackle fragment"));
 	}
 }
 #endif

@@ -23,5 +23,6 @@ struct FAttackData
 	float Weight = 1.0f;             // drives hit-stop duration
 	bool bUnparryable = false;       // telegraphed attack that parry cannot stop
 	bool bUndodgeable = false;       // e.g. area attack; i-frames do not help
+	bool bUnguardable = false;       // blocking (guard) does not reduce it
 };
 } // namespace ArpgCore

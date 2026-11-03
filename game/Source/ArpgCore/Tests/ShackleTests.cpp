@@ -46,7 +46,8 @@ FBossConfig MakeBoss(bool bShackleEnabled)
 	FBossConfig B;
 	B.Id = "test_boar";
 	B.MaxHealth = 500.0f;
-	B.HealthFloorWhileShackled = 1.0f;
+	B.HealthFloor = 1.0f;
+	B.bHealthFloorForcesFinalStagger = false;
 	B.Posture.MaxPosture = 100.0f;
 	B.Posture.RegenPerSecond = 0.0f;
 	B.Posture.RegenDelay = 10.0f;
@@ -139,7 +140,7 @@ TEST_SUITE("Shackle")
 
 		REQUIRE(S.BeginPry(true));
 		TickTo(S, 0.25f);
-		CHECK(S.InputBeat() == EPryResult::Miss); // early
+		CHECK(S.InputBeat() == EPryResult::Failed); // early
 		CHECK(S.GetState() == EShackleState::Ready);
 		CHECK(S.GetBeatsHit() == 0);
 		CHECK(S.GetCracks() == 1);
@@ -147,10 +148,10 @@ TEST_SUITE("Shackle")
 		REQUIRE(S.BeginPry(true));
 		TickTo(S, 0.5f);
 		CHECK(S.InputBeat() == EPryResult::BeatHit);
-		CHECK(S.InputBeat() == EPryResult::Miss); // mashing: next beat is 0.5 s away
+		CHECK(S.InputBeat() == EPryResult::Failed); // mashing: next beat is 0.5 s away
 
 		REQUIRE(S.BeginPry(true));
-		CHECK(TickTo(S, 0.6875f) == EPryResult::Miss); // window closed at 0.625
+		CHECK(TickTo(S, 0.6875f) == EPryResult::Failed); // window closed at 0.625
 		CHECK(S.GetState() == EShackleState::Ready);
 	}
 
@@ -213,7 +214,7 @@ TEST_SUITE("BossEncounter")
 		CHECK(Boss.GetHealth() == Approx(1.0f));
 		CHECK(R.Applied.Health == Approx(99.0f));
 		CHECK(Boss.GetOutcome() == EBossOutcome::InProgress);
-		CHECK(Boss.GetFreedDrops().empty());
+		CHECK(Boss.GetOutcomeDrops().empty());
 
 		REQUIRE(Boss.CanBeginPry());
 		const float StaggerBefore = Boss.GetPosture().GetStaggerRemaining();
@@ -221,8 +222,8 @@ TEST_SUITE("BossEncounter")
 		CHECK(Boss.GetPosture().GetStaggerRemaining() == Approx(0.0f));
 		CHECK(StaggerBefore > 0.0f);
 		CHECK(Boss.GetOutcome() == EBossOutcome::Freed);
-		REQUIRE(Boss.GetFreedDrops().size() == 1);
-		CHECK(Boss.GetFreedDrops()[0].MaterialId == "boar_hide");
+		REQUIRE(Boss.GetOutcomeDrops().size() == 1);
+		CHECK(Boss.GetOutcomeDrops()[0].MaterialId == "boar_hide");
 		CHECK(Boss.Tick(1.0f) == EPryResult::None);
 		CHECK_FALSE(Boss.ReceivePlayerHit(Hit(100, 50), Weapon).bPostureBroken);
 		CHECK_FALSE(Boss.BeginPry());
@@ -242,7 +243,7 @@ TEST_SUITE("BossEncounter")
 		Boss.Tick(0.25f);
 		CHECK(Boss.GetPosture().GetStaggerRemaining() == Approx(1.5f));
 
-		CHECK(Boss.InputPryBeat() == EPryResult::Miss); // early
+		CHECK(Boss.InputPryBeat() == EPryResult::Failed); // early
 		CHECK_FALSE(Boss.GetPosture().IsStaggered());
 		CHECK(Boss.GetPosture().GetAccumulated() == Approx(60.0f)); // 100 * (1 - 0.4)
 		CHECK(Boss.GetShackle().GetState() == EShackleState::Ready);
@@ -266,13 +267,15 @@ TEST_SUITE("BossEncounter")
 			const EPryResult R = Boss.Tick(Step);
 			Last = R == EPryResult::None ? Last : R;
 		});
-		CHECK(Last == EPryResult::Miss);
+		CHECK(Last == EPryResult::Failed);
 		CHECK_FALSE(Boss.GetPosture().IsStaggered());
 	}
 
-	TEST_CASE("disabled shackle: fight ends by health (K0 fallback)")
+	TEST_CASE("no shackle and no health floor: fight ends by health")
 	{
-		FBossEncounter Boss(MakeBoss(false), FDifficultyConfig{});
+		FBossConfig Config = MakeBoss(false);
+		Config.HealthFloor = 0.0f;
+		FBossEncounter Boss(Config, FDifficultyConfig{});
 		for (int I = 0; I < 4; ++I)
 		{
 			Boss.ReceivePlayerHit(Hit(100, 50), FWeaponConfig{});
@@ -282,7 +285,7 @@ TEST_SUITE("BossEncounter")
 		Boss.ReceivePlayerHit(Hit(500, 0), FWeaponConfig{});
 		CHECK(Boss.GetHealth() == Approx(0.0f));
 		CHECK(Boss.GetOutcome() == EBossOutcome::Defeated);
-		CHECK(Boss.GetFreedDrops().empty());
+		CHECK(Boss.GetOutcomeDrops().empty());
 		CHECK(Boss.ReceivePostureDamage(100.0f).Applied.Posture == Approx(0.0f));
 	}
 
@@ -307,6 +310,9 @@ TEST_SUITE("BossEncounter")
 				FBossConfig Config = MakeBoss(bEnabled);
 				Config.Posture.RegenPerSecond = 15.0f; // regen fights back
 				Config.Posture.RegenDelay = 0.5f;
+				Config.bHealthFloorForcesFinalStagger = true;
+				Config.Shackle.MissRetriesPerBeat = static_cast<int>(Seed % 3);
+				Config.FledDrops = Config.FreedDrops;
 				FBossEncounter Boss(Config, FDifficultyConfig{});
 				float SinceAttack = 0.0f;
 				int SimSteps = 0;
@@ -319,7 +325,7 @@ TEST_SUITE("BossEncounter")
 					if (Boss.GetShackle().GetState() == EShackleState::Prying)
 					{
 						const FShackle& S = Boss.GetShackle();
-						const float Target = S.GetBeatTime(S.GetBeatsHit());
+						const float Target = S.GetCurrentTargetTime();
 						if (std::fabs(S.GetPryElapsed() - Target) < 0.5f * Dt)
 						{
 							// 70%: on time; 30%: fumble (press early).
@@ -335,15 +341,195 @@ TEST_SUITE("BossEncounter")
 						Boss.BeginPry();
 						continue;
 					}
+					if (Boss.CanPerformFinisher())
+					{
+						Boss.PerformFinisher();
+						continue;
+					}
 					if (SinceAttack >= 0.5f)
 					{
 						SinceAttack = 0.0f;
 						Boss.ReceivePlayerHit(Hit(static_cast<float>(Rng.RangeInt(10, 40)), static_cast<float>(Rng.RangeInt(10, 40))), FWeaponConfig{});
 					}
 				}
-				CHECK(Boss.GetOutcome() == (bEnabled ? EBossOutcome::Freed : EBossOutcome::Defeated));
+				CHECK(Boss.GetOutcome() == (bEnabled ? EBossOutcome::Freed : EBossOutcome::Fled));
+				CHECK(Boss.GetOutcomeDrops().size() == 1);
 			}
 		}
+	}
+}
+TEST_SUITE("Shackle")
+{
+	TEST_CASE("missed beats are retried on the next slot, then the pry fails")
+	{
+		FShackleConfig C = MakeShackle();
+		C.CracksToOpen = 1;
+		C.MissRetriesPerBeat = 2;
+		FShackle S(C);
+		S.OnPostureBroken();
+		REQUIRE(S.BeginPry(true));
+		CHECK(TickTo(S, 0.5f) == EPryResult::None);
+		CHECK(S.InputBeat() == EPryResult::BeatHit);          // beat 1 on slot 0
+		CHECK(TickTo(S, 1.25f) == EPryResult::BeatMissed);    // slot 1 (1.0) timed out
+		CHECK(S.GetMissesOnBeat() == 1);
+		CHECK(S.GetCurrentTargetTime() == Approx(1.5f));
+		CHECK(TickTo(S, 1.5f) == EPryResult::None);
+		CHECK(S.InputBeat() == EPryResult::BeatHit);          // beat 2 retried on slot 2
+		CHECK(S.GetMissesOnBeat() == 0);
+		CHECK(TickTo(S, 1.75f) == EPryResult::None);
+		CHECK(S.InputBeat() == EPryResult::BeatMissed);       // early for slot 3 (2.0)
+		CHECK(S.GetCurrentTargetTime() == Approx(2.5f));
+		CHECK(TickTo(S, 2.6875f) == EPryResult::BeatMissed); // slot 4 timed out: 2nd miss on beat 3
+		CHECK(S.GetMissesOnBeat() == 2);
+		CHECK(TickTo(S, 3.1875f) == EPryResult::Failed);     // 3rd miss on the same beat
+		CHECK(S.GetState() == EShackleState::Ready);
+		CHECK(S.GetCracks() == 1);
+	}
+
+	TEST_CASE("hold mode: holding fills each beat, releasing only resets progress")
+	{
+		FShackleConfig C = MakeShackle();
+		C.CracksToOpen = 1;
+		C.HoldDurationPerBeat = 0.5f;
+		FShackle S(C, 1.0f, EPryInputMode::Hold);
+		CHECK(S.GetInputMode() == EPryInputMode::Hold);
+		S.OnPostureBroken();
+		REQUIRE(S.BeginPry(true));
+		CHECK(S.InputBeat() == EPryResult::None); // presses are ignored in hold mode
+		S.SetHeld(true);
+		ArpgCoreTest::Simulate(0.25f, [&S](float Step) { CHECK(S.Tick(Step) == EPryResult::None); });
+		S.SetHeld(false);
+		CHECK(S.Tick(Dt) == EPryResult::None);
+		S.SetHeld(true);
+		int Hits = 0;
+		EPryResult Last = EPryResult::None;
+		ArpgCoreTest::Simulate(5.0f, [&](float Step) {
+			const EPryResult R = S.Tick(Step);
+			Hits += R == EPryResult::BeatHit ? 1 : 0;
+			Last = R == EPryResult::None ? Last : R;
+		});
+		CHECK(Hits == 2);
+		CHECK(Last == EPryResult::Freed);
+	}
+
+	TEST_CASE("auto mode frees on the grid without input; ForceReady opens the pry")
+	{
+		FShackle S(MakeShackle(), 1.0f, EPryInputMode::Auto);
+		CHECK_FALSE(S.CanBeginPry(true));
+		S.ForceReady();
+		CHECK(S.GetState() == EShackleState::Ready);
+		CHECK(S.GetCracks() == 3);
+		REQUIRE(S.BeginPry(true));
+		EPryResult Last = EPryResult::None;
+		ArpgCoreTest::Simulate(2.0f, [&](float Step) {
+			const EPryResult R = S.Tick(Step);
+			Last = R == EPryResult::None ? Last : R;
+		});
+		CHECK(Last == EPryResult::Freed);
+		S.ForceReady(); // no effect once freed
+		CHECK(S.GetState() == EShackleState::Freed);
+		S.SetInputMode(EPryInputMode::Timed);
+		CHECK(S.GetInputMode() == EPryInputMode::Timed);
+	}
+}
+
+TEST_SUITE("BossEncounter")
+{
+	FBossConfig MakePhasedBoss(bool bShackle)
+	{
+		FBossConfig B = MakeBoss(bShackle);
+		B.bHealthFloorForcesFinalStagger = true;
+		B.Shackle.CracksToOpen = 3;
+		B.FledDrops = {FMaterialAmount{"boar_hide", 1}};
+		FBossPhase P1;
+		P1.Id = "ph1";
+		P1.MaxPosture = 100.0f;
+		FBossPhase P2;
+		P2.Id = "ph2";
+		P2.EnterCracksAtLeast = 2;
+		P2.EnterHealthRatioAtMost = 0.5f;
+		P2.MaxPosture = 80.0f;
+		B.Phases = {P1, P2};
+		return B;
+	}
+
+	TEST_CASE("phase 2 enters on cracks or health and changes the posture max")
+	{
+		FBossEncounter ByCracks(MakePhasedBoss(true), FDifficultyConfig{});
+		CHECK(ByCracks.GetPhaseIndex() == 0);
+		ByCracks.ReceivePostureDamage(100.0f);
+		ByCracks.Tick(2.0f);
+		CHECK(ByCracks.GetPhaseIndex() == 0);
+		CHECK(ByCracks.ReceivePostureDamage(100.0f).bPhaseChanged);
+		CHECK(ByCracks.GetPhaseIndex() == 1);
+		CHECK(ByCracks.GetPhase()->Id == "ph2");
+		CHECK(ByCracks.GetPosture().GetConfig().MaxPosture == Approx(80.0f));
+
+		FBossEncounter ByHealth(MakePhasedBoss(true), FDifficultyConfig{});
+		ByHealth.ReceivePostureDamage(50.0f);
+		const FBossHitResult R = ByHealth.ReceivePlayerHit(Hit(250, 0), FWeaponConfig{});
+		CHECK(R.bPhaseChanged);
+		CHECK(ByHealth.GetPosture().GetAccumulated() == Approx(40.0f)); // ratio 0.5 kept
+
+		FBossConfig AllCfg = MakePhasedBoss(true);
+		AllCfg.Phases[1].bEnterOnAny = false;
+		FBossEncounter All(AllCfg, FDifficultyConfig{});
+		All.ReceivePlayerHit(Hit(250, 0), FWeaponConfig{});
+		CHECK(All.GetPhaseIndex() == 0); // health alone is not enough
+		All.ReceivePostureDamage(100.0f);
+		All.Tick(2.0f);
+		All.ReceivePostureDamage(100.0f);
+		CHECK(All.GetPhaseIndex() == 1);
+		CHECK(All.GetPhase() != nullptr);
+	}
+
+	TEST_CASE("health floor forces a final stagger that opens the pry without all cracks")
+	{
+		FBossEncounter Boss(MakePhasedBoss(true), FDifficultyConfig{});
+		const FBossHitResult R = Boss.ReceivePlayerHit(Hit(1000, 0), FWeaponConfig{});
+		CHECK(R.bFinalStagger);
+		CHECK(R.bPostureBroken);
+		CHECK(Boss.GetHealth() == Approx(1.0f));
+		CHECK(Boss.GetPosture().IsIndefiniteStagger());
+		CHECK(Boss.GetShackle().GetCracks() == 3);
+		Boss.Tick(60.0f); // the final stagger does not time out
+		REQUIRE(Boss.CanBeginPry());
+		CHECK_FALSE(Boss.CanPerformFinisher());
+		REQUIRE(Boss.BeginPry());
+		CHECK(Boss.InputPryBeat() == EPryResult::Failed);
+		CHECK_FALSE(Boss.GetPosture().IsStaggered());
+		CHECK(Boss.GetPosture().GetAccumulated() == Approx(48.0f)); // 80 * (1 - 0.4) in phase 2
+		CHECK_FALSE(Boss.ReceivePlayerHit(Hit(1000, 0), FWeaponConfig{}).bFinalStagger); // only once
+		CHECK(Boss.ReceivePostureDamage(40.0f).bPostureBroken);
+		CHECK(PryPerfectly(Boss) == EPryResult::Freed);
+		CHECK(Boss.GetOutcomeDrops().size() == 1);
+	}
+
+	TEST_CASE("shackle disabled: final stagger, shove, the creature flees with its drop")
+	{
+		FBossEncounter Boss(MakePhasedBoss(false), FDifficultyConfig{});
+		CHECK_FALSE(Boss.PerformFinisher());
+		Boss.ReceivePlayerHit(Hit(1000, 0), FWeaponConfig{});
+		CHECK(Boss.CanPerformFinisher());
+		CHECK_FALSE(Boss.CanBeginPry());
+		REQUIRE(Boss.PerformFinisher());
+		CHECK(Boss.GetOutcome() == EBossOutcome::Fled);
+		REQUIRE(Boss.GetOutcomeDrops().size() == 1);
+		CHECK(Boss.GetOutcomeDrops()[0].MaterialId == "boar_hide");
+	}
+
+	TEST_CASE("pry difficulty and accessibility modes reach the encounter")
+	{
+		FDifficultyConfig Story;
+		Story.bPryAuto = true;
+		FBossEncounter Boss(MakePhasedBoss(true), Story);
+		CHECK(Boss.GetShackle().GetInputMode() == EPryInputMode::Auto);
+		Boss.SetPryInputMode(EPryInputMode::Hold);
+		Boss.ReceivePlayerHit(Hit(1000, 0), FWeaponConfig{});
+		REQUIRE(Boss.BeginPry());
+		Boss.SetPryHeld(true);
+		ArpgCoreTest::Simulate(3.0f, [&Boss](float Step) { Boss.Tick(Step); });
+		CHECK(Boss.GetOutcome() == EBossOutcome::Freed);
 	}
 }
 #endif

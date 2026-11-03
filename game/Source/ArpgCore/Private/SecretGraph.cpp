@@ -17,7 +17,9 @@ constexpr std::size_t MaxNodes = 64;
 struct FCompiled
 {
 	std::size_t NodeCount = 0;
-	std::vector<std::vector<std::size_t>> Requires; // clue indices per node
+	std::vector<std::vector<std::size_t>> Requires; // clue indices per node (all)
+	std::vector<std::vector<std::size_t>> RequiresAny; // clue indices per node (any)
+	std::uint64_t StartMask = 0;
 	std::vector<std::uint64_t> ExcludedMask;        // per node
 	std::vector<std::uint64_t> GrantMask;           // per clue: nodes granting it
 	std::vector<bool> BaseKnown;                    // per clue: known without completing anything
@@ -44,6 +46,7 @@ FCompiled Compile(const FSecretGraphDef& Def, const std::set<std::string>& Extra
 		C.NodeIndex[Def.Nodes[I].Id] = I;
 	}
 	C.Requires.resize(C.NodeCount);
+	C.RequiresAny.resize(C.NodeCount);
 	C.ExcludedMask.assign(C.NodeCount, 0);
 	for (std::size_t I = 0; I < C.NodeCount; ++I)
 	{
@@ -52,9 +55,17 @@ FCompiled Compile(const FSecretGraphDef& Def, const std::set<std::string>& Extra
 		{
 			C.Requires[I].push_back(ClueOf(Clue));
 		}
+		for (const std::string& Clue : Node.RequiresAnyClues)
+		{
+			C.RequiresAny[I].push_back(ClueOf(Clue));
+		}
 		for (const std::string& Clue : Node.GrantsClues)
 		{
 			C.GrantMask[ClueOf(Clue)] |= (std::uint64_t{1} << I);
+		}
+		if (Node.bIsStart)
+		{
+			C.StartMask |= (std::uint64_t{1} << I);
 		}
 		for (const std::string& Other : Node.ExcludedBy)
 		{
@@ -87,14 +98,12 @@ bool IsAvailableMask(const FCompiled& C, std::uint64_t State, std::size_t Node)
 	{
 		return false;
 	}
-	for (const std::size_t Clue : C.Requires[Node])
+	auto Known = [&C, State](std::size_t Clue) { return C.BaseKnown[Clue] || (State & C.GrantMask[Clue]) != 0; };
+	if (!std::all_of(C.Requires[Node].begin(), C.Requires[Node].end(), Known))
 	{
-		if (!C.BaseKnown[Clue] && (State & C.GrantMask[Clue]) == 0)
-		{
-			return false;
-		}
+		return false;
 	}
-	return true;
+	return C.RequiresAny[Node].empty() || std::any_of(C.RequiresAny[Node].begin(), C.RequiresAny[Node].end(), Known);
 }
 
 struct FSearch
@@ -215,6 +224,13 @@ TResult<FSecretGraph> FSecretGraph::Create(const FSecretGraphDef& Def)
 				Errors.push_back(FError{Path + ".requires_clues", "clue '" + Clue + "' is never granted"});
 			}
 		}
+		for (const std::string& Clue : Node.RequiresAnyClues)
+		{
+			if (Granted.count(Clue) == 0)
+			{
+				Errors.push_back(FError{Path + ".requires_any_clues", "clue '" + Clue + "' is never granted"});
+			}
+		}
 		for (const std::string& Other : Node.ExcludedBy)
 		{
 			if (Ids.count(Other) == 0)
@@ -240,6 +256,14 @@ FSecretProgress FSecretGraph::MakeInitialProgress() const
 {
 	FSecretProgress Progress;
 	Progress.KnownClues.insert(Def.InitialClues.begin(), Def.InitialClues.end());
+	for (const FSecretNode& Node : Def.Nodes)
+	{
+		if (Node.bIsStart)
+		{
+			Progress.CompletedNodes.insert(Node.Id);
+			Progress.KnownClues.insert(Node.GrantsClues.begin(), Node.GrantsClues.end());
+		}
+	}
 	return Progress;
 }
 
@@ -262,8 +286,9 @@ bool FSecretGraph::IsAvailable(const FSecretProgress& Progress, const std::strin
 				return false;
 			}
 		}
-		return std::all_of(Node.RequiresClues.begin(), Node.RequiresClues.end(),
-			[&Progress](const std::string& Clue) { return Progress.KnownClues.count(Clue) != 0; });
+		auto Known = [&Progress](const std::string& Clue) { return Progress.KnownClues.count(Clue) != 0; };
+		return std::all_of(Node.RequiresClues.begin(), Node.RequiresClues.end(), Known)
+			&& (Node.RequiresAnyClues.empty() || std::any_of(Node.RequiresAnyClues.begin(), Node.RequiresAnyClues.end(), Known));
 	}
 	return false;
 }
@@ -314,12 +339,24 @@ FSoftlockReport FSecretGraph::CheckNoSoftlock(std::size_t MaxStates) const
 {
 	FSoftlockReport Report;
 	const FCompiled C = Compile(Def, {});
-	const FSearch S = Explore(C, 0, std::max<std::size_t>(MaxStates, 1));
+	const FSearch S = Explore(C, C.StartMask, std::max<std::size_t>(MaxStates, 1));
 	Report.StatesExplored = S.States.size();
 	Report.bExhaustive = S.bExhaustive;
 	if (!S.bExhaustive)
 	{
 		Report.Problems.push_back(FError{Def.Id, "state limit reached: softlock check inconclusive"});
+	}
+	std::uint64_t Reached = 0;
+	for (const std::uint64_t State : S.States)
+	{
+		Reached |= State;
+	}
+	for (std::size_t Node = 0; Node < C.NodeCount && S.bExhaustive; ++Node)
+	{
+		if (((Reached >> Node) & 1u) == 0)
+		{
+			Report.Problems.push_back(FError{Def.Id, "node '" + Def.Nodes[Node].Id + "' is unreachable"});
+		}
 	}
 	for (std::size_t I = 0; I < S.States.size(); ++I)
 	{

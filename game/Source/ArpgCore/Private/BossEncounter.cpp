@@ -13,9 +13,18 @@ FBossEncounter::FBossEncounter(const FBossConfig& InConfig, const FDifficultyCon
 	: Config(InConfig)
 	, Difficulty(InDifficulty)
 	, Posture(InConfig.Posture)
-	, Shackle(InConfig.Shackle, InDifficulty.PryBeatWindowScale)
+	, Shackle(InConfig.Shackle, InDifficulty.PryBeatWindowScale, InDifficulty.bPryAuto ? EPryInputMode::Auto : EPryInputMode::Timed)
 	, Health(NonNegative(InConfig.MaxHealth))
 {
+	if (!Config.Phases.empty() && Config.Phases[0].MaxPosture > 0.0f)
+	{
+		Posture.SetMaxPosture(Config.Phases[0].MaxPosture);
+	}
+}
+
+const FBossPhase* FBossEncounter::GetPhase() const
+{
+	return static_cast<std::size_t>(PhaseIndex) < Config.Phases.size() ? &Config.Phases[static_cast<std::size_t>(PhaseIndex)] : nullptr;
 }
 
 FBossHitResult FBossEncounter::ReceivePlayerHit(const FAttackData& Attack, const FWeaponConfig& Weapon)
@@ -31,21 +40,32 @@ FBossHitResult FBossEncounter::ReceivePlayerHit(const FAttackData& Attack, const
 	const FDamageResult Damage = ComputeDamage(Attack, Weapon, Difficulty, Context);
 
 	const float HealthBefore = Health;
-	Health -= Damage.Health;
-	if (Shackle.GetState() != EShackleState::Disabled)
+	const float Floor = std::min(NonNegative(Config.HealthFloor), NonNegative(Config.MaxHealth));
+	Health = std::max(Health - Damage.Health, std::min(Floor, HealthBefore));
+
+	FBossHitResult Result;
+	if (Floor > 0.0f && Health <= Floor && !bFinalStaggerUsed && Config.bHealthFloorForcesFinalStagger)
 	{
-		// While shackled the boss cannot be killed: the fight ends by freeing it.
-		const float Floor = std::min(NonNegative(Config.HealthFloorWhileShackled), NonNegative(Config.MaxHealth));
-		Health = std::max(Health, std::min(Floor, HealthBefore));
+		// The health floor forces the final stagger; with the shackle on it also opens the pry.
+		bFinalStaggerUsed = true;
+		const bool bWasStaggered = Posture.IsStaggered();
+		Posture.ForceStagger(true);
+		Shackle.ForceReady();
+		Result = OnPostureResult(false);
+		Result.bPostureBroken = !bWasStaggered;
+		Result.bFinalStagger = true;
 	}
-	else if (Health <= 0.0f)
+	else if (Floor <= 0.0f && Health <= 0.0f)
 	{
 		Health = 0.0f;
 		Outcome = EBossOutcome::Defeated;
 	}
-
-	FBossHitResult Result = OnPostureResult(Posture.ApplyDamage(Damage.Posture));
+	else
+	{
+		Result = OnPostureResult(Posture.ApplyDamage(Damage.Posture));
+	}
 	Result.Applied = FDamageResult{HealthBefore - Health, Damage.Posture};
+	Result.bPhaseChanged = UpdatePhase();
 	return Result;
 }
 
@@ -57,6 +77,7 @@ FBossHitResult FBossEncounter::ReceivePostureDamage(float Amount)
 	}
 	FBossHitResult Result = OnPostureResult(Posture.ApplyDamage(Amount));
 	Result.Applied.Posture = NonNegative(Amount);
+	Result.bPhaseChanged = UpdatePhase();
 	return Result;
 }
 
@@ -71,6 +92,33 @@ FBossHitResult FBossEncounter::OnPostureResult(bool bBroken)
 		Result.bShackleCracked = Shackle.GetCracks() > Before;
 	}
 	return Result;
+}
+
+bool FBossEncounter::UpdatePhase()
+{
+	bool bChanged = false;
+	while (static_cast<std::size_t>(PhaseIndex + 1) < Config.Phases.size())
+	{
+		const FBossPhase& Next = Config.Phases[static_cast<std::size_t>(PhaseIndex + 1)];
+		const bool bHasCrack = Next.EnterCracksAtLeast >= 0;
+		const bool bHasHealth = Next.EnterHealthRatioAtMost >= 0.0f;
+		const float MaxHealth = NonNegative(Config.MaxHealth);
+		const bool bCrackOk = bHasCrack && Shackle.GetCracks() >= Next.EnterCracksAtLeast;
+		const bool bHealthOk = bHasHealth && MaxHealth > 0.0f && Health / MaxHealth <= Next.EnterHealthRatioAtMost;
+		const bool bEnter = Next.bEnterOnAny ? (bCrackOk || bHealthOk)
+		                                     : ((bHasCrack || bHasHealth) && (!bHasCrack || bCrackOk) && (!bHasHealth || bHealthOk));
+		if (!bEnter)
+		{
+			break;
+		}
+		++PhaseIndex;
+		if (Next.MaxPosture > 0.0f)
+		{
+			Posture.SetMaxPosture(Next.MaxPosture);
+		}
+		bChanged = true;
+	}
+	return bChanged;
 }
 
 bool FBossEncounter::CanBeginPry() const
@@ -95,6 +143,23 @@ EPryResult FBossEncounter::InputPryBeat()
 	return Result;
 }
 
+bool FBossEncounter::CanPerformFinisher() const
+{
+	return Outcome == EBossOutcome::InProgress && Shackle.GetState() == EShackleState::Disabled
+		&& Posture.IsIndefiniteStagger();
+}
+
+bool FBossEncounter::PerformFinisher()
+{
+	if (!CanPerformFinisher())
+	{
+		return false;
+	}
+	Outcome = EBossOutcome::Fled;
+	Posture.EndStagger();
+	return true;
+}
+
 EPryResult FBossEncounter::Tick(float DeltaSeconds)
 {
 	if (Outcome != EBossOutcome::InProgress)
@@ -114,18 +179,22 @@ void FBossEncounter::HandlePryResult(EPryResult Result)
 		Outcome = EBossOutcome::Freed;
 		Posture.EndStagger();
 	}
-	else if (Result == EPryResult::Miss)
+	else if (Result == EPryResult::Failed)
 	{
 		Posture.EndStaggerWithRecovery(Config.Shackle.MissPostureRecoverFraction);
 	}
 }
 
-std::vector<FMaterialAmount> FBossEncounter::GetFreedDrops() const
+std::vector<FMaterialAmount> FBossEncounter::GetOutcomeDrops() const
 {
-	if (Outcome != EBossOutcome::Freed)
+	if (Outcome == EBossOutcome::Freed)
 	{
-		return {};
+		return Config.FreedDrops;
 	}
-	return Config.FreedDrops;
+	if (Outcome == EBossOutcome::Fled)
+	{
+		return Config.FledDrops;
+	}
+	return {};
 }
 } // namespace ArpgCore

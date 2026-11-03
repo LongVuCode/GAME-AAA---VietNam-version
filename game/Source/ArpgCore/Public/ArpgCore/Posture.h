@@ -27,6 +27,11 @@ public:
 	void Recover(float Amount);
 	void Tick(float DeltaSeconds);
 
+	/** Breaks posture now. bIndefinite: the stagger only ends via EndStagger* (final stagger). */
+	void ForceStagger(bool bInIndefinite);
+	/** Changes MaxPosture (boss phases), keeping the accumulated ratio. */
+	void SetMaxPosture(float NewMax);
+
 	/** While paused the stagger timer does not run (used during the pry finisher). */
 	void SetStaggerPaused(bool bPaused) { bStaggerPaused = bPaused; }
 	/** Ends stagger now; accumulated posture = Max * PostureAfterStagger. */
@@ -36,6 +41,7 @@ public:
 	void EndStaggerWithRecovery(float RecoverFraction);
 
 	bool IsStaggered() const { return bStaggered; }
+	bool IsIndefiniteStagger() const { return bStaggered && bIndefinite; }
 	float GetAccumulated() const { return Accumulated; }
 	float GetRatio() const;
 	float GetStaggerRemaining() const { return StaggerRemaining; }
@@ -51,6 +57,7 @@ private:
 	float StaggerRemaining = 0.0f;
 	bool bStaggered = false;
 	bool bStaggerPaused = false;
+	bool bIndefinite = false;
 	int BreakCount = 0;
 };
 } // namespace ArpgCore

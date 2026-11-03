@@ -8,6 +8,12 @@
 
 namespace ArpgCore
 {
+/** Numeric weights for the design categories (`hit_weight`: light / medium / heavy, plus finisher). */
+inline constexpr float HitWeightLight = 1.0f;
+inline constexpr float HitWeightMedium = 2.0f;
+inline constexpr float HitWeightHeavy = 3.0f;
+inline constexpr float HitWeightFinisher = 4.0f;
+
 struct FHitStopPoint
 {
 	float Weight = 0.0f;
@@ -22,6 +28,8 @@ struct FHitStopConfig
 	float MaxDuration = 0.20f;
 	float TimeScaleDuringStop = 0.0f; // 0 = full freeze
 	float PerfectParryBonus = 0.04f;  // added for perfect parries (before clamping)
+	float PryBeatDuration = 0.08f;    // each successful pry beat
+	float PryReleaseDuration = 0.12f; // the shackle comes off
 };
 
 ARPGCORE_API float ComputeHitStopDuration(const FHitStopConfig& Config, float Weight, bool bPerfectParry = false);

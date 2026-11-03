@@ -24,7 +24,7 @@ file(GLOB ARPGCORE_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Public
 
 add_library(ArpgCore STATIC ${ARPGCORE_SOURCES} ${ARPGCORE_HEADERS})
 target_include_directories(ArpgCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Public")
-# nlohmann/json is a private dependency (only ConfigLoader.cpp includes it).
+# nlohmann/json is a private dependency (only DesignDataLoader.cpp includes it).
 target_include_directories(ArpgCore SYSTEM PRIVATE "${ARPGCORE_THIRD_PARTY}")
 target_compile_options(ArpgCore PRIVATE ${ARPGCORE_WARNINGS})
 
@@ -40,9 +40,12 @@ if(ARPGCORE_BUILD_TESTS)
   target_link_libraries(ArpgCoreTests PRIVATE ArpgCore)
   target_include_directories(ArpgCoreTests SYSTEM PRIVATE "${ARPGCORE_THIRD_PARTY}")
   target_compile_options(ArpgCoreTests PRIVATE ${ARPGCORE_WARNINGS})
+  # Real design data, given relative to the repo root (design/data/*.json by game-designer).
+  set(ARPGCORE_DESIGN_DATA_RELPATH "design/data" CACHE STRING "Design data folder, relative to the repo root")
   target_compile_definitions(ArpgCoreTests PRIVATE
     ARPGCORE_STANDALONE_TESTS=1
-    ARPGCORE_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/Tests/fixtures")
+    ARPGCORE_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/Tests/fixtures"
+    ARPGCORE_DESIGN_DATA_DIR="${ARPGCORE_REPO_ROOT}/${ARPGCORE_DESIGN_DATA_RELPATH}")
 
   # One CTest entry per doctest suite, discovered from TEST_SUITE("Name") in Tests/*.cpp.
   set(ARPGCORE_TEST_SUITES "")

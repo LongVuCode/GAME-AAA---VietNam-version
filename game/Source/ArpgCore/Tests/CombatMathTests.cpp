@@ -383,4 +383,96 @@ TEST_SUITE("DrumMeter")
 		CHECK_FALSE(M.CanSurge());
 	}
 }
+TEST_SUITE("Defense")
+{
+	TEST_CASE("guard reduces guardable hits; dodge and parry take precedence")
+	{
+		FDodgeConfig Dodge;
+		Dodge.Recovery = 0.25f;
+		FDefenseController D(Dodge, FParryConfig{});
+		D.SetGuarding(true);
+		CHECK(D.IsGuarding());
+		FAttackData Normal = Attack(10, 10);
+		FAttackData Unguardable = Attack(10, 10);
+		Unguardable.bUnguardable = true;
+		CHECK(D.ResolveIncoming(Normal) == EDefenseOutcome::Guarded);
+		CHECK(D.ResolveIncoming(Unguardable) == EDefenseOutcome::Hit);
+		REQUIRE(D.StartParry());
+		CHECK(D.ResolveIncoming(Normal) == EDefenseOutcome::PerfectParry);
+		Advance(D, 0.25f); // parry window over, guard still held
+		CHECK(D.ResolveIncoming(Normal) == EDefenseOutcome::Guarded);
+		Advance(D, 0.25f);
+		REQUIRE(D.StartDodge());
+		CHECK(D.ResolveIncoming(Normal) == EDefenseOutcome::Hit); // dodging: no guard
+		Advance(D, 0.5f);
+		CHECK(D.IsBusy()); // recovery after the dodge motion
+		Advance(D, 0.25f);
+		CHECK_FALSE(D.IsBusy());
+		D.SetGuarding(false);
+		CHECK(D.ResolveIncoming(Normal) == EDefenseOutcome::Hit);
+	}
+}
+
+TEST_SUITE("Damage")
+{
+	TEST_CASE("guard and flat parry posture")
+	{
+		const FDamageResult Guarded = ApplyGuard(FDamageResult{100.0f, 20.0f}, FGuardConfig{0.7f, 1.5f});
+		CHECK(Guarded.Health == Approx(30.0f));
+		CHECK(Guarded.Posture == Approx(30.0f));
+
+		FParryConfig Flat;
+		Flat.AttackerPostureFlatOnParry = 20.0f;
+		Flat.AttackerPostureFlatOnPerfectParry = 40.0f;
+		Flat.AttackerPostureOnParry = 0.0f;
+		Flat.AttackerPostureOnPerfectParry = 0.0f;
+		CHECK(ComputeParryExchange(Attack(10, 99), false, Flat, FDifficultyConfig{}).AttackerPosture == Approx(20.0f));
+		CHECK(ComputeParryExchange(Attack(10, 99), true, Flat, FDifficultyConfig{}).AttackerPosture == Approx(40.0f));
+	}
+}
+
+TEST_SUITE("DrumMeter")
+{
+	TEST_CASE("design events, hit-taken loss and partial surge cost")
+	{
+		FDrumConfig C;
+		C.Notches = 4;
+		C.PointsPerNotch = 100.0f;
+		C.PerfectParryGain = 50.0f;
+		C.HitGain = 10.0f;
+		C.HeavyHitGain = 15.0f;
+		C.ParryGain = 25.0f;
+		C.PostureBreakGain = 50.0f;
+		C.PryBeatGain = 5.0f;
+		C.HitTakenLoss = 30.0f;
+		C.SurgeCostNotches = 2;
+		FDrumMeter M(C);
+		M.AddEvent(EDrumEvent::HeavyHit);
+		M.AddEvent(EDrumEvent::Parry);
+		M.AddEvent(EDrumEvent::PostureBreak);
+		M.AddEvent(EDrumEvent::PryBeat);
+		CHECK(M.GetPoints() == Approx(95.0f));
+		M.OnHitTaken();
+		CHECK(M.GetPoints() == Approx(65.0f));
+		M.AddEvent(EDrumEvent::PostureBreak); // 115
+		M.OnHitTaken();                       // floor at the full notch
+		CHECK(M.GetPoints() == Approx(100.0f));
+		CHECK(M.GetSurgeCost() == Approx(200.0f));
+		CHECK_FALSE(M.CanSurge());
+		M.AddEvent(EDrumEvent::PerfectParry);
+		M.AddEvent(EDrumEvent::PerfectParry);
+		M.AddEvent(EDrumEvent::HitLanded);
+		REQUIRE(M.TrySurge());
+		CHECK(M.GetPoints() == Approx(10.0f)); // 210 - 200
+
+		C.bHitTakenKeepsFullNotches = false;
+		C.SurgeCostNotches = 99; // clamped to all notches
+		FDrumMeter Loose(C);
+		Loose.AddEvent(EDrumEvent::PostureBreak);
+		Loose.AddEvent(EDrumEvent::PostureBreak);
+		Loose.OnHitTaken();
+		CHECK(Loose.GetPoints() == Approx(70.0f));
+		CHECK(Loose.GetSurgeCost() == Approx(400.0f));
+	}
+}
 #endif

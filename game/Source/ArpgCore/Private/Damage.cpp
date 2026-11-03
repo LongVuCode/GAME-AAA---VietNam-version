@@ -34,12 +34,21 @@ FDamageResult ComputeDamage(const FAttackData& Attack, const FWeaponConfig& Weap
 	return Result;
 }
 
+FDamageResult ApplyGuard(const FDamageResult& Incoming, const FGuardConfig& Guard)
+{
+	FDamageResult Out;
+	Out.Health = NonNegative(Incoming.Health) * (1.0f - Detail::Clamp01(Guard.DamageReduction));
+	Out.Posture = NonNegative(Incoming.Posture) * NonNegative(Guard.PostureDamageMult);
+	return Out;
+}
+
 FParryExchange ComputeParryExchange(const FAttackData& Incoming, bool bPerfect, const FParryConfig& Parry,
 	const FDifficultyConfig& Difficulty, bool bDefenderIsPlayer)
 {
 	const float Base = NonNegative(Incoming.BasePostureDamage);
 	FParryExchange Exchange;
-	Exchange.AttackerPosture = Base * NonNegative(bPerfect ? Parry.AttackerPostureOnPerfectParry : Parry.AttackerPostureOnParry);
+	Exchange.AttackerPosture = NonNegative(bPerfect ? Parry.AttackerPostureFlatOnPerfectParry : Parry.AttackerPostureFlatOnParry)
+		+ Base * NonNegative(bPerfect ? Parry.AttackerPostureOnPerfectParry : Parry.AttackerPostureOnParry);
 	Exchange.DefenderPosture = Base * NonNegative(bPerfect ? Parry.DefenderPostureOnPerfectParry : Parry.DefenderPostureOnParry);
 	if (bDefenderIsPlayer)
 	{

@@ -6,6 +6,7 @@
 #include "ArpgCore/ComboGraph.h"
 #include "ArpgCore/InputBuffer.h"
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -23,15 +24,23 @@ FActionTiming MakeTiming(float Startup, float Active, float Recovery)
 	return T;
 }
 
+FComboMove MakeMove(const char* Id, const FActionTiming& Timing = {})
+{
+	FComboMove M;
+	M.Id = Id;
+	M.Timing = Timing;
+	return M;
+}
+
 FComboGraph MakeGraph()
 {
 	FComboGraph G;
 	const FActionTiming Fast = MakeTiming(0.125f, 0.0625f, 0.25f);
 	for (const char* Id : {"L1", "L2", "L3", "LD2", "LH2"})
 	{
-		G.AddMove(FComboMove{Id, Fast, FAttackData{}});
+		G.AddMove(MakeMove(Id, Fast));
 	}
-	G.AddMove(FComboMove{"H1", MakeTiming(0.5f, 0.125f, 0.25f), FAttackData{}});
+	G.AddMove(MakeMove("H1", MakeTiming(0.5f, 0.125f, 0.25f)));
 	REQUIRE(G.AddTransition("", EInputType::Light, 0.0f, -1.0f, "L1"));
 	REQUIRE(G.AddTransition("", EInputType::Heavy, 0.0f, -1.0f, "H1"));
 	REQUIRE(G.AddTransition("L1", EInputType::Light, 0.0f, 0.3f, "L2"));
@@ -178,8 +187,8 @@ TEST_SUITE("ComboGraph")
 	TEST_CASE("graph construction errors")
 	{
 		FComboGraph G = MakeGraph();
-		CHECK(G.AddMove(FComboMove{"L1", {}, {}}) == FComboGraph::RootNode); // duplicate
-		CHECK(G.AddMove(FComboMove{"", {}, {}}) == FComboGraph::RootNode);
+		CHECK(G.AddMove(MakeMove("L1")) == FComboGraph::RootNode); // duplicate
+		CHECK(G.AddMove(MakeMove("")) == FComboGraph::RootNode);
 		CHECK_FALSE(G.AddTransition("nope", EInputType::Light, 0.0f, -1.0f, "L1"));
 		CHECK_FALSE(G.AddTransition("L1", EInputType::Light, 0.0f, -1.0f, "nope"));
 		CHECK_FALSE(G.AddTransition("L1", EInputType::Dodge, 0.0f, -1.0f, "L2"));
@@ -192,7 +201,7 @@ TEST_SUITE("ComboGraph")
 	TEST_CASE("validation finds ambiguous branches and unreachable moves")
 	{
 		FComboGraph G = MakeGraph();
-		G.AddMove(FComboMove{"Orphan", {}, {}});
+		G.AddMove(MakeMove("Orphan"));
 		REQUIRE(G.AddTransition("L1", EInputType::Light, 0.25f, 0.5f, "L3")); // overlaps both L1 light branches
 		REQUIRE(G.AddTransition("", EInputType::Light, 0.0f, -1.0f, "L2"));   // second root light
 		const std::vector<FError> Errors = G.Validate();
@@ -316,12 +325,106 @@ TEST_SUITE("ComboGraph")
 	TEST_CASE("runner: input with no transition is dropped")
 	{
 		FComboGraph G;
-		G.AddMove(FComboMove{"OnlyLight", MakeTiming(0.1f, 0.1f, 0.1f), {}});
+		G.AddMove(MakeMove("OnlyLight", MakeTiming(0.1f, 0.1f, 0.1f)));
 		REQUIRE(G.AddTransition("", EInputType::Light, 0.0f, -1.0f, "OnlyLight"));
 		FComboRunner R(G, FComboRunnerConfig{});
 		R.PressInput(EInputType::Heavy);
 		CHECK(R.Tick(Dt).StartedMove == FComboGraph::RootNode);
 		CHECK_FALSE(R.IsActing());
+	}
+}
+TEST_SUITE("ComboGraph")
+{
+	TEST_CASE("context nodes: dodge,L and perfect_parry,H")
+	{
+		FComboGraph G = MakeGraph();
+		G.AddMove(MakeMove("DodgeAttack", MakeTiming(0.1f, 0.1f, 0.2f)));
+		G.AddMove(MakeMove("Counter", MakeTiming(0.1f, 0.1f, 0.2f)));
+		REQUIRE(G.AddTransition("@dodge", EInputType::Light, 0.0f, -1.0f, "DodgeAttack"));
+		REQUIRE(G.AddTransition("@perfect_parry", EInputType::Heavy, 0.0f, -1.0f, "Counter"));
+		CHECK_FALSE(G.AddTransition("@nope", EInputType::Light, 0.0f, -1.0f, "L1"));
+		CHECK(G.Validate().empty());
+		CHECK(FComboGraph::SpecialNodeFromName("@dodge") == FComboGraph::AfterDodgeNode);
+
+		FComboRunnerConfig Config{0.25f, 1, 0.5f, 0.5f, 0.5f, 0.0f};
+		FComboRunner R(G, Config);
+		R.NotifyDodge();
+		CHECK(R.GetActiveContext() == FComboGraph::AfterDodgeNode);
+		R.PressInput(EInputType::Light);
+		CHECK(R.Tick(Dt).StartedMove == G.FindMove("DodgeAttack"));
+		CHECK(R.GetActiveContext() == FComboGraph::RootNode);
+		ArpgCoreTest::Simulate(2.0f, [&R](float Step) { R.Tick(Step); });
+
+		R.NotifyPerfectParry();
+		ArpgCoreTest::Simulate(0.25f, [&R](float Step) { R.Tick(Step); });
+		R.PressInput(EInputType::Heavy);
+		CHECK(R.Tick(Dt).StartedMove == G.FindMove("Counter"));
+		ArpgCoreTest::Simulate(2.0f, [&R](float Step) { R.Tick(Step); });
+
+		R.NotifyPerfectParry();
+		ArpgCoreTest::Simulate(0.75f, [&R](float Step) { R.Tick(Step); }); // context expired
+		CHECK(R.GetActiveContext() == FComboGraph::RootNode);
+		R.PressInput(EInputType::Heavy);
+		CHECK(R.Tick(Dt).StartedMove == G.FindMove("H1"));
+
+		FComboGraph Dup = MakeGraph();
+		Dup.AddMove(MakeMove("A2"));
+		REQUIRE(Dup.AddTransition("@dodge", EInputType::Light, 0.0f, -1.0f, "L2"));
+		REQUIRE(Dup.AddTransition("@dodge", EInputType::Light, 0.0f, -1.0f, "A2"));
+		REQUIRE(Dup.AddTransition("@perfect_parry", EInputType::Light, 0.0f, -1.0f, "L2"));
+		REQUIRE(Dup.AddTransition("@perfect_parry", EInputType::Light, 0.0f, -1.0f, "L3"));
+		int Ambiguous = 0;
+		for (const FError& E : Dup.Validate())
+		{
+			Ambiguous += E.Message.find("@") != std::string::npos ? 1 : 0;
+		}
+		CHECK(Ambiguous == 2);
+	}
+
+	TEST_CASE("moves locked behind a skill fall back to the root branch")
+	{
+		FComboGraph G = MakeGraph();
+		FComboMove L4 = MakeMove("L4", MakeTiming(0.125f, 0.0625f, 0.25f));
+		L4.RequiredUnlock = "sk_vo_noi_don";
+		G.AddMove(L4);
+		REQUIRE(G.AddTransition("L3", EInputType::Light, 0.0f, -1.0f, "L4"));
+		const std::set<std::string> None;
+		const std::set<std::string> Skill{"sk_vo_noi_don"};
+		CHECK_FALSE(G.FindNext(G.FindMove("L3"), EInputType::Light, 0.1f, &None).has_value());
+		CHECK(G.FindNext(G.FindMove("L3"), EInputType::Light, 0.1f, &Skill) == G.FindMove("L4"));
+		CHECK(G.FindNext(G.FindMove("L3"), EInputType::Light, 0.1f) == G.FindMove("L4"));
+
+		FComboRunner R(G, FComboRunnerConfig{0.25f, 1, 0.5f});
+		std::vector<std::pair<float, EInputType>> Presses{
+			{0.0f, EInputType::Light}, {0.1f, EInputType::Light}, {0.4f, EInputType::Light}, {0.75f, EInputType::Light}};
+		CHECK(Run(R, G, Presses, 2.0f) == std::vector<std::string>{"L1", "L2", "L3", "L1"});
+		FComboRunner Unlocked(G, FComboRunnerConfig{0.25f, 1, 0.5f});
+		Unlocked.SetUnlocked(Skill);
+		CHECK(Run(Unlocked, G, Presses, 2.0f) == std::vector<std::string>{"L1", "L2", "L3", "L4"});
+	}
+
+	TEST_CASE("per-move link window and defense cancel delay")
+	{
+		FComboGraph G;
+		FComboMove Ender = MakeMove("Ender", MakeTiming(0.125f, 0.0625f, 0.25f));
+		Ender.ChainLinkWindow = 0.0f; // chain ends with this move
+		G.AddMove(Ender);
+		G.AddMove(MakeMove("Next", MakeTiming(0.125f, 0.0625f, 0.25f)));
+		REQUIRE(G.AddTransition("", EInputType::Light, 0.0f, -1.0f, "Ender"));
+		REQUIRE(G.AddTransition("Ender", EInputType::Light, 0.0f, -1.0f, "Next"));
+		FComboRunner R(G, FComboRunnerConfig{0.25f, 1, 0.5f});
+		// Pressed after Ender finished: chain closed, so the root branch (Ender) starts again.
+		CHECK(Run(R, G, {{0.0f, EInputType::Light}, {0.5f, EInputType::Light}}, 1.0f)
+			== std::vector<std::string>{"Ender", "Ender"});
+
+		FComboRunnerConfig Delayed{0.25f, 1, 0.5f, 0.6f, 0.6f, 0.125f};
+		FComboRunner D(G, Delayed);
+		D.PressInput(EInputType::Light);
+		ArpgCoreTest::Simulate(0.203125f, [&D](float Step) { D.Tick(Step); }); // just inside the cancel window
+		CHECK(D.GetTimeline().IsInCancelWindow());
+		CHECK_FALSE(D.TryCancelForDefense());
+		ArpgCoreTest::Simulate(0.125f, [&D](float Step) { D.Tick(Step); });
+		CHECK(D.TryCancelForDefense());
 	}
 }
 #endif

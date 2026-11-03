@@ -175,4 +175,42 @@ TEST_SUITE("SecretGraph")
 		CHECK(G.GetHint(P, 3) == std::optional<std::string>("hint.go.3"));
 	}
 }
+TEST_SUITE("SecretGraph")
+{
+	TEST_CASE("start nodes, any-of requirements (two alternative sources), unreachable nodes")
+	{
+		FSecretGraphDef D;
+		D.Id = "kiln";
+		FSecretNode Start = Node("start", {}, {});
+		Start.bIsStart = true;
+		Start.GrantsClues = {"rumor"};
+		FSecretNode Scrap = Node("scrap", {}, {"scrap"});
+		Scrap.RequiresAnyClues = {"trap_a", "trap_b"};
+		D.Nodes = {Start, Node("trap_a", {"rumor"}, {"trap_a"}), Node("trap_b", {"rumor"}, {"trap_b"}), Scrap,
+			Node("end", {"scrap"}, {}, true)};
+		const FSecretGraph G = FSecretGraph::Create(D).GetValue();
+		FSecretProgress P = G.MakeInitialProgress();
+		CHECK(P.CompletedNodes.count("start") == 1);
+		CHECK(P.KnownClues.count("rumor") == 1);
+		CHECK_FALSE(G.IsAvailable(P, "scrap"));
+		REQUIRE(G.Complete(P, "trap_b").IsOk());
+		CHECK(G.IsAvailable(P, "scrap")); // one of the alternatives is enough
+		const FSoftlockReport R = G.CheckNoSoftlock();
+		CHECK(R.bOk);
+
+		FSecretGraphDef Island = D;
+		FSecretNode Lonely = Node("lonely", {}, {"x"});
+		Lonely.RequiresAnyClues = {"never_reached"};
+		Island.Nodes.push_back(Lonely);
+		Island.Nodes.push_back(Node("source", {"x"}, {"never_reached"})); // needs x, which needs never_reached
+		const FSoftlockReport Bad = FSecretGraph::Create(Island).GetValue().CheckNoSoftlock();
+		CHECK_FALSE(Bad.bOk);
+		CHECK(Bad.Problems.size() == 2);
+		CHECK(Bad.Problems[0].Message.find("'lonely' is unreachable") != std::string::npos);
+
+		FSecretGraphDef Ghost = D;
+		Ghost.Nodes[3].RequiresAnyClues = {"ghost"};
+		CHECK(FSecretGraph::Create(Ghost).ErrorSummary().find("requires_any_clues") != std::string::npos);
+	}
+}
 #endif

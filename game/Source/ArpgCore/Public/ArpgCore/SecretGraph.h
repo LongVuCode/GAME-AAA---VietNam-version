@@ -18,9 +18,11 @@ namespace ArpgCore
 struct FSecretNode
 {
 	std::string Id;
-	std::vector<std::string> RequiresClues; // all must be known
+	std::vector<std::string> RequiresClues;    // all must be known
+	std::vector<std::string> RequiresAnyClues; // if non-empty, at least one must be known
 	std::vector<std::string> ExcludedBy;    // node ids; if any is completed this node is closed
 	std::vector<std::string> GrantsClues;
+	bool bIsStart = false; // completed in the initial state
 	bool bIsEnding = false;
 	/** Localization keys: [0] vague, [1] direction, [2] exact location. */
 	std::array<std::string, 3> HintKeys;

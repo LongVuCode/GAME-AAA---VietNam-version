@@ -10,7 +10,8 @@ namespace ArpgCore
 {
 struct FDodgeConfig
 {
-	float Duration = 0.50f;      // whole dodge action (busy time)
+	float Duration = 0.50f;      // dodge motion; i-frames are measured from its start
+	float Recovery = 0.0f;       // extra busy time after Duration
 	float IFrameStart = 0.05f;   // seconds from dodge start
 	float IFrameEnd = 0.25f;     // exclusive
 	float PerfectWindow = 0.08f; // hits landing in [IFrameStart, IFrameStart + PerfectWindow] are perfect
@@ -21,11 +22,20 @@ struct FParryConfig
 	float Window = 0.15f;        // normal parry window from press
 	float PerfectWindow = 0.05f; // perfect window from press (subset of Window)
 	float Duration = 0.40f;      // whole parry action (anti-spam lockout)
-	// Posture exchange as fractions of the incoming attack's posture damage (see Damage.h).
+	// Posture exchange (see Damage.h): flat amount + fraction of the incoming attack's posture damage.
+	float AttackerPostureFlatOnParry = 0.0f;
+	float AttackerPostureFlatOnPerfectParry = 0.0f;
 	float AttackerPostureOnParry = 0.5f;
 	float AttackerPostureOnPerfectParry = 1.0f;
 	float DefenderPostureOnParry = 0.3f;
 	float DefenderPostureOnPerfectParry = 0.0f;
+};
+
+/** Holding guard (block): reduces damage of guardable attacks. */
+struct FGuardConfig
+{
+	float DamageReduction = 0.7f;   // fraction of health damage removed
+	float PostureDamageMult = 1.0f; // multiplier on posture damage taken while guarding
 };
 
 enum class EDefenseAction : std::uint8_t
@@ -42,6 +52,7 @@ enum class EDefenseOutcome : std::uint8_t
 	PerfectDodge,
 	Parried,
 	PerfectParry,
+	Guarded,
 };
 
 class ARPGCORE_API FDefenseController
@@ -54,8 +65,11 @@ public:
 	bool StartDodge();
 	bool StartParry();
 	void Tick(float DeltaSeconds);
+	/** Guard held or released. Guard does not block StartDodge/StartParry. */
+	void SetGuarding(bool bInGuarding) { bGuarding = bInGuarding; }
+	bool IsGuarding() const { return bGuarding; }
 
-	/** Resolves an attack landing right now. Does not change state. */
+	/** Resolves an attack landing right now: dodge/parry first, then guard. Does not change state. */
 	EDefenseOutcome ResolveIncoming(const FAttackData& Attack) const;
 
 	EDefenseAction GetAction() const { return Action; }
@@ -72,6 +86,7 @@ private:
 	float PerfectParryWindow;
 	EDefenseAction Action = EDefenseAction::None;
 	float Elapsed = 0.0f;
+	bool bGuarding = false;
 };
 
 /** True for outcomes that reward the Drum meter / count as "perfect". */

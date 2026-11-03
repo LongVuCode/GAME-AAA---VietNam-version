@@ -26,6 +26,11 @@ struct FDifficultyConfig
 	float PostureToEnemyMultiplier = 1.0f;
 	float ParryWindowScale = 1.0f;          // > 1 widens parry windows
 	float PryBeatWindowScale = 1.0f;        // > 1 widens pry beat windows
+	bool bPryAuto = false;                  // pry beats succeed automatically (accessibility)
+	// Pass-through values for the game layer (AI speed, telegraph length, aim assist).
+	float EnemySpeedMultiplier = 1.0f;
+	float TelegraphTimeMultiplier = 1.0f;
+	bool bAimAssist = true;
 };
 
 struct FDamageContext
@@ -51,6 +56,9 @@ struct FParryExchange
 	float AttackerPosture = 0.0f; // posture damage dealt back to the attacker
 	float DefenderPosture = 0.0f; // posture chip taken by the defender
 };
+
+/** Damage actually taken when the hit was Guarded. */
+ARPGCORE_API FDamageResult ApplyGuard(const FDamageResult& Incoming, const FGuardConfig& Guard);
 
 /** Posture exchange for a successful parry. bDefenderIsPlayer selects difficulty scaling. */
 ARPGCORE_API FParryExchange ComputeParryExchange(const FAttackData& Incoming, bool bPerfect,

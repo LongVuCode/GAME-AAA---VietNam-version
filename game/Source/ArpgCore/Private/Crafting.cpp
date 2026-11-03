@@ -1,6 +1,7 @@
 // Crafting.cpp
 #include "ArpgCore/Crafting.h"
 
+#include <algorithm>
 #include <set>
 
 namespace ArpgCore
@@ -49,6 +50,30 @@ const FRecipe* FCraftingDatabase::FindRecipe(const std::string& Id) const
 	for (const FRecipe& Recipe : Recipes)
 	{
 		if (Recipe.Id == Id)
+		{
+			return &Recipe;
+		}
+	}
+	return nullptr;
+}
+
+const FItemDef* FCraftingDatabase::FindItem(const std::string& Id) const
+{
+	for (const FItemDef& Def : Items)
+	{
+		if (Def.Id == Id)
+		{
+			return &Def;
+		}
+	}
+	return nullptr;
+}
+
+const FUpgradeRecipe* FCraftingDatabase::FindUpgradeRecipe(const std::string& ItemId, int ToLevel) const
+{
+	for (const FUpgradeRecipe& Recipe : UpgradeRecipes)
+	{
+		if (Recipe.TargetItemId == ItemId && Recipe.ToLevel == ToLevel)
 		{
 			return &Recipe;
 		}
@@ -147,9 +172,54 @@ std::vector<FError> ValidateCraftingDatabase(const FCraftingDatabase& Db)
 		{
 			CheckMaterialRef(Db, Recipe.Inputs[J].MaterialId, Recipe.Inputs[J].Amount, false, Idx(Path + ".inputs", J), Errors);
 		}
+		const FItemDef* Output = Db.FindItem(Recipe.ResultItemId);
+		if (Output != nullptr && Output->Category == EItemCategory::BaoKhi)
+		{
+			const bool bHasBossPart = std::any_of(Recipe.Inputs.begin(), Recipe.Inputs.end(), [&Db](const FMaterialAmount& In) {
+				const FMaterialDef* M = Db.FindMaterial(In.MaterialId);
+				return M != nullptr && M->Category == EMaterialCategory::BossPart;
+			});
+			if (!bHasBossPart)
+			{
+				Errors.push_back(FError{Path + ".inputs", "a Bảo khí needs a part shed by a freed boss"});
+			}
+		}
 		if (!(Recipe.BonusRarityChance >= 0.0f && Recipe.BonusRarityChance <= 1.0f))
 		{
 			Errors.push_back(FError{Path + ".bonus_rarity_chance", "must be in [0, 1]"});
+		}
+	}
+
+	Seen.clear();
+	for (std::size_t I = 0; I < Db.Items.size(); ++I)
+	{
+		const FItemDef& Item = Db.Items[I];
+		const std::string Path = Idx("items", I);
+		if (Item.Id.empty() || !Seen.insert(Item.Id).second)
+		{
+			Errors.push_back(FError{Path + ".id", "empty or duplicate item '" + Item.Id + "'"});
+		}
+		if (Item.MaxLevel < Item.BaseLevel)
+		{
+			Errors.push_back(FError{Path + ".upgrade_levels", "max level below base level"});
+		}
+	}
+	for (std::size_t I = 0; I < Db.UpgradeRecipes.size(); ++I)
+	{
+		const FUpgradeRecipe& Recipe = Db.UpgradeRecipes[I];
+		const std::string Path = Idx("upgrade_recipes", I);
+		const FItemDef* Target = Db.FindItem(Recipe.TargetItemId);
+		if (Target == nullptr)
+		{
+			Errors.push_back(FError{Path + ".target", "unknown item '" + Recipe.TargetItemId + "'"});
+		}
+		else if (Recipe.ToLevel <= Target->BaseLevel || Recipe.ToLevel > Target->MaxLevel)
+		{
+			Errors.push_back(FError{Path + ".to_level", "outside the item's level range"});
+		}
+		for (std::size_t J = 0; J < Recipe.Inputs.size(); ++J)
+		{
+			CheckMaterialRef(Db, Recipe.Inputs[J].MaterialId, Recipe.Inputs[J].Amount, false, Idx(Path + ".inputs", J), Errors);
 		}
 	}
 
@@ -224,6 +294,10 @@ TResult<FItemInstance> Craft(const FCraftingDatabase& Db, const std::string& Rec
 	Item.ItemId = Recipe->ResultItemId;
 	Item.Rarity = Recipe->Rarity;
 	Item.OriginGeneration = Generation;
+	if (const FItemDef* Def = Db.FindItem(Recipe->ResultItemId))
+	{
+		Item.UpgradeLevel = Def->BaseLevel;
+	}
 	if (Recipe->BonusRarityChance > 0.0f && Rng.Roll(Recipe->BonusRarityChance) && Item.Rarity < ERarity::Legendary)
 	{
 		// Divine ("Thần khí") only comes from secret chains, never from a roll.
@@ -232,13 +306,29 @@ TResult<FItemInstance> Craft(const FCraftingDatabase& Db, const std::string& Rec
 	return TResult<FItemInstance>::Ok(std::move(Item));
 }
 
+std::vector<FMaterialAmount> GetNextUpgradeCost(const FCraftingDatabase& Db, const FItemInstance& Item)
+{
+	if (const FUpgradeRecipe* Recipe = Db.FindUpgradeRecipe(Item.ItemId, Item.UpgradeLevel + 1))
+	{
+		return Recipe->Inputs;
+	}
+	return GetUpgradeCost(Db.Upgrade, Item.Rarity, Item.UpgradeLevel);
+}
+
 FStatus Upgrade(const FCraftingDatabase& Db, FItemInstance& Item, FInventory& Inventory)
 {
-	if (Item.UpgradeLevel >= Db.Upgrade.MaxLevel)
+	const FItemDef* Def = Db.FindItem(Item.ItemId);
+	const int MaxLevel = Def != nullptr ? Def->MaxLevel : Db.Upgrade.MaxLevel;
+	if (Item.UpgradeLevel >= MaxLevel)
 	{
 		return FStatus::Fail(FError{"upgrade", "already at max level"});
 	}
-	const std::vector<FMaterialAmount> Costs = GetUpgradeCost(Db.Upgrade, Item.Rarity, Item.UpgradeLevel);
+	const bool bExplicit = Db.FindUpgradeRecipe(Item.ItemId, Item.UpgradeLevel + 1) != nullptr;
+	if (Def != nullptr && !bExplicit && Db.Upgrade.Terms.empty())
+	{
+		return FStatus::Fail(FError{"upgrade", "no upgrade recipe for the next level"});
+	}
+	const std::vector<FMaterialAmount> Costs = GetNextUpgradeCost(Db, Item);
 	if (!Inventory.RemoveAll(Costs))
 	{
 		return FStatus::Fail(FError{"inventory", "missing upgrade materials"});

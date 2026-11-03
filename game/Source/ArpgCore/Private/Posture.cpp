@@ -29,6 +29,7 @@ bool FPosture::ApplyDamage(float Amount)
 		Accumulated = Max;
 		bStaggered = true;
 		bStaggerPaused = false;
+		bIndefinite = false;
 		StaggerRemaining = NonNegative(Config.StaggerDuration);
 		++BreakCount;
 		return true;
@@ -50,7 +51,7 @@ void FPosture::Tick(float DeltaSeconds)
 	const float Dt = Detail::SanitizeDelta(DeltaSeconds);
 	if (bStaggered)
 	{
-		if (!bStaggerPaused)
+		if (!bStaggerPaused && !bIndefinite)
 		{
 			StaggerRemaining -= Dt;
 			if (StaggerRemaining <= 0.0f)
@@ -69,6 +70,26 @@ void FPosture::Tick(float DeltaSeconds)
 	}
 }
 
+void FPosture::ForceStagger(bool bInIndefinite)
+{
+	if (!bStaggered)
+	{
+		++BreakCount;
+	}
+	Accumulated = NonNegative(Config.MaxPosture);
+	bStaggered = true;
+	bStaggerPaused = false;
+	bIndefinite = bInIndefinite;
+	StaggerRemaining = NonNegative(Config.StaggerDuration);
+}
+
+void FPosture::SetMaxPosture(float NewMax)
+{
+	const float Ratio = GetRatio();
+	Config.MaxPosture = NonNegative(NewMax);
+	Accumulated = bStaggered ? Config.MaxPosture : std::min(Ratio, 1.0f) * Config.MaxPosture;
+}
+
 void FPosture::EndStagger()
 {
 	EndStaggerWithRecovery(1.0f - Detail::Clamp01(Config.PostureAfterStagger));
@@ -78,6 +99,7 @@ void FPosture::EndStaggerWithRecovery(float RecoverFraction)
 {
 	bStaggered = false;
 	bStaggerPaused = false;
+	bIndefinite = false;
 	StaggerRemaining = 0.0f;
 	SinceLastDamage = 0.0f;
 	Accumulated = NonNegative(Config.MaxPosture) * (1.0f - Detail::Clamp01(RecoverFraction));

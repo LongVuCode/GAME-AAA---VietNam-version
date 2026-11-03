@@ -35,6 +35,25 @@ enum class EMaterialCategory : std::uint8_t
 	Other,
 };
 
+enum class EItemCategory : std::uint8_t
+{
+	Consumable,
+	Material,
+	BaoKhi, // crafted heirloom item
+};
+
+/** Item definition (design: items.json). Levels follow the data: a crafted item starts at BaseLevel. */
+struct FItemDef
+{
+	std::string Id;
+	EItemCategory Category = EItemCategory::Material;
+	ERarity Rarity = ERarity::Common;
+	std::string SourceKind; // e.g. "shed_after_pry", "gather", "crafted"
+	int BaseLevel = 0;
+	int MaxLevel = 0;
+	bool bUnique = false;
+};
+
 struct FMaterialDef
 {
 	std::string Id;
@@ -45,6 +64,15 @@ struct FMaterialAmount
 {
 	std::string MaterialId;
 	int Amount = 1;
+};
+
+/** Explicit upgrade recipe: Target goes from ToLevel - 1 to ToLevel, consuming Inputs. */
+struct FUpgradeRecipe
+{
+	std::string Id;
+	std::string TargetItemId;
+	int ToLevel = 1;
+	std::vector<FMaterialAmount> Inputs;
 };
 
 struct FRecipe
@@ -76,10 +104,15 @@ struct FCraftingDatabase
 {
 	std::vector<FMaterialDef> Materials;
 	std::vector<FRecipe> Recipes;
+	/** Formula upgrades (used when an item has no explicit upgrade recipe for the next level). */
 	FUpgradeConfig Upgrade;
+	std::vector<FItemDef> Items;
+	std::vector<FUpgradeRecipe> UpgradeRecipes;
 
 	const FMaterialDef* FindMaterial(const std::string& Id) const;
 	const FRecipe* FindRecipe(const std::string& Id) const;
+	const FItemDef* FindItem(const std::string& Id) const;
+	const FUpgradeRecipe* FindUpgradeRecipe(const std::string& ItemId, int ToLevel) const;
 };
 
 /** One crafted Bảo khí instance. */
@@ -104,13 +137,17 @@ private:
 	std::map<std::string, int> Counts;
 };
 
-/** Duplicate ids, unknown materials, non-positive amounts, shackle fragments used as input, etc. */
+/** Duplicate ids, unknown materials, non-positive amounts, shackle fragments used as input, Bảo khí
+ *  recipes without a boss part (SB-06), upgrade recipes outside the item's level range, etc. */
 ARPGCORE_API std::vector<FError> ValidateCraftingDatabase(const FCraftingDatabase& Db);
 
 ARPGCORE_API std::vector<FMaterialAmount> GetUpgradeCost(const FUpgradeConfig& Config, ERarity Rarity, int CurrentLevel);
 
 ARPGCORE_API TResult<FItemInstance> Craft(const FCraftingDatabase& Db, const std::string& RecipeId,
 	FInventory& Inventory, FRng& Rng, int Generation = 0);
+
+/** Cost of the next level: explicit recipe if the database has one, else the formula. */
+ARPGCORE_API std::vector<FMaterialAmount> GetNextUpgradeCost(const FCraftingDatabase& Db, const FItemInstance& Item);
 
 /** Upgrades by one level, spending materials. Fails without side effects. */
 ARPGCORE_API FStatus Upgrade(const FCraftingDatabase& Db, FItemInstance& Item, FInventory& Inventory);

@@ -12,7 +12,7 @@ public class ArpgCore : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		CppStandard = CppStandardVersion.Cpp20;
 
-		// ConfigLoader.cpp includes nlohmann/json and wraps parsing in try/catch so that no exception
+		// DesignDataLoader.cpp includes nlohmann/json and wraps parsing in try/catch so that no exception
 		// crosses the public API. Exceptions must therefore be enabled for this module only.
 		bEnableExceptions = true;
 

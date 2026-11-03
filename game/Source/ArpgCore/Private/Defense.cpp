@@ -47,7 +47,8 @@ void FDefenseController::Tick(float DeltaSeconds)
 		return;
 	}
 	Elapsed += Detail::SanitizeDelta(DeltaSeconds);
-	const float Duration = Action == EDefenseAction::Dodge ? NonNegative(Dodge.Duration) : NonNegative(Parry.Duration);
+	const float Duration = Action == EDefenseAction::Dodge ? NonNegative(Dodge.Duration) + NonNegative(Dodge.Recovery)
+	                                                       : NonNegative(Parry.Duration);
 	if (Elapsed >= Duration)
 	{
 		Action = EDefenseAction::None;
@@ -62,21 +63,13 @@ bool FDefenseController::IsInvulnerable() const
 
 EDefenseOutcome FDefenseController::ResolveIncoming(const FAttackData& Attack) const
 {
-	if (Action == EDefenseAction::Dodge)
+	if (Action == EDefenseAction::Dodge && !Attack.bUndodgeable && IsInvulnerable())
 	{
-		if (Attack.bUndodgeable || !IsInvulnerable())
-		{
-			return EDefenseOutcome::Hit;
-		}
 		const float PerfectEnd = NonNegative(Dodge.IFrameStart) + NonNegative(Dodge.PerfectWindow);
 		return Elapsed <= PerfectEnd ? EDefenseOutcome::PerfectDodge : EDefenseOutcome::Dodged;
 	}
-	if (Action == EDefenseAction::Parry)
+	if (Action == EDefenseAction::Parry && !Attack.bUnparryable)
 	{
-		if (Attack.bUnparryable)
-		{
-			return EDefenseOutcome::Hit;
-		}
 		if (Elapsed <= PerfectParryWindow)
 		{
 			return EDefenseOutcome::PerfectParry;
@@ -85,6 +78,10 @@ EDefenseOutcome FDefenseController::ResolveIncoming(const FAttackData& Attack) c
 		{
 			return EDefenseOutcome::Parried;
 		}
+	}
+	if (bGuarding && Action != EDefenseAction::Dodge && !Attack.bUnguardable)
+	{
+		return EDefenseOutcome::Guarded;
 	}
 	return EDefenseOutcome::Hit;
 }

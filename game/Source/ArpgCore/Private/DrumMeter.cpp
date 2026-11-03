@@ -34,9 +34,30 @@ void FDrumMeter::AddEvent(EDrumEvent Event)
 	case EDrumEvent::HitLanded:
 		Gain = Config.HitGain;
 		break;
+	case EDrumEvent::HeavyHit:
+		Gain = Config.HeavyHitGain;
+		break;
+	case EDrumEvent::Parry:
+		Gain = Config.ParryGain;
+		break;
+	case EDrumEvent::PostureBreak:
+		Gain = Config.PostureBreakGain;
+		break;
+	case EDrumEvent::PryBeat:
+		Gain = Config.PryBeatGain;
+		break;
 	}
 	Points = std::min(GetMaxPoints(), Points + NonNegative(Gain));
 	SinceCombat = 0.0f;
+}
+
+void FDrumMeter::OnHitTaken()
+{
+	SinceCombat = 0.0f;
+	const float Floor = Config.bHitTakenKeepsFullNotches
+		? static_cast<float>(GetFullNotches()) * NonNegative(Config.PointsPerNotch)
+		: 0.0f;
+	Points = std::max(Floor, Points - NonNegative(Config.HitTakenLoss));
 }
 
 void FDrumMeter::Tick(float DeltaSeconds)
@@ -66,9 +87,16 @@ int FDrumMeter::GetFullNotches() const
 	return std::clamp(Full, 0, std::max(Config.Notches, 0));
 }
 
+float FDrumMeter::GetSurgeCost() const
+{
+	const int Notches = std::max(Config.Notches, 0);
+	const int Cost = Config.SurgeCostNotches < 0 ? Notches : std::min(Config.SurgeCostNotches, Notches);
+	return static_cast<float>(Cost) * NonNegative(Config.PointsPerNotch);
+}
+
 bool FDrumMeter::CanSurge() const
 {
-	return GetMaxPoints() > 0.0f && Points >= GetMaxPoints();
+	return GetSurgeCost() > 0.0f && Points >= GetSurgeCost();
 }
 
 bool FDrumMeter::TrySurge()
@@ -77,7 +105,7 @@ bool FDrumMeter::TrySurge()
 	{
 		return false;
 	}
-	Points = 0.0f;
+	Points = std::max(0.0f, Points - GetSurgeCost());
 	SinceCombat = 0.0f;
 	return true;
 }
