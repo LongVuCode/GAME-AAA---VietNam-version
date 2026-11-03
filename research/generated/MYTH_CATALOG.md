@@ -10,26 +10,29 @@ Nguồn: `research/data/myths.json`.
   - Các bản địa phương ở Phú Thọ có tình tiết bổ sung.
 - **Canon của game:** Theo cốt lõi trong LNCQ (bọc trăm trứng, chia con lên núi xuống biển). Phần phả hệ Đế Minh chỉ đưa vào Codex, không dựng thành cảnh. Lý do: giữ nguyên cốt lõi được thờ phụng và tránh tranh luận về nguồn gốc.
 - **Lưu ý thể hiện:** Gắn với Tín ngưỡng thờ cúng Hùng Vương (UNESCO 2012). Lạc Long Quân và Âu Cơ chỉ xuất hiện trang nghiêm, không thể là đối tượng bị tấn công.
-- **Tiềm năng gameplay:** Khung mở đầu; thần lực Thủy (Rồng) và Sơn (Tiên).
+- **Tiềm năng gameplay:** Khung mở đầu và nền Codex. KHÔNG trao thần lực Rồng/Tiên cho người chơi. Lạc Long Quân chỉ hiện qua rồng, nước, dáng uy nghi, không thoại tự do; Âu Cơ chỉ ở Codex. Sức mạnh của người chơi là kỹ nghệ dòng họ và Bảo khí [SÁNG TẠO]; mọi Ân phù của thần chỉ có hiệu lực trong set-piece.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái), TT (Đại Việt sử ký toàn thư)
 
 ## M002 — Lạc Long Quân diệt Ngư Tinh [HUYỀN THOẠI]
-- **Vùng:** Ven biển Bắc Bộ · **Nhạy cảm:** low · **Dùng:** candidate · **Xác minh:** B
+- **Vùng:** Ven biển Bắc Bộ · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** B
 - **Tóm tắt:** Yêu cá khổng lồ ở biển Đông ăn thịt người. Lạc Long Quân dùng khối sắt nung đỏ diệt yêu và chém thân nó thành nhiều khúc, các khúc hóa thành địa danh.
 - **Dị bản:**
   - Tên các địa danh hình thành từ xác Ngư Tinh khác nhau giữa các bản — cần đối chiếu.
 - **Canon của game:** Bản LNCQ. Lý do: đây là văn bản sớm nhất có hệ thống.
-- **Tiềm năng gameplay:** Boss thủy quái nhiều pha; set-piece trên thuyền.
+- **Lưu ý thể hiện:** Lạc Long Quân là thần được thờ: khối sắt nung đỏ và đòn kết liễu chỉ thuộc về ông, thể hiện trong cutscene. LNCQ ghi 'Đông Hải'; địa danh hóa từ xác Ngư Tinh (Cẩu Đầu Sơn, Mạn Cầu, Bạch Long Vĩ) có thể không trùng địa danh hiện nay (một mũi đất Bạch Long Vĩ cũ ở Phòng Thành, Quảng Tây) – tránh bản đồ biển đảo hiện đại và tránh tên chương 'Biển Đông' trên trang Steam (rủi ro địa chính trị).
+- **Tiềm năng gameplay:** Boss thủy quái nhiều pha theo mô hình 'người chơi phá Thế, Lạc Long Quân kết liễu' (cần playtest câu hỏi 'có thấy bị cướp công không'); set-piece trên thuyền, không combat bơi. Người chơi không cầm khối sắt hay sức thủy tộc của Lạc Long Quân; chỉ nhận Bảo khí [SÁNG TẠO] rèn từ chiến lợi phẩm boss phụ [SÁNG TẠO] tự hạ.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái)
 
 ## M003 — Hồ Tinh (Cáo chín đuôi) và sự tích Hồ Tây / Đầm Xác Cáo [HUYỀN THOẠI]
-- **Vùng:** Hà Nội (Long Biên cổ, Hồ Tây) · **Nhạy cảm:** low · **Dùng:** candidate · **Xác minh:** B
+- **Vùng:** Hà Nội (Long Biên cổ, Hồ Tây) · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** B
 - **Tóm tắt:** Cáo chín đuôi sống trong hang đá, hóa người để bắt dân. Lạc Long Quân đem thủy tộc dâng nước phá hang diệt yêu; nơi đó thành đầm, gọi là Đầm Xác Cáo, về sau là Hồ Tây.
 - **Dị bản:**
   - Hồ Tây còn có truyền thuyết khác là Trâu Vàng (Kim Ngưu), xem M017.
+  - Truyền thuyết đền Quán Thánh: Huyền Thiên Trấn Vũ (không phải Lạc Long Quân) diệt hồ tinh chín đuôi ở rừng Thiết Lâm, làng Long Đỗ (theo trích đoạn tìm kiếm, chưa đối chiếu thần tích).
+  - Chi tiết dây/lưới ngũ sắc giăng cửa hang và tên hang/làng (Hồ Thôn) xuất hiện ở một số bản kể – chưa đối chiếu LNCQ.
 - **Canon của game:** Bản LNCQ: Lạc Long Quân là người diệt yêu. Nhân vật chính của game chỉ hỗ trợ, không giành công diệt yêu. Lý do: tôn trọng truyền thuyết gốc.
-- **Lưu ý thể hiện:** Phải tránh dựng 'cáo chín đuôi' theo hình mẫu Nhật/Hàn; thiết kế cần dựa trên mỹ thuật Đông Sơn.
-- **Tiềm năng gameplay:** Boss 3 pha cho vertical slice; khu bán mở rừng đầm Long Biên.
+- **Lưu ý thể hiện:** Phải tránh dựng 'cáo chín đuôi' theo hình mẫu Nhật/Hàn; thiết kế cần dựa trên mỹ thuật Đông Sơn. Lạc Long Quân là thần được thờ: không thoại tự do, đòn diệt yêu thuộc về ông. Dị bản Huyền Thiên Trấn Vũ chỉ ở Codex; không dựng di tích Hồ Tây có thật thành đấu trường (QT-09).
+- **Tiềm năng gameplay:** Vertical slice: khu bán mở rừng đầm Long Biên [SÁNG TẠO]. Boss Hồ Tinh 3 pha theo mô hình 'người chơi phá Thế, Lạc Long Quân dâng nước kết liễu'; chương có ít nhất một boss [SÁNG TẠO] người chơi tự thắng trọn. Người chơi không nhận sức thủy tộc của Lạc Long Quân; chỉ có Bảo khí [SÁNG TẠO] và Ân phù trong set-piece.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái)
 
 ## M004 — Mộc Tinh [HUYỀN THOẠI]
@@ -38,7 +41,7 @@ Nguồn: `research/data/myths.json`.
 - **Dị bản:**
   - Chi tiết về loài cây và cách diệt khác nhau giữa các bản — cần đối chiếu.
 - **Canon của game:** Chờ đối chiếu.
-- **Tiềm năng gameplay:** Boss rừng; cơ chế đốt hoặc chặt rễ.
+- **Tiềm năng gameplay:** Boss rừng; cơ chế đốt hoặc chặt rễ do người chơi phá Thế, việc diệt yêu giữ cho Lạc Long Quân theo LNCQ. Không trao thần khí.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái)
 
 ## M005 — Thánh Gióng (Phù Đổng Thiên Vương) [HUYỀN THOẠI]
@@ -50,8 +53,8 @@ Nguồn: `research/data/myths.json`.
   - Ao hồ hình thành từ vết chân ngựa; làng Cháy.
   - VDULT ghi thần hiệu khác.
 - **Canon của game:** Ngựa sắt, roi sắt gãy, nhổ tre đằng ngà; về trời ở Sóc Sơn. Lý do: đây là bản phổ biến nhất và gắn với Hội Gióng (UNESCO 2010).
-- **Lưu ý thể hiện:** Gióng là thần được thờ (Tứ bất tử). Gióng KHÔNG phải nhân vật điều khiển, không bị đánh bại và không bị nói đùa. 'Giặc Ân' trong game thể hiện thành đạo quân yêu ma theo nghĩa huyền thoại [SÁNG TẠO], không gắn với một dân tộc hiện nay.
-- **Tiềm năng gameplay:** Chương set-piece; bí mật 'Tre đằng ngà' (vũ khí tối thượng).
+- **Lưu ý thể hiện:** Gióng là thần được thờ (Tứ bất tử). Gióng KHÔNG phải nhân vật điều khiển, không thoại tự do, không bị đánh bại và không bị nói đùa. 'Giặc Ân' chỉ xuất hiện trong Codex (trích LNCQ, [HUYỀN THOẠI]); UI và thoại chỉ dùng 'giặc' hoặc tên [SÁNG TẠO] trung tính, tránh mô-típ nhà Thương và chữ Hán (QT-08, J-01). Combat chỉ ở làng [SÁNG TẠO], không mô phỏng nghi lễ Hội Gióng.
+- **Tiềm năng gameplay:** Chương set-piece. Ngựa sắt, roi sắt, nón sắt và tre đằng ngà là vật của thần được thờ: người chơi KHÔNG cầm, chỉ thấy trong cutscene/Codex (bí mật 'Tre đằng ngà' chỉ mở mục Codex hoặc cảnh). Ân phù của Gióng (nếu có) chỉ hiệu lực trong set-piece. Boss [SÁNG TẠO] ở tuyến phụ; đạo quân chính do Gióng phá trong cutscene. Người chơi nhận Bảo khí [SÁNG TẠO].
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái), VDULT (Việt điện u linh tập), UNESCO (Danh mục Di sản UNESCO (Hoàng thành Thăng Long 2010; Thành nhà Hồ 2011; Hội Gióng 2010; Tín ngưỡng thờ cúng Hùng Vương 2012; Thực hành Tín ngưỡng thờ Mẫu Tam phủ 2016))
 
 ## M006 — Sơn Tinh – Thủy Tinh [HUYỀN THOẠI]
@@ -62,7 +65,7 @@ Nguồn: `research/data/myths.json`.
   - Mối quan hệ của Tản Viên với các truyền thuyết khác ở Ba Vì.
 - **Canon của game:** Bản dân gian phổ biến (sính lễ chín ngà, chín cựa, chín hồng mao). Lý do: được biết rộng rãi; các dị bản đưa vào Codex.
 - **Lưu ý thể hiện:** Tản Viên Sơn Thánh là một trong Tứ bất tử. Thủy Tinh không phải 'ác quỷ' mà là thần nước bị từ chối, nên thể hiện như một thế lực tự nhiên, không bêu xấu.
-- **Tiềm năng gameplay:** Set-piece lũ dâng; cơ chế địa hình thay đổi; Thủy Tinh là thử thách chứ không phải boss để giết.
+- **Tiềm năng gameplay:** Set-piece lũ dâng: mục tiêu là cứu người, dẫn dân lên cao, dựng rào tre, đánh trống gõ cối trợ lực (chi tiết theo bản kể, chưa đối chiếu); nguy hiểm đến từ môi trường. Kẻ thù của chương KHÔNG là sinh vật nước, NPC không gọi nước là 'yêu/giặc'. Sơn Tinh, Thủy Tinh không phải boss, không bị đánh; dời núi chỉ trong cutscene. Không trao thần lực của Tản Viên cho người chơi.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái), VDULT (Việt điện u linh tập)
 
 ## M007 — Chử Đồng Tử – Tiên Dung (Nhất Dạ Trạch) [HUYỀN THOẠI]
@@ -72,11 +75,11 @@ Nguồn: `research/data/myths.json`.
   - Thầy truyền đạo cho Chử Đồng Tử khác nhau giữa các bản.
 - **Canon của game:** Bản LNCQ.
 - **Lưu ý thể hiện:** Tứ bất tử.
-- **Tiềm năng gameplay:** Bí mật 'Gậy và nón thần' (vật phẩm hỗ trợ); liên kết với chương Dạ Trạch.
+- **Tiềm năng gameplay:** Ngoài Game 1 (cổng Dạ Trạch). Gậy và nón thần là thần khí của thần được thờ: người chơi KHÔNG cầm, chỉ xuất hiện trong cutscene/Codex. Người chơi nhận Bảo khí [SÁNG TẠO].
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái), TT (Đại Việt sử ký toàn thư)
 
 ## M008 — An Dương Vương – Rùa Vàng (Kim Quy) – Nỏ thần – Mị Châu, Trọng Thủy [HUYỀN THOẠI]
-- **Vùng:** Cổ Loa (Đông Anh, Hà Nội); Mộ Dạ (Nghệ An) · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** B
+- **Vùng:** Cổ Loa (Đông Anh, Hà Nội); Mộ Dạ (Nghệ An) · **Nhạy cảm:** high · **Dùng:** candidate · **Xác minh:** B
 - **Tóm tắt:** Thành Cổ Loa xây mãi không xong cho tới khi có Rùa Vàng giúp trừ yêu. Rùa Vàng tặng vuốt để làm lẫy nỏ thần. Trọng Thủy lấy Mị Châu rồi tráo lẫy nỏ; Âu Lạc mất nước, An Dương Vương chém Mị Châu rồi theo Rùa Vàng xuống biển.
 - **Dị bản:**
   - Người chế nỏ: một số nguồn nêu Cao Lỗ (Cao Thông) — cần đối chiếu nguồn.
@@ -84,7 +87,7 @@ Nguồn: `research/data/myths.json`.
   - Tên gọi nỏ 'Linh Quang Kim Quy Thần Cơ' — cần đối chiếu.
 - **Canon của game:** Theo LNCQ và TT; nhắc Cao Lỗ như người thợ chế nỏ theo dị bản [ghi rõ trong Codex]. Lý do: TT chép lại truyền thuyết này.
 - **Lưu ý thể hiện:** Kể như bi kịch về niềm tin, không biếm họa Trọng Thủy hay nhà Triệu thành ác nhân sắc tộc.
-- **Tiềm năng gameplay:** Chương Cổ Loa; vũ khí tối thượng 'Nỏ thần'; giải đố thành xoắn ốc.
+- **Tiềm năng gameplay:** Ngoài Game 1. Nỏ thần là thần khí gắn An Dương Vương và Rùa Vàng: người chơi KHÔNG cầm; nỏ chỉ dùng trong set-piece/cutscene, Ân phù chỉ hiệu lực trong set-piece. Giải đố thành xoắn ốc. Cảnh chém Mị Châu chỉ gián tiếp, ngoài khung hình, cần cố vấn duyệt.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái), TT (Đại Việt sử ký toàn thư)
 
 ## M009 — Bánh chưng bánh giầy (Lang Liêu) [HUYỀN THOẠI]
@@ -122,11 +125,11 @@ Nguồn: `research/data/myths.json`.
   - Chi tiết thần báo mộng khác nhau giữa các bản.
 - **Canon của game:** Bản LNCQ; lệ hội thề lấy theo TT. Đây là nền tảng cho khung truyện [SÁNG TẠO] 'Lời thề Đồng Cổ'.
 - **Lưu ý thể hiện:** Khung truyện của game được XÂY TRÊN thần Đồng Cổ. Mọi tình tiết mở rộng phải gắn nhãn SÁNG TẠO và không mạo danh lời thần.
-- **Tiềm năng gameplay:** Khung truyện; cơ chế 'Nhịp trống'.
+- **Tiềm năng gameplay:** Khung truyện; cơ chế 'Nhịp trống' [SÁNG TẠO] là kỹ nghệ của người chơi, KHÔNG phải sức mạnh hay lời của thần Đồng Cổ. Không mạo danh thần.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái), TT (Đại Việt sử ký toàn thư)
 
 ## M014 — Rùa Vàng đòi gươm (sự tích Hồ Hoàn Kiếm) [HUYỀN THOẠI]
-- **Vùng:** Thanh Hóa (Lam Sơn), Hà Nội · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** C
+- **Vùng:** Thanh Hóa (Lam Sơn), Hà Nội · **Nhạy cảm:** high · **Dùng:** candidate · **Xác minh:** C
 - **Tóm tắt:** Lê Lợi được gươm thần để đánh giặc Minh. Sau khi thắng, vua dạo thuyền trên hồ Tả Vọng thì Rùa Vàng nổi lên đòi lại gươm, hồ được gọi là Hoàn Kiếm.
 - **Dị bản:**
   - Dị bản 1: Lê Thận đánh cá vớt được lưỡi gươm, còn Lê Lợi thấy chuôi gươm trên cây đa; lưỡi và chuôi khớp nhau.
@@ -134,14 +137,15 @@ Nguồn: `research/data/myths.json`.
   - Tên gươm 'Thuận Thiên' theo bản dân gian phổ biến.
 - **Canon của game:** Dị bản 1 (lưỡi và chuôi tìm thấy riêng rồi khớp nhau), vì bản này có sẵn cơ chế 'ghép mảnh' cho chuỗi bí mật. Cần xác định văn bản ghi chép sớm nhất trước khi nâng lên mức A.
 - **Lưu ý thể hiện:** Toàn thư (theo hiểu biết hiện có) không chép truyện trả gươm, nên phải gắn nhãn HUYỀN THOẠI rõ ràng.
-- **Tiềm năng gameplay:** Vũ khí tối thượng 'Gươm Thuận Thiên' — chuỗi bí mật ghép lưỡi và chuôi.
+- **Tiềm năng gameplay:** Ngoài Game 1. Chuỗi bí mật ghép lưỡi và chuôi chỉ mở set-piece/mục Codex; gươm thuộc về Lê Lợi, người chơi KHÔNG cầm. Người chơi nhận Bảo khí [SÁNG TẠO].
 - **Nguồn:** ORAL (Truyền khẩu dân gian (chưa xác định văn bản sớm nhất)), KTTC (Kho tàng truyện cổ tích Việt Nam)
 
 ## M015 — Triệu Quang Phục nhận móng rồng [HUYỀN THOẠI]
-- **Vùng:** Đầm Dạ Trạch (Hưng Yên) · **Nhạy cảm:** low · **Dùng:** candidate · **Xác minh:** B
+- **Vùng:** Đầm Dạ Trạch (Hưng Yên) · **Nhạy cảm:** high · **Dùng:** candidate · **Xác minh:** B
 - **Tóm tắt:** Chử Đồng Tử cưỡi rồng xuống trao móng rồng cho Triệu Quang Phục cài lên mũ đâu mâu để đánh giặc.
 - **Canon của game:** Bản TT.
-- **Tiềm năng gameplay:** Vật phẩm huyền thoại 'Móng rồng'.
+- **Lưu ý thể hiện:** Chử Đồng Tử là một trong Tứ bất tử; việc thờ Triệu Quang Phục cần xác minh trước cổng Dạ Trạch. Quy mô trong game = quy mô truyền thuyết (QT-03).
+- **Tiềm năng gameplay:** Ngoài Game 1 (cổng Dạ Trạch). Móng rồng là vật Chử Đồng Tử trao cho Triệu Quang Phục, chỉ xuất hiện trên mũ đâu mâu của ông trong set-piece/cutscene; người chơi KHÔNG cầm. Người chơi nhận Bảo khí [SÁNG TẠO].
 - **Nguồn:** TT (Đại Việt sử ký toàn thư), LNCQ (Lĩnh Nam chích quái)
 
 ## M016 — Yết Kiêu, Dã Tượng — gia tướng của Trần Hưng Đạo [SỬ LIỆU-TRANH LUẬN]
@@ -151,7 +155,7 @@ Nguồn: `research/data/myths.json`.
   - Các tình tiết kỳ tích là truyền thuyết địa phương.
 - **Canon của game:** Tách bạch: tên và vai trò lấy theo TT [SỬ LIỆU], kỳ tích gắn nhãn [HUYỀN THOẠI].
 - **Lưu ý thể hiện:** Yết Kiêu được thờ ở địa phương.
-- **Tiềm năng gameplay:** Đồng đội NPC trong chương Trần; set-piece dưới nước.
+- **Tiềm năng gameplay:** Đồng đội NPC trong chương Trần (không điều khiển được, không bị người chơi đánh); set-piece dưới nước.
 - **Nguồn:** TT (Đại Việt sử ký toàn thư), ORAL (Truyền khẩu dân gian (chưa xác định văn bản sớm nhất))
 
 ## M017 — Trâu Vàng Hồ Tây; Khổng Lồ (thiền sư Nguyễn Minh Không) đúc chuông [HUYỀN THOẠI]
@@ -171,7 +175,7 @@ Nguồn: `research/data/myths.json`.
   - Kết cục của Lý Thông: bị sét đánh hóa bọ hung, hoặc được tha.
   - Cảnh 'mười tám nước chư hầu' cần thể hiện trung tính.
 - **Canon của game:** Bản Nguyễn Đổng Chi.
-- **Tiềm năng gameplay:** Chuỗi phụ; boss Chằn Tinh và Đại Bàng; vũ khí 'Đàn thần' (hỗ trợ, gây choáng).
+- **Tiềm năng gameplay:** Chuỗi phụ; boss Chằn Tinh và Đại Bàng; 'Đàn thần' chỉ dùng trong set-piece (Ân phù), người chơi không giữ trong túi đồ cho tới khi xác minh việc thờ.
 - **Nguồn:** KTTC (Kho tàng truyện cổ tích Việt Nam)
 
 ## M019 — Cây tre trăm đốt [CỔ TÍCH]
@@ -240,10 +244,15 @@ Nguồn: `research/data/myths.json`.
 - **Nguồn:** ORAL (Truyền khẩu dân gian (chưa xác định văn bản sớm nhất))
 
 ## M028 — Thuồng luồng và tục xăm mình [HUYỀN THOẠI]
-- **Vùng:** Sông nước Bắc Bộ · **Nhạy cảm:** low · **Dùng:** candidate · **Xác minh:** B
-- **Tóm tắt:** Theo LNCQ, Lạc Long Quân dạy dân vẽ mình hình thủy quái để không bị thuồng luồng hại.
+- **Vùng:** Sông nước Bắc Bộ · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** B
+- **Tóm tắt:** Theo LNCQ (TT chép lại, chưa đối chiếu): dân xuống nước đánh cá thường bị giao long/thuồng luồng hại, tâu lên vua; vua dạy lấy mực vẽ mình hình thủy quái để thủy tộc tưởng là đồng loại mà không hại nữa. Người ra lệnh là vua Hùng theo nhiều bản kể; một số bản kể gán cho Lạc Long Quân – cần đối chiếu.
+- **Dị bản:**
+  - Người dạy tục: vua Hùng (TT, Trần Trọng Kim chép 'Hùng Vương thứ nhất') hay Lạc Long Quân (một số bản kể) – chưa đối chiếu.
+  - Hình vẽ: 'hình thủy quái' / 'hình Long Quân dạng thủy quái' / 'hình rồng ở ngực, bụng, chân'; chất liệu: mực hoặc chàm – khác nhau giữa các bản kể.
+  - Tục xăm rồng ở đùi của vua Trần, bỏ từ Trần Anh Tông (TT, chưa đối chiếu) – chỉ dùng cho Codex.
 - **Canon của game:** Bản LNCQ.
-- **Tiềm năng gameplay:** Quái thủy; trang trí hình xăm cho trang phục thời Văn Lang.
+- **Lưu ý thể hiện:** Hình xăm là tục của dân thường, không phải thần khí. Thuồng luồng có thể gắn với tín ngưỡng thủy thần ở một số làng (chưa xác minh): thiết kế thuồng luồng làm kẻ thù không gắn với đền miếu có thật. Không dùng thuồng luồng làm kẻ thù trong chương Ba Vì.
+- **Tiềm năng gameplay:** Nhánh kỹ năng hình xăm [SÁNG TẠO] dựa trên tục vẽ mình của dân thường (kỹ nghệ dòng họ, không phải thần khí); thuồng luồng là quái thủy hợp lệ ở các chương trừ Ba Vì; phản diện xuyên suốt 'Thuồng luồng chúa' [SÁNG TẠO].
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái)
 
 ## M029 — Đức Thánh Trần (Trần Hưng Đạo được thờ) [HUYỀN THOẠI]
