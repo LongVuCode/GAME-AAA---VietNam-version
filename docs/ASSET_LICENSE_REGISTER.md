@@ -15,6 +15,7 @@
 ## Bảng đăng ký
 | ID | Asset | Loại | Nguồn / URL | License | Ngày | Dùng ở đâu | AI tạo? | Tag | Ghi chú |
 |---|---|---|---|---|---|---|---|---|---|
-| — | (chưa có asset nào ở GĐ0) | | | | | | | | |
+| L-001 | doctest 2.4.11 (`third_party/doctest/`) | Thư viện test C++ | https://github.com/doctest/doctest (tag v2.4.11), SHA-256 `44faa038…` | MIT | 2026-11-03 | Test ArpgCore (không ship trong game) | Không | | Kèm `LICENSE.txt` |
+| L-002 | nlohmann/json 3.11.3 (`third_party/nlohmann/`) | Thư viện JSON C++ | https://github.com/nlohmann/json (tag v3.11.3), SHA-256 `9bea4c80…` | MIT | 2026-11-03 | ArpgCore đọc dữ liệu thiết kế | Không | | Kèm `LICENSE.MIT`; nếu ship thì ghi credit |
 
 > Cột "AI tạo?" phục vụ việc khai báo nội dung AI với Steam (xem `COMMERCIAL_RELEASE.md`).
