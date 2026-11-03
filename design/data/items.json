@@ -1,84 +1,264 @@
 {
   "schema_version": 1,
-  "_note": "Vật phẩm Demo 0.1. Mảnh khoen KHÔNG phải vật phẩm (V9): không làm nguyên liệu, không cho sức mạnh, không có UI đếm. Bảo khí chỉ làm từ phần thú tự rụng sau khi được cạy (SB-06). Không có Thần khí trong demo. Mọi con số là giả định.",
+  "_note": "Vật phẩm Demo 0.1. Mảnh khoen KHÔNG phải vật phẩm (V9): không làm nguyên liệu, không cho sức mạnh, không có UI đếm. Bảo khí chỉ làm từ phần thú tự rụng sau khi được cạy (SB-06), chế tác ở lò làng bằng cách đúc đồng rồi ghép (không rèn, không sắt). Không có Thần khí trong demo. Mô tả của vật kế thừa qua Thạp không nhắc khoen (luật đời Hùng 6, SB-02). Mọi con số là giả định.",
   "rarities": [
-    {"id": "common", "name": {"vi": "Thường", "en": "Common"}, "order": 1},
-    {"id": "fine", "name": {"vi": "Tốt", "en": "Fine"}, "order": 2},
-    {"id": "precious", "name": {"vi": "Quý", "en": "Precious"}, "order": 3},
-    {"id": "rare", "name": {"vi": "Hiếm", "en": "Rare"}, "order": 4},
-    {"id": "legendary", "name": {"vi": "Huyền thoại", "en": "Legendary"}, "order": 5},
-    {"id": "divine", "name": {"vi": "Thần khí", "en": "Divine"}, "order": 6, "allowed_in_demo": false}
+    {
+      "id": "common",
+      "name": {
+        "vi": "Thường",
+        "en": "Common"
+      },
+      "order": 1
+    },
+    {
+      "id": "fine",
+      "name": {
+        "vi": "Tốt",
+        "en": "Fine"
+      },
+      "order": 2
+    },
+    {
+      "id": "precious",
+      "name": {
+        "vi": "Quý",
+        "en": "Precious"
+      },
+      "order": 3
+    },
+    {
+      "id": "rare",
+      "name": {
+        "vi": "Hiếm",
+        "en": "Rare"
+      },
+      "order": 4
+    },
+    {
+      "id": "legendary",
+      "name": {
+        "vi": "Huyền thoại",
+        "en": "Legendary"
+      },
+      "order": 5
+    },
+    {
+      "id": "divine",
+      "name": {
+        "vi": "Thần khí",
+        "en": "Divine"
+      },
+      "order": 6,
+      "allowed_in_demo": false
+    }
   ],
   "items": [
     {
       "id": "it_nam_com_la",
       "category": "consumable",
-      "name": {"vi": "Nắm cơm lá", "en": "Leaf-wrapped Rice"},
-      "description": {"vi": "Nắm cơm gói lá mang theo đò. Hồi một phần sức. Được nạp lại ở bếp lửa nghỉ.", "en": "Rice wrapped in a leaf, carried on the ferry. Restores some health. Refilled at resting fires."},
+      "name": {
+        "vi": "Nắm cơm lá",
+        "en": "Leaf-wrapped Rice"
+      },
+      "description": {
+        "vi": "Nắm cơm gói lá mang theo đò. Hồi một phần sức. Được nạp lại ở bếp lửa nghỉ.",
+        "en": "Rice wrapped in a leaf, carried on the ferry. Restores some health. Refilled at resting fires."
+      },
       "label": "SÁNG TẠO",
       "rarity": "common",
-      "source": {"kind": "starting"},
-      "effect": {"type": "heal_ratio", "value": 0.4}
+      "source": {
+        "kind": "starting"
+      },
+      "effect": {
+        "type": "heal_ratio",
+        "value": 0.4
+      }
     },
     {
       "id": "mat_day_may",
       "category": "material",
-      "name": {"vi": "Dây mây", "en": "Rattan Cord"},
-      "description": {"vi": "Sợi mây tước ở bãi lau, dùng buộc chuôi.", "en": "Rattan stripped in the reed beds, used to bind hilts."},
+      "name": {
+        "vi": "Dây mây",
+        "en": "Rattan Cord"
+      },
+      "description": {
+        "vi": "Sợi mây tước ở bãi lau, dùng buộc chuôi.",
+        "en": "Rattan stripped in the reed beds, used to bind hilts."
+      },
       "label": "SÁNG TẠO",
       "rarity": "common",
-      "source": {"kind": "gather", "zones": ["z_bai_lau", "z_dam_nong"], "nodes": 6}
+      "source": {
+        "kind": "gather",
+        "zones": [
+          "z_bai_lau",
+          "z_dam_nong"
+        ],
+        "nodes": 6
+      }
     },
     {
       "id": "mat_dong_lo_lang",
       "category": "material",
-      "name": {"vi": "Đồng lò làng", "en": "Village Bronze"},
-      "description": {"vi": "Một thỏi đồng của thợ đúc làng bến Lau, trao cho việc tử tế.", "en": "A bronze ingot from the bến Lau village caster, given for honest work."},
+      "name": {
+        "vi": "Đồng lò làng",
+        "en": "Village Bronze"
+      },
+      "description": {
+        "vi": "Một thỏi đồng của thợ đúc làng bến Lau, trao cho việc tử tế.",
+        "en": "A bronze ingot from the bến Lau village caster, given for honest work."
+      },
       "label": "SÁNG TẠO",
       "rarity": "fine",
-      "source": {"kind": "village_gift", "npc": "npc_tho_duc_lang"}
+      "source": {
+        "kind": "village_gift",
+        "npc": "npc_tho_duc_lang"
+      }
     },
     {
       "id": "mat_nanh_rung",
       "category": "material",
-      "name": {"vi": "Nanh rụng", "en": "Shed Tusk"},
-      "description": {"vi": "Chiếc nanh Lợn Lòi Đầm tự rụng sau khi được cạy mảnh khoen. Không ai bẻ nó.", "en": "A tusk the Marsh Boar shed on its own after the collar shard was pried free. No one broke it off."},
+      "name": {
+        "vi": "Nanh rụng",
+        "en": "Shed Tusk"
+      },
+      "description": {
+        "vi": "Chiếc nanh Lợn Lòi Đầm tự rụng khi con thú được giải thoát. Không ai bẻ nó.",
+        "en": "A tusk the Marsh Boar shed on its own once it was set free. No one broke it off."
+      },
       "label": "SÁNG TẠO",
       "rarity": "rare",
       "unique": true,
-      "source": {"kind": "shed_after_pry", "enemy": "boss_lon_loi_dam"}
+      "source": {
+        "kind": "shed_after_pry",
+        "enemy": "boss_lon_loi_dam"
+      }
+    },
+    {
+      "id": "mat_sap_ong_cu",
+      "category": "material",
+      "name": {
+        "vi": "Sáp ong cũ",
+        "en": "Old Beeswax"
+      },
+      "description": {
+        "vi": "Một nắm sáp ong khô giấu trong hốc lò bỏ hoang. Thợ đúc làng dùng để miết dây buộc chuôi cho bền.",
+        "en": "A lump of dry beeswax hidden in a hollow of the abandoned kiln. The village caster uses it to seal hilt bindings."
+      },
+      "label": "SÁNG TẠO",
+      "rarity": "precious",
+      "unique": true,
+      "source": {
+        "kind": "secret_reward",
+        "secret_chain": "sec_lo_bo_hoang"
+      }
     },
     {
       "id": "bk_nanh_dam",
       "category": "bao_khi",
-      "name": {"vi": "Nanh Đầm", "en": "Marsh Tusk"},
-      "description": {"vi": "Nanh rụng của Lợn Lòi Đầm, chuôi đồng lò làng, buộc mây. Mang theo người. Con thú đã vào lau, không ngoảnh lại.", "en": "The Marsh Boar's shed tusk, set in village bronze and bound with rattan. Carried on the body. The beast went into the reeds without looking back."},
+      "name": {
+        "vi": "Nanh Đầm",
+        "en": "Marsh Tusk"
+      },
+      "description": {
+        "vi": "Nanh rụng của Lợn Lòi Đầm, chuôi đồng lò làng, buộc mây. Con thú đã vào lau, không ngoảnh lại.",
+        "en": "The Marsh Boar's shed tusk, set in village bronze and bound with rattan. The beast went into the reeds without looking back."
+      },
       "label": "SÁNG TẠO",
       "rarity": "rare",
       "era": "era_legendary_hong_bang",
       "slot": "bao_khi",
       "unique": true,
       "inheritable_via": "thap_nha",
-      "source": {"kind": "crafted", "recipe": "rcp_nanh_dam"},
-      "effect": {"type": "the_damage_mult", "applies_to": "heavy_and_branch", "value": 0.15},
-      "effect_text": {"vi": "Đòn nặng và đòn rẽ nhánh gây thêm 15% sát thương Thế.", "en": "Heavy and branch attacks deal 15% more Stance damage."},
-      "codex_ref": "cx_lon_loi_dam"
+      "source": {
+        "kind": "crafted",
+        "recipe": "rcp_nanh_dam"
+      },
+      "effect": {
+        "type": "the_damage_mult",
+        "applies_to": "heavy_and_branch",
+        "value": 0.15
+      },
+      "effect_text": {
+        "vi": "Đòn nặng và đòn rẽ nhánh gây thêm 15% sát thương Thế (20% khi đã nâng).",
+        "en": "Heavy and branch attacks deal 15% more Stance damage (20% when upgraded)."
+      },
+      "codex_ref": "cx_lon_loi_dam",
+      "upgrade_levels": [
+        {
+          "level": 1,
+          "effect_value": 0.15
+        },
+        {
+          "level": 2,
+          "effect_value": 0.2,
+          "recipe": "rcp_nanh_dam_up"
+        }
+      ]
     }
   ],
   "recipes": [
     {
       "id": "rcp_nanh_dam",
       "station": "st_lo_lang",
-      "output": {"item": "bk_nanh_dam", "count": 1},
+      "output": {
+        "item": "bk_nanh_dam",
+        "count": 1
+      },
       "inputs": [
-        {"item": "mat_nanh_rung", "count": 1},
-        {"item": "mat_dong_lo_lang", "count": 1},
-        {"item": "mat_day_may", "count": 2}
+        {
+          "item": "mat_nanh_rung",
+          "count": 1
+        },
+        {
+          "item": "mat_dong_lo_lang",
+          "count": 1
+        },
+        {
+          "item": "mat_day_may",
+          "count": 2
+        }
       ],
-      "craft_time_s": 4.0
+      "craft_time_s": 4.0,
+      "type": "craft"
+    },
+    {
+      "id": "rcp_nanh_dam_up",
+      "type": "upgrade",
+      "station": "st_lo_lang",
+      "target": "bk_nanh_dam",
+      "to_level": 2,
+      "inputs": [
+        {
+          "item": "bk_nanh_dam",
+          "count": 1
+        },
+        {
+          "item": "mat_sap_ong_cu",
+          "count": 1
+        },
+        {
+          "item": "mat_day_may",
+          "count": 1
+        }
+      ],
+      "output": {
+        "item": "bk_nanh_dam",
+        "count": 1
+      },
+      "craft_time_s": 3.0
     }
   ],
   "stations": [
-    {"id": "st_lo_lang", "name": {"vi": "Lò đúc làng", "en": "Village Furnace"}, "label": "SÁNG TẠO", "level": "lvl_hub_ben_lau", "npc": "npc_tho_duc_lang"}
+    {
+      "id": "st_lo_lang",
+      "name": {
+        "vi": "Lò đúc làng",
+        "en": "Village Furnace"
+      },
+      "label": "SÁNG TẠO",
+      "level": "lvl_hub_ben_lau",
+      "npc": "npc_tho_duc_lang",
+      "era_note": "Lò ở hub; chế tác Nanh Đầm diễn ra trong đời Cói, trước bàn giao."
+    }
   ]
 }

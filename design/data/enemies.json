@@ -1,101 +1,292 @@
 {
   "schema_version": 1,
-  "_note": "Kẻ địch Demo 0.1 (ch_longbien). Không có người, không cáo, không giao long/thuồng luồng, không thân rắn hay rùa (D-017, D-018, R3-11, R2-04). Mọi con số là giả định, chờ playtest.",
+  "_note": "Kẻ địch Demo 0.1 (ch_longbien), theo Story Bible v1.1 §7: Rái Đầm, Lợn Rừng Non, Bóng Mê; boss Lợn Lòi Đầm. Không có người (kể cả người bị mê), không cáo, không bò sát, không tên giao long/thuồng luồng (D-017, D-018, SB-01, SB-05). Thú hết sức thì bỏ chạy. Mọi con số là giả định, chờ playtest.",
   "enemies": [
     {
-      "id": "en_cua_cang_bun",
-      "name": {"vi": "Cua Càng Bùn", "en": "Mudclaw Crab"},
-      "description": {"vi": "Cua đầm to bằng cái nong, mai dày phía trước. Đánh từ bên hông hoặc chờ nó giơ càng rồi Đỡ nhịp.", "en": "A marsh crab as wide as a winnowing tray, with a thick front shell. Strike its flank, or parry when it raises its claws."},
+      "id": "en_rai_dam",
+      "name": {
+        "vi": "Rái Đầm",
+        "en": "Marsh Otter"
+      },
+      "description": {
+        "vi": "Rái cá to, đi từng cặp, lao ra từ mép nước rồi rút về. Hết sức thì chạy mất xuống đầm.",
+        "en": "Large otters that hunt in pairs, darting out from the water's edge and back. When spent, they flee into the marsh."
+      },
       "label": "SÁNG TẠO",
       "type": "beast",
-      "species_family": "crab",
+      "species_family": "otter",
+      "skeleton_family": "quadruped_small",
       "rank": "normal",
       "chapter": "ch_longbien",
-      "zones": ["z_ben_say", "z_dam_nong"],
-      "hp": 220,
-      "the_max": 80,
-      "the_regen_per_s": 12,
-      "the_regen_delay_s": 1.5,
-      "stagger_duration_s": 2.5,
-      "interrupt_threshold": 10,
-      "front_damage_mult": 0.6,
-      "respawns_at_checkpoint": true,
-      "attacks": [
-        {"id": "cua_kep", "name": {"vi": "Kẹp càng", "en": "Claw Pinch"}, "damage": 18, "player_the_damage": 15, "windup_s": 0.55, "active_s": 0.12, "recovery_s": 0.6, "parryable": true, "guardable": true, "delayed": false, "range_m": 1.6, "cooldown_s": 1.5, "dodge_hint": "back",
-         "telegraph": {"visual": "giơ càng phải lên cao", "audio": "tiếng lách cách vỏ", "color_cue": "none"}},
-        {"id": "cua_kep_doi", "name": {"vi": "Kẹp đôi", "en": "Double Pinch"}, "damage": 14, "player_the_damage": 12, "hits": 2, "windup_s": 0.6, "active_s": 0.25, "recovery_s": 0.7, "parryable": true, "guardable": true, "delayed": false, "range_m": 1.6, "cooldown_s": 3.0, "dodge_hint": "back",
-         "telegraph": {"visual": "dang cả hai càng", "audio": "lách cách hai lần", "color_cue": "none"}},
-        {"id": "cua_ui_ngang", "name": {"vi": "Ủi ngang", "en": "Sidelong Shove"}, "damage": 22, "player_the_damage": 30, "windup_s": 0.8, "active_s": 0.3, "recovery_s": 0.9, "parryable": false, "guardable": false, "delayed": false, "range_m": 3.0, "cooldown_s": 6.0, "dodge_hint": "side",
-         "telegraph": {"visual": "hạ thấp mai, chân cào bùn", "audio": "tiếng bùn sục", "color_cue": "red_bronze"}}
+      "zones": [
+        "z_ben_say",
+        "z_dam_nong"
       ],
-      "drops": []
-    },
-    {
-      "id": "en_bo_ngua_lau",
-      "name": {"vi": "Bọ Ngựa Lau", "en": "Reed Mantis"},
-      "description": {"vi": "Bọ ngựa cao ngang vai người, nấp trong bãi lau. Nhanh, máu mỏng; né đúng lúc để lấy Nhịp.", "en": "A shoulder-high mantis that hides in the reeds. Fast and frail; time your dodges to build Rhythm."},
-      "label": "SÁNG TẠO",
-      "type": "insect",
-      "species_family": "mantis",
-      "rank": "normal",
-      "chapter": "ch_longbien",
-      "zones": ["z_bai_lau"],
-      "hp": 160,
+      "spawn_group_size": 2,
+      "hp": 150,
       "the_max": 60,
       "the_regen_per_s": 15,
       "the_regen_delay_s": 1.2,
       "stagger_duration_s": 2.0,
-      "interrupt_threshold": 6,
+      "interrupt_threshold": 8,
       "front_damage_mult": 1.0,
       "respawns_at_checkpoint": true,
+      "defeat_behavior": "flee",
       "attacks": [
-        {"id": "bn_chem_doi", "name": {"vi": "Chém đôi", "en": "Twin Scythe"}, "damage": 12, "player_the_damage": 10, "hits": 2, "windup_s": 0.4, "active_s": 0.2, "recovery_s": 0.45, "parryable": true, "guardable": true, "delayed": false, "range_m": 1.8, "cooldown_s": 1.8, "dodge_hint": "back",
-         "telegraph": {"visual": "dựng hai chân trước", "audio": "tiếng cánh rít ngắn", "color_cue": "none"}},
-        {"id": "bn_vo_phuc", "name": {"vi": "Vồ phục", "en": "Ambush Grab"}, "damage": 26, "player_the_damage": 0, "windup_s": 0.7, "active_s": 0.15, "recovery_s": 1.0, "parryable": false, "guardable": false, "delayed": false, "range_m": 3.5, "cooldown_s": 8.0, "dodge_hint": "side",
-         "telegraph": {"visual": "lau rẽ thành vệt, bọ nhô đầu", "audio": "tiếng lau xào xạc gấp", "color_cue": "red_bronze"}},
-        {"id": "bn_rinh", "name": {"vi": "Rình chém", "en": "Lurking Slash"}, "damage": 16, "player_the_damage": 14, "windup_s": 0.5, "hold_s": 0.35, "active_s": 0.1, "recovery_s": 0.5, "parryable": true, "guardable": true, "delayed": true, "range_m": 2.0, "cooldown_s": 4.0, "dodge_hint": "back",
-         "telegraph": {"visual": "đung đưa thân, dừng khựng rồi chém", "audio": "tiếng rít dừng đột ngột", "color_cue": "none"}}
+        {
+          "id": "rai_cap",
+          "name": {
+            "vi": "Cắp",
+            "en": "Snap"
+          },
+          "damage": 14,
+          "player_the_damage": 12,
+          "windup_s": 0.4,
+          "active_s": 0.1,
+          "recovery_s": 0.45,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 1.4,
+          "cooldown_s": 1.5,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "rụt cổ, nhe răng",
+            "audio": "tiếng chí chí ngắn",
+            "color_cue": "none"
+          }
+        },
+        {
+          "id": "rai_lao",
+          "name": {
+            "vi": "Lao bờ",
+            "en": "Bank Dart"
+          },
+          "damage": 20,
+          "player_the_damage": 20,
+          "windup_s": 0.6,
+          "active_s": 0.3,
+          "recovery_s": 0.8,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 5.0,
+          "cooldown_s": 4.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "nằm rạp, đuôi quẫy nước",
+            "audio": "tiếng nước tóe",
+            "color_cue": "none"
+          }
+        },
+        {
+          "id": "rai_cuon",
+          "name": {
+            "vi": "Cuộn đôi",
+            "en": "Tandem Tumble"
+          },
+          "damage": 24,
+          "player_the_damage": 30,
+          "windup_s": 0.8,
+          "active_s": 0.5,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 4.0,
+          "cooldown_s": 9.0,
+          "dodge_hint": "side",
+          "requires_pair": true,
+          "telegraph": {
+            "visual": "hai con nhìn nhau rồi chụm đầu",
+            "audio": "hai tiếng huýt gọi nhau",
+            "color_cue": "red_bronze"
+          }
+        }
       ],
       "drops": []
     },
     {
-      "id": "en_u_bun",
-      "name": {"vi": "Ụ Bùn", "en": "Mud Mound"},
-      "description": {"vi": "Yêu đầm hư cấu: một ụ bùn và rễ lau tự đứng dậy. Chậm, chịu đòn; dùng đòn nặng để phá Thế.", "en": "A fictional marsh spirit: a mound of mud and reed roots that stands up on its own. Slow and sturdy; use heavy attacks to break its Stance."},
+      "id": "en_lon_rung_non",
+      "name": {
+        "vi": "Lợn Rừng Non",
+        "en": "Young Wild Boar"
+      },
+      "description": {
+        "vi": "Lợn rừng non hoảng loạn vì bãi lầy bị càn phá. Cách nó cào móng trước khi lao là bài học cho trận lớn hơn. Hết sức thì bỏ chạy.",
+        "en": "A young wild boar panicked by the ravaged mire. The way it paws before charging is a lesson for a bigger fight. When spent, it flees."
+      },
       "label": "SÁNG TẠO",
-      "type": "spirit",
-      "species_family": "mud_spirit",
-      "rank": "elite",
+      "type": "beast",
+      "species_family": "boar",
+      "skeleton_family": "quadruped_shared",
+      "rig_note": "rig boss thu nhỏ",
+      "rank": "normal",
       "chapter": "ch_longbien",
-      "zones": ["z_dam_nong", "z_lo_bo_hoang"],
-      "hp": 480,
-      "the_max": 160,
-      "the_regen_per_s": 8,
-      "the_regen_delay_s": 2.0,
-      "stagger_duration_s": 3.0,
-      "interrupt_threshold": 25,
+      "zones": [
+        "z_dam_nong",
+        "z_bai_lau"
+      ],
+      "spawn_group_size": 1,
+      "hp": 260,
+      "the_max": 90,
+      "the_regen_per_s": 12,
+      "the_regen_delay_s": 1.5,
+      "stagger_duration_s": 2.5,
+      "interrupt_threshold": 15,
       "front_damage_mult": 1.0,
       "respawns_at_checkpoint": true,
+      "defeat_behavior": "flee",
       "attacks": [
-        {"id": "ub_dap", "name": {"vi": "Đập bùn", "en": "Mud Slam"}, "damage": 32, "player_the_damage": 30, "windup_s": 0.9, "active_s": 0.15, "recovery_s": 1.1, "parryable": true, "guardable": true, "delayed": false, "range_m": 2.2, "cooldown_s": 2.5, "dodge_hint": "side",
-         "telegraph": {"visual": "giơ khối bùn lên quá đầu", "audio": "tiếng bùn nhóp nhép", "color_cue": "none"}},
-        {"id": "ub_lan", "name": {"vi": "Lan bùn", "en": "Spreading Mire"}, "damage": 10, "player_the_damage": 0, "windup_s": 1.2, "active_s": 2.0, "recovery_s": 1.0, "parryable": false, "guardable": false, "delayed": false, "range_m": 4.0, "cooldown_s": 10.0, "dodge_hint": "back",
-         "applies": {"status": "slow", "speed_mult": 0.6, "duration_s": 3.0},
-         "telegraph": {"visual": "ụ bùn lún xuống, vòng sóng bùn trên mặt đất", "audio": "tiếng ục ục dưới bùn", "color_cue": "red_bronze"}}
+        {
+          "id": "lrn_hat",
+          "name": {
+            "vi": "Hất mõm",
+            "en": "Snout Toss"
+          },
+          "damage": 18,
+          "player_the_damage": 18,
+          "windup_s": 0.55,
+          "active_s": 0.12,
+          "recovery_s": 0.6,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 1.8,
+          "cooldown_s": 2.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "cúi đầu, hất mõm lên",
+            "audio": "khịt mũi",
+            "color_cue": "none"
+          }
+        },
+        {
+          "id": "lrn_lao",
+          "name": {
+            "vi": "Lao thẳng",
+            "en": "Straight Charge"
+          },
+          "damage": 26,
+          "player_the_damage": 30,
+          "windup_s": 1.0,
+          "active_s": 0.6,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 10.0,
+          "cooldown_s": 6.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "cào móng hai lần, hạ đầu",
+            "audio": "tiếng ụt ịt dồn dập",
+            "color_cue": "red_bronze"
+          }
+        }
+      ],
+      "drops": []
+    },
+    {
+      "id": "en_bong_me",
+      "name": {
+        "vi": "Bóng Mê",
+        "en": "Lure Shade"
+      },
+      "description": {
+        "vi": "Ảo ảnh như làn sương mang dáng bụi lau, vờn quanh người bị mê. Không phải người, không phải cáo. Tan khi người bị mê được gọi tỉnh.",
+        "en": "A mist-like illusion shaped like a clump of reeds, circling an entranced villager. Neither human nor fox. It fades once the villager is called back to their senses."
+      },
+      "label": "SÁNG TẠO",
+      "type": "illusion",
+      "species_family": "illusion_mist",
+      "skeleton_family": "none_vfx_mesh",
+      "rank": "normal",
+      "chapter": "ch_longbien",
+      "zones": [
+        "z_bai_lau"
+      ],
+      "spawn_group_size": 2,
+      "hp": 120,
+      "the_max": 50,
+      "the_regen_per_s": 20,
+      "the_regen_delay_s": 1.0,
+      "stagger_duration_s": 1.8,
+      "interrupt_threshold": 5,
+      "front_damage_mult": 1.0,
+      "respawns_at_checkpoint": true,
+      "defeat_behavior": "dissipate",
+      "dispelled_by": "nc_nguoi_bi_me",
+      "attacks": [
+        {
+          "id": "bm_quat",
+          "name": {
+            "vi": "Quất sương",
+            "en": "Mist Lash"
+          },
+          "damage": 12,
+          "player_the_damage": 14,
+          "windup_s": 0.5,
+          "active_s": 0.15,
+          "recovery_s": 0.5,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.2,
+          "cooldown_s": 2.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "bụi lau sương vươn dài một nhánh",
+            "audio": "tiếng gió rít",
+            "color_cue": "none"
+          }
+        },
+        {
+          "id": "bm_chap_chon",
+          "name": {
+            "vi": "Chập chờn",
+            "en": "Flicker Strike"
+          },
+          "damage": 16,
+          "player_the_damage": 16,
+          "windup_s": 0.6,
+          "hold_s": 0.3,
+          "active_s": 0.12,
+          "recovery_s": 0.6,
+          "parryable": true,
+          "guardable": true,
+          "delayed": true,
+          "range_m": 3.0,
+          "cooldown_s": 5.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "tan đi rồi hiện ra sát bên, khựng một nhịp",
+            "audio": "tiếng chuông gió ngắt quãng",
+            "color_cue": "none"
+          }
+        }
       ],
       "drops": []
     },
     {
       "id": "boss_lon_loi_dam",
-      "name": {"vi": "Lợn Lòi Đầm", "en": "Marsh Boar"},
-      "description": {"vi": "Con lợn lòi già càn phá bãi lầy quanh lò bỏ hoang. Ở cổ nó có một mảnh khoen đồng cắm sâu vào thịt.", "en": "An old boar rampaging across the mire by the abandoned kiln. A shard of a bronze collar is lodged deep in its neck."},
+      "name": {
+        "vi": "Lợn Lòi Đầm",
+        "en": "Marsh Boar"
+      },
+      "description": {
+        "vi": "Con lợn lòi già càn phá bãi lầy quanh lò bỏ hoang. Nó từng giật đứt một cái bẫy; lưỡi bẫy đúc vụng còn mắc ở cổ, cắm vào thịt.",
+        "en": "An old boar rampaging across the mire by the abandoned kiln. It once tore free of a trap; the crudely cast trap blade is still caught in its neck, biting into the flesh."
+      },
       "label": "SÁNG TẠO",
       "type": "beast",
       "species_family": "boar",
       "skeleton_family": "quadruped_shared",
       "rank": "boss",
       "chapter": "ch_longbien",
-      "zones": ["z_dau_truong"],
+      "zones": [
+        "z_dau_truong"
+      ],
       "hp": 2000,
       "hp_floor": 1,
       "hp_floor_forces_final_stagger": true,
@@ -108,47 +299,263 @@
       "respawns_at_checkpoint": false,
       "checkpoint_before": "cp_cong_lau",
       "intro_traces": [
-        {"vi": "Vết nanh cày sâu trên bờ đất.", "en": "Deep tusk furrows in the bank."},
-        {"vi": "Cọc tre gãy, dính lông bờm.", "en": "Snapped bamboo stakes caught with bristles."},
-        {"vi": "Người đi cắt lau trèo tránh trên cây, gọi vọng xuống.", "en": "A reed-cutter, hiding up a tree, calls down."}
+        {
+          "vi": "Vết nanh cày sâu trên bờ đất.",
+          "en": "Deep tusk furrows in the bank."
+        },
+        {
+          "vi": "Cọc bẫy gãy, dây mây đứt, dính lông bờm.",
+          "en": "A snapped trap stake, torn rattan, caught with bristles."
+        },
+        {
+          "vi": "Lau rạp thành lối, dẫn về phía lò bỏ hoang.",
+          "en": "Reeds flattened into a trail leading toward the abandoned kiln."
+        }
       ],
       "attacks": [
-        {"id": "ll_hat_nanh", "name": {"vi": "Hất nanh", "en": "Tusk Toss"}, "damage": 30, "player_the_damage": 25, "windup_s": 0.6, "active_s": 0.15, "recovery_s": 0.8, "parryable": true, "guardable": true, "delayed": false, "range_m": 2.5, "cooldown_s": 2.0, "dodge_hint": "side",
-         "telegraph": {"visual": "cúi đầu, nanh lóe sáng", "audio": "khịt mũi mạnh", "color_cue": "none"}},
-        {"id": "ll_quat_doi", "name": {"vi": "Quật đầu đôi", "en": "Double Head-Swing"}, "damage": 24, "player_the_damage": 20, "hits": 2, "windup_s": 0.5, "active_s": 0.5, "recovery_s": 0.9, "parryable": true, "guardable": true, "delayed": false, "range_m": 2.5, "cooldown_s": 3.0, "dodge_hint": "back",
-         "telegraph": {"visual": "lắc đầu sang trái rồi phải", "audio": "hai tiếng khịt ngắn", "color_cue": "none"}},
-        {"id": "ll_can_lay", "name": {"vi": "Càn lầy", "en": "Mire Charge"}, "damage": 45, "player_the_damage": 50, "windup_s": 1.2, "active_s": 0.8, "recovery_s": 1.2, "parryable": false, "guardable": false, "delayed": false, "range_m": 14.0, "cooldown_s": 7.0, "dodge_hint": "side",
-         "telegraph": {"visual": "cào móng ba lần, hạ đầu, bùn bắn sau chân", "audio": "rống trầm kéo dài", "color_cue": "red_bronze"}},
-        {"id": "ll_dam_lay", "name": {"vi": "Dậm lầy", "en": "Mire Stomp"}, "damage": 28, "player_the_damage": 30, "windup_s": 0.9, "hold_s": 0.4, "active_s": 0.15, "recovery_s": 1.0, "parryable": true, "guardable": true, "delayed": true, "range_m": 3.0, "cooldown_s": 5.0, "dodge_hint": "back",
-         "telegraph": {"visual": "chồm hai chân trước, khựng lại trên không", "audio": "tiếng thở hắt rồi im", "color_cue": "none"}},
-        {"id": "ll_ui_bun", "name": {"vi": "Ủi bùn", "en": "Mud Plough"}, "damage": 18, "player_the_damage": 35, "windup_s": 0.8, "active_s": 0.4, "recovery_s": 0.9, "parryable": false, "guardable": true, "delayed": false, "range_m": 4.0, "cooldown_s": 6.0, "dodge_hint": "through",
-         "telegraph": {"visual": "dúi mõm xuống bùn, vai gồng", "audio": "tiếng ủi bùn sồn sột", "color_cue": "red_bronze"}},
-        {"id": "ll_giay_dau", "name": {"vi": "Giãy đau", "en": "Pain Thrash"}, "damage": 20, "player_the_damage": 18, "hits": 3, "windup_s": 0.8, "active_s": 0.9, "recovery_s": 1.4, "parryable": true, "guardable": true, "delayed": false, "range_m": 2.5, "cooldown_s": 4.0, "dodge_hint": "back",
-         "telegraph": {"visual": "dụi cổ xuống đất, mảnh khoen lóe", "audio": "tiếng rên đứt quãng", "color_cue": "none"}},
-        {"id": "ll_can_khuyu", "name": {"vi": "Càn khuỵu", "en": "Faltering Charge"}, "damage": 35, "player_the_damage": 40, "windup_s": 1.5, "active_s": 0.6, "recovery_s": 2.0, "parryable": false, "guardable": false, "delayed": false, "range_m": 8.0, "cooldown_s": 8.0, "dodge_hint": "side",
-         "telegraph": {"visual": "cào móng hai lần, chân trước run", "audio": "rống khàn, đứt hơi", "color_cue": "red_bronze"},
-         "ends_in_stumble_s": 1.5},
-        {"id": "ll_rong_dau", "name": {"vi": "Rống đau", "en": "Pained Bellow"}, "damage": 0, "player_the_damage": 0, "windup_s": 0.6, "active_s": 1.2, "recovery_s": 1.0, "parryable": false, "guardable": true, "delayed": false, "range_m": 4.0, "cooldown_s": 12.0, "dodge_hint": "none", "pushback_m": 2.0,
-         "telegraph": {"visual": "ngửa cổ, mảnh khoen rung", "audio": "tiếng rống vỡ giọng", "color_cue": "none"}}
+        {
+          "id": "ll_hat_nanh",
+          "name": {
+            "vi": "Hất nanh",
+            "en": "Tusk Toss"
+          },
+          "damage": 30,
+          "player_the_damage": 25,
+          "windup_s": 0.6,
+          "active_s": 0.15,
+          "recovery_s": 0.8,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.5,
+          "cooldown_s": 2.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "cúi đầu, nanh lóe sáng",
+            "audio": "khịt mũi mạnh",
+            "color_cue": "none"
+          }
+        },
+        {
+          "id": "ll_quat_doi",
+          "name": {
+            "vi": "Quật đầu đôi",
+            "en": "Double Head-Swing"
+          },
+          "damage": 24,
+          "player_the_damage": 20,
+          "hits": 2,
+          "windup_s": 0.5,
+          "active_s": 0.5,
+          "recovery_s": 0.9,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.5,
+          "cooldown_s": 3.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "lắc đầu sang trái rồi phải",
+            "audio": "hai tiếng khịt ngắn",
+            "color_cue": "none"
+          }
+        },
+        {
+          "id": "ll_can_lay",
+          "name": {
+            "vi": "Càn lầy",
+            "en": "Mire Charge"
+          },
+          "damage": 45,
+          "player_the_damage": 50,
+          "windup_s": 1.2,
+          "active_s": 0.8,
+          "recovery_s": 1.2,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 14.0,
+          "cooldown_s": 7.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "cào móng ba lần, hạ đầu, bùn bắn sau chân",
+            "audio": "rống trầm kéo dài",
+            "color_cue": "red_bronze"
+          }
+        },
+        {
+          "id": "ll_dam_lay",
+          "name": {
+            "vi": "Dậm lầy",
+            "en": "Mire Stomp"
+          },
+          "damage": 28,
+          "player_the_damage": 30,
+          "windup_s": 0.9,
+          "hold_s": 0.4,
+          "active_s": 0.15,
+          "recovery_s": 1.0,
+          "parryable": true,
+          "guardable": true,
+          "delayed": true,
+          "range_m": 3.0,
+          "cooldown_s": 5.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "chồm hai chân trước, khựng lại trên không",
+            "audio": "tiếng thở hắt rồi im",
+            "color_cue": "none"
+          }
+        },
+        {
+          "id": "ll_ui_bun",
+          "name": {
+            "vi": "Ủi bùn",
+            "en": "Mud Plough"
+          },
+          "damage": 18,
+          "player_the_damage": 35,
+          "windup_s": 0.8,
+          "active_s": 0.4,
+          "recovery_s": 0.9,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 4.0,
+          "cooldown_s": 6.0,
+          "dodge_hint": "through",
+          "telegraph": {
+            "visual": "dúi mõm xuống bùn, vai gồng",
+            "audio": "tiếng ủi bùn sồn sột",
+            "color_cue": "red_bronze"
+          }
+        },
+        {
+          "id": "ll_giay_dau",
+          "name": {
+            "vi": "Giãy đau",
+            "en": "Pain Thrash"
+          },
+          "damage": 20,
+          "player_the_damage": 18,
+          "hits": 3,
+          "windup_s": 0.8,
+          "active_s": 0.9,
+          "recovery_s": 1.4,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.5,
+          "cooldown_s": 4.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "dụi cổ xuống đất, mảnh khoen lóe",
+            "audio": "tiếng rên đứt quãng",
+            "color_cue": "none"
+          }
+        },
+        {
+          "id": "ll_can_khuyu",
+          "name": {
+            "vi": "Càn khuỵu",
+            "en": "Faltering Charge"
+          },
+          "damage": 35,
+          "player_the_damage": 40,
+          "windup_s": 1.5,
+          "active_s": 0.6,
+          "recovery_s": 2.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 8.0,
+          "cooldown_s": 8.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "cào móng hai lần, chân trước run",
+            "audio": "rống khàn, đứt hơi",
+            "color_cue": "red_bronze"
+          },
+          "ends_in_stumble_s": 1.5
+        },
+        {
+          "id": "ll_rong_dau",
+          "name": {
+            "vi": "Rống đau",
+            "en": "Pained Bellow"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.6,
+          "active_s": 1.2,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 4.0,
+          "cooldown_s": 12.0,
+          "dodge_hint": "none",
+          "pushback_m": 2.0,
+          "telegraph": {
+            "visual": "ngửa cổ, mảnh khoen rung",
+            "audio": "tiếng rống vỡ giọng",
+            "color_cue": "none"
+          }
+        }
       ],
       "phases": [
         {
           "id": "ph1_de_doa",
-          "name": {"vi": "Đe dọa", "en": "Menace"},
-          "narrative": {"vi": "Con thú coi mọi thứ trên bãi lầy là kẻ thù: càn, hất, dậm.", "en": "The beast treats everything on the mire as a threat: it charges, tosses, stomps."},
-          "enter": {"type": "start"},
-          "moveset": ["ll_hat_nanh", "ll_quat_doi", "ll_can_lay", "ll_dam_lay", "ll_ui_bun"],
+          "name": {
+            "vi": "Đe dọa",
+            "en": "Menace"
+          },
+          "narrative": {
+            "vi": "Con thú coi mọi thứ trên bãi lầy là kẻ thù: càn, hất, dậm.",
+            "en": "The beast treats everything on the mire as a threat: it charges, tosses, stomps."
+          },
+          "enter": {
+            "type": "start"
+          },
+          "moveset": [
+            "ll_hat_nanh",
+            "ll_quat_doi",
+            "ll_can_lay",
+            "ll_dam_lay",
+            "ll_ui_bun"
+          ],
           "speed_mult": 1.0,
           "telegraph_time_mult": 1.0,
           "the_max": 320
         },
         {
           "id": "ph2_noi_dau",
-          "name": {"vi": "Lộ nỗi đau", "en": "Pain Revealed"},
-          "narrative": {"vi": "Khoen nứt; con thú khuỵu xuống, dụi cổ vào bùn. Đòn chậm hơn, dễ đọc hơn: nó đau chứ không ác.", "en": "The collar cracks; the beast sinks to its knees and rubs its neck in the mud. Slower, readable blows: it is hurting, not cruel."},
-          "enter": {"type": "any", "conditions": [{"khoen_cracks_at_least": 2}, {"hp_ratio_at_most": 0.5}]},
+          "name": {
+            "vi": "Lộ nỗi đau",
+            "en": "Pain Revealed"
+          },
+          "narrative": {
+            "vi": "Khoen nứt; con thú khuỵu xuống, dụi cổ vào bùn. Đòn chậm hơn, dễ đọc hơn: nó đau chứ không ác.",
+            "en": "The collar cracks; the beast sinks to its knees and rubs its neck in the mud. Slower, readable blows: it is hurting, not cruel."
+          },
+          "enter": {
+            "type": "any",
+            "conditions": [
+              {
+                "khoen_cracks_at_least": 2
+              },
+              {
+                "hp_ratio_at_most": 0.5
+              }
+            ]
+          },
           "transition_beat_s": 3.0,
-          "moveset": ["ll_hat_nanh", "ll_giay_dau", "ll_can_khuyu", "ll_rong_dau"],
+          "moveset": [
+            "ll_hat_nanh",
+            "ll_giay_dau",
+            "ll_can_khuyu",
+            "ll_rong_dau"
+          ],
           "speed_mult": 0.85,
           "telegraph_time_mult": 1.25,
           "the_max": 260
@@ -160,14 +567,70 @@
         "socket": "neck",
         "crack_stages": 3,
         "crack_on": "the_break",
-        "pry_condition": {"khoen_cracks_at_least": 3, "state": "staggered"},
+        "pry_condition": {
+          "khoen_cracks_at_least": 3,
+          "state": "staggered"
+        },
         "pry_beats": 3,
         "pry_tuning_ref": "combat_tuning.pry",
-        "on_pry_success": {"outcome": "freed_walks_away", "drops": [{"item": "mat_nanh_rung", "count": 1, "chance": 1.0}], "sets_flag": "flag_boss_lon_loi_freed", "shard_handling": "narrative_only_no_item"},
-        "fallback_when_disabled": {"outcome": "flees_into_reeds", "finisher": "final_stagger_shove", "drops": [{"item": "mat_nanh_rung", "count": 1, "chance": 1.0}], "sets_flag": "flag_boss_lon_loi_freed"}
+        "on_pry_success": {
+          "outcome": "freed_walks_away",
+          "drops": [
+            {
+              "item": "mat_nanh_rung",
+              "count": 1,
+              "chance": 1.0
+            }
+          ],
+          "sets_flag": "flag_boss_lon_loi_freed",
+          "shard_handling": "narrative_only_no_item"
+        },
+        "fallback_when_disabled": {
+          "outcome": "flees_into_reeds",
+          "finisher": "final_stagger_shove",
+          "drops": [
+            {
+              "item": "mat_nanh_rung",
+              "count": 1,
+              "chance": 1.0
+            }
+          ],
+          "sets_flag": "flag_boss_lon_loi_freed"
+        }
       },
       "finish": "pry",
-      "drops": []
+      "drops": [],
+      "defeat_behavior": "pry_then_walk_away"
+    }
+  ],
+  "non_combat_encounters": [
+    {
+      "id": "nc_nguoi_bi_me",
+      "name": {
+        "vi": "Người đi cắt lau bị mê",
+        "en": "Entranced Reed-cutter"
+      },
+      "description": {
+        "vi": "Một người làng đứng giữa bãi lau, mắt nhìn vào khoảng không. Không đánh được: giữ nút \"Gọi tên\" để gọi người ấy tỉnh.",
+        "en": "A villager stands in the reeds, staring at nothing. Cannot be attacked: hold \"Call by name\" to bring them back."
+      },
+      "label": "SÁNG TẠO",
+      "type": "human_entranced",
+      "combat": false,
+      "targetable_by_attacks": false,
+      "lock_on_target": false,
+      "zone": "z_bai_lau",
+      "interaction": "hold_call_name",
+      "hold_s": 2.0,
+      "progress_kept_on_interrupt": 0.5,
+      "on_success": {
+        "dispels": [
+          "en_bong_me"
+        ],
+        "grants_skill_points": 1,
+        "sets_flag": "flag_nguoi_bi_me_saved",
+        "villager_returns_to": "z_ben_say"
+      }
     }
   ]
 }

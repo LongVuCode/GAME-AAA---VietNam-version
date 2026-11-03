@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "_note": "Chuỗi UI tối thiểu và 5 câu thoại/vè của Demo 0.1. vi là gốc. Thoại và vè lấy nguyên văn Story Bible v1.1 §7; bản en là dịch nháp.",
+  "ui": {
+    "menu_new_game": {
+      "vi": "Chơi mới",
+      "en": "New Game"
+    },
+    "menu_continue": {
+      "vi": "Chơi tiếp",
+      "en": "Continue"
+    },
+    "menu_settings": {
+      "vi": "Cài đặt",
+      "en": "Settings"
+    },
+    "menu_codex": {
+      "vi": "Codex",
+      "en": "Codex"
+    },
+    "menu_quit": {
+      "vi": "Thoát",
+      "en": "Quit"
+    },
+    "menu_difficulty": {
+      "vi": "Độ khó",
+      "en": "Difficulty"
+    },
+    "menu_accessibility": {
+      "vi": "Trợ năng",
+      "en": "Accessibility"
+    },
+    "menu_language": {
+      "vi": "Ngôn ngữ",
+      "en": "Language"
+    },
+    "hud_health": {
+      "vi": "Sức",
+      "en": "Health"
+    },
+    "hud_the": {
+      "vi": "Thế",
+      "en": "Stance"
+    },
+    "hud_drum": {
+      "vi": "Nhịp trống",
+      "en": "Drum Rhythm"
+    },
+    "hud_drum_ready": {
+      "vi": "Hồi trống sẵn sàng",
+      "en": "Drum Burst ready"
+    },
+    "hud_heal_charges": {
+      "vi": "Nắm cơm lá",
+      "en": "Leaf-wrapped Rice"
+    },
+    "prompt_interact": {
+      "vi": "Xem",
+      "en": "Inspect"
+    },
+    "prompt_rest": {
+      "vi": "Nghỉ bên lửa",
+      "en": "Rest by the fire"
+    },
+    "prompt_pry": {
+      "vi": "Cạy",
+      "en": "Pry"
+    },
+    "prompt_pry_hold": {
+      "vi": "Giữ để cạy",
+      "en": "Hold to pry"
+    },
+    "prompt_call_name": {
+      "vi": "Giữ để gọi tên",
+      "en": "Hold to call by name"
+    },
+    "prompt_lock_on": {
+      "vi": "Khóa mục tiêu",
+      "en": "Lock on"
+    },
+    "prompt_swap_weapon": {
+      "vi": "Đổi vũ khí",
+      "en": "Swap weapon"
+    },
+    "prompt_board_ferry": {
+      "vi": "Lên đò",
+      "en": "Board the ferry"
+    },
+    "prompt_open_thap": {
+      "vi": "Mở Thạp nhà",
+      "en": "Open the House Jar"
+    },
+    "craft_title": {
+      "vi": "Lò đúc làng",
+      "en": "Village Furnace"
+    },
+    "craft_button": {
+      "vi": "Đúc và ghép",
+      "en": "Cast and assemble"
+    },
+    "craft_missing": {
+      "vi": "Chưa đủ vật liệu",
+      "en": "Missing materials"
+    },
+    "skills_title": {
+      "vi": "Nghề nhà",
+      "en": "House Craft"
+    },
+    "skills_points": {
+      "vi": "Điểm nghề",
+      "en": "Craft points"
+    },
+    "skills_locked_branch": {
+      "vi": "Mở ở đời sau",
+      "en": "Opens in a later generation"
+    },
+    "hint_ask": {
+      "vi": "Hỏi bà lái đò",
+      "en": "Ask the old ferrywoman"
+    },
+    "hint_tier_1": {
+      "vi": "Gợi ý mơ hồ",
+      "en": "Vague hint"
+    },
+    "hint_tier_2": {
+      "vi": "Gợi ý hướng",
+      "en": "Directional hint"
+    },
+    "hint_tier_3": {
+      "vi": "Chỉ thẳng",
+      "en": "Exact location"
+    },
+    "hint_disable": {
+      "vi": "Tắt gợi ý",
+      "en": "Turn hints off"
+    },
+    "handoff_confirm": {
+      "vi": "Khép lại đời Cói? Những việc chưa xong vẫn làm lại được trong Ký ức.",
+      "en": "Close Cói's lifetime? Unfinished tasks can still be done later in Memory."
+    },
+    "handoff_incomplete": {
+      "vi": "Còn việc chưa xong",
+      "en": "Unfinished tasks remain"
+    },
+    "demo_end": {
+      "vi": "Hết bản demo. Cảm ơn bạn đã chơi.",
+      "en": "End of the demo. Thank you for playing."
+    },
+    "demo_replay_memory": {
+      "vi": "Ký ức: chơi lại đời Cói",
+      "en": "Memory: replay Cói's lifetime"
+    },
+    "codex_label_su_lieu": {
+      "vi": "Sử liệu",
+      "en": "Historical record"
+    },
+    "codex_label_su_lieu_tranh_luan": {
+      "vi": "Sử liệu – còn tranh luận",
+      "en": "Historical record – debated"
+    },
+    "codex_label_huyen_thoai": {
+      "vi": "Huyền thoại",
+      "en": "Legend"
+    },
+    "codex_label_co_tich": {
+      "vi": "Cổ tích",
+      "en": "Folktale"
+    },
+    "codex_label_sang_tao": {
+      "vi": "Sáng tạo của game",
+      "en": "Invented for the game"
+    },
+    "codex_sources": {
+      "vi": "Nguồn",
+      "en": "Sources"
+    },
+    "you_fell": {
+      "vi": "Ngã xuống bùn",
+      "en": "Fallen in the mud"
+    }
+  },
+  "dialogue": [
+    {
+      "id": "dlg_01_opening",
+      "speaker": "npc_ba_lai_do",
+      "trigger": "opening",
+      "label": "SÁNG TẠO",
+      "text": {
+        "vi": "Bến này giữ bằng tay người, con ạ.",
+        "en": "This landing is kept by human hands, child."
+      }
+    },
+    {
+      "id": "dlg_02_see_shard",
+      "speaker": "chr_coi",
+      "trigger": "boss_phase2_enter",
+      "label": "SÁNG TẠO",
+      "text": {
+        "vi": "Ai trói mày thế này?",
+        "en": "Who bound you like this?"
+      }
+    },
+    {
+      "id": "dlg_03_melting",
+      "speaker": "npc_tho_duc_lang",
+      "trigger": "craft_rcp_nanh_dam",
+      "label": "SÁNG TẠO",
+      "text": {
+        "vi": "Đồng đúc sai thì đúc lại, thành cái cuốc cho ruộng.",
+        "en": "Bronze cast wrong gets cast again, into a hoe for the fields."
+      }
+    },
+    {
+      "id": "dlg_04_ve_after_pry",
+      "speaker": "narration_ve",
+      "trigger": "after_pry_silence",
+      "label": "SÁNG TẠO",
+      "form": "luc_bat",
+      "text": {
+        "vi": "Ai đem khoen trói thú rừng\nThú đau hóa dữ, bến chừng chẳng êm\nSào nhà cạy mảnh đêm đêm\nGiữ bến bằng tay, chẳng thèm khoen ai",
+        "en": "Who put a collar on the wild beast?\nIn pain it turned fierce, and the landing knew no peace.\nNight after night, the house pole pries the shards away;\nkeep the landing by hand, and want no one's collar."
+      }
+    },
+    {
+      "id": "dlg_05_handoff",
+      "speaker": "npc_nguoi_gia_ben",
+      "trigger": "handoff",
+      "label": "SÁNG TẠO",
+      "text": {
+        "vi": "Nhiều đời trước có người giữ bến này. Giờ đến lượt con.",
+        "en": "Many generations ago, someone kept this landing. Now it is your turn."
+      }
+    }
+  ]
+}

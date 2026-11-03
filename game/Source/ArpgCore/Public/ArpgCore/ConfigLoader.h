@@ -13,6 +13,6 @@
 
 namespace ArpgCore
 {
-/** Parses + validates. On success OutWarnings (optional) receives non-fatal findings. */
+/** Parses + validates. OutWarnings (optional) receives non-fatal findings such as unknown keys. */
 ARPGCORE_API TResult<FArpgConfig> LoadConfigFromJson(std::string_view JsonText, std::vector<FError>* OutWarnings = nullptr);
 } // namespace ArpgCore
