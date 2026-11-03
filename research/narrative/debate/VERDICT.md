@@ -27,7 +27,7 @@ Cả ba giám khảo cùng chọn **H**. Hai giám khảo cảnh báo có hiện
   1. Long Biên / Hồ Tinh
   2. Phù Đổng / Gióng
   3. Ba Vì / Sơn Tinh – Thủy Tinh
-  4. Biển Đông / Ngư Tinh
+  4. Đông Hải / Ngư Tinh (tên chương đổi theo D-016)
 
   Đây là **thứ tự sản xuất 1 → 3 → 4 → 2** theo đánh số chương cũ (Giám khảo Khả thi). Phạm vi tối thiểu gồm Long Biên, Phù Đổng và Ba Vì; khi trễ nặng thì chỉ còn Long Biên và Phù Đổng. Chương biển là chương cuối hoặc thành DLC; không có combat bơi.
 - **Quyền lực của người chơi (Giám khảo Người chơi):**

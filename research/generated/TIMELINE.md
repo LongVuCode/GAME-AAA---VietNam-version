@@ -40,7 +40,7 @@ Nguồn: `research/data/timeline.json`. Nhãn và mức xác minh xem `docs/RESE
 
 ### T001 — Kinh Dương Vương lập nước Xích Quỷ; Lạc Long Quân – Âu Cơ; 18 đời Hùng Vương (truyền thống: 2879 TCN) [HUYỀN THOẠI]
 Toàn thư (Ngoại kỷ) chép niên đại 2879 TCN và phả hệ Hồng Bàng; Cương mục đã hoài nghi tính xác thực. Giới sử học hiện đại xem đây là truyền thuyết lập quốc, phản ánh ký ức về các cộng đồng thời đại đồ đồng.
-- **Tranh luận/lưu ý:** Niên đại 2879 TCN và phả hệ 18 đời không được khảo cổ chứng minh. TT không có niên biểu từng đời (2622 năm / 18 đời ≈ 146 năm mỗi đời), nên nhiều học giả coi 18 là con số biểu trưng hoặc 18 chi. Mốc 'Hùng Vương thứ 6' (Thánh Gióng, M005) và 'thứ 18' (Sơn Tinh – Thủy Tinh, M006) là niên đại truyền thống theo LNCQ/TT, không phải niên đại khảo cổ; danh sách tên và năm từng đời (theo ngọc phả, sách phổ thông) chưa đối chiếu.
+- **Tranh luận/lưu ý:** Niên đại 2879 TCN và phả hệ 18 đời không được khảo cổ chứng minh. TT không có niên biểu từng đời (2622 năm / 18 đời ≈ 146 năm mỗi đời), nên nhiều học giả coi 18 là con số biểu trưng hoặc 18 chi. Mốc 'Hùng Vương thứ 6' (Thánh Gióng, M005) và 'thứ 18' (Sơn Tinh – Thủy Tinh, M006) là niên đại truyền thống (theo nguồn thứ cấp, chưa đối chiếu LNCQ; TT có thể chỉ chép 'cuối đời Hùng Vương' – cần đối chiếu), không phải niên đại khảo cổ; danh sách tên và năm từng đời (theo ngọc phả, sách phổ thông) chưa đối chiếu.
 - **Nguồn:** TT (Đại Việt sử ký toàn thư), CM (Khâm định Việt sử thông giám cương mục), LNCQ (Lĩnh Nam chích quái)
 
 ### T002 — Văn hóa Đông Sơn: trống đồng, vũ khí đồng, nông nghiệp lúa nước (khoảng thế kỷ 7 TCN – thế kỷ 1 SCN (theo khảo cổ, mốc cụ thể còn tranh luận)) [SỬ LIỆU-TRANH LUẬN]

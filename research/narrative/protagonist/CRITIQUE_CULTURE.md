@@ -2,6 +2,8 @@
 
 `vn-history-folklore-expert` (AI), 2026-11-03. Mức B. **N** nguồn (trích đoạn, chưa đối chiếu) · **D** dân gian · **S** suy luận. Xem `research/expert/GAME1_LORE_DOSSIER.md`.
 
+> **Đính chính (phiên điều phối, sau phản biện V-01):** thứ tự Ngư Tinh → Hồ Tinh trong LNCQ chỉ là thứ tự chương trong sách, không phải thứ tự thời gian. Kết luận ở Q2 rằng thứ tự của v1 "đảo ngược LNCQ" vì vậy không còn đúng: hai chương cùng đời Lạc Long Quân và được tự do sắp xếp.
+
 ## 1. Năm câu hỏi
 
 **Q1. Tục xăm thành nghề một nhà?**

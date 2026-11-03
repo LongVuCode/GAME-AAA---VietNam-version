@@ -5,7 +5,7 @@ Nguồn: `research/data/myths.json`.
 ## M001 — Con Rồng cháu Tiên (Lạc Long Quân – Âu Cơ, bọc trăm trứng) [HUYỀN THOẠI]
 - **Vùng:** Bắc Bộ · **Nhạy cảm:** high · **Dùng:** candidate · **Xác minh:** B
 - **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 14–15 (LNCQ: tương truyền soạn thời Trần, bản còn lại do Vũ Quỳnh hiệu đính 1492, Kiều Phú; chưa đối chiếu); TT Ngoại kỷ (Ngô Sĩ Liên 1479, bản Chính Hòa 1697) chép lại
-- **Nơi thờ / lễ hội:** Khu di tích lịch sử Đền Hùng (Việt Trì, Phú Thọ): đền thờ Quốc Tổ Lạc Long Quân trên đồi Sim (xây 2009), đền Tổ Mẫu Âu Cơ trên núi Vặn; lễ giỗ Quốc Tổ 6/3 âm lịch; Giỗ Tổ Hùng Vương 10/3 âm lịch (theo trích đoạn tìm kiếm), Đình–đền Nội Bình Đà (Thanh Oai, Hà Nội) thờ Lạc Long Quân làm thành hoàng; lễ hội Bình Đà – di sản phi vật thể quốc gia (theo trích đoạn tìm kiếm), Tín ngưỡng thờ cúng Hùng Vương ở Phú Thọ – UNESCO 2012
+- **Nơi thờ / lễ hội:** Khu di tích lịch sử Đền Hùng (Việt Trì, Phú Thọ): đền thờ Quốc Tổ Lạc Long Quân trên đồi Sim (khánh thành 2009), đền Tổ Mẫu Âu Cơ trên núi Vặn; lễ giỗ Quốc Tổ 6/3 âm lịch; Giỗ Tổ Hùng Vương 10/3 âm lịch (theo trích đoạn tìm kiếm), Đền Mẫu Âu Cơ (Hiền Lương, Hạ Hòa, Phú Thọ): tương truyền dựng thời Lê Thánh Tông; lễ hội chính mùng 7 tháng Giêng; 'Tín ngưỡng thờ Mẫu Âu Cơ' là di sản phi vật thể quốc gia (2017); tượng Mẫu Âu Cơ là bảo vật quốc gia (theo trích đoạn tìm kiếm). Cần đưa vào danh sách tham vấn QT-16, Đình–đền Nội Bình Đà (Thanh Oai, Hà Nội) thờ Lạc Long Quân làm thành hoàng; lễ hội Bình Đà – di sản phi vật thể quốc gia (theo trích đoạn tìm kiếm), Tín ngưỡng thờ cúng Hùng Vương ở Phú Thọ – UNESCO 2012
 - **Tóm tắt:** Lạc Long Quân (dòng Rồng) kết duyên với Âu Cơ (dòng Tiên), sinh bọc trăm trứng nở ra trăm người con. Năm mươi con theo cha xuống biển, năm mươi con theo mẹ lên núi; người con trưởng làm Hùng Vương.
 - **Dị bản:**
   - LNCQ gắn phả hệ Kinh Dương Vương với Đế Minh (dòng Thần Nông) — chi tiết dễ gây tranh luận về nguồn gốc.
@@ -18,23 +18,23 @@ Nguồn: `research/data/myths.json`.
 ## M002 — Lạc Long Quân diệt Ngư Tinh [HUYỀN THOẠI]
 - **Vùng:** Ven biển Bắc Bộ · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** B
 - **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 14–15 (LNCQ: tương truyền soạn thời Trần, bản còn lại do Vũ Quỳnh hiệu đính 1492, Kiều Phú; chưa đối chiếu)
-- **Nơi thờ / lễ hội:** Khu di tích lịch sử Đền Hùng (Việt Trì, Phú Thọ): đền thờ Quốc Tổ Lạc Long Quân trên đồi Sim (xây 2009), đền Tổ Mẫu Âu Cơ trên núi Vặn; lễ giỗ Quốc Tổ 6/3 âm lịch; Giỗ Tổ Hùng Vương 10/3 âm lịch (theo trích đoạn tìm kiếm), Đình–đền Nội Bình Đà (Thanh Oai, Hà Nội) thờ Lạc Long Quân làm thành hoàng; lễ hội Bình Đà – di sản phi vật thể quốc gia (theo trích đoạn tìm kiếm), Chưa xác định nơi thờ riêng gắn với truyện Ngư Tinh (chưa tra nguồn)
-- **Tóm tắt:** Yêu cá khổng lồ ở biển Đông ăn thịt người. Lạc Long Quân dùng khối sắt nung đỏ diệt yêu và chém thân nó thành nhiều khúc, các khúc hóa thành địa danh.
+- **Nơi thờ / lễ hội:** Khu di tích lịch sử Đền Hùng (Việt Trì, Phú Thọ): đền thờ Quốc Tổ Lạc Long Quân trên đồi Sim (khánh thành 2009), đền Tổ Mẫu Âu Cơ trên núi Vặn; lễ giỗ Quốc Tổ 6/3 âm lịch; Giỗ Tổ Hùng Vương 10/3 âm lịch (theo trích đoạn tìm kiếm), Đình–đền Nội Bình Đà (Thanh Oai, Hà Nội) thờ Lạc Long Quân làm thành hoàng; lễ hội Bình Đà – di sản phi vật thể quốc gia (theo trích đoạn tìm kiếm), Chưa xác định nơi thờ riêng gắn với truyện Ngư Tinh (chưa tra nguồn)
+- **Tóm tắt:** Yêu cá khổng lồ (LNCQ gọi là tinh cá-rắn) ở Đông Hải ăn thịt người. Lạc Long Quân dùng khối sắt nung đỏ diệt yêu và chém thân nó thành nhiều khúc, các khúc hóa thành địa danh.
 - **Dị bản:**
   - Tên các địa danh hình thành từ xác Ngư Tinh khác nhau giữa các bản — cần đối chiếu.
 - **Canon của game:** Bản LNCQ. Lý do: đây là văn bản sớm nhất có hệ thống.
-- **Lưu ý thể hiện:** Lạc Long Quân là thần được thờ: khối sắt nung đỏ và đòn kết liễu chỉ thuộc về ông, thể hiện trong cutscene. LNCQ ghi 'Đông Hải'; địa danh hóa từ xác Ngư Tinh (Cẩu Đầu Sơn, Mạn Cầu, Bạch Long Vĩ) có thể không trùng địa danh hiện nay (một mũi đất Bạch Long Vĩ cũ ở Phòng Thành, Quảng Tây) – tránh bản đồ biển đảo hiện đại và tránh tên chương 'Biển Đông' trên trang Steam (rủi ro địa chính trị).
-- **Tiềm năng gameplay:** Boss thủy quái nhiều pha theo mô hình 'người chơi phá Thế, Lạc Long Quân kết liễu' (cần playtest câu hỏi 'có thấy bị cướp công không'); set-piece trên thuyền, không combat bơi. Người chơi không cầm khối sắt hay sức thủy tộc của Lạc Long Quân; chỉ nhận Bảo khí [SÁNG TẠO] rèn từ chiến lợi phẩm boss phụ [SÁNG TẠO] tự hạ.
+- **Lưu ý thể hiện:** Lạc Long Quân là thần được thờ: khối sắt nung đỏ và đòn kết liễu chỉ thuộc về ông, thể hiện trong cutscene. Tên chương dùng 'Đông Hải' theo văn phong và văn bản LNCQ (東海). Bản địa hóa: bản en dùng 'Đông Hải' kèm chú thích, KHÔNG dùng 'East Sea' hay 'South China Sea'; Codex trích bản dịch tiếng Việt thì giữ nguyên 'Biển Đông' của người dịch. Luật cứng: không có bản đồ biển đảo hiện đại. Codex chỉ ghi: địa danh hóa từ xác Ngư Tinh (Cẩu Đầu Sơn, Mạn Cầu, Bạch Long Vĩ) chưa xác định tương ứng với địa danh hiện nay.
+- **Tiềm năng gameplay:** Boss thủy quái nhiều pha theo mô hình 'người chơi phá Thế, Lạc Long Quân kết liễu' (cần playtest câu hỏi 'có thấy bị cướp công không'); set-piece trên thuyền, không combat bơi. Người chơi không cầm khối sắt hay sức thủy tộc của Lạc Long Quân; chỉ nhận Bảo khí [SÁNG TẠO] đúc/chế tác từ chiến lợi phẩm boss phụ [SÁNG TẠO] tự hạ.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái)
 
 ## M003 — Hồ Tinh (Cáo chín đuôi) và sự tích Hồ Tây / Đầm Xác Cáo [HUYỀN THOẠI]
 - **Vùng:** Hà Nội (Long Biên cổ, Hồ Tây) · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** B
 - **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 14–15 (LNCQ: tương truyền soạn thời Trần, bản còn lại do Vũ Quỳnh hiệu đính 1492, Kiều Phú; chưa đối chiếu)
-- **Nơi thờ / lễ hội:** Khu di tích lịch sử Đền Hùng (Việt Trì, Phú Thọ): đền thờ Quốc Tổ Lạc Long Quân trên đồi Sim (xây 2009), đền Tổ Mẫu Âu Cơ trên núi Vặn; lễ giỗ Quốc Tổ 6/3 âm lịch; Giỗ Tổ Hùng Vương 10/3 âm lịch (theo trích đoạn tìm kiếm), Đình–đền Nội Bình Đà (Thanh Oai, Hà Nội) thờ Lạc Long Quân làm thành hoàng; lễ hội Bình Đà – di sản phi vật thể quốc gia (theo trích đoạn tìm kiếm), Đền Quán Thánh (Hà Nội) thờ Huyền Thiên Trấn Vũ – truyền thuyết của đền gán việc diệt hồ tinh chín đuôi cho Huyền Thiên (theo trích đoạn tìm kiếm), Khu vực Hồ Tây có nhiều di tích đang thờ tự (Phủ Tây Hồ, chùa Trấn Quốc...) – không gắn trực tiếp với truyện (chưa tra nguồn)
+- **Nơi thờ / lễ hội:** Khu di tích lịch sử Đền Hùng (Việt Trì, Phú Thọ): đền thờ Quốc Tổ Lạc Long Quân trên đồi Sim (khánh thành 2009), đền Tổ Mẫu Âu Cơ trên núi Vặn; lễ giỗ Quốc Tổ 6/3 âm lịch; Giỗ Tổ Hùng Vương 10/3 âm lịch (theo trích đoạn tìm kiếm), Đình–đền Nội Bình Đà (Thanh Oai, Hà Nội) thờ Lạc Long Quân làm thành hoàng; lễ hội Bình Đà – di sản phi vật thể quốc gia (theo trích đoạn tìm kiếm), Đền Quán Thánh (Hà Nội) thờ Huyền Thiên Trấn Vũ – truyền thuyết của đền gán việc diệt hồ tinh chín đuôi cho Huyền Thiên (theo trích đoạn tìm kiếm), Khu vực Hồ Tây có nhiều di tích đang thờ tự (Phủ Tây Hồ, chùa Trấn Quốc...) – không gắn trực tiếp với truyện (chưa tra nguồn)
 - **Tóm tắt:** Cáo chín đuôi sống trong hang đá, hóa người để bắt dân. Lạc Long Quân đem thủy tộc dâng nước phá hang diệt yêu; nơi đó thành đầm, gọi là Đầm Xác Cáo, về sau là Hồ Tây.
 - **Dị bản:**
   - Hồ Tây còn có truyền thuyết khác là Trâu Vàng (Kim Ngưu), xem M017.
-  - Truyền thuyết đền Quán Thánh: Huyền Thiên Trấn Vũ (không phải Lạc Long Quân) diệt hồ tinh chín đuôi ở rừng Thiết Lâm, làng Long Đỗ (theo trích đoạn tìm kiếm, chưa đối chiếu thần tích).
+  - Truyền thuyết đền Quán Thánh: Huyền Thiên Trấn Vũ (không phải Lạc Long Quân) diệt hồ tinh chín đuôi ở rừng Thiết Lâm, làng Long Đỗ; thời điểm không thống nhất giữa các nguồn (đời Hùng thứ 6–7, thứ 14, hoặc 'thời Hùng Vương'). Một nguồn (chưa đọc được) nói có bản LNCQ chép Huyền Thiên trừ hồ tinh – cần đối chiếu. Huyền Thiên là thần gốc Đạo giáo phương Bắc: Codex giữ giọng trung tính (theo trích đoạn tìm kiếm).
   - Chi tiết dây/lưới ngũ sắc giăng cửa hang và tên hang/làng (Hồ Thôn) xuất hiện ở một số bản kể – chưa đối chiếu LNCQ.
 - **Canon của game:** Bản LNCQ: Lạc Long Quân là người diệt yêu. Nhân vật chính của game chỉ hỗ trợ, không giành công diệt yêu. Lý do: tôn trọng truyền thuyết gốc.
 - **Lưu ý thể hiện:** Phải tránh dựng 'cáo chín đuôi' theo hình mẫu Nhật/Hàn; thiết kế cần dựa trên mỹ thuật Đông Sơn. Lạc Long Quân là thần được thờ: không thoại tự do, đòn diệt yêu thuộc về ông. Dị bản Huyền Thiên Trấn Vũ chỉ ở Codex; không dựng di tích Hồ Tây có thật thành đấu trường (QT-09).
@@ -42,21 +42,21 @@ Nguồn: `research/data/myths.json`.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái)
 
 ## M004 — Mộc Tinh [HUYỀN THOẠI]
-- **Vùng:** Bắc Bộ · **Nhạy cảm:** low · **Dùng:** candidate · **Xác minh:** C
+- **Vùng:** Bắc Bộ · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** C
 - **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 14–15 (LNCQ: tương truyền soạn thời Trần, bản còn lại do Vũ Quỳnh hiệu đính 1492, Kiều Phú; chưa đối chiếu)
-- **Nơi thờ / lễ hội:** Khu di tích lịch sử Đền Hùng (Việt Trì, Phú Thọ): đền thờ Quốc Tổ Lạc Long Quân trên đồi Sim (xây 2009), đền Tổ Mẫu Âu Cơ trên núi Vặn; lễ giỗ Quốc Tổ 6/3 âm lịch; Giỗ Tổ Hùng Vương 10/3 âm lịch (theo trích đoạn tìm kiếm), Đình–đền Nội Bình Đà (Thanh Oai, Hà Nội) thờ Lạc Long Quân làm thành hoàng; lễ hội Bình Đà – di sản phi vật thể quốc gia (theo trích đoạn tìm kiếm)
-- **Tóm tắt:** Cây cổ thụ ngàn năm hóa yêu hại người và bị Lạc Long Quân trừ diệt.
+- **Nơi thờ / lễ hội:** Khu di tích lịch sử Đền Hùng (Việt Trì, Phú Thọ): đền thờ Quốc Tổ Lạc Long Quân trên đồi Sim (khánh thành 2009), đền Tổ Mẫu Âu Cơ trên núi Vặn; lễ giỗ Quốc Tổ 6/3 âm lịch; Giỗ Tổ Hùng Vương 10/3 âm lịch (theo trích đoạn tìm kiếm), Đình–đền Nội Bình Đà (Thanh Oai, Hà Nội) thờ Lạc Long Quân làm thành hoàng; lễ hội Bình Đà – di sản phi vật thể quốc gia (theo trích đoạn tìm kiếm)
+- **Tóm tắt:** Cây cổ thụ ngàn năm hóa yêu hại người, bị Lạc Long Quân đánh. Cần đối chiếu: có bản tóm tắt nói Mộc Tinh bỏ chạy về tây nam chứ không bị diệt hẳn.
 - **Dị bản:**
   - Chi tiết về loài cây và cách diệt khác nhau giữa các bản — cần đối chiếu.
 - **Canon của game:** Chờ đối chiếu.
-- **Tiềm năng gameplay:** Boss rừng; cơ chế đốt hoặc chặt rễ do người chơi phá Thế, việc diệt yêu giữ cho Lạc Long Quân theo LNCQ. Không trao thần khí.
+- **Tiềm năng gameplay:** Boss rừng; cơ chế đốt hoặc chặt rễ do người chơi phá Thế, việc diệt/đuổi yêu giữ cho Lạc Long Quân theo LNCQ (chờ đối chiếu). Không trao thần khí.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái)
 
 ## M005 — Thánh Gióng (Phù Đổng Thiên Vương) [HUYỀN THOẠI]
 - **Vùng:** Phù Đổng (Gia Lâm), Sóc Sơn – Hà Nội · **Nhạy cảm:** high · **Dùng:** candidate · **Xác minh:** B
 - **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 14 (VDULT ~1329: Sóc Thiên Vương; LNCQ tương truyền thời Trần, bản 1492)
 - **Nơi thờ / lễ hội:** Đền Phù Đổng (Gia Lâm, Hà Nội) – Hội Gióng tháng 4 âm lịch (ngày chính: chưa tra nguồn), Đền Sóc (Sóc Sơn, Hà Nội) – Hội Gióng mùng 6–8 tháng Giêng: dâng hoa tre, nghi thức chém tướng giặc (theo trích đoạn tìm kiếm), Hội Gióng ở đền Phù Đổng và đền Sóc – UNESCO ghi danh 16/11/2010, Đền Mẫu Gióng, chùa Kiến Sơ (Phù Đổng) – liên quan, chưa tra nguồn
-- **Tóm tắt:** Đời Hùng Vương thứ sáu, giặc Ân sang xâm lược. Cậu bé làng Phù Đổng ba năm không nói, nghe sứ giả gọi thì vươn vai thành tráng sĩ, cưỡi ngựa sắt cầm roi sắt đánh giặc. Roi gãy, Gióng nhổ tre đánh tiếp; thắng giặc rồi bay về trời ở núi Sóc.
+- **Tóm tắt:** Đời Hùng Vương thứ sáu (theo nguồn thứ cấp, chưa đối chiếu LNCQ), giặc Ân sang xâm lược. Cậu bé làng Phù Đổng ba năm không nói, nghe sứ giả gọi thì vươn vai thành tráng sĩ, cưỡi ngựa sắt cầm roi sắt đánh giặc. Roi gãy, Gióng nhổ tre đánh tiếp; thắng giặc rồi bay về trời ở núi Sóc.
 - **Dị bản:**
   - Vũ khí: roi sắt / gậy sắt.
   - Tre đằng ngà vàng vì bị lửa ngựa phun cháy (dân gian).
@@ -70,14 +70,14 @@ Nguồn: `research/data/myths.json`.
 ## M006 — Sơn Tinh – Thủy Tinh [HUYỀN THOẠI]
 - **Vùng:** Ba Vì (Tản Viên) · **Nhạy cảm:** high · **Dùng:** candidate · **Xác minh:** B
 - **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 14 (VDULT ~1329 có Tản Viên; LNCQ tương truyền thời Trần, bản 1492)
-- **Nơi thờ / lễ hội:** Quần thể đền Thượng, đền Trung (thờ Ma Thị Cao Sơn Thần Nữ, người nuôi Tản Viên), đền Hạ ở Ba Vì, Hà Nội – lễ hội Tản Viên Sơn Thánh tháng Giêng (theo trích đoạn tìm kiếm), Đền Và (Sơn Tây, Hà Nội) (chưa tra nguồn), Việc thờ Thủy Tinh và Mị Nương (Ngọc Hoa): chưa xác minh – mặc định coi như được thờ
-- **Tóm tắt:** Hùng Vương thứ mười tám kén rể cho Mị Nương. Sơn Tinh mang sính lễ tới trước nên cưới được. Thủy Tinh dâng nước đánh, Sơn Tinh dời núi chống; hằng năm Thủy Tinh vẫn dâng nước báo thù.
+- **Nơi thờ / lễ hội:** Quần thể đền Thượng, đền Trung (thờ Ma Thị Cao Sơn Thần Nữ, người nuôi Tản Viên), đền Hạ ở Ba Vì, Hà Nội – lễ hội Tản Viên Sơn Thánh tháng Giêng (theo trích đoạn tìm kiếm), Đền Và (Sơn Tây, Hà Nội) thờ Tản Viên (theo trích đoạn tìm kiếm), Mị Nương (Ngọc Hoa) có thể được phối thờ cùng Tản Viên (theo trích đoạn tìm kiếm); việc thờ Thủy Tinh: chưa xác minh – mặc định coi như được thờ
+- **Tóm tắt:** Hùng Vương thứ mười tám (theo nguồn thứ cấp, chưa đối chiếu LNCQ) kén rể cho Mị Nương. Sơn Tinh mang sính lễ tới trước nên cưới được. Thủy Tinh dâng nước đánh, Sơn Tinh dời núi chống; hằng năm Thủy Tinh vẫn dâng nước báo thù.
 - **Dị bản:**
   - Sính lễ 'voi chín ngà, gà chín cựa, ngựa chín hồng mao' (bản dân gian phổ biến).
   - Mối quan hệ của Tản Viên với các truyền thuyết khác ở Ba Vì.
 - **Canon của game:** Bản dân gian phổ biến (sính lễ chín ngà, chín cựa, chín hồng mao). Lý do: được biết rộng rãi; các dị bản đưa vào Codex.
 - **Lưu ý thể hiện:** Tản Viên Sơn Thánh là một trong Tứ bất tử. Thủy Tinh không phải 'ác quỷ' mà là thần nước bị từ chối, nên thể hiện như một thế lực tự nhiên, không bêu xấu.
-- **Tiềm năng gameplay:** Set-piece lũ dâng: mục tiêu là cứu người, dẫn dân lên cao, dựng rào tre, đánh trống gõ cối trợ lực (chi tiết theo bản kể, chưa đối chiếu); nguy hiểm đến từ môi trường. Kẻ thù của chương KHÔNG là sinh vật nước, NPC không gọi nước là 'yêu/giặc'. Sơn Tinh, Thủy Tinh không phải boss, không bị đánh; dời núi chỉ trong cutscene. Không trao thần lực của Tản Viên cho người chơi.
+- **Tiềm năng gameplay:** Set-piece lũ dâng: mục tiêu là cứu người, dẫn dân lên cao, dựng rào tre, đánh trống báo hiệu; nguy hiểm đến từ môi trường. Trong bản kể (đề thi ghi nguồn LNCQ, NXB Kim Đồng 2019; chưa đối chiếu sách), dân đánh trống, hò reo để cứu viện Tản Viên chống Thủy Tinh: game KHÔNG làm trống thành đòn đánh vào nước hay 'trợ lực' cho một bên thần. Kẻ thù của chương KHÔNG là sinh vật nước, NPC không gọi nước là 'yêu/giặc'. Sơn Tinh, Thủy Tinh không phải boss, không bị đánh; dời núi chỉ trong cutscene. Không trao thần lực của Tản Viên cho người chơi.
 - **Nguồn:** LNCQ (Lĩnh Nam chích quái), VDULT (Việt điện u linh tập)
 
 ## M007 — Chử Đồng Tử – Tiên Dung (Nhất Dạ Trạch) [HUYỀN THOẠI]
@@ -171,10 +171,10 @@ Nguồn: `research/data/myths.json`.
 ## M015 — Triệu Quang Phục nhận móng rồng [HUYỀN THOẠI]
 - **Vùng:** Đầm Dạ Trạch (Hưng Yên) · **Nhạy cảm:** high · **Dùng:** candidate · **Xác minh:** B
 - **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 14–15 (LNCQ: tương truyền soạn thời Trần, bản còn lại do Vũ Quỳnh hiệu đính 1492, Kiều Phú; chưa đối chiếu); TT 1479 chép lại
-- **Nơi thờ / lễ hội:** Đền Dạ Trạch/Đa Hòa (Khoái Châu, Hưng Yên) thờ Chử Đồng Tử – chưa tra nguồn, Nơi thờ Triệu Quang Phục: chưa xác minh
+- **Nơi thờ / lễ hội:** Đền Dạ Trạch/Đa Hòa (Khoái Châu, Hưng Yên) thờ Chử Đồng Tử – chưa tra nguồn, Triệu Quang Phục được thờ ở nhiều nơi: đền Triệu Việt Vương (Khoái Châu, Dạ Trạch – Hưng Yên), Đình Vuông (Giao Thủy, Nam Định), Yên Ninh (Ninh Bình) (theo trích đoạn tìm kiếm)
 - **Tóm tắt:** Chử Đồng Tử cưỡi rồng xuống trao móng rồng cho Triệu Quang Phục cài lên mũ đâu mâu để đánh giặc.
 - **Canon của game:** Bản TT.
-- **Lưu ý thể hiện:** Chử Đồng Tử là một trong Tứ bất tử; việc thờ Triệu Quang Phục cần xác minh trước cổng Dạ Trạch. Quy mô trong game = quy mô truyền thuyết (QT-03).
+- **Lưu ý thể hiện:** Chử Đồng Tử là một trong Tứ bất tử; Triệu Quang Phục được thờ ở nhiều nơi (xem worship_sites). Quy mô trong game = quy mô truyền thuyết (QT-03).
 - **Tiềm năng gameplay:** Ngoài Game 1 (cổng Dạ Trạch). Móng rồng là vật Chử Đồng Tử trao cho Triệu Quang Phục, chỉ xuất hiện trên mũ đâu mâu của ông trong set-piece/cutscene; người chơi KHÔNG cầm. Người chơi nhận Bảo khí [SÁNG TẠO].
 - **Nguồn:** TT (Đại Việt sử ký toàn thư), LNCQ (Lĩnh Nam chích quái)
 
@@ -204,7 +204,7 @@ Nguồn: `research/data/myths.json`.
 
 ## M018 — Thạch Sanh [CỔ TÍCH]
 - **Vùng:** Toàn quốc · **Nhạy cảm:** low · **Dùng:** candidate · **Xác minh:** B
-- **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** chưa xác định (cổ tích; KTTC thế kỷ 20)
+- **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 18–19 (truyện Nôm Thạch Sanh, lục bát, khuyết danh – cần đối chiếu); KTTC thế kỷ 20
 - **Nơi thờ / lễ hội:** Chưa rõ có nơi thờ Thạch Sanh – chưa tra nguồn (mặc định true)
 - **Tóm tắt:** Thạch Sanh diệt chằn tinh, bắn đại bàng cứu công chúa và bị Lý Thông lừa nhiều lần. Đàn thần giải oan cho chàng; niêu cơm thần đẩy lui quân mười tám nước chư hầu.
 - **Dị bản:**
@@ -220,6 +220,7 @@ Nguồn: `research/data/myths.json`.
 - **Nơi thờ / lễ hội:** —
 - **Tóm tắt:** Bụt dạy câu thần chú 'khắc nhập, khắc xuất' để nối và tách trăm đốt tre.
 - **Canon của game:** Bản Nguyễn Đổng Chi.
+- **Lưu ý thể hiện:** 'Bụt' trong cổ tích là hình ảnh Phật trong tâm thức dân gian: không biếm họa, không tạo hình như tượng thờ cụ thể. Câu 'khắc nhập, khắc xuất' là cơ chế cổ tích, không phải thần khí của đối tượng được thờ.
 - **Tiềm năng gameplay:** Cơ chế giải đố ghép/tách vật thể.
 - **Nguồn:** KTTC (Kho tàng truyện cổ tích Việt Nam)
 
@@ -240,6 +241,7 @@ Nguồn: `research/data/myths.json`.
 - **Nơi thờ / lễ hội:** —
 - **Tóm tắt:** Các truyện cổ tích phổ biến.
 - **Canon của game:** Bản Nguyễn Đổng Chi.
+- **Lưu ý thể hiện:** Sọ Dừa có dị bản Chăm và Raglai: dùng dị bản của dân tộc nào cũng phải tham vấn cộng đồng; mặc định dùng bản KTTC. Chưa tìm thấy nơi thờ Sọ Dừa, Cây khế, Cuội (theo trích đoạn tìm kiếm).
 - **Tiềm năng gameplay:** Nhiệm vụ phụ và sự kiện ngẫu nhiên (ví dụ: 'chim thần' của truyện Cây khế đưa đi đảo vàng — 'may túi ba gang').
 - **Nguồn:** KTTC (Kho tàng truyện cổ tích Việt Nam)
 
@@ -300,12 +302,13 @@ Nguồn: `research/data/myths.json`.
 ## M028 — Thuồng luồng và tục xăm mình [HUYỀN THOẠI]
 - **Vùng:** Sông nước Bắc Bộ · **Nhạy cảm:** med · **Dùng:** candidate · **Xác minh:** B
 - **Được thờ:** có · **Người chơi được cầm vật:** không · **Văn bản sớm nhất:** 14–15 (LNCQ: tương truyền soạn thời Trần, bản còn lại do Vũ Quỳnh hiệu đính 1492, Kiều Phú; chưa đối chiếu); TT Ngoại kỷ 1479 chép lại (chưa đối chiếu); tục 'đoạn phát văn thân' của người Việt (Yue) có trong Trang Tử và chú giải Hán thư – chưa đối chiếu, Yue không đồng nhất với Lạc Việt
-- **Nơi thờ / lễ hội:** Không có nơi thờ riêng gắn với truyện (chưa tra nguồn); người dạy tục (vua Hùng/Lạc Long Quân theo bản kể) được thờ ở Đền Hùng
-- **Tóm tắt:** Theo LNCQ (TT chép lại, chưa đối chiếu): dân xuống nước đánh cá thường bị giao long/thuồng luồng hại, tâu lên vua; vua dạy lấy mực vẽ mình hình thủy quái để thủy tộc tưởng là đồng loại mà không hại nữa. Người ra lệnh là vua Hùng theo nhiều bản kể; một số bản kể gán cho Lạc Long Quân – cần đối chiếu.
+- **Nơi thờ / lễ hội:** Không có nơi thờ riêng gắn với truyện (chưa tra nguồn); vua Hùng (người dạy tục theo nhiều bản kể) được thờ ở Đền Hùng
+- **Tóm tắt:** Theo LNCQ (TT chép lại, chưa đối chiếu): dân xuống nước đánh cá thường bị giao long/thuồng luồng hại, tâu lên vua; vua dạy lấy mực vẽ mình hình thủy quái để thủy tộc tưởng là đồng loại mà không hại nữa. Người ra lệnh là 'vua' (vua Hùng theo nhiều bản kể); chưa tìm được bản nào ghi rõ Lạc Long Quân ra lệnh.
 - **Dị bản:**
-  - Người dạy tục: vua Hùng (TT, Trần Trọng Kim chép 'Hùng Vương thứ nhất') hay Lạc Long Quân (một số bản kể) – chưa đối chiếu.
+  - Người dạy tục: 'vua' (vua Hùng theo nhiều bản kể; Trần Trọng Kim chép 'Hùng Vương thứ nhất'). Cụm 'hình Long Quân dạng thủy quái' ở một số bản kể là nội dung hình vẽ, không có nghĩa Lạc Long Quân là người dạy. Chưa đối chiếu.
   - Hình vẽ: 'hình thủy quái' / 'hình Long Quân dạng thủy quái' / 'hình rồng ở ngực, bụng, chân'; chất liệu: mực hoặc chàm – khác nhau giữa các bản kể.
   - Tục xăm rồng ở đùi của vua Trần, bỏ từ Trần Anh Tông (TT, chưa đối chiếu) – chỉ dùng cho Codex.
+  - Quân Trần thích chữ 'Sát Thát' (1284–1285, cần đối chiếu TT) – chỉ dùng cho Codex.
 - **Canon của game:** Bản LNCQ.
 - **Lưu ý thể hiện:** Hình xăm là tục của dân thường, không phải thần khí. Thuồng luồng có thể gắn với tín ngưỡng thủy thần ở một số làng (chưa xác minh): thiết kế thuồng luồng làm kẻ thù không gắn với đền miếu có thật. Không dùng thuồng luồng làm kẻ thù trong chương Ba Vì.
 - **Tiềm năng gameplay:** Nhánh kỹ năng hình xăm [SÁNG TẠO] dựa trên tục vẽ mình của dân thường (kỹ nghệ dòng họ, không phải thần khí); thuồng luồng là quái thủy hợp lệ ở các chương trừ Ba Vì; phản diện xuyên suốt 'Thuồng luồng chúa' [SÁNG TẠO].
