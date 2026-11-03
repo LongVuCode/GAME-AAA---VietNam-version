@@ -1,0 +1,17 @@
+{
+  "name": "ngb-demo-0-1-web-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Track W: graybox web prototype of Demo 0.1 (three.js). Not final art.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test test/",
+    "smoke": "node build.mjs && node test/smoke.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0",
+    "three": "0.169.0"
+  }
+}
