@@ -633,7 +633,10 @@ void ReadWeapons(FReader& R, const FJson& J, FArpgConfig& Config)
 			P.Move = ReadMoveStats(R, M, MP);
 			R.String(M, "input", MP, P.Input, true);
 			R.Int(M, "chain_index", MP, P.ChainIndex, true);
-			R.Float(M, "combo_window_s", MP, P.Move.ChainLinkWindow, true);
+			if (R.Float(M, "combo_window_s", MP, P.Move.ChainLinkWindow, true) && P.Move.ChainLinkWindow < 0.0f)
+			{
+				R.Error(Join(MP, "combo_window_s"), "must be >= 0");
+			}
 			R.String(M, "requires_skill", MP, P.Move.RequiredUnlock, false);
 			if (R.Find(M, "charge") != nullptr)
 			{
@@ -714,7 +717,10 @@ void ReadPhases(FReader& R, const FJson& E, const std::string& Path, FBossConfig
 	R.ForEachObject(E, "phases", Path, true, [&R, &Boss](const FJson& Ph, const std::string& PP) {
 		FBossPhase Phase;
 		R.String(Ph, "id", PP, Phase.Id, true);
-		R.Float(Ph, "the_max", PP, Phase.MaxPosture, false);
+		if (R.Float(Ph, "the_max", PP, Phase.MaxPosture, false) && !(Phase.MaxPosture > 0.0f))
+		{
+			R.Error(Join(PP, "the_max"), "must be > 0");
+		}
 		R.Float(Ph, "speed_mult", PP, Phase.SpeedMult, false);
 		R.Float(Ph, "telegraph_time_mult", PP, Phase.TelegraphTimeMult, false);
 		R.Float(Ph, "transition_beat_s", PP, Phase.TransitionBeat, false);
@@ -976,7 +982,7 @@ void ReadLineage(FReader& R, const FJson& J, FArpgConfig& Config)
 			R.Expect(*Unlock, "type", Join(MP, "unlock"), "flag");
 			R.String(*Unlock, "flag", Join(MP, "unlock"), House.UnlockFlag, true);
 		}
-		House.Move.RequiredUnlock = House.UnlockFlag;
+		House.Move.RequiredUnlock = House.Id; // learned via the flag, inherited by id (QA N6)
 		House.Move.ChainLinkWindow = 0.0f;
 		L.HouseMoves.push_back(std::move(House));
 	});

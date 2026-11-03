@@ -3,6 +3,7 @@
 
 #include "MathUtil.h"
 
+#include <algorithm>
 #include <limits>
 #include <queue>
 
@@ -87,8 +88,18 @@ int FComboGraph::FindMove(const std::string& Id) const
 	return RootNode;
 }
 
-std::optional<int> FComboGraph::FindNext(int From, EInputType Input, float DelaySincePrevious,
-	const std::set<std::string>* Unlocked) const
+float FComboGraph::MaxPauseFrom(int From) const
+{
+	float Max = 0.0f;
+	for (const FComboTransition& T : Transitions)
+	{
+		Max = T.From == From ? std::max(Max, T.MinDelay) : Max;
+	}
+	return Max;
+}
+
+std::optional<int> FComboGraph::FindNext(int From, EInputType Input, float PauseSincePrevious,
+	const std::set<std::string>* Unlocked, float LinkWindow) const
 {
 	for (const FComboTransition& T : Transitions)
 	{
@@ -102,7 +113,13 @@ std::optional<int> FComboGraph::FindNext(int From, EInputType Input, float Delay
 			continue;
 		}
 		// Root/context transitions ignore the delay: there is no previous move in the chain.
-		if (IsSpecialNode(From) || (DelaySincePrevious >= T.MinDelay && DelaySincePrevious <= UpperBound(T.MaxDelay)))
+		if (IsSpecialNode(From))
+		{
+			return T.To;
+		}
+		const bool bInRange = PauseSincePrevious >= T.MinDelay && PauseSincePrevious <= UpperBound(T.MaxDelay);
+		const bool bLinked = LinkWindow < 0.0f || PauseSincePrevious <= T.MinDelay + LinkWindow;
+		if (bInRange && bLinked)
 		{
 			return T.To;
 		}
@@ -208,7 +225,8 @@ FComboTickResult FComboRunner::Tick(float DeltaSeconds)
 	{
 		ContextNode = FComboGraph::RootNode;
 	}
-	if (!Timeline.IsRunning() && CurrentMove != FComboGraph::RootNode && (Now - LastFinishTime) > LinkWindowOf(CurrentMove))
+	if (!Timeline.IsRunning() && CurrentMove != FComboGraph::RootNode
+		&& (Now - LastFinishTime) > static_cast<double>(LinkWindowOf(CurrentMove) + Graph->MaxPauseFrom(CurrentMove)))
 	{
 		CurrentMove = FComboGraph::RootNode;
 		bHasPrevious = false;
@@ -226,7 +244,7 @@ float FComboRunner::LinkWindowOf(int Move) const
 void FComboRunner::OpenContext(int Node, float Window)
 {
 	ContextNode = Node;
-	ContextExpiry = Now + Detail::NonNegative(Window);
+	ContextExpiry = Now + static_cast<double>(Detail::NonNegative(Window));
 }
 
 bool FComboRunner::TryStartBufferedMove(FComboTickResult& Result)
@@ -242,15 +260,15 @@ bool FComboRunner::TryStartBufferedMove(FComboTickResult& Result)
 	{
 		Next = Graph->FindNext(ContextNode, Input->Type, 0.0f, &Unlocked);
 	}
-	const float Delay = bHasPrevious ? (Input->Time - LastMoveStartTime) : std::numeric_limits<float>::max();
-	if (!Next && CurrentMove != FComboGraph::RootNode
-		&& (Timeline.IsRunning() || (Input->Time - LastFinishTime) <= LinkWindowOf(CurrentMove)))
+	// Pause after the previous move: 0 while it is still running (the press was buffered).
+	const float Pause = Timeline.IsRunning() ? 0.0f : static_cast<float>(std::max(0.0, Input->Time - LastFinishTime));
+	if (!Next && CurrentMove != FComboGraph::RootNode && bHasPrevious)
 	{
-		Next = Graph->FindNext(CurrentMove, Input->Type, Delay, &Unlocked);
+		Next = Graph->FindNext(CurrentMove, Input->Type, Pause, &Unlocked, LinkWindowOf(CurrentMove));
 	}
 	if (!Next)
 	{
-		Next = Graph->FindNext(FComboGraph::RootNode, Input->Type, Delay, &Unlocked);
+		Next = Graph->FindNext(FComboGraph::RootNode, Input->Type, 0.0f, &Unlocked);
 	}
 	if (!Next)
 	{
@@ -260,7 +278,6 @@ bool FComboRunner::TryStartBufferedMove(FComboTickResult& Result)
 	Timeline.Start(Graph->GetMove(*Next).Timing);
 	CurrentMove = *Next;
 	ContextNode = FComboGraph::RootNode;
-	LastMoveStartTime = Now;
 	bHasPrevious = true;
 	Result.StartedMove = *Next;
 	return true;

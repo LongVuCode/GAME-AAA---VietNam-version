@@ -94,6 +94,25 @@ class RealData(unittest.TestCase):
         del boss["khoen"]["feature_flag"]
         self.assertTrue(any("feature_flag" in e for e in self.errors(b)))
 
+    def test_khoen_boss_without_hp_floor_is_error(self):
+        for value in (None, 0, -1, "1", True):
+            with self.subTest(hp_floor=value):
+                b = self.fresh()
+                boss = next(e for e in b["enemies"]["enemies"] if e["id"] == "boss_lon_loi_dam")
+                if value is None:
+                    del boss["hp_floor"]
+                else:
+                    boss["hp_floor"] = value
+                self.assertTrue(any("needs hp_floor > 0" in e for e in self.errors(b)))
+
+    def test_khoen_boss_floor_must_force_final_stagger(self):
+        b = self.fresh()
+        boss = next(e for e in b["enemies"]["enemies"] if e["id"] == "boss_lon_loi_dam")
+        boss["hp_floor_forces_final_stagger"] = False
+        self.assertTrue(any("hp_floor_forces_final_stagger=true" in e for e in self.errors(b)))
+        del boss["hp_floor_forces_final_stagger"]
+        self.assertTrue(any("hp_floor_forces_final_stagger=true" in e for e in self.errors(b)))
+
     def test_khoen_shard_item_is_error(self):
         b = self.fresh()
         b["items"]["items"].append({"id": "mat_manh_khoen", "category": "material", "label": "SÁNG TẠO",

@@ -64,7 +64,7 @@ export class Player {
     // ---- defensive inputs (highest priority)
     if (input.pressed('dodge') && this._canDodge()) this._startDodge(input);
     else if (input.pressed('parry') && (this.state === 'free' || this.state === 'guard')) {
-      if (this.defense.startParry()) { this.state = 'parry'; this.stateT = 0; }
+      if (this.defense.startParry()) { this.state = 'parry'; this.stateT = 0; this.chainIndex = 0; } // any other action breaks the 'pause' branch
     }
     if (input.pressed('burst') && this.state === 'free' && this.drum.canBurst()) this._startBurst();
     if (input.pressed('heal') && this.state === 'free') {
@@ -256,7 +256,7 @@ export class Player {
     if (the > 0 && this.the.applyDamage(the)) {
       this.state = 'guardbreak'; this.stateT = 0; g.ui.toast(g.i18n.t('msg_guard_break'));
     } else if (outcome === 'hit' && hp > 0 && !this.superArmor) {
-      this.state = 'hitstun'; this.stateT = 0; this.cur = null; this.pending = null;
+      this.state = 'hitstun'; this.stateT = 0; this.cur = null; this.pending = null; this.chainIndex = 0;
       this.stunS = heavy ? this.tun.player.hitstun_heavy_s : this.tun.player.hitstun_light_s;
     }
     if (this.hp <= 0) { this.alive = false; this.state = 'dead'; g.onPlayerDeath(); }

@@ -522,6 +522,13 @@ def validate(b: dict, research: dict) -> Report:
                 rep.err(f"enemies.{eid}: khoen needs a feature_flag so it can be disabled (V9)")
             if "fallback_when_disabled" not in kh:
                 rep.err(f"enemies.{eid}: khoen needs fallback_when_disabled (V9)")
+            # The fight always ends by prying: the creature never dies (DEMO §6), so it needs a
+            # health floor that forces the final stagger (QA N1).
+            floor = e.get("hp_floor")
+            if not isinstance(floor, (int, float)) or isinstance(floor, bool) or floor <= 0:
+                rep.err(f"enemies.{eid}: khoen boss needs hp_floor > 0 (the creature never dies; fight ends by prying)")
+            if e.get("hp_floor_forces_final_stagger") is not True:
+                rep.err(f"enemies.{eid}: khoen boss needs hp_floor_forces_final_stagger=true (floor opens the pry)")
             if not isinstance(kh.get("crack_stages"), int) or kh["crack_stages"] < 1:
                 rep.err(f"enemies.{eid}: khoen.crack_stages must be int >= 1")
             if kh.get("pry_beats") != tuning.get("pry", {}).get("beats"):

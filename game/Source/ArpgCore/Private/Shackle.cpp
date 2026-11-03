@@ -114,13 +114,17 @@ EPryResult FShackle::InputBeat()
 	return RegisterHit();
 }
 
-EPryResult FShackle::Tick(float DeltaSeconds)
+EPryResult FShackle::Tick(float RealDeltaSeconds)
 {
 	if (State != EShackleState::Prying)
 	{
 		return EPryResult::None;
 	}
-	const float Dt = Detail::SanitizeDelta(DeltaSeconds);
+	float Dt = Detail::SanitizeDelta(RealDeltaSeconds);
+	if (Config.MaxTickDelta > 0.0f)
+	{
+		Dt = std::min(Dt, Config.MaxTickDelta);
+	}
 	PryElapsed += Dt;
 	switch (Mode)
 	{

@@ -299,6 +299,32 @@ TResult<FGeneration> Handover(const FGeneration& Previous, const FHandoverReques
 	return TResult<FGeneration>::Ok(std::move(Next));
 }
 
+int LearnHouseMoves(FGeneration& Generation, const FLineageConfig& Config, const std::set<std::string>& Flags)
+{
+	int Added = 0;
+	for (const FHouseMoveDef& Move : Config.HouseMoves)
+	{
+		if (Move.LearnedBy == Generation.HeirId && Flags.count(Move.UnlockFlag) != 0 && Generation.HouseMoves.insert(Move.Id).second)
+		{
+			++Added;
+		}
+	}
+	return Added;
+}
+
+std::set<std::string> MakeUnlockSet(const FGeneration& Generation)
+{
+	std::set<std::string> Out(Generation.HouseMoves.begin(), Generation.HouseMoves.end());
+	for (const auto& [SkillId, Rank] : Generation.Skills.Ranks)
+	{
+		if (Rank > 0)
+		{
+			Out.insert(SkillId);
+		}
+	}
+	return Out;
+}
+
 FStatus TakeFromThap(FGeneration& Generation, std::size_t ThapIndex)
 {
 	if (ThapIndex >= Generation.Thap.size())

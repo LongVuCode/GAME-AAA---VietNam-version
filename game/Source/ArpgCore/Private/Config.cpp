@@ -190,6 +190,9 @@ void ValidateBoss(const FBossConfig& Boss, const FCraftingDatabase& Crafting, co
 		C.Unit(Sh.MissPostureRecoverFraction, Path + ".shackle.miss_posture_recover_fraction");
 		C.NonNegative(Sh.HoldDurationPerBeat, Path + ".shackle.hold_duration_per_beat");
 	}
+	// The shackled creature never dies; the fight ends by prying (DEMO §6, QA N1).
+	C.Check(!Sh.bEnabled || (Boss.HealthFloor > 0.0f && Boss.bHealthFloorForcesFinalStagger), Path + ".health_floor",
+		"a shackled boss needs health_floor > 0 that forces the final stagger");
 	// No softlock: with a health floor the fight must still be able to end.
 	C.Check(Boss.HealthFloor <= 0.0f || Sh.bEnabled || Boss.bHealthFloorForcesFinalStagger, Path,
 		"health floor without shackle or forced final stagger: the fight can never end");

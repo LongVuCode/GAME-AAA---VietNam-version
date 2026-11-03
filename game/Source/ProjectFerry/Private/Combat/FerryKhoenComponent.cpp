@@ -67,13 +67,13 @@ bool UFerryKhoenComponent::PerformFinisher()
 	return Encounter.IsSet() && Encounter->PerformFinisher();
 }
 
-EFerryPryResult UFerryKhoenComponent::Advance(float GameDt)
+EFerryPryResult UFerryKhoenComponent::Advance(float GameDt, float RealDt)
 {
 	if (!Encounter.IsSet())
 	{
 		return EFerryPryResult::None;
 	}
-	const EFerryPryResult Result = Convert(Encounter->Tick(GameDt));
+	const EFerryPryResult Result = Convert(Encounter->Tick(GameDt, RealDt));
 	if (Result != EFerryPryResult::None)
 	{
 		OnPryEvent.Broadcast(Result);

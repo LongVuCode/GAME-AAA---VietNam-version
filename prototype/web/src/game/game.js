@@ -24,6 +24,8 @@ import { makeHumanoid, makeTusk } from './meshes.js';
 const SETTINGS_KEY = 'ngb_demo01_settings_v1';
 const START_CODEX = ['cx_ben_lau', 'cx_mui_sao', 'cx_bronze_weapons', 'cx_ho_tinh'];
 const FREED_FLAG = 'flag_boss_lon_loi_freed';
+const MAX_SIM_DT_S = 0.1;  // clamp of one simulation step (s)
+const MAX_WALL_DT_S = 0.5; // clamp of one real-time step (s)
 // Screen marker height above each enemy (m), graybox presentation only.
 const MARKER_H = { en_cua_cang_bun: 1.5, en_bo_ngua_lau: 2.2, en_u_bun: 2.8, boss_lon_loi_dam: 3.4 };
 
@@ -233,8 +235,9 @@ export class Game {
   frame() {
     const now = performance.now();
     const rawDt = Math.max(0, (now - this.lastNow) / 1000);
-    const realDt = Math.min(0.1, rawDt);   // simulation step (clamped)
-    const wallDt = Math.min(0.5, rawDt);   // wall clock: timers, pry rhythm, UI
+    // Large hitches (tab switch, GC, slow machine) are clamped so the simulation never jumps.
+    const realDt = Math.min(MAX_SIM_DT_S, rawDt);  // simulation step (then scaled by hit-stop)
+    const wallDt = Math.min(MAX_WALL_DT_S, rawDt); // real time: timers, pry rhythm, UI — never hit-stop/time-scaled
     this.frameStart = this.lastNow; this.lastNow = now;
     this.fpsFrames.push(now); while (this.fpsFrames.length && now - this.fpsFrames[0] > 1000) this.fpsFrames.shift();
     this.fps = this.fpsFrames.length;
@@ -270,7 +273,9 @@ export class Game {
     this.gameNow = (this.gameNow ?? 0) + dt;
     const p = this.player;
     this.updateLock(i);
-    if (this.pry) this.updatePry(wallDt, i);
+    // The pry rhythm runs on real time (wallDt), NOT on hit-stop-scaled game time, so it stays in
+    // sync with the drum the player hears (QA: hit-stop on beats 1-2 must not shift beat 3).
+    if (this.pry && !this.debugPryFrozen) this.updatePry(wallDt, i);
     p.update(dt, this.gameNow, i);
     if ((i.pressed('slot1') || i.pressed('slot2')) && !this.locked) this.swapWeapon(i.pressed('slot1') ? 0 : 1);
     this.tokens.tick(dt);
@@ -607,7 +612,7 @@ export class Game {
     }
     const T = this.i18n.t;
     if (foe) {
-      const key = foe.isBoss ? (foe.enc.khoen.enabled ? (this.settings.acc.acc_hold_instead_of_tap ? 'prompt_pry_hold' : 'prompt_pry') : 'prompt_shove') : 'prompt_finish_normal';
+      const key = foe.isBoss ? (foe.enc.khoen.enabled ? (this.settings.acc.acc_hold_instead_of_tap ? 'prompt_pry_hold' : 'prompt_pry') : 'prompt_finisher_shove') : 'prompt_finish_normal';
       this.ui.prompt(`<span class="kbd">F</span> ${this.ui.esc(T(key))}`);
       if (i.pressed('interact') && p.state !== 'attack') {
         if (foe.isBoss) { if (foe.enc.khoen.enabled) this.startPry(foe); else this.shoveBoss(foe); }
@@ -988,6 +993,8 @@ export class Game {
         if (e) { g.player.yaw = Math.atan2(e.x - g.player.x, e.z - g.player.z); g.cam.yaw = Math.atan2(-(e.x - g.player.x), -(e.z - g.player.z)); }
       },
       setGod(on) { g.player.invulnDebug = !!on; },
+      /** Test-only: hold the pry clock while a screenshot is taken. */
+      freezePry(on) { g.debugPryFrozen = !!on; },
       hitEnemy(uid, hp, the) { const e = [...g.enemies, ...(g.practiceEnemies ?? [])].find((x) => x.uid === uid); const r = e?.receiveHit({ hp, the }); if (e) g.onHitResult(e, r); return r; },
       setCameraYaw(y) { g.cam.yaw = y; },
       freezeEnemy(uid, on) { const e = g.enemies.find((x) => x.uid === uid); if (e) e.engaged = !on && e.engaged; if (e && on) { e.state = 'idle'; e.spawn = { x: e.x, z: e.z }; } },

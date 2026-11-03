@@ -29,16 +29,16 @@ game/Source/ArpgCore/
 
 | # | Hệ thống | Header | Ý chính |
 |---|---|---|---|
-| 1 | Nhịp đòn | `ActionTimeline.h`, `InputBuffer.h`, `ComboGraph.h` | Có các phần sau: <ul><li>Startup/Active/Recovery với sự kiện cạnh (vẫn báo đúng khi `dt` lớn). Cửa sổ cancel mặc định = toàn bộ Recovery.</li><li>Input buffer có hạn tuổi.</li><li>Combo graph rẽ nhánh theo nhẹ/nặng **và** độ trễ tính từ lúc đòn trước bắt đầu (nhánh "dừng").</li><li>Hai node ngữ cảnh `@dodge` và `@perfect_parry` cho `dodge,L` và `perfect_parry,L/H`.</li><li>Cửa sổ nối đòn riêng cho từng đòn (`combo_window_s`, 0 = hết chuỗi).</li><li>Đòn khóa theo kỹ năng hoặc cờ (`RequiredUnlock`).</li><li>Né chỉ hủy được đòn sau `DefenseCancelDelay`.</li></ul> |
+| 1 | Nhịp đòn | `ActionTimeline.h`, `InputBuffer.h`, `ComboGraph.h` | Có các phần sau: <ul><li>Startup/Active/Recovery với sự kiện cạnh (vẫn báo đúng khi `dt` lớn). Cửa sổ cancel mặc định = toàn bộ Recovery.</li><li>Input buffer có hạn tuổi.</li><li>Combo graph rẽ nhánh theo nhẹ/nặng **và** khoảng dừng tính từ lúc đòn trước **kết thúc** (nhánh "dừng"; bấm trong lúc đòn còn chạy thì khoảng dừng = 0).</li><li>Đồng hồ combo và input buffer dùng `double`.</li><li>Hai node ngữ cảnh `@dodge` và `@perfect_parry` cho `dodge,L` và `perfect_parry,L/H`.</li><li>Cửa sổ nối đòn riêng cho từng đòn (`combo_window_s`, 0 = hết chuỗi).</li><li>Đòn khóa theo kỹ năng hoặc cờ (`RequiredUnlock`).</li><li>Né chỉ hủy được đòn sau `DefenseCancelDelay`.</li></ul> |
 | 2 | Phòng thủ | `Defense.h` | <ul><li>Né có i-frame, perfect dodge và thời gian hồi.</li><li>Đỡ nhịp (parry) có cửa sổ thường và perfect, nhân hệ số độ khó.</li><li>Đỡ thường (guard): giảm sát thương, nhân Thế nhận vào.</li><li>Cờ `bUnparryable`/`bUnguardable`/`bUndodgeable` trên đòn.</li></ul> |
 | 3 | Thế (posture) | `Posture.h` | <ul><li>Tích lũy tới đầy thì vỡ Thế, choáng N giây; hồi sau một khoảng delay.</li><li>Choáng cuối (`ForceStagger`, không hết hạn).</li><li>Đổi `MaxPosture` theo pha, giữ tỉ lệ.</li><li>Tạm dừng đồng hồ choáng khi đang cạy.</li></ul> |
 | 4 | Sát thương | `Damage.h` | <ul><li>Máu và Thế × hệ số vũ khí × hệ số độ khó × hệ số stagger × (1 − giảm sát thương).</li><li>`ApplyGuard` tính sát thương khi đỡ.</li><li>`ComputeParryExchange` tính Thế dội lại khi parry: lượng cố định cộng phần theo tỉ lệ.</li></ul> |
 | 5 | Hit-stop | `HitStop.h` | <ul><li>Đường cong theo trọng lượng đòn. Dữ liệu `light/medium/heavy/finisher` được đặt vào các điểm 1/2/3/4.</li><li>Kẹp min/max.</li><li>Thời lượng riêng cho nhịp cạy và lúc nhả cạy.</li><li>`FHitStopClock` đổi `dt` thật thành `dt` game.</li></ul> |
 | 6 | Nhịp trống | `DrumMeter.h` | <ul><li>N nấc.</li><li>Cộng điểm khi: đòn nhẹ, đòn nặng, đỡ nhịp, đỡ nhịp hoàn hảo, né hoàn hảo, phá Thế, nhịp cạy.</li><li>Trúng đòn thì mất điểm, có tùy chọn giữ các nấc đã đầy.</li><li>Rời giao tranh thì điểm giảm dần.</li><li>Hồi trống tiêu `SurgeCostNotches` nấc.</li></ul> |
 | 7 | Khoen (cạy) | `Shackle.h`, `BossEncounter.h`, `Enemy.h` | Xem §3 |
-| 8 | Dòng họ | `Lineage.h` | `Handover(prev, request, config) -> next` làm các việc sau: <ul><li>Cây kỹ năng giữ 100%.</li><li>Giữ điểm kỹ năng chưa tiêu và cộng điểm thưởng khi bàn giao.</li><li>Giữ vũ khí và Đòn nhà (`house_moves`, nếu `inheritable`).</li><li>Ghi moveset đời trước vào `FamilyMovesets`.</li><li>Đưa Bảo khí đang mang vào Thạp, xếp theo đời; đời sau lấy ra được.</li></ul> Cây kỹ năng có kiểm tra tiền đề, điểm, nhánh bị khóa và vòng lặp. |
+| 8 | Dòng họ | `Lineage.h` | `Handover(prev, request, config) -> next` làm các việc sau: <ul><li>Cây kỹ năng giữ 100%.</li><li>Giữ điểm kỹ năng chưa tiêu và cộng điểm thưởng khi bàn giao.</li><li>Giữ vũ khí và Đòn nhà (`house_moves`, nếu `inheritable`). `LearnHouseMoves` học đòn khi có cờ. `MakeUnlockSet` trả về tập kỹ năng + đòn nhà để đưa vào `FComboRunner::SetUnlocked`; đòn nhà trong combo được khóa bằng **id** của đòn.</li><li>Ghi moveset đời trước vào `FamilyMovesets`.</li><li>Đưa Bảo khí đang mang vào Thạp, xếp theo đời; đời sau lấy ra được.</li></ul> Cây kỹ năng có kiểm tra tiền đề, điểm, nhánh bị khóa và vòng lặp. |
 | 9 | Chế tác | `Crafting.h`, `Rng.h` | <ul><li>Công thức vật liệu → Bảo khí.</li><li>Bảo khí bắt buộc có phần thú tự rụng (SB-06).</li><li>Món chế ra bắt đầu ở cấp nền của item.</li><li>Nâng cấp theo công thức `upgrade` trong dữ liệu. Không có công thức thì dùng chi phí tính theo cấp (số nguyên).</li><li>Thao tác trừ kho là nguyên tử.</li><li>Bonus độ hiếm dùng RNG có seed và không bao giờ lên Thần khí.</li></ul> |
-| 10 | Đồ thị bí mật | `SecretGraph.h` | <ul><li>Node làm được khi có đủ manh mối `requires.all` và ít nhất một manh mối trong `requires.any`.</li><li>Manh mối không bao giờ mất. Node `is_start` đã hoàn thành sẵn từ đầu.</li><li>`CheckNoSoftlock()` duyệt **toàn bộ** trạng thái: mọi node đều tới được, và từ mọi trạng thái vẫn tới được node kết thúc. Ngữ nghĩa giống `tools/design_validate.py`. Nếu không đạt, hàm trả về phản ví dụ ngắn nhất.</li><li>`GetHint(progress, tier 1..3)` chọn node kế tiếp không dẫn vào ngõ cụt.</li></ul> |
+| 10 | Đồ thị bí mật | `SecretGraph.h` | <ul><li>Node làm được khi có đủ manh mối `requires.all` và ít nhất một manh mối trong `requires.any`.</li><li>Manh mối không bao giờ mất. Node `is_start` đã hoàn thành sẵn từ đầu.</li><li>`CheckNoSoftlock()` duyệt **toàn bộ** trạng thái: mọi node đều tới được, và từ mọi trạng thái vẫn tới được node kết thúc. Ngữ nghĩa giống `tools/design_validate.py`. Nếu không đạt, hàm trả về phản ví dụ ngắn nhất.</li><li>`GetHint(progress, tier 1..3)` chỉ tới bước đầu của **đường ngắn nhất** tới node kết thúc. Vì vậy hàm không bao giờ chỉ tới một nguồn thay thế của manh mối đã có, và cũng không chỉ vào ngõ cụt.</li></ul> |
 | 11 | Dữ liệu | `Config.h`, `DesignDataLoader.h` | `LoadDesignData` đọc 6 file thiết kế (§4) rồi chạy `ValidateConfig` để kiểm tra: <ul><li>Khoảng giá trị.</li><li>Tham chiếu chéo.</li><li>Combo mơ hồ.</li><li>Softlock bí mật.</li><li>Boss có kết thúc được không.</li><li>Phần thưởng là mảnh khoen.</li></ul> |
 
 ## 3. Cơ chế khoen (VERDICT, `DEMO_0_1_DESIGN.md` §3, §6, `enemies.json`)
@@ -54,6 +54,16 @@ Prying: 3 nhịp trên lưới trống 84 bpm (ô n ở LeadIn + n·60/84 s), m�
 Chế độ: Timed (bấm), Hold (giữ 0,5 s mỗi nhịp, nhả chỉ reset tiến độ), Auto ("Nghe chuyện")
 Khoen tắt (cờ feature_khoen, V9/K0): máu chạm sàn -> choáng cuối -> PerformFinisher (cú đẩy) -> Fled
 ```
+### Hợp đồng đồng hồ (UE và prototype phải làm theo)
+- **Cạy chạy theo thời gian THỰC, không bị hit-stop co giãn** (QA S2). Gọi `FBossEncounter::Tick(GameDt, RealDt)`:
+  - `GameDt` là thời gian game sau hit-stop / slow-mo, dùng cho Thế và choáng.
+  - `RealDt` là thời gian khung hình **trước** hit-stop. Trong UE là `FApp::GetDeltaTime()` trước time dilation; trong prototype là dt của frame trước `FHitStopClock`.
+  - `FShackle::Tick` cũng nhận dt thực.
+  - `Tick(dt)` một tham số chỉ dùng khi không có hit-stop.
+- **Lý do:** nếu đưa dt đã qua hit-stop vào, mỗi nhịp trúng làm lưới trống lệch 0,08 s. Người chơi bấm đúng tiếng trống 84 bpm sẽ ra "hit hit miss miss FAILED". Test `pry judged on real time` tái hiện cả hai trường hợp.
+- **Kẹp bước:** mỗi `Tick` của cạy bị kẹp ở `MaxTickDelta` = 0,1 s, nên một khung hình giật 2,5 s không đốt hết lượt thử lại (N4). Game nên tạm dừng cạy và nhạc trống khi cửa sổ mất focus.
+- Các hệ thống khác vẫn chỉ lọc dt không hợp lệ. Engine nên tự kẹp dt khung hình: UE dùng `MaxDeltaTime`, prototype kẹp trước khi gọi.
+
 - Trận **luôn kết bằng cạy** khi khoen bật. Boss không chết, vì máu không xuống dưới `hp_floor`.
 - Pha 2 bắt đầu khi khoen nứt ≥ 2 **hoặc** máu ≤ 50%. Khi đó Thế tối đa đổi từ 320 xuống 260, giữ nguyên tỉ lệ.
 - **Mảnh khoen không cho người chơi sức mạnh:**
@@ -61,9 +71,10 @@ Khoen tắt (cờ feature_khoen, V9/K0): máu chạm sàn -> choáng cuối -> P
   - Vật liệu loại `shackle_fragment` không được làm đầu vào chế tác hay nâng cấp, và không được nằm trong phần rơi.
   - Không có hàm nào đếm mảnh.
 - **Bằng chứng chống softlock ở mức logic** (chưa phải ở mức animation):
-  - Test bot dùng **tham số thật**: 8 seed × khoen bật/tắt. Bot nhắm trúng 55–90%, có hụt nhịp cạy.
+  - Test bot dùng **tham số thật**: 8 seed × khoen bật/tắt, có hit-stop. Bot nghe trống theo đồng hồ thực **của chính nó**, nhắm trúng 55–90%.
   - Khoen bật luôn kết thúc bằng Freed, khoen tắt luôn kết thúc bằng Fled, cả hai đều rơi `mat_nanh_rung`.
-  - Thời gian trận mô phỏng 48–64 s. Bot luôn đánh trúng, nên con số này **không** phải số liệu cân bằng.
+  - Thời gian trận mô phỏng 48–71 s. Bot luôn đánh trúng, nên con số này **không** phải số liệu cân bằng.
+  - Trong lần chạy ngày 2026-11-03, 1/8 lượt khoen bật (seed 2, 70,6 s) phải cạy 2 lần, nghĩa là nhánh "cạy hỏng → hồi nửa Thế → phá lại" đã chạy trên dữ liệu thật. Ngoài ra có test riêng cho nhánh này với dữ liệu thật (`a failed pry ... restores half the posture`).
   - Có thêm 50 lượt bot với tham số tổng hợp.
 
 ## 4. Đọc dữ liệu thiết kế (`LoadDesignData`)
@@ -103,13 +114,35 @@ Những chỗ thiết kế không nói, ArpgCore chọn như sau:
 | 5 | Hệ số sát thương khi địch đang choáng | **1,0** (dữ liệu không có), để không tạo hằng số ẩn |
 | 6 | Đỡ nhịp có trừ Thế người chơi không | Không. Chỉ có Thế dội lại cố định 20/40 cho địch |
 | 7 | Thời gian khóa của động tác Đỡ nhịp | 0,4 s (mặc định của code, dữ liệu không có) |
-| 8 | `duration_s` của né đã gồm `recovery_s` chưa | Chưa gồm. Né bận tổng cộng 0,45 + 0,15 s; cửa sổ `dodge,L` dài 0,6 s |
-| 9 | Độ trễ của nhánh "dừng" tính từ đâu | Từ lúc **đòn trước bắt đầu** tới lúc bấm (≥ 0,35 s). Bấm dồn thì ra đòn nặng gốc |
+| 8 | `duration_s` của né đã gồm `recovery_s` chưa | **Mơ hồ, cần chốt**: DEMO §3 ghi "Né 0,45 s" như tổng thời lượng, trong khi schema có `recovery_s` riêng. ArpgCore hiện coi là **chưa gồm**: i-frame tính từ đầu `duration_s`, sau đó bận thêm `recovery_s` (tổng 0,6 s), cửa sổ `dodge,L` dài 0,6 s. Nếu designer chốt "0,45 s là tổng" thì chỉ cần đổi `duration_s` = 0,30 trong dữ liệu |
+| 9 | Khoảng "dừng" của nhánh tính từ đâu (đã sửa theo QA S3) | Từ lúc **L2 kết thúc** tới lúc bấm H, cần ≥ `combo_pause_threshold_s` (0,35 s). Bấm H (kể cả bấm trước, nằm trong buffer) khi L2 còn chạy thì khoảng dừng = 0 và ra đòn nặng gốc. Nhánh dừng có cửa sổ nối riêng **sau** khoảng dừng: từ 0,35 tới 0,35 + `combo_window_s` của L2 (0,70 s). Muộn hơn thì chuỗi đã hết và ra đòn nặng gốc. Lý do: nếu chỉ dùng `combo_window_s` (0,35 s) thì nhánh dừng chỉ bấm được đúng ở mốc 0,35 s |
 | 10 | `damage_dealt_mult` có nhân cả Thế không | Không, chỉ nhân máu |
 | 11 | Trọng lượng hit-stop của đòn địch | Mức `medium` (dữ liệu không có) |
-| 12 | Đòn nhà trong combo | Thêm vào mọi bộ chiêu từ `@perfect_parry` bằng phím nặng, khóa bằng cờ `flag_boss_lon_loi_freed` |
+| 12 | Đòn nhà trong combo | Thêm vào mọi bộ chiêu từ `@perfect_parry` bằng phím nặng. Học qua cờ `flag_boss_lon_loi_freed` (`LearnHouseMoves`), khóa trong combo bằng **id** `hm_chong_sao`. Nhờ vậy `inheritable` quyết định đời sau có dùng được hay không (QA N6) |
 | 13 | Công thức nâng cấp liệt kê chính món đồ trong `inputs` | Món được nâng cấp không bị trừ khỏi kho |
-| 14 | Thạp | Bảo khí đang mang tự vào Thạp khi bàn giao; đời sau lấy ra bằng `TakeFromThap` |
+| 14 | Thạp | Bảo khí đang mang tự vào Thạp khi bàn giao; đời sau lấy ra bằng `TakeFromThap`. Nếu theo DEMO §1 bước 6 Cói cất vào Thạp **trước** bàn giao, game tự đẩy món đó vào `FGeneration::Thap` |
+| 15 | "Né hoàn hảo trong 0,10 s đầu" tính từ đâu (N8) | Từ **đầu i-frame**: hoàn hảo nếu trúng trong [0,05; 0,15] s. Schema ghi "`perfect_dodge_window_s` ≤ i-frame". Nếu ý là 0,10 s đầu của **động tác né** thì cửa sổ sẽ là [0,05; 0,10] |
+| 16 | `damage_taken_mult` có nhân cả Thế người chơi nhận không (N8) | Có, nhân cả máu lẫn Thế. Mục đích là để mức "Nghe chuyện" ít bị vỡ Thế hơn. DEMO §11 chỉ nói "sát thương nhận" |
+| 17 | Đồng hồ của cạy so với hit-stop (N8, S2) | Thời gian thực, xem §3 "Hợp đồng đồng hồ". Hit-stop 0,08 s mỗi nhịp chỉ làm đứng hình, không dời nhịp trống |
+
+**Cần designer thêm trường** (hiện đang dùng hằng số trong code, QA N7):
+
+| Giá trị | Đang dùng | Ghi chú |
+|---|---|---|
+| Thời gian khóa của Đỡ nhịp | 0,4 s | `guard` chưa có trường này |
+| Nhịp cạy đầu tiên (`LeadIn`) | 1 phách | `pry` chưa có trường này |
+| Hit-stop: tỉ lệ thời gian khi đứng hình | 0 (đóng băng hẳn) | `hit_stop` chưa có trường này |
+| Hit-stop thưởng cho Đỡ nhịp hoàn hảo | 0 | |
+| Hệ số sát thương khi địch choáng | 1,0 | `enemy_the_defaults` chưa có trường này |
+| Trọng lượng hit-stop của đòn địch | `medium` | `attacks[]` chưa có `hit_weight` |
+| Số ô input buffer | 1 | `input` chưa có trường này |
+| Số moveset đời trước giữ lại (`MaxFamilyMovesets`) | 3 | `inheritance` chưa có trường này |
+| Thời lượng cửa sổ `dodge,L` | `duration_s` + `recovery_s` | |
+
+Không cần designer thêm trường, nhưng cần biết:
+- `MaxTickDelta` = 0,1 s là ngưỡng kỹ thuật, không phải số thiết kế.
+- `ChainLinkWindow` mặc định 0,6 s không bao giờ dùng với dữ liệu thật, vì `combo_window_s` là trường bắt buộc và nay loader từ chối giá trị < 0.
+- Loader cũng từ chối `phases[].the_max` ≤ 0.
 
 ## 6. Build và test (Linux, đã chạy)
 ```bash
@@ -127,14 +160,16 @@ cmake --build build/arpgcore-cov --target coverage      # thoát với mã 1 n�
 - Test đọc dữ liệu thật ở `ARPGCORE_DESIGN_DATA_DIR` = gốc repo + `ARPGCORE_DESIGN_DATA_RELPATH`. Biến cache CMake này có giá trị mặc định `design/data`.
 - CTest tạo một mục cho mỗi `TEST_SUITE` (tự dò từ `Tests/*.cpp` lúc configure), cộng một mục `ArpgCore.All` chạy toàn bộ.
 
-**Kết quả đo ngày 2026-11-03 (container Linux, trên các thay đổi chưa commit, sau commit b16e0b6):**
+**Kết quả đo ngày 2026-11-03.** Đo trên container Linux, từ commit `8368983` cộng các thay đổi sửa lỗi QA chưa commit. Log nằm ở `/tmp/claude-0/-home-user/c58ad2cd-0dde-5c55-b1e4-0cacdf2a6473/scratchpad/logs/qa_fix_*.log`.
 
 | Hạng mục | g++ 13.3.0 | clang++ 18.1.3 |
 |---|---|---|
 | Build Debug, `-Werror` | 0 cảnh báo | 0 cảnh báo |
 | Build Release, `-Werror` | 0 cảnh báo, test đạt | 0 cảnh báo, test đạt |
-| Test | 100 test case, 5887 assertion, 18/18 mục CTest đạt | như g++ |
-| Độ phủ dòng `Private/` | **99,1%** (2253/2274 dòng, gcov) | không đo được: container thiếu `libclang_rt.profile` |
+| Test | 110 test case, 6037 assertion, 19/19 mục CTest đạt | như g++ |
+| Build không exception (`-fno-exceptions -DJSON_NOEXCEPTION`), mục CTest `ArpgCore.NoExceptionsSmoke` | build đạt và chạy đạt: nạp dữ liệu thật, lỗi trả về bằng giá trị | như g++ |
+| ASan + UBSan (`-fno-sanitize-recover=all`) | 19/19 đạt, 0 báo cáo | không chạy được: container thiếu compiler-rt |
+| Độ phủ dòng `Private/` | **99,1%** (2291/2312 dòng, gcov) | không đo được: container thiếu `libclang_rt.profile` |
 
 ## 7. Unreal Engine: CHƯA BUILD TRONG UE
 - `ArpgCore.Build.cs`:
@@ -143,7 +178,10 @@ cmake --build build/arpgcore-cov --target coverage      # thoát với mã 1 n�
   - Thêm `<repo>/third_party` vào include riêng.
   - Include của nlohmann được bọc trong `THIRD_PARTY_INCLUDES_START/END` nếu macro này tồn tại.
 - UBT biên dịch mọi `.cpp` trong thư mục module. Các file `Tests/*.cpp` được bọc bởi `#if defined(ARPGCORE_STANDALONE_TESTS)`, nên trong UE chúng thành file rỗng.
-- Phương án thay thế nếu PO không muốn bật exceptions: tách `DesignDataLoader.cpp` thành module hoặc thư viện riêng có exceptions, hoặc định nghĩa `JSON_NOEXCEPTION`. Khi đó loader dùng nhánh `allow_exceptions=false` đã có sẵn, nhưng nhánh này **chưa được test**.
+- Nếu PO không muốn bật exceptions: định nghĩa `JSON_NOEXCEPTION` và để `bEnableExceptions = false`. Loader khi đó dùng nhánh `allow_exceptions=false`.
+  - Nhánh này **đã được test ngoài UE**: mục CTest `ArpgCore.NoExceptionsSmoke` build cả thư viện với `-fno-exceptions` trên g++ và clang++, rồi nạp dữ liệu thật.
+  - QA đã fuzz nhánh này 24.072 lượt với ASan + UBSan, không có lỗi (`reports/qa/QA_ARPGCORE_DEMO01.md` §2).
+- **Tên project:** `docs/DEMO_PLAN.md` gọi module UE là `HonTrong`/`HonTrongEditor`, còn mã nguồn dùng tên mã `ProjectFerry`, theo yêu cầu của phiên điều phối vì tên game chưa đăng ký nhãn hiệu. Việc thống nhất tên để phiên điều phối cập nhật tài liệu.
 - **Hướng dẫn cho PO (Windows, máy RTX 5050):**
   1. Tạo project C++ trống `ProjectFerry` (UE 5.x đã pin, xem TECH_SPEC §2), đặt cùng cấp với `game/Source`, sao cho đường dẫn là `game/ProjectFerry.uproject`.
   2. Thêm `"ArpgCore"` vào `PublicDependencyModuleNames` của module game. Thêm `{ "Name": "ArpgCore", "Type": "Runtime", "LoadingPhase": "Default" }` vào `Modules` trong `.uproject`.

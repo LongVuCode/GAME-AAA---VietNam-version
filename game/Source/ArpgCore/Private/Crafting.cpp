@@ -2,6 +2,7 @@
 #include "ArpgCore/Crafting.h"
 
 #include <algorithm>
+#include <limits>
 #include <set>
 
 namespace ArpgCore
@@ -83,10 +84,13 @@ const FUpgradeRecipe* FCraftingDatabase::FindUpgradeRecipe(const std::string& It
 
 void FInventory::Add(const std::string& MaterialId, int Amount)
 {
-	if (Amount > 0)
+	if (Amount <= 0)
 	{
-		Counts[MaterialId] += Amount;
+		return;
 	}
+	// Saturate instead of overflowing (signed overflow is UB).
+	int& Count = Counts[MaterialId];
+	Count = static_cast<int>(std::min<long long>(static_cast<long long>(Count) + Amount, std::numeric_limits<int>::max()));
 }
 
 int FInventory::Count(const std::string& MaterialId) const
@@ -97,14 +101,18 @@ int FInventory::Count(const std::string& MaterialId) const
 
 bool FInventory::HasAll(const std::vector<FMaterialAmount>& Costs) const
 {
-	std::map<std::string, int> Needed;
+	std::map<std::string, long long> Needed;
 	for (const FMaterialAmount& Cost : Costs)
 	{
+		if (Cost.Amount <= 0)
+		{
+			return false; // a non-positive cost would add items (QA N3)
+		}
 		Needed[Cost.MaterialId] += Cost.Amount;
 	}
 	for (const auto& [Id, Amount] : Needed)
 	{
-		if (Count(Id) < Amount)
+		if (static_cast<long long>(Count(Id)) < Amount)
 		{
 			return false;
 		}

@@ -12,6 +12,7 @@
 
 using namespace ArpgCore;
 using ArpgCoreTest::Dt;
+using doctest::Approx;
 
 namespace
 {
@@ -240,8 +241,13 @@ TEST_SUITE("ComboGraph")
 	{
 		const FComboGraph G = MakeGraph();
 		FComboRunner R(G, FComboRunnerConfig{0.25f, 1, 0.5f});
-		const auto Started = Run(R, G, {{0.0f, EInputType::Light}, {0.5f, EInputType::Light}}, 1.5f);
-		CHECK(Started == std::vector<std::string>{"L1", "LD2"});
+		// L1 ends at 0.453 s; the delayed branch needs a pause >= 0.45 s after that (and within the
+		// 0.5 s link window that follows the pause).
+		CHECK(Run(R, G, {{0.0f, EInputType::Light}, {0.93f, EInputType::Light}}, 2.0f) == std::vector<std::string>{"L1", "LD2"});
+		FComboRunner Short(G, FComboRunnerConfig{0.25f, 1, 0.5f});
+		CHECK(Run(Short, G, {{0.0f, EInputType::Light}, {0.5f, EInputType::Light}}, 1.5f) == std::vector<std::string>{"L1", "L2"});
+		FComboRunner Late(G, FComboRunnerConfig{0.25f, 1, 0.5f});
+		CHECK(Run(Late, G, {{0.0f, EInputType::Light}, {1.5f, EInputType::Light}}, 2.5f) == std::vector<std::string>{"L1", "L1"});
 	}
 
 	TEST_CASE("runner: light then heavy branches to the heavy finisher")
@@ -425,6 +431,28 @@ TEST_SUITE("ComboGraph")
 		CHECK_FALSE(D.TryCancelForDefense());
 		ArpgCoreTest::Simulate(0.125f, [&D](float Step) { D.Tick(Step); });
 		CHECK(D.TryCancelForDefense());
+	}
+}
+TEST_SUITE("ComboGraph")
+{
+	TEST_CASE("runner clock is double: inputs still expire after 10 hours of play (QA N5)")
+	{
+		const FComboGraph G = MakeGraph();
+		FComboRunner R(G, FComboRunnerConfig{0.25f, 1, 0.5f});
+		const int Steps = 120 * 3600 * 10;
+		for (int I = 0; I < Steps; ++I)
+		{
+			R.Tick(1.0f / 120.0f);
+		}
+		// float(1/120) itself is inexact (~2 ms over 10 h); the float clock used to lose ~8 s per hour.
+		CHECK(R.GetTime() == Approx(36000.0).epsilon(1e-6));
+		R.PressInput(EInputType::Heavy);
+		CHECK(R.Tick(1.0f / 120.0f).StartedMove == G.FindMove("H1"));
+		// A press buffered during H1's startup expires after 0.25 s.
+		R.PressInput(EInputType::Light);
+		bool bStarted = false;
+		ArpgCoreTest::Simulate(2.0f, [&](float Step) { bStarted = bStarted || R.Tick(Step).StartedMove != FComboGraph::RootNode; });
+		CHECK_FALSE(bStarted);
 	}
 }
 #endif

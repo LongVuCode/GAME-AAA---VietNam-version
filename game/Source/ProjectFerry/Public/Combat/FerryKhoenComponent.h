@@ -36,8 +36,12 @@ public:
 	bool CanPerformFinisher() const;
 	bool PerformFinisher();
 
-	/** Advanced by the owner with its hit-stop-adjusted game delta (the component does not tick itself). */
-	EFerryPryResult Advance(float GameDt);
+	/**
+	 * Advanced by the owner (the component does not tick itself).
+	 * GameDt: hit-stop-adjusted delta for the fight. RealDt: undilated delta used to judge the pry beats
+	 * against the drum the player hears (ArpgCore clock contract, QA S2).
+	 */
+	EFerryPryResult Advance(float GameDt, float RealDt);
 
 	// --- Views (HUD / AI) ------------------------------------------------------------------------------
 	EFerryBossOutcome GetOutcome() const;

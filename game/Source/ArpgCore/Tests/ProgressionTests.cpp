@@ -6,6 +6,8 @@
 #include "ArpgCore/Lineage.h"
 #include "ArpgCore/Rng.h"
 
+#include <limits>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -457,6 +459,51 @@ TEST_SUITE("Crafting")
 		CHECK(HasError(E, "unknown item 'ghost'"));
 		CHECK(HasError(E, "outside the item's level range"));
 		CHECK(HasError(E, "upgrade_recipes[1].inputs[0]: shackle fragment"));
+	}
+}
+TEST_SUITE("Crafting")
+{
+	TEST_CASE("inventory rejects non-positive costs and saturates instead of overflowing (QA N3)")
+	{
+		FInventory Inv;
+		Inv.Add("x", 1);
+		CHECK_FALSE(Inv.HasAll({{"x", -5}}));
+		CHECK_FALSE(Inv.RemoveAll({{"x", -5}}));
+		CHECK_FALSE(Inv.RemoveAll({{"x", 0}}));
+		CHECK(Inv.Count("x") == 1);
+		Inv.Add("x", std::numeric_limits<int>::max());
+		CHECK(Inv.Count("x") == std::numeric_limits<int>::max());
+		CHECK(Inv.RemoveAll({{"x", std::numeric_limits<int>::max()}, {"x", 0 + 1}}) == false);
+		CHECK(Inv.RemoveAll({{"x", 1}}));
+		CHECK(Inv.Count("x") == std::numeric_limits<int>::max() - 1);
+	}
+}
+
+TEST_SUITE("Lineage")
+{
+	TEST_CASE("house moves are learned by flag and gated by id, so `inheritable` really applies (QA N6)")
+	{
+		FLineageConfig Config;
+		Config.Characters = {FCharacterDef{"coi", 1, 1, {"spear"}, 2, 0}, FCharacterDef{"buong", 2, 2, {"axe"}, 0, 1}};
+		FHouseMoveDef Shove;
+		Shove.Id = "hm_shove";
+		Shove.LearnedBy = "coi";
+		Shove.UnlockFlag = "flag_freed";
+		Config.HouseMoves = {Shove};
+		FGeneration Coi = MakeFirstGeneration(*Config.FindCharacter("coi"));
+		CHECK(LearnHouseMoves(Coi, Config, {}) == 0);
+		CHECK(LearnHouseMoves(Coi, Config, {"flag_freed"}) == 1);
+		CHECK(LearnHouseMoves(Coi, Config, {"flag_freed"}) == 0); // already known
+		Coi.Skills.Ranks["sk_a"] = 1;
+		Coi.Skills.Ranks["sk_zero"] = 0;
+		CHECK(MakeUnlockSet(Coi) == std::set<std::string>{"hm_shove", "sk_a"});
+
+		FGeneration Buong = Handover(Coi, MakeHandoverRequest(*Config.FindCharacter("buong")), Config).GetValue();
+		CHECK(LearnHouseMoves(Buong, Config, {"flag_freed"}) == 0); // only Cói learns it
+		CHECK(MakeUnlockSet(Buong).count("hm_shove") == 1);
+		Config.HouseMoves[0].bInheritable = false;
+		const FGeneration NoInherit = Handover(Coi, MakeHandoverRequest(*Config.FindCharacter("buong")), Config).GetValue();
+		CHECK(MakeUnlockSet(NoInherit).count("hm_shove") == 0);
 	}
 }
 #endif

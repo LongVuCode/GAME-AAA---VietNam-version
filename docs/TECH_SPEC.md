@@ -27,8 +27,8 @@ Tiêu chí pin: cả 3 plugin upscaler đều build và chạy được, và b�
 Source/
   ArpgCore/         # C++ thuần, không UObject: combat math, posture, damage, loot roll,
                     # crafting, secret-chain graph, event director. Unit test: GoogleTest (chạy CI Linux/Windows)
-  HonTrong/         # Game module: Character, GAS abilities, AI (StateTree), UI (CommonUI), SaveGame
-  HonTrongEditor/   # Validators: data asset lint, secret-graph reachability, localization coverage
+  ProjectFerry/     # Game module (tên mã nội bộ): Character, GAS abilities, AI (StateTree), UI (CommonUI), SaveGame
+  ProjectFerryEditor/ # Validators: data asset lint, secret-graph reachability, localization coverage
 Content/Data/       # DataTables (nguồn JSON/CSV có schema, import tự động)
 tools/              # Pipeline Python: research lint, codex export, benchmark parser
 ```

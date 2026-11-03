@@ -44,6 +44,7 @@ FBossHitResult FBossEncounter::ReceivePlayerHit(const FAttackData& Attack, const
 	Health = std::max(Health - Damage.Health, std::min(Floor, HealthBefore));
 
 	FBossHitResult Result;
+	float PostureApplied = 0.0f;
 	if (Floor > 0.0f && Health <= Floor && !bFinalStaggerUsed && Config.bHealthFloorForcesFinalStagger)
 	{
 		// The health floor forces the final stagger; with the shackle on it also opens the pry.
@@ -62,9 +63,13 @@ FBossHitResult FBossEncounter::ReceivePlayerHit(const FAttackData& Attack, const
 	}
 	else
 	{
+		const bool bWasStaggered = Posture.IsStaggered();
 		Result = OnPostureResult(Posture.ApplyDamage(Damage.Posture));
+		PostureApplied = bWasStaggered ? 0.0f : Damage.Posture;
 	}
-	Result.Applied = FDamageResult{HealthBefore - Health, Damage.Posture};
+	// Applied.Posture is the posture this hit actually added: 0 when the floor forced the stagger
+	// or the boss was defeated (QA N2).
+	Result.Applied = FDamageResult{HealthBefore - Health, PostureApplied};
 	Result.bPhaseChanged = UpdatePhase();
 	return Result;
 }
@@ -160,14 +165,14 @@ bool FBossEncounter::PerformFinisher()
 	return true;
 }
 
-EPryResult FBossEncounter::Tick(float DeltaSeconds)
+EPryResult FBossEncounter::Tick(float GameDeltaSeconds, float RealDeltaSeconds)
 {
 	if (Outcome != EBossOutcome::InProgress)
 	{
 		return EPryResult::None;
 	}
-	Posture.Tick(DeltaSeconds);
-	const EPryResult Result = Shackle.Tick(DeltaSeconds);
+	Posture.Tick(GameDeltaSeconds);
+	const EPryResult Result = Shackle.Tick(RealDeltaSeconds);
 	HandlePryResult(Result);
 	return Result;
 }

@@ -4,6 +4,7 @@ import { DATA } from '../src/data.js';
 import { BossEncounter } from '../src/logic/boss.js';
 import { Khoen, KhoenState, PryJudge, INPUT_GRACE_S } from '../src/logic/shackle.js';
 import { attackTimeline, telegraphKind, chooseAttack, delayedCount, AttackTokens } from '../src/logic/enemyAi.js';
+import { HitStopClock } from '../src/logic/hitstop.js';
 
 const T = DATA.combat;
 const boss = DATA.enemies.enemies.find((e) => e.id === 'boss_lon_loi_dam');
@@ -135,3 +136,27 @@ test('attack tokens cap simultaneous attackers', () => {
 });
 
 function close(a, b, eps = 1e-6) { assert.ok(Math.abs(a - b) <= eps, `${a} != ${b}`); }
+
+test('QA: pry rhythm runs on real time; hit-stop on beats must not shift later beats', () => {
+  // Simulate the game loop at 60 Hz: real time drives the judge, hit-stop only scales game time.
+  const run = (useGameTime) => {
+    const j = new PryJudge(T.pry); const hs = new HitStopClock(0);
+    const presses = [0, 1, 2].map((n) => j.slotTime(n)); // player presses exactly on the drum heard
+    let real = 0; const step = 1 / 60;
+    while (!j.done && real < 5) {
+      const game = hs.advance(step);
+      real += step;
+      const before = j.t;
+      const dt = useGameTime ? game : step;
+      const p = presses.find((x) => x > real - step && x <= real);
+      if (p !== undefined && !useGameTime) { j.tick(p - before); for (const e of j.press()) if (e.type === 'hit') hs.trigger(T.hit_stop.pry_beat_s); j.tick(real - p); }
+      else if (p !== undefined) { j.tick(dt); for (const e of j.press()) if (e.type === 'hit') hs.trigger(T.hit_stop.pry_beat_s); }
+      else j.tick(dt);
+    }
+    return j;
+  };
+  assert.equal(run(false).result, 'freed', 'real-time judge: all 3 beats on the drum hit');
+  const wrong = run(true);
+  assert.equal(wrong.beat, 2, 'a hit-stop-scaled judge drifts 2 x pry_beat_s and misses beat 3');
+  assert.notEqual(wrong.result, 'freed');
+});

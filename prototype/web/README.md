@@ -16,7 +16,7 @@ npm run smoke       # build + Playwright smoke test (cần gói `playwright` có
 
 - Chạy: mở `dist/index.html` trực tiếp trong Chrome/Edge/Firefox bản mới (cần WebGL2), hoặc publish file này thành trang web.
 - `?debug=1`: bật hook `window.__demo` (chỉ dùng cho kiểm thử tự động, không bật khi gửi người test).
-- `?khoen=0`: tắt cờ `feature_khoen` (V9) để thử phương án lùi K0: boss kết bằng cú đẩy, vẫn rụng nanh.
+- `?khoen=0`: tắt cờ `feature_khoen` (V9) để thử phương án lùi K0: boss kết bằng cú đẩy (lời nhắc `prompt_finisher_shove`), vẫn rụng nanh.
 - Smoke test lưu ảnh chụp vào thư mục ngoài repo (mặc định thư mục scratchpad của phiên; đổi bằng biến môi trường `SHOTS_DIR`).
 - Dữ liệu: sửa `design/data/*.json` rồi build lại. Chuỗi hiển thị mới phải thêm vào `design/data/strings.json` (đủ `vi` + `en`) và chạy `python3 tools/design_validate.py`. Test `strings.test.mjs` bắt khóa chuỗi thiếu và chữ tiếng Việt viết cứng trong code.
 
@@ -80,8 +80,8 @@ test/        *.test.mjs (unit), smoke.mjs (Playwright)
 
 - **Hiệu năng chưa đo**: mục tiêu 60 FPS máy tầm trung chưa được kiểm chứng. FPS đọc trong smoke test là Chromium headless với SwiftShader (render bằng CPU, máy dùng chung tải) — **không đại diện**, không dùng làm số liệu. Cần đo trên máy thật (ghi cấu hình, build ID, commit).
 - **`src/logic/proto.js`** chứa vài hằng số mà dữ liệu thiết kế **chưa có** (tốc độ di chuyển và bán kính quái, bán kính khiêu khích, cung đánh trúng của địch, thời lượng khóa của Đỡ nhịp lấy theo mặc định ArpgCore). Đây là giả định để graybox chạy được, không phải số cân bằng; cần đưa vào `design/data` nếu giữ.
-- Diễn giải thời gian combo (khi nào chuỗi còn sống, khoảng "dừng" của đòn nhánh, cửa sổ né→đòn lướt dùng `combo_pause_threshold_s`) là cách đọc của prototype, ghi ở đầu `combo.js`; cần game-designer xác nhận.
-- **So với ArpgCore** (đang được hoàn thiện song song, đối chiếu ngày 2026-11-03): cạy dùng cùng lưới nhịp (lead-in = 1 nhịp, thử lại `miss_retries_per_beat`, chế độ giữ/tự động), Nhịp trống cùng luật mất điểm khi trúng đòn. Khác: prototype phán định phím cạy theo **dấu thời gian sự kiện** và chỉ tính "trượt nhịp" sau cửa sổ + 0,25 s (`INPUT_GRACE_S`) để không phụ thuộc FPS; bản UE nên làm tương tự với timestamp của Enhanced Input.
+- Diễn giải thời gian combo là cách đọc của prototype (ghi ở đầu `combo.js`, có test), cần game-designer xác nhận: chuỗi nhẹ còn sống tới `combo_window_s` sau khi đòn trước **kết thúc**; đòn nhánh cần **dừng thật** ≥ `combo_pause_threshold_s` tính từ lúc đòn nhẹ thứ 2+ kết thúc (bấm dồn/đệm phím ra đòn nặng gốc; né, đỡ hay bị trúng đòn đều xóa chuỗi); né→đòn lướt trong `combo_pause_threshold_s` sau khi né xong. ArpgCore README §5 mục 9 tính độ trễ từ lúc đòn trước **bắt đầu** — hai bên cần thống nhất.
+- **So với ArpgCore** (đang được hoàn thiện song song, đối chiếu ngày 2026-11-03): cạy dùng cùng lưới nhịp (lead-in = 1 nhịp, thử lại `miss_retries_per_beat`, chế độ giữ/tự động), Nhịp trống cùng luật mất điểm khi trúng đòn. Nhịp cạy chạy trên **thời gian thực** (không bị hit-stop co giãn; có test chứng minh nếu dùng thời gian game thì hụt nhịp 3). `dt` mô phỏng kẹp 0,1 s, `dt` thời gian thực kẹp 0,5 s khi khung hình giật. Khác: prototype phán định phím cạy theo **dấu thời gian sự kiện** và chỉ tính "trượt nhịp" sau cửa sổ + 0,25 s (`INPUT_GRACE_S`) để không phụ thuộc FPS; bản UE nên làm tương tự với timestamp của Enhanced Input.
 - Không có: lồng tiếng, nhạc thật, animation thật (tư thế thủ tục), va chạm camera, che khuất tầm nhìn khi khóa mục tiêu (chưa mô phỏng "khuất 1,5 s"), đổi phím (hiện "chưa có trong bản prototype"), lưu tiến trình (chỉ lưu cài đặt vào trình duyệt), hình nộm luyện tập chỉ phản hồi va chạm.
 - Âm thanh WebAudio cần một lần bấm (nút Chơi mới) mới phát được, theo chính sách trình duyệt.
 - Bản `en` là dịch nháp; hai bài vè cần người viết vè đọc lại; nội dung văn hóa tối đa mức B (demo nội bộ, SB11-14).

@@ -532,4 +532,43 @@ TEST_SUITE("BossEncounter")
 		CHECK(Boss.GetOutcome() == EBossOutcome::Freed);
 	}
 }
+TEST_SUITE("Shackle")
+{
+	TEST_CASE("pry steps are clamped: a frame hitch cannot burn the retries (QA N4)")
+	{
+		FShackleConfig C = MakeShackle();
+		C.CracksToOpen = 1;
+		C.MissRetriesPerBeat = 2;
+		FShackle S(C);
+		S.OnPostureBroken();
+		REQUIRE(S.BeginPry(true));
+		CHECK(S.Tick(2.5f) == EPryResult::None);
+		CHECK(S.GetPryElapsed() == Approx(0.1f));
+		CHECK(S.Tick(1.0f / 60.0f) == EPryResult::None);
+		CHECK(S.Tick(1.0f / 60.0f) == EPryResult::None);
+		CHECK(S.GetMissesOnBeat() == 0);
+	}
+}
+
+TEST_SUITE("BossEncounter")
+{
+	TEST_CASE("Applied.Posture is 0 when the hit did not add posture (QA N2)")
+	{
+		FBossConfig Config = MakeBoss(true);
+		Config.bHealthFloorForcesFinalStagger = true;
+		FBossEncounter Boss(Config, FDifficultyConfig{});
+		CHECK(Boss.ReceivePlayerHit(Hit(10, 50), FWeaponConfig{}).Applied.Posture == Approx(50.0f));
+		const FBossHitResult Floor = Boss.ReceivePlayerHit(Hit(5000, 50), FWeaponConfig{});
+		CHECK(Floor.bFinalStagger);
+		CHECK(Floor.Applied.Posture == Approx(0.0f));
+		CHECK(Boss.ReceivePlayerHit(Hit(10, 50), FWeaponConfig{}).Applied.Posture == Approx(0.0f)); // staggered
+
+		FBossConfig Mortal = MakeBoss(false);
+		Mortal.HealthFloor = 0.0f;
+		FBossEncounter Dies(Mortal, FDifficultyConfig{});
+		const FBossHitResult Kill = Dies.ReceivePlayerHit(Hit(5000, 50), FWeaponConfig{});
+		CHECK(Dies.GetOutcome() == EBossOutcome::Defeated);
+		CHECK(Kill.Applied.Posture == Approx(0.0f));
+	}
+}
 #endif

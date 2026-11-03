@@ -87,8 +87,12 @@ public:
 	/** Shackle disabled: the shove finisher is available during the final stagger. */
 	bool CanPerformFinisher() const;
 	bool PerformFinisher();
-	/** Advances posture (stagger paused while prying) and the pry clock. */
-	EPryResult Tick(float DeltaSeconds);
+	/** Advances posture with GAME time (after hit-stop) and the pry clock with REAL, unscaled time
+	 *  (see the clock contract in Shackle.h). UE: GameDt = the world delta after time dilation,
+	 *  RealDt = FApp::GetDeltaTime() before dilation; prototype: frame dt before FHitStopClock. */
+	EPryResult Tick(float GameDeltaSeconds, float RealDeltaSeconds);
+	/** Convenience for callers without hit-stop or time dilation: game time == real time. */
+	EPryResult Tick(float DeltaSeconds) { return Tick(DeltaSeconds, DeltaSeconds); }
 
 	EBossOutcome GetOutcome() const { return Outcome; }
 	float GetHealth() const { return Health; }

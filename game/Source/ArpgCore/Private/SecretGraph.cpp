@@ -394,22 +394,36 @@ std::optional<std::string> FSecretGraph::GetHint(const FSecretProgress& Progress
 	{
 		return std::nullopt;
 	}
+	// Point at the first step of a SHORTEST path to an ending (BFS in node order). A node that only
+	// re-grants clues already known (an alternative source) is never on a shortest path, so the hint
+	// shows real progress (QA S1). If no ending is reachable, fall back to the first available node.
 	const FCompiled C = Compile(Def, Progress.KnownClues);
-	const std::uint64_t Mask = ToMask(C, Progress);
+	const std::uint64_t Start = ToMask(C, Progress);
 	std::string Chosen = Available.front();
-	for (const std::string& Id : Available)
+	std::unordered_map<std::uint64_t, std::size_t> FirstStep; // state -> node index of the first step
+	std::vector<std::uint64_t> Queue{Start};
+	FirstStep.emplace(Start, C.NodeCount);
+	const std::size_t MaxStates = std::size_t{1} << 16;
+	for (std::size_t Cursor = 0; Cursor < Queue.size(); ++Cursor)
 	{
-		const auto It = C.NodeIndex.find(Id);
-		if (It == C.NodeIndex.end())
+		const std::uint64_t State = Queue[Cursor];
+		const std::size_t First = FirstStep[State];
+		if ((State & C.EndingMask) != 0)
 		{
-			continue;
-		}
-		const std::uint64_t Next = Mask | (std::uint64_t{1} << It->second);
-		const FSearch S = Explore(C, Next, std::size_t{1} << 16);
-		if (S.CanFinish[0])
-		{
-			Chosen = Id;
+			Chosen = Def.Nodes[First].Id;
 			break;
+		}
+		for (std::size_t Node = 0; Node < C.NodeCount && Queue.size() < MaxStates; ++Node)
+		{
+			if (!IsAvailableMask(C, State, Node))
+			{
+				continue;
+			}
+			const std::uint64_t Next = State | (std::uint64_t{1} << Node);
+			if (FirstStep.emplace(Next, First == C.NodeCount ? Node : First).second)
+			{
+				Queue.push_back(Next);
+			}
 		}
 	}
 	const std::size_t Slot = static_cast<std::size_t>(std::clamp(Tier, 1, 3) - 1);

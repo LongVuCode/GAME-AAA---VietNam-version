@@ -145,7 +145,8 @@ void AFerryEnemy::Tick(float DeltaSeconds)
 		return;
 	}
 	// DeltaSeconds is already dilated by our own hit-stop; drive the ArpgCore clock from the world delta.
-	const float GameDt = HitStopClock.Advance(static_cast<float>(GetWorld()->GetDeltaSeconds()));
+	const float RealDt = static_cast<float>(GetWorld()->GetDeltaSeconds());
+	const float GameDt = HitStopClock.Advance(RealDt);
 	FerryCombat::ApplyHitStopDilation(this, HitStopClock.IsStopped(), Data->Core.HitStop.TimeScaleDuringStop);
 	TickAi(GameDt);
 	if (!IsActorBeingDestroyed())
@@ -204,7 +205,7 @@ void AFerryEnemy::TickAi(float GameDt)
 
 	if (bIsBoss)
 	{
-		Khoen->Advance(GameDt); // results arrive through HandlePryResult
+		Khoen->Advance(GameDt, RealDt); // pry beats judged on RealDt; results arrive through HandlePryResult
 		if (Khoen->IsFinished())
 		{
 			if (!IsFinished())

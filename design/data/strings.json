@@ -446,10 +446,6 @@
       "vi": "Tiếp tục",
       "en": "Continue"
     },
-    "prompt_shove": {
-      "vi": "Đẩy",
-      "en": "Shove"
-    },
     "prompt_finish_normal": {
       "vi": "Đuổi đi",
       "en": "Drive off"
@@ -749,6 +745,10 @@
     "speaker_narration_ve": {
       "vi": "Vè",
       "en": "Folk verse"
+    },
+    "prompt_finisher_shove": {
+      "vi": "Đẩy con thú ra",
+      "en": "Shove the beast away"
     }
   },
   "dialogue": [

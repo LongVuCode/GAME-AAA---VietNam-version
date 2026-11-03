@@ -142,3 +142,15 @@ test('hit-stop by weight and clock', () => {
   close(c.advance(0.06), 0); close(c.advance(0.06), 0.02);
   assert.ok(shakeFor(T.camera_shake, 'heavy') <= T.camera_shake.max_amplitude);
 });
+
+test('QA: branch "L, L, pause >= 0.35 s, H" needs a REAL pause after the 2nd light ends', () => {
+  const it = T.input; const l2 = spear.moves.find((m) => m.id === 'sp_l2');
+  const ctx = (now) => ({ inputTuning: it, maxChain: 3, now, lastMove: l2, lastMoveEnd: 1.0, chainIndex: 2 });
+  const kind = (now) => selectMove(spear, 'H', ctx(now)).kind;
+  assert.equal(kind(1.0), 'heavy', 'mashed / buffered H executes at move end: no pause');
+  assert.equal(kind(1.0 + it.combo_pause_threshold_s - 0.01), 'heavy', 'pause too short');
+  assert.equal(kind(1.0 + it.combo_pause_threshold_s), 'branch');
+  assert.equal(kind(1.0 + it.combo_pause_threshold_s + l2.combo_window_s + 0.01), 'heavy', 'chain expired');
+  // Pressing L during the would-be pause continues the chain instead of pausing.
+  assert.equal(selectMove(spear, 'L', ctx(1.1)).move.id, 'sp_l3');
+});

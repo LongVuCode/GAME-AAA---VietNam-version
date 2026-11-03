@@ -173,6 +173,7 @@ FBotResult RunBossBot(const FArpgConfig& Config, bool bKhoen, std::uint64_t Seed
 	float ReactAt = -1.0f;
 	bool bReactParry = false;
 	const FEnemyAttack* Pending = nullptr;
+	float PryStartReal = 0.0f;
 	const float MaxSeconds = 20.0f * 60.0f;
 
 	while (Boss.GetOutcome() == EBossOutcome::InProgress && Time < MaxSeconds)
@@ -181,17 +182,20 @@ FBotResult RunBossBot(const FArpgConfig& Config, bool bKhoen, std::uint64_t Seed
 		Time += Dt;
 		Defense.Tick(GameDt);
 		Drum.Tick(GameDt);
-		const EPryResult Pry = Boss.Tick(GameDt);
+		// Posture runs on game time, the pry on real time (clock contract, Shackle.h).
+		const EPryResult Pry = Boss.Tick(GameDt, Dt);
 		if (Pry == EPryResult::BeatHit || Pry == EPryResult::Freed)
 		{
 			HitStop.Trigger(Pry == EPryResult::Freed ? Config.HitStop.PryReleaseDuration : Config.HitStop.PryBeatDuration);
 		}
 
-		// Pry: press on the current slot with probability Skill, otherwise let it pass (miss + retry).
+		// Pry: the bot listens to the drum on ITS OWN real clock (not the shackle's), pressing on the
+		// grid slot with probability Skill, otherwise letting it pass (miss + retry).
 		if (Boss.GetShackle().GetState() == EShackleState::Prying)
 		{
 			const FShackle& S = Boss.GetShackle();
-			if (S.GetPryElapsed() >= S.GetCurrentTargetTime() - 0.5f * Dt && S.GetPryElapsed() < S.GetCurrentTargetTime() + 0.5f * Dt
+			const float Heard = Time - PryStartReal;
+			if (Heard >= S.GetCurrentTargetTime() - 0.5f * Dt && Heard < S.GetCurrentTargetTime() + 0.5f * Dt
 				&& Rng.Roll(Skill))
 			{
 				const EPryResult R = Boss.InputPryBeat();
@@ -206,6 +210,7 @@ FBotResult RunBossBot(const FArpgConfig& Config, bool bKhoen, std::uint64_t Seed
 		if (Boss.CanBeginPry())
 		{
 			REQUIRE(Boss.BeginPry());
+			PryStartReal = Time;
 			++Out.PryAttempts;
 			Pending = nullptr;
 			continue;
@@ -299,6 +304,91 @@ FBotResult RunBossBot(const FArpgConfig& Config, bool bKhoen, std::uint64_t Seed
 	Out.Outcome = Boss.GetOutcome();
 	Out.Seconds = Time;
 	Out.Drops = Boss.GetOutcomeDrops();
+	return Out;
+}
+
+/** Spear/axe L, L, then H pressed Offset seconds after L2 starts (bFromEnd=false) or ends. Returns the
+ *  id of the move the H press produced. Ticks at 1/120 s like the QA probe. */
+std::string HeavyAfterL2(const FArpgConfig& Config, const std::string& Weapon, bool bFromEnd, float Offset)
+{
+	const FMovesetConfig& Set = *Config.FindMoveset(Weapon);
+	const TResult<FComboGraph> GraphResult = BuildComboGraph(Set);
+	REQUIRE(GraphResult.IsOk());
+	const FComboGraph& G = GraphResult.GetValue();
+	FComboRunner R(G, Config.Combat.Runner);
+	const float Step = 1.0f / 120.0f;
+	R.PressInput(EInputType::Light);
+	double L2Start = -1.0;
+	double L2End = -1.0;
+	bool bPressedL = false;
+	bool bPressedH = false;
+	for (int I = 0; I < 120 * 4; ++I)
+	{
+		const FComboTickResult T = R.Tick(Step);
+		if (T.StartedMove != FComboGraph::RootNode)
+		{
+			const std::string& Id = G.GetMove(T.StartedMove).Id;
+			if (Id.find("_l2") != std::string::npos)
+			{
+				L2Start = R.GetTime();
+			}
+			else if (Id.find("_l1") == std::string::npos)
+			{
+				return Id;
+			}
+		}
+		if (T.bMoveFinished && L2Start >= 0.0 && L2End < 0.0)
+		{
+			L2End = R.GetTime();
+		}
+		if (!bPressedL && R.GetTimeline().GetPhase() == EActionPhase::Recovery)
+		{
+			R.PressInput(EInputType::Light);
+			bPressedL = true;
+		}
+		const double Reference = bFromEnd ? L2End : L2Start;
+		if (!bPressedH && Reference >= 0.0 && R.GetTime() >= Reference + static_cast<double>(Offset) - 1e-9)
+		{
+			R.PressInput(EInputType::Heavy);
+			bPressedH = true;
+		}
+	}
+	return "<none>";
+}
+
+/** Pry on the real boss: presses at real-time grid slots (from Presses, slot indices), with the
+ *  hit-stop of combat_tuning applied to game time. bRealClock=false reproduces the QA S2 misuse. */
+std::vector<EPryResult> PryWithHitStop(const FArpgConfig& Config, const std::vector<int>& Slots, bool bRealClock)
+{
+	FBossEncounter Boss(*Config.FindBoss("boss_lon_loi_dam"), *Config.FindDifficulty(Config.DefaultDifficultyId));
+	FHitStopClock HitStop(Config.HitStop.TimeScaleDuringStop);
+	Boss.ReceivePlayerHit(FAttackData{5000.0f, 0.0f, 1.0f, false, false, false}, FWeaponConfig{}); // floor -> final stagger
+	REQUIRE(Boss.BeginPry());
+	const FShackleConfig& Sh = Boss.GetShackle().GetConfig();
+	std::vector<EPryResult> Out;
+	const float Step = 1.0f / 120.0f;
+	double Real = 0.0;
+	std::size_t Next = 0;
+	for (int I = 0; I < 120 * 10 && Boss.GetShackle().GetState() == EShackleState::Prying; ++I)
+	{
+		const float GameDt = HitStop.Advance(Step);
+		Real += Step;
+		const EPryResult T = Boss.Tick(GameDt, bRealClock ? Step : GameDt);
+		if (T != EPryResult::None)
+		{
+			Out.push_back(T);
+		}
+		if (Next < Slots.size() && Real + 1e-9 >= Sh.LeadIn + Sh.BeatInterval * static_cast<float>(Slots[Next]))
+		{
+			++Next;
+			const EPryResult P = Boss.InputPryBeat();
+			Out.push_back(P);
+			if (P == EPryResult::BeatHit || P == EPryResult::Freed)
+			{
+				HitStop.Trigger(P == EPryResult::Freed ? Config.HitStop.PryReleaseDuration : Config.HitStop.PryBeatDuration);
+			}
+		}
+	}
 	return Out;
 }
 } // namespace
@@ -528,7 +618,7 @@ TEST_SUITE("DesignData")
 		const TResult<FComboGraph> Graph = BuildComboGraph(Spear);
 		REQUIRE(Graph.IsOk());
 		CHECK(Graph.GetValue().GetMove(Graph.GetValue().FindMove("sp_l4")).RequiredUnlock == "sk_vo_noi_don");
-		CHECK(Graph.GetValue().GetMove(Graph.GetValue().FindMove("hm_chong_sao")).RequiredUnlock == "flag_boss_lon_loi_freed");
+		CHECK(Graph.GetValue().GetMove(Graph.GetValue().FindMove("hm_chong_sao")).RequiredUnlock == "hm_chong_sao");
 
 		// enemies
 		CHECK(C.Enemies.size() == 3);
@@ -798,6 +888,107 @@ TEST_SUITE("DesignDataLoader")
 		REQUIRE(R.IsOk());
 		CHECK(R.GetValue().Player.HealCharges == 4); // default kept
 		CHECK(R.GetValue().Enemies[0].Posture.StaggerDuration == Approx(2.5f)); // from enemy_the_defaults
+	}
+}
+TEST_SUITE("DesignData")
+{
+	TEST_CASE("hint after trap A points at the next real step, not the alternative source (QA S1)")
+	{
+		const FArpgConfig C = LoadReal();
+		const FSecretGraph G = FSecretGraph::Create(C.Secrets[0]).GetValue();
+		FSecretProgress P = G.MakeInitialProgress();
+		REQUIRE(G.Complete(P, "sn_trap_a").IsOk());
+		CHECK(G.GetAvailableNodes(P) == std::vector<std::string>{"sn_trap_b", "sn_scrap"});
+		for (int Tier = 1; Tier <= 3; ++Tier)
+		{
+			CHECK(G.GetHint(P, Tier) == std::optional<std::string>("secrets.sec_lo_bo_hoang.sn_scrap.hint" + std::to_string(Tier)));
+		}
+		FSecretProgress ViaB = G.MakeInitialProgress();
+		REQUIRE(G.Complete(ViaB, "sn_trap_b").IsOk());
+		CHECK(G.GetHint(ViaB, 2) == std::optional<std::string>("secrets.sec_lo_bo_hoang.sn_scrap.hint2"));
+	}
+
+	TEST_CASE("pry judged on real time: pressing on the 84 bpm drum with hit-stop frees (QA S2)")
+	{
+		const FArpgConfig C = LoadReal();
+		// Contract followed: real time to the pry, hit-stop only to game time.
+		CHECK(PryWithHitStop(C, {0, 1, 2}, true)
+			== std::vector<EPryResult>{EPryResult::BeatHit, EPryResult::BeatHit, EPryResult::Freed});
+		// The QA scenario: the same presses with the hit-stopped clock fed to the pry drift by 0.08 s
+		// per beat ("hit hit miss miss FAILED"). Kept as a guard that the contract matters.
+		const std::vector<EPryResult> Misuse = PryWithHitStop(C, {0, 1, 2, 3, 4}, false);
+		REQUIRE(Misuse.size() >= 3);
+		CHECK(Misuse[0] == EPryResult::BeatHit);
+		CHECK(Misuse[1] == EPryResult::BeatHit);
+		CHECK(Misuse[2] == EPryResult::BeatMissed);
+		CHECK(Misuse.back() == EPryResult::Failed);
+	}
+
+	TEST_CASE("real data: a failed pry (3 misses on one beat) restores half the posture, then re-break frees")
+	{
+		const FArpgConfig C = LoadReal();
+		const std::vector<EPryResult> R = PryWithHitStop(C, {}, true); // never press: miss, retry, retry, fail
+		CHECK(R == std::vector<EPryResult>{EPryResult::BeatMissed, EPryResult::BeatMissed, EPryResult::Failed});
+
+		FBossEncounter Boss(*C.FindBoss("boss_lon_loi_dam"), *C.FindDifficulty(C.DefaultDifficultyId));
+		Boss.ReceivePlayerHit(FAttackData{5000.0f, 0.0f, 1.0f, false, false, false}, FWeaponConfig{});
+		REQUIRE(Boss.BeginPry());
+		while (Boss.GetShackle().GetState() == EShackleState::Prying)
+		{
+			Boss.Tick(1.0f / 120.0f);
+		}
+		const float Max = Boss.GetPosture().GetConfig().MaxPosture;
+		CHECK(Max == Approx(260.0f)); // phase 2 (HP at floor)
+		CHECK(Boss.GetPosture().GetAccumulated() == Approx(0.5f * Max));
+		CHECK(Boss.GetShackle().GetCracks() == 3);
+		CHECK(Boss.ReceivePostureDamage(0.5f * Max).bPostureBroken);
+		CHECK(Boss.CanBeginPry());
+	}
+
+	TEST_CASE("pause branch needs a real pause after L2 ends (QA S3, DEMO §3 'dừng >= 0,35 s')")
+	{
+		const FArpgConfig C = LoadReal();
+		for (const std::string Weapon : {"wp_giao_dong", "wp_riu_xeo"})
+		{
+			CAPTURE(Weapon);
+			const std::string Heavy = Weapon == "wp_giao_dong" ? "sp_h1" : "ax_h1";
+			const std::string Branch = Weapon == "wp_giao_dong" ? "sp_b1" : "ax_b1";
+			// In rhythm, no pause (QA probe P2 timings measured from L2's start): plain heavy.
+			for (const float Offset : {0.30f, 0.36f, 0.40f, 0.50f})
+			{
+				CAPTURE(Offset);
+				CHECK(HeavyAfterL2(C, Weapon, false, Offset) == Heavy);
+			}
+			CHECK(HeavyAfterL2(C, Weapon, true, 0.10f) == Heavy);  // short pause
+			CHECK(HeavyAfterL2(C, Weapon, true, 0.40f) == Branch); // pause >= 0.35 s
+			CHECK(HeavyAfterL2(C, Weapon, true, 0.60f) == Branch); // still inside 0.35 + combo_window_s
+			CHECK(HeavyAfterL2(C, Weapon, true, 0.80f) == Heavy);  // chain over: root heavy
+		}
+	}
+}
+
+TEST_SUITE("DesignDataLoader")
+{
+	TEST_CASE("QA N1/N7: shackled boss needs a forcing floor; negative windows and posture max rejected")
+	{
+		FDesignFiles Files;
+		Files.Edit("enemies", [](FJson& J) {
+			FJson& B = Boss(J);
+			B.erase("hp_floor");
+			B["phases"][1]["the_max"] = -1;
+		});
+		Files.Edit("weapons", [](FJson& J) { J["weapons"][0]["moves"][0]["combo_window_s"] = -1; });
+		const std::vector<FError> E = LoadErrors(Files);
+		INFO(Dump(E));
+		CHECK(HasError(E, "weapons[0].moves[0].combo_window_s: must be >= 0"));
+		CHECK(HasError(E, "phases[1].the_max: must be > 0"));
+
+		FDesignFiles NoFloor;
+		NoFloor.Edit("enemies", [](FJson& J) { Boss(J).erase("hp_floor"); });
+		CHECK(HasError(LoadErrors(NoFloor), "a shackled boss needs health_floor > 0 that forces the final stagger"));
+		FDesignFiles NoForce;
+		NoForce.Edit("enemies", [](FJson& J) { Boss(J)["hp_floor_forces_final_stagger"] = false; });
+		CHECK(HasError(LoadErrors(NoForce), "a shackled boss needs health_floor > 0"));
 	}
 }
 #endif

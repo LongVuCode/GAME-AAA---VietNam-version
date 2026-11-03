@@ -4,6 +4,12 @@
 // A missed beat is retried on the next grid slot up to MissRetriesPerBeat times; one more miss fails
 // the pry (the boss recovers MissPostureRecoverFraction of its posture, cracks are kept - see
 // FBossEncounter). Success => Freed. The shackle never yields anything that powers the player.
+//
+// CLOCK CONTRACT (QA S2): the pry is judged against the drum the player HEARS, so Tick() must receive
+// REAL (unscaled) frame time - the delta before hit-stop / slow motion / time dilation. Feeding the
+// hit-stopped game delta makes the grid drift 0.08 s per beat and timed pries become unwinnable.
+// Each step is clamped to MaxTickDelta so a frame hitch cannot burn the retries (QA N4); the game
+// should also pause the pry (and its audio) while the window is unfocused.
 #pragma once
 
 #include "ArpgCore/ArpgCoreApi.h"
@@ -32,6 +38,7 @@ struct FShackleConfig
 	float MissPostureRecoverFraction = 0.35f; // fraction of posture the boss regains when the pry fails
 	float HoldDurationPerBeat = 0.5f;          // Hold mode
 	float SilenceAfter = 0.0f;                 // presentation only: quiet seconds after the release
+	float MaxTickDelta = 0.1f;                 // engineering clamp per Tick (not design data)
 };
 
 enum class EShackleState : std::uint8_t
@@ -70,8 +77,9 @@ public:
 	EPryResult InputBeat();
 	/** Hold mode: button held / released. */
 	void SetHeld(bool bInHeld) { bHeld = bInHeld; }
-	/** Advances the pry clock; may return BeatHit (Hold/Auto), BeatMissed, Failed or Freed. */
-	EPryResult Tick(float DeltaSeconds);
+	/** Advances the pry clock by REAL (unscaled) seconds, clamped to MaxTickDelta.
+	 *  May return BeatHit (Hold/Auto), BeatMissed, Failed or Freed. */
+	EPryResult Tick(float RealDeltaSeconds);
 
 	void SetInputMode(EPryInputMode InMode) { Mode = InMode; }
 	EPryInputMode GetInputMode() const { return Mode; }

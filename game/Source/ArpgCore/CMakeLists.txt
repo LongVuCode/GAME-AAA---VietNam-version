@@ -62,6 +62,15 @@ if(ARPGCORE_BUILD_TESTS)
   endforeach()
   # Also run the whole binary once so test cases outside any suite are never skipped.
   add_test(NAME ArpgCore.All COMMAND ArpgCoreTests --no-version)
+
+  # The whole library again with exceptions OFF (as a UE module might be), loading the real data.
+  add_executable(ArpgCoreNoExceptSmoke ${ARPGCORE_SOURCES} "${CMAKE_CURRENT_SOURCE_DIR}/Tests/noexcept/NoExceptSmoke.cpp")
+  target_include_directories(ArpgCoreNoExceptSmoke PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Public")
+  target_include_directories(ArpgCoreNoExceptSmoke SYSTEM PRIVATE "${ARPGCORE_THIRD_PARTY}")
+  target_compile_options(ArpgCoreNoExceptSmoke PRIVATE ${ARPGCORE_WARNINGS} -fno-exceptions)
+  target_compile_definitions(ArpgCoreNoExceptSmoke PRIVATE JSON_NOEXCEPTION ARPGCORE_NOEXCEPT_SMOKE=1
+    ARPGCORE_DESIGN_DATA_DIR="${ARPGCORE_REPO_ROOT}/${ARPGCORE_DESIGN_DATA_RELPATH}")
+  add_test(NAME ArpgCore.NoExceptionsSmoke COMMAND ArpgCoreNoExceptSmoke)
 endif()
 
 if(ARPGCORE_COVERAGE)

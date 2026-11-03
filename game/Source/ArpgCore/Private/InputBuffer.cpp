@@ -13,7 +13,7 @@ FInputBuffer::FInputBuffer(float InWindow, std::size_t InCapacity)
 {
 }
 
-void FInputBuffer::Push(EInputType Type, float Now)
+void FInputBuffer::Push(EInputType Type, double Now)
 {
 	Expire(Now);
 	while (Entries.size() >= Capacity)
@@ -23,15 +23,15 @@ void FInputBuffer::Push(EInputType Type, float Now)
 	Entries.push_back(FBufferedInput{Type, Now});
 }
 
-void FInputBuffer::Expire(float Now)
+void FInputBuffer::Expire(double Now)
 {
-	while (!Entries.empty() && (Now - Entries.front().Time) > Window)
+	while (!Entries.empty() && (Now - Entries.front().Time) > static_cast<double>(Window))
 	{
 		Entries.pop_front();
 	}
 }
 
-std::optional<FBufferedInput> FInputBuffer::Peek(float Now)
+std::optional<FBufferedInput> FInputBuffer::Peek(double Now)
 {
 	Expire(Now);
 	if (Entries.empty())
@@ -41,7 +41,7 @@ std::optional<FBufferedInput> FInputBuffer::Peek(float Now)
 	return Entries.front();
 }
 
-std::optional<FBufferedInput> FInputBuffer::Consume(float Now)
+std::optional<FBufferedInput> FInputBuffer::Consume(double Now)
 {
 	std::optional<FBufferedInput> Front = Peek(Now);
 	if (Front)

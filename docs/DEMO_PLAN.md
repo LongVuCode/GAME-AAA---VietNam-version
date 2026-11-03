@@ -9,7 +9,7 @@ Mục tiêu: có **bản demo đầu tiên chơi được** để bắt đầu v
 | Track | Là gì | Chạy ở đâu | Mục đích |
 |---|---|---|---|
 | **W: Prototype web** | Graybox góc nhìn thứ ba chạy trên trình duyệt (three.js), một khu của chương Long Biên | Mở link là chơi | Thử **nhịp chơi** (combat, cạy khoen, bàn giao đời) và thu ý kiến **ngay hôm nay**. Không phải đồ họa đích; sẽ bỏ khi bản UE thay thế được |
-| **U: Unreal Engine 5** | Project C++ (các module `ArpgCore` / `HonTrong` / `HonTrongEditor`), script Python tạo graybox trong editor, hướng dẫn build | Máy PO (Windows, RTX 5050) | Nền cho vertical slice thật |
+| **U: Unreal Engine 5** | Project C++ (các module `ArpgCore` / `ProjectFerry` / `ProjectFerryEditor` (tên mã nội bộ, trung tính)), script Python tạo graybox trong editor, hướng dẫn build | Máy PO (Windows, RTX 5050) | Nền cho vertical slice thật |
 | **Lõi chung** | `ArpgCore`: C++20 thuần, có test (doctest); dữ liệu thiết kế `design/data/*.json` có schema và validator | Build và test ngay trong CI/container | Một nguồn luật duy nhất; Track W đọc chung file dữ liệu cân bằng |
 
 ## Phạm vi nội dung Demo 0.1 (lát cắt của `ch_longbien`)

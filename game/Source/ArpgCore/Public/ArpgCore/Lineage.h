@@ -57,7 +57,7 @@ struct FHouseMoveDef
 {
 	std::string Id;
 	std::string LearnedBy;   // character id
-	std::string UnlockFlag;  // flag that unlocks it (becomes FComboMove::RequiredUnlock)
+	std::string UnlockFlag;  // flag that teaches it (see LearnHouseMoves); the combo move is gated by Id
 	std::string Input;       // design input string, e.g. "perfect_parry,H"
 	FComboMove Move;
 	bool bInheritable = true;
@@ -118,6 +118,13 @@ ARPGCORE_API FHandoverRequest MakeHandoverRequest(const FCharacterDef& Next);
 /** Produces the next generation. Fails on empty ids or an invalid config. Pure function. */
 ARPGCORE_API TResult<FGeneration> Handover(const FGeneration& Previous, const FHandoverRequest& Request,
 	const FLineageConfig& Config);
+
+/** Learns the house moves of this heir whose UnlockFlag is set. Returns how many were added. */
+ARPGCORE_API int LearnHouseMoves(FGeneration& Generation, const FLineageConfig& Config, const std::set<std::string>& Flags);
+
+/** Unlock set for FComboRunner::SetUnlocked: unlocked skills + learned house moves. Inherited house
+ *  moves follow `inheritable` through Handover, so a non-inheritable move stays locked (QA N6). */
+ARPGCORE_API std::set<std::string> MakeUnlockSet(const FGeneration& Generation);
 
 /** Moves the item at ThapIndex from the Thạp to Equipped. */
 ARPGCORE_API FStatus TakeFromThap(FGeneration& Generation, std::size_t ThapIndex);

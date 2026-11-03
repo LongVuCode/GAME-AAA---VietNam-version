@@ -1,5 +1,5 @@
-// ComboGraph.h - Combo graph (moves + transitions branching on input type and on the delay since
-// the previous move started) and FComboRunner, which drives an FActionTimeline from buffered inputs.
+// ComboGraph.h - Combo graph (moves + transitions branching on input type and on the PAUSE after the
+// previous move) and FComboRunner, which drives an FActionTimeline from buffered inputs.
 // Besides the neutral root, two context nodes let data express "dodge,L" and "perfect_parry,L".
 #pragma once
 
@@ -28,9 +28,10 @@ struct FComboMove
 	std::string RequiredUnlock;
 };
 
-/** Edge From -> To taken when Input is pressed with MinDelay <= delay <= MaxDelay.
- *  Delay = seconds between the start of the previous move and the press. MaxDelay < 0 means unbounded.
- *  Transitions out of RootNode and the context nodes ignore the delay. */
+/** Edge From -> To taken when Input is pressed with MinDelay <= pause <= MaxDelay.
+ *  Pause = seconds between the END of the previous move and the press; a press made (or buffered)
+ *  while the previous move is still running has pause 0 ("L,L,pause,H": DEMO §3 "dừng >= 0,35 s").
+ *  MaxDelay < 0 means unbounded. Transitions out of RootNode and the context nodes ignore it. */
 struct FComboTransition
 {
 	int From = -1;
@@ -63,9 +64,12 @@ public:
 
 	int FindMove(const std::string& Id) const;
 	/** First matching transition in insertion order whose target move is unlocked
-	 *  (Unlocked == nullptr means everything is unlocked). */
-	std::optional<int> FindNext(int From, EInputType Input, float DelaySincePrevious,
-		const std::set<std::string>* Unlocked = nullptr) const;
+	 *  (Unlocked == nullptr means everything is unlocked). LinkWindow >= 0 additionally requires
+	 *  pause <= MinDelay + LinkWindow: a pause branch gets its own link window after the pause. */
+	std::optional<int> FindNext(int From, EInputType Input, float PauseSincePrevious,
+		const std::set<std::string>* Unlocked = nullptr, float LinkWindow = -1.0f) const;
+	/** Largest MinDelay among transitions leaving From (0 if none). */
+	float MaxPauseFrom(int From) const;
 
 	const FComboMove& GetMove(int Index) const { return Moves[static_cast<std::size_t>(Index)]; }
 	std::size_t NumMoves() const { return Moves.size(); }
@@ -120,7 +124,7 @@ public:
 	bool IsActing() const { return Timeline.IsRunning(); }
 	int GetCurrentMove() const { return CurrentMove; }
 	int GetActiveContext() const { return ContextNode; }
-	float GetTime() const { return Now; }
+	double GetTime() const { return Now; }
 	const FActionTimeline& GetTimeline() const { return Timeline; }
 
 private:
@@ -133,10 +137,10 @@ private:
 	FInputBuffer Buffer;
 	FActionTimeline Timeline;
 	std::set<std::string> Unlocked;
-	float Now = 0.0f;
-	float LastMoveStartTime = 0.0f;
-	float LastFinishTime = 0.0f;
-	float ContextExpiry = 0.0f;
+	// double: a float clock stalls after ~73 h and drifts after ~1 h of play (QA N5).
+	double Now = 0.0;
+	double LastFinishTime = 0.0;
+	double ContextExpiry = 0.0;
 	bool bHasPrevious = false;
 	int CurrentMove = FComboGraph::RootNode;
 	int ContextNode = FComboGraph::RootNode;

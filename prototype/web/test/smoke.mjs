@@ -86,12 +86,11 @@ try {
   await press('r');
   s = await waitFor((x) => x.player.state === 'burst', 2000, 20);
   check('Hồi trống with 4 full notches', !!s);
-  await waitFor((x) => x.player.state === 'free', 8000);
+  await waitFor((x) => x.player.state === 'free', 40000); // game time runs slower at headless frame rates
 
   // ---- Hints (player-initiated, 3 tiers) from the old ferrywoman.
   await D('teleport', -4, 20.5, 0);
-  await sleep(300); await press('f');
-  s = await waitFor((x) => x.screen === 'hints', 3000);
+  for (let k = 0; k < 3 && !s?.screen; k++) { await sleep(300); await press('f'); s = await waitFor((x) => x.screen === 'hints', 3000); }
   await page.click('[data-tier="1"]'); await page.click('[data-tier="3"]');
   const hint = await page.textContent('[data-hint]');
   check('3-tier hint shown on request', !!s && hint.length > 10, hint.slice(0, 60));
@@ -156,7 +155,7 @@ try {
     for (let guard = 0; guard < 60; guard++) {
       s = await S();
       if (!s.pry) break;
-      if (!shotPry && s.pry.beat >= 1) { await shot('08_pry.png'); shotPry = true; continue; }
+      if (!shotPry && s.pry.beat >= 1) { await D('freezePry', true); await shot('08_pry.png'); await D('freezePry', false); shotPry = true; continue; }
       const wait = s.pry.slotAtMs - s.pageNow;
       if (wait > 120) { await sleep(wait - 100); continue; }
       if (wait < -s.pry.window * 1000) { await sleep(30); continue; }
