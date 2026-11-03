@@ -106,7 +106,7 @@ export class PryJudge {
       }
       return events;
     }
-    if (!this.auto && this.t > this.slotTime(this.slot) + this.window) {
+    while (!this.auto && !this.done && this.t > this.slotTime(this.slot) + this.window) {
       this.slot += 1;
       this._miss(events);
     }

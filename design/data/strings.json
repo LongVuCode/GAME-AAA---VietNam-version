@@ -181,6 +181,574 @@
     "codex_notice_level_b": {
       "vi": "Nội dung văn hóa chưa qua chuyên gia duyệt (mức B)",
       "en": "Cultural content not yet reviewed by experts (level B)"
+    },
+    "game_title": {
+      "vi": "Người Giữ Bến (tên tạm)",
+      "en": "The Ferrykeepers (working title)"
+    },
+    "intro_proto_notice": {
+      "vi": "Bản prototype thử nhịp chơi — graybox, không phải đồ họa cuối cùng",
+      "en": "Gameplay-feel prototype — graybox, not final art"
+    },
+    "intro_internal": {
+      "vi": "Bản nội bộ cho người test đã được mời. Xin đừng chia sẻ công khai.",
+      "en": "Internal build for invited playtesters. Please do not share it publicly."
+    },
+    "intro_content_label": {
+      "vi": "Nhãn nội dung",
+      "en": "Content notes"
+    },
+    "intro_content_text": {
+      "vi": "Giao tranh với thú và yêu đầm hư cấu; không đánh người, không máu me. Mọi mục nội dung đều có nhãn (sáng tạo của game, huyền thoại...) trong Codex.",
+      "en": "Combat against fictional beasts and marsh spirits; no fighting people, no gore. Every content entry carries a label (invented for the game, legend...) in the Codex."
+    },
+    "intro_audio_note": {
+      "vi": "Âm thanh được tổng hợp ngay trong trình duyệt. Nên dùng tai nghe: tiếng báo đòn có hướng trái/phải.",
+      "en": "All sound is synthesized in the browser. Headphones recommended: attack cues are panned left/right."
+    },
+    "btn_back": {
+      "vi": "Quay lại",
+      "en": "Back"
+    },
+    "btn_close": {
+      "vi": "Đóng",
+      "en": "Close"
+    },
+    "btn_confirm": {
+      "vi": "Đồng ý",
+      "en": "Confirm"
+    },
+    "btn_cancel": {
+      "vi": "Thôi",
+      "en": "Cancel"
+    },
+    "btn_feedback": {
+      "vi": "Phản hồi",
+      "en": "Feedback"
+    },
+    "btn_to_title": {
+      "vi": "Về màn hình đầu",
+      "en": "Back to title"
+    },
+    "lang_vi": {
+      "vi": "Tiếng Việt",
+      "en": "Tiếng Việt"
+    },
+    "lang_en": {
+      "vi": "English",
+      "en": "English"
+    },
+    "webgl_error": {
+      "vi": "Trình duyệt này không chạy được WebGL2, nên không mở được bản prototype.",
+      "en": "This browser cannot run WebGL2, so the prototype cannot start."
+    },
+    "controls_title": {
+      "vi": "Phím điều khiển",
+      "en": "Controls"
+    },
+    "ctl_move": {
+      "vi": "Di chuyển",
+      "en": "Move"
+    },
+    "ctl_walk": {
+      "vi": "Đi chậm (giữ)",
+      "en": "Walk (hold)"
+    },
+    "ctl_camera": {
+      "vi": "Xoay camera",
+      "en": "Camera"
+    },
+    "ctl_light": {
+      "vi": "Đòn nhẹ",
+      "en": "Light attack"
+    },
+    "ctl_heavy": {
+      "vi": "Đòn nặng (giữ để gồng)",
+      "en": "Heavy attack (hold to charge)"
+    },
+    "ctl_dodge": {
+      "vi": "Né",
+      "en": "Dodge"
+    },
+    "ctl_parry": {
+      "vi": "Đỡ nhịp (bấm) / Đỡ (giữ)",
+      "en": "Parry (tap) / Guard (hold)"
+    },
+    "ctl_burst": {
+      "vi": "Hồi trống (khi đủ 4 nấc)",
+      "en": "Drum Burst (when all 4 notches are full)"
+    },
+    "ctl_interact": {
+      "vi": "Tương tác / Cạy",
+      "en": "Interact / Pry"
+    },
+    "ctl_heal": {
+      "vi": "Ăn nắm cơm lá",
+      "en": "Eat leaf-wrapped rice"
+    },
+    "ctl_menu": {
+      "vi": "Tạm dừng",
+      "en": "Pause"
+    },
+    "ctl_fps": {
+      "vi": "Hiện/ẩn FPS",
+      "en": "Show/hide FPS"
+    },
+    "ctl_gamepad_note": {
+      "vi": "Tay cầm (thử nghiệm): cần trái di chuyển, cần phải camera, X nhẹ, Y nặng, A né, LB đỡ, B tương tác, RB gọi tên, RT Hồi trống, LT ăn, R3 khóa mục tiêu, Start tạm dừng.",
+      "en": "Gamepad (experimental): left stick move, right stick camera, X light, Y heavy, A dodge, LB parry, B interact, RB call by name, RT Drum Burst, LT eat, R3 lock on, Start pause."
+    },
+    "key_mouse": {
+      "vi": "Chuột",
+      "en": "Mouse"
+    },
+    "key_lmb": {
+      "vi": "Chuột trái",
+      "en": "Left mouse"
+    },
+    "key_rmb": {
+      "vi": "Chuột phải",
+      "en": "Right mouse"
+    },
+    "key_mmb": {
+      "vi": "Chuột giữa",
+      "en": "Middle mouse"
+    },
+    "key_space": {
+      "vi": "Phím cách",
+      "en": "Space"
+    },
+    "legend_title": {
+      "vi": "Đọc báo hiệu đòn",
+      "en": "Reading attack telegraphs"
+    },
+    "legend_parryable": {
+      "vi": "Vòng tròn sáng trên đầu, vòng trên đất: đòn Đỡ nhịp được.",
+      "en": "Bright circle overhead, ring on the ground: can be parried."
+    },
+    "legend_delayed": {
+      "vi": "Vòng đôi: đòn trễ — con thú khựng lại rồi mới đánh.",
+      "en": "Double ring: delayed attack — the creature pauses before striking."
+    },
+    "legend_unparryable": {
+      "vi": "Tam giác đỏ đồng có dấu chấm than, kèm tiếng rền trầm: không Đỡ nhịp được, hãy né.",
+      "en": "Red-bronze triangle with an exclamation mark, plus a low rumble: cannot be parried — dodge."
+    },
+    "feedback_title": {
+      "vi": "Gửi ý kiến",
+      "en": "Send feedback"
+    },
+    "feedback_text": {
+      "vi": "Bản prototype không gửi dữ liệu đi đâu. Hãy chép khối thông tin dưới đây và gửi kèm ý kiến của bạn cho người đã mời bạn chơi thử, qua kênh đã hẹn.",
+      "en": "This prototype sends no data anywhere. Copy the block below and send it with your comments to the person who invited you, through the agreed channel."
+    },
+    "feedback_questions_title": {
+      "vi": "Câu hỏi gợi ý",
+      "en": "Suggested questions"
+    },
+    "feedback_copy": {
+      "vi": "Chép thông tin",
+      "en": "Copy info"
+    },
+    "feedback_copied": {
+      "vi": "Đã chép",
+      "en": "Copied"
+    },
+    "fb_build": {
+      "vi": "Bản build",
+      "en": "Build"
+    },
+    "fb_browser": {
+      "vi": "Trình duyệt",
+      "en": "Browser"
+    },
+    "fb_q1": {
+      "vi": "Theo bạn, điều gì đã gây ra rắc rối ở đầm? Hãy tóm trong một câu.",
+      "en": "In your own words, what caused the trouble in the marsh? One sentence."
+    },
+    "fb_q2": {
+      "vi": "Câu chuyện có gợi phe của vị thần nào không?",
+      "en": "Did the story seem to take any deity's side?"
+    },
+    "fb_q3": {
+      "vi": "Bạn có thấy nhân vật của mình bị cướp công không?",
+      "en": "Did you feel your character's deeds were taken from them?"
+    },
+    "fb_q4": {
+      "vi": "Khi đổi sang đời sau: bạn thấy mất mát hay háo hức?",
+      "en": "When the next generation took over: did it feel like loss or excitement?"
+    },
+    "fb_q5": {
+      "vi": "Combat: đòn nào khó đọc? Cửa sổ Đỡ nhịp và nhịp cạy thấy thế nào?",
+      "en": "Combat: which attacks were hard to read? How did the parry window and the pry rhythm feel?"
+    },
+    "hud_khoen_cracks": {
+      "vi": "Khoen nứt",
+      "en": "Khoen cracks"
+    },
+    "zone_bai_song": {
+      "vi": "Bãi sông",
+      "en": "River bank"
+    },
+    "obj_find_villager": {
+      "vi": "Tìm người đi cắt lau chưa về",
+      "en": "Find the reed-cutter who has not come home"
+    },
+    "obj_boss": {
+      "vi": "Theo dấu con thú về bãi lầy lò cũ",
+      "en": "Follow the beast's trail to the old kiln mire"
+    },
+    "obj_return": {
+      "vi": "Lên đò ở Bến Sậy, về bến Lau",
+      "en": "Take the ferry at Sậy Landing back to Lau Landing"
+    },
+    "obj_craft": {
+      "vi": "Chế Nanh Đầm ở lò đúc làng",
+      "en": "Craft the Marsh Fang at the village furnace"
+    },
+    "obj_handoff": {
+      "vi": "Khép lại đời Cói ở trống gỗ",
+      "en": "Close Cói's lifetime at the wooden drum"
+    },
+    "obj_practice": {
+      "vi": "Thử rìu ở bãi sông: đổi vũ khí ít nhất một lần (phím 1/2)",
+      "en": "Try the axe on the river bank: swap weapons at least once (keys 1/2)"
+    },
+    "obj_end": {
+      "vi": "Về bên trống gỗ",
+      "en": "Go back to the wooden drum"
+    },
+    "prompt_talk": {
+      "vi": "Nói chuyện",
+      "en": "Talk"
+    },
+    "prompt_gather": {
+      "vi": "Tước mây",
+      "en": "Strip rattan"
+    },
+    "prompt_shortcut": {
+      "vi": "Mở lối tắt",
+      "en": "Open the shortcut"
+    },
+    "prompt_compare": {
+      "vi": "So với mép lưỡi bẫy",
+      "en": "Compare with the blade's edge"
+    },
+    "prompt_craft": {
+      "vi": "Dùng lò đúc",
+      "en": "Use the furnace"
+    },
+    "prompt_handoff": {
+      "vi": "Khép lại đời Cói",
+      "en": "Close Cói's lifetime"
+    },
+    "prompt_continue": {
+      "vi": "Tiếp tục",
+      "en": "Continue"
+    },
+    "prompt_shove": {
+      "vi": "Đẩy",
+      "en": "Shove"
+    },
+    "prompt_finish_normal": {
+      "vi": "Đuổi đi",
+      "en": "Drive off"
+    },
+    "kiln_piece": {
+      "vi": "Mảnh miệng lò {n}",
+      "en": "Kiln lip piece {n}"
+    },
+    "pry_hint": {
+      "vi": "Bấm {key} đúng tiếng trống",
+      "en": "Press {key} on the drumbeat"
+    },
+    "pry_hint_hold": {
+      "vi": "Giữ {key} cho tới khi vạch đầy",
+      "en": "Hold {key} until the bar fills"
+    },
+    "pry_auto": {
+      "vi": "Cạy tự động",
+      "en": "Automatic pry"
+    },
+    "pry_beat_hit": {
+      "vi": "Đúng nhịp",
+      "en": "On the beat"
+    },
+    "pry_beat_miss": {
+      "vi": "Lệch nhịp — thử lại nhịp này",
+      "en": "Off the beat — try this beat again"
+    },
+    "pry_failed": {
+      "vi": "Con thú vùng ra",
+      "en": "The beast tore free"
+    },
+    "msg_perfect_parry": {
+      "vi": "Đỡ nhịp hoàn hảo",
+      "en": "Perfect parry"
+    },
+    "msg_parry": {
+      "vi": "Đỡ nhịp",
+      "en": "Parry"
+    },
+    "msg_perfect_dodge": {
+      "vi": "Né hoàn hảo",
+      "en": "Perfect dodge"
+    },
+    "msg_guard_break": {
+      "vi": "Vỡ Thế",
+      "en": "Stance broken"
+    },
+    "msg_heal_none": {
+      "vi": "Hết nắm cơm lá",
+      "en": "No rice left"
+    },
+    "msg_enemy_fled": {
+      "vi": "{name} bỏ chạy",
+      "en": "{name} fled"
+    },
+    "msg_enemy_dissipated": {
+      "vi": "{name} sụp lại thành bùn",
+      "en": "{name} slumped back into the mud"
+    },
+    "msg_got_item": {
+      "vi": "Nhận: {name} × {n}",
+      "en": "Received: {name} × {n}"
+    },
+    "msg_clue": {
+      "vi": "Ghi vào sổ tay: {name}",
+      "en": "Noted in journal: {name}"
+    },
+    "msg_skill_points": {
+      "vi": "+{n} điểm nghề",
+      "en": "+{n} craft points"
+    },
+    "msg_rested": {
+      "vi": "Đã nghỉ bên lửa. Nắm cơm lá được nạp lại.",
+      "en": "Rested by the fire. Rice refilled."
+    },
+    "msg_respawn": {
+      "vi": "Về bếp lửa gần nhất. Không mất gì.",
+      "en": "Back at the nearest fire. Nothing was lost."
+    },
+    "msg_ferry_locked": {
+      "vi": "Chưa về được: người làng còn chưa tìm thấy, bãi lầy chưa yên.",
+      "en": "Not yet: the villager is still missing and the mire is not at peace."
+    },
+    "msg_shortcut_open": {
+      "vi": "Lối tắt về Bến Sậy đã mở",
+      "en": "Shortcut to Sậy Landing opened"
+    },
+    "msg_puzzle_wrong": {
+      "vi": "Đường cong không khớp.",
+      "en": "The curve doesn't match."
+    },
+    "msg_villager_saved": {
+      "vi": "Người làng tỉnh lại và theo lối về bến.",
+      "en": "The villager comes to and heads back to the landing."
+    },
+    "msg_call_interrupted": {
+      "vi": "Bị cắt ngang — mất nửa tiến độ gọi tên",
+      "en": "Interrupted — half of the calling progress lost"
+    },
+    "msg_crafted": {
+      "vi": "Đã chế: {name}",
+      "en": "Crafted: {name}"
+    },
+    "msg_upgraded": {
+      "vi": "Đã nâng: {name}",
+      "en": "Upgraded: {name}"
+    },
+    "msg_house_move_learned": {
+      "vi": "Học được {name}",
+      "en": "Learned {name}"
+    },
+    "msg_swap": {
+      "vi": "Cầm {name}",
+      "en": "Wielding {name}"
+    },
+    "msg_practice_done": {
+      "vi": "Luyện xong",
+      "en": "Practice done"
+    },
+    "msg_no_hints": {
+      "vi": "Bà lái đò không còn gì để kể.",
+      "en": "The old ferrywoman has nothing more to tell."
+    },
+    "msg_hints_off": {
+      "vi": "Gợi ý đang tắt.",
+      "en": "Hints are off."
+    },
+    "msg_codex_unlocked": {
+      "vi": "Codex mới: {name}",
+      "en": "New Codex entry: {name}"
+    },
+    "msg_codex_extra": {
+      "vi": "Codex thêm ghi chép: {name}",
+      "en": "Codex entry extended: {name}"
+    },
+    "msg_khoen_crack": {
+      "vi": "Khoen nứt {n}/3",
+      "en": "Khoen cracked {n}/3"
+    },
+    "hint_enable": {
+      "vi": "Bật gợi ý",
+      "en": "Turn hints on"
+    },
+    "craft_inputs": {
+      "vi": "Cần",
+      "en": "Requires"
+    },
+    "craft_upgrade": {
+      "vi": "Nâng",
+      "en": "Upgrade"
+    },
+    "skill_buy": {
+      "vi": "Học",
+      "en": "Learn"
+    },
+    "skill_owned": {
+      "vi": "Đã có",
+      "en": "Learned"
+    },
+    "skill_prereq": {
+      "vi": "Cần học trước: {name}",
+      "en": "Requires: {name}"
+    },
+    "journal_title": {
+      "vi": "Sổ tay",
+      "en": "Journal"
+    },
+    "journal_empty": {
+      "vi": "Chưa có ghi chép.",
+      "en": "No notes yet."
+    },
+    "journal_inventory": {
+      "vi": "Vật liệu",
+      "en": "Materials"
+    },
+    "journal_bao_khi": {
+      "vi": "Bảo khí",
+      "en": "Heirlooms"
+    },
+    "codex_locked": {
+      "vi": "Chưa mở",
+      "en": "Not yet unlocked"
+    },
+    "codex_extra_unlocked": {
+      "vi": "Ghi chép thêm",
+      "en": "Further notes"
+    },
+    "codex_verification": {
+      "vi": "Mức xác minh: {v}",
+      "en": "Verification level: {v}"
+    },
+    "codex_review_pending": {
+      "vi": "Chờ chuyên gia duyệt",
+      "en": "Awaiting expert review"
+    },
+    "handoff_receive_tool": {
+      "vi": "Nhận {name} với cán tre mới",
+      "en": "Received the {name} with a new bamboo shaft"
+    },
+    "handoff_skills": {
+      "vi": "Nghề nhà giữ nguyên: {n} nút đã học, {p} điểm",
+      "en": "Family Craft kept: {n} skills learned, {p} points"
+    },
+    "handoff_slot2": {
+      "vi": "Mở ô vũ khí 2: {name}",
+      "en": "Weapon slot 2 opened: {name}"
+    },
+    "handoff_gen_label": {
+      "vi": "đời {n}",
+      "en": "generation {n}"
+    },
+    "thap_empty": {
+      "vi": "Thạp còn trống.",
+      "en": "The jar is empty."
+    },
+    "set_custom": {
+      "vi": "Tùy chỉnh",
+      "en": "Custom"
+    },
+    "set_custom_desc": {
+      "vi": "Tự chỉnh từng thông số trong giới hạn thiết kế.",
+      "en": "Adjust each value within the design limits."
+    },
+    "set_parry_window": {
+      "vi": "Cửa sổ Đỡ nhịp (giây)",
+      "en": "Parry window (seconds)"
+    },
+    "set_damage_taken": {
+      "vi": "Sát thương nhận (hệ số)",
+      "en": "Damage taken (multiplier)"
+    },
+    "set_enemy_speed": {
+      "vi": "Tốc độ địch (hệ số)",
+      "en": "Enemy speed (multiplier)"
+    },
+    "set_telegraph": {
+      "vi": "Thời gian báo hiệu (hệ số)",
+      "en": "Telegraph time (multiplier)"
+    },
+    "set_pry_auto": {
+      "vi": "Cạy tự động",
+      "en": "Automatic pry"
+    },
+    "set_aim_assist": {
+      "vi": "Hỗ trợ nhắm",
+      "en": "Aim assist"
+    },
+    "set_show_fps": {
+      "vi": "Hiện FPS",
+      "en": "Show FPS"
+    },
+    "set_hints": {
+      "vi": "Gợi ý của bà lái đò",
+      "en": "The ferrywoman's hints"
+    },
+    "set_volume": {
+      "vi": "Âm lượng",
+      "en": "Volume"
+    },
+    "set_camera_sens": {
+      "vi": "Độ nhạy camera",
+      "en": "Camera sensitivity"
+    },
+    "set_not_in_proto": {
+      "vi": "Chưa có trong bản prototype",
+      "en": "Not in this prototype"
+    },
+    "tut_move": {
+      "vi": "WASD để đi, chuột để xoay camera. Bấm vào màn hình để khóa chuột.",
+      "en": "WASD to move, mouse to turn the camera. Click the screen to capture the mouse."
+    },
+    "tut_parry": {
+      "vi": "Cua giơ càng là sắp kẹp: bấm Q đúng lúc để Đỡ nhịp, giữ Q để Đỡ.",
+      "en": "A raised claw means a pinch is coming: tap Q on time to parry, hold Q to guard."
+    },
+    "tut_unparryable": {
+      "vi": "Tam giác đỏ đồng và tiếng rền: không Đỡ nhịp được, bấm phím cách để né.",
+      "en": "Red-bronze triangle and a rumble: cannot be parried, press Space to dodge."
+    },
+    "tut_lock": {
+      "vi": "Tab hoặc chuột giữa để khóa mục tiêu.",
+      "en": "Tab or middle mouse to lock on."
+    },
+    "tut_drum": {
+      "vi": "Đỡ nhịp, né đúng lúc và đánh trúng làm đầy Nhịp trống. Đủ 4 nấc: bấm R để Hồi trống.",
+      "en": "Parries, timed dodges and hits fill the Drum Rhythm. With 4 notches full, press R for a Drum Burst."
+    },
+    "speaker_npc_tho_duc_lang": {
+      "vi": "Thợ đúc làng",
+      "en": "Village caster"
+    },
+    "speaker_npc_nguoi_gia_ben": {
+      "vi": "Người giữ bến già",
+      "en": "Old landing-keeper"
+    },
+    "speaker_narration_ve": {
+      "vi": "Vè",
+      "en": "Folk verse"
     }
   },
   "dialogue": [
