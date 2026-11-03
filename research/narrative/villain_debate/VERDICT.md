@@ -41,7 +41,7 @@ Người điều phối: phiên chính · Ngày: 2026-11-03 · Trạng thái: **
 | V2 | Chương Phù Đổng không có mảnh khoen. Khoen không phải cọc đóng xuống đất, không khắc chữ, không gọi là "trấn", "yểm" hay "ách" (tránh mô-típ trấn yểm, vốn gắn với chuyện quan phương Bắc trong dân gian) | Văn hóa |
 | V3 | Boss Ba Vì khổ vì mảnh khoen, không vì lũ của Thủy Tinh | Văn hóa |
 | V4 | Mảnh không cắm trên Hồ Tinh hay Ngư Tinh. Người làm khoen là một lái đò đúc vụng, còn thợ đúc của làng là người nấu chảy mảnh, để nghề đúc không bị bôi xấu | K1, Văn hóa |
-| V5 | Spike 1 (GĐ2): thao tác cạy trên 2 rig (Cáo Đầu Bầy, Rết Lớn); không xuyên mesh ở 3 góc camera; khoen bám đúng socket; giờ công mỗi rig ≤ 1,5 × một đòn hành quyết thường (hệ số là giả định). Trượt thì đổi rig; trượt cả hai thì về K0 | Khả thi |
+| V5 | Spike 1 (GĐ2): thao tác cạy trên 2 rig (Lợn Lòi Đầm, Rết Lớn; thay Cáo Đầu Bầy vì R3-11 cấm loài cáo trong chương Hồ Tinh); không xuyên mesh ở 3 góc camera; khoen bám đúng socket; giờ công mỗi rig ≤ 1,5 × một đòn hành quyết thường (hệ số là giả định). Trượt thì đổi rig; trượt cả hai thì về K0 | Khả thi |
 | V6 | Spike 2: các boss bốn chân (Cáo, Gấu hoặc Lợn Lòi, thú đầu tiên) dùng chung một họ skeleton | Khả thi |
 | V7 | Phần "người lặp lỗi" và cảnh kết (bản K1+) chỉ làm sau khi đã có giờ công thật của chương 1 và graybox hub. Trượt thì ship bản K1-nhẹ, vì đó là tập con nên không phải làm lại | Khả thi |
 | V8 | Phép thử sau chương 1: ≥ 2/3 người chơi tóm được nguồn ác trong một câu. Câu hỏi bác bỏ: "có gợi phe của vị thần nào không?" | Người chơi, K1 |
