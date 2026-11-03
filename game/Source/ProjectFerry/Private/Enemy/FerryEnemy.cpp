@@ -3,6 +3,7 @@
 
 #include "AIController.h"
 #include "Combat/FerryCombatComponent.h"
+#include "Combat/FerryCombatUtils.h"
 #include "Combat/FerryKhoenComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -84,7 +85,7 @@ void AFerryEnemy::BeginPlay()
 bool AFerryEnemy::InitializeFromData()
 {
 	const UFerryDataSubsystem* DataSubsystem = UFerryDataSubsystem::Get(this);
-	Data = DataSubsystem != nullptr ? DataSubsystem->GetData() : nullptr;
+	Data = DataSubsystem != nullptr ? DataSubsystem->GetData() : TSharedPtr<const FFerryDesignData>();
 	if (!Data.IsValid())
 	{
 		return false;
@@ -144,10 +145,13 @@ void AFerryEnemy::Tick(float DeltaSeconds)
 		return;
 	}
 	// DeltaSeconds is already dilated by our own hit-stop; drive the ArpgCore clock from the world delta.
-	const float GameDt = HitStopClock.Advance(GetWorld()->GetDeltaSeconds());
+	const float GameDt = HitStopClock.Advance(static_cast<float>(GetWorld()->GetDeltaSeconds()));
 	FerryCombat::ApplyHitStopDilation(this, HitStopClock.IsStopped(), Data->Core.HitStop.TimeScaleDuringStop);
 	TickAi(GameDt);
-	UpdateTelegraphVisual();
+	if (!IsActorBeingDestroyed())
+	{
+		UpdateTelegraphVisual();
+	}
 }
 
 void AFerryEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -232,6 +236,7 @@ void AFerryEnemy::TickAi(float GameDt)
 		const int32 PhaseIndex = Khoen->GetPhaseIndex();
 		if (PhaseIndex != LastPhaseIndex)
 		{
+			const bool bInitialPhase = LastPhaseIndex < 0;
 			LastPhaseIndex = PhaseIndex;
 			const ArpgCore::FBossPhase* Phase = Khoen->GetPhase();
 			PhaseMoveset.Reset();
@@ -254,7 +259,7 @@ void AFerryEnemy::TickAi(float GameDt)
 			{
 				EndAttack(0.0f);
 			}
-			if (!Khoen->IsStaggered() && !Khoen->IsPrying())
+			if (!bInitialPhase && !Khoen->IsStaggered() && !Khoen->IsPrying())
 			{
 				EnterState(EFerryEnemyState::PhaseTransition, Phase != nullptr ? Phase->TransitionBeat : 0.0f);
 			}
@@ -270,7 +275,7 @@ void AFerryEnemy::TickAi(float GameDt)
 	}
 
 	APawn* Player = GetPlayerPawn();
-	const float Distance = Player != nullptr ? FVector::Dist2D(Player->GetActorLocation(), GetActorLocation()) : TNumericLimits<float>::Max();
+	const float Distance = Player != nullptr ? static_cast<float>(FVector::Dist2D(Player->GetActorLocation(), GetActorLocation())) : TNumericLimits<float>::Max();
 	const float AggroCm = Data->Tuning.LockMaxDistanceM * 100.0f; // aggro radius = lock-on distance (placeholder)
 
 	switch (State)
@@ -420,7 +425,7 @@ void AFerryEnemy::TickAttack(float GameDt)
 		// Charge attacks (e.g. "Càn lầy"): cover the range during Active, stopping at the player.
 		if (const APawn* Player = GetPlayerPawn())
 		{
-			const float Remaining = FVector::Dist2D(Player->GetActorLocation(), GetActorLocation()) - GetBodyRadius() - ContactGapCm;
+			const float Remaining = static_cast<float>(FVector::Dist2D(Player->GetActorLocation(), GetActorLocation())) - GetBodyRadius() - ContactGapCm;
 			const float Step = FMath::Min(RangeM * 100.0f / Timing.Active * GameDt, FMath::Max(Remaining, 0.0f));
 			AddActorWorldOffset(GetActorForwardVector() * Step, true);
 		}
@@ -457,7 +462,7 @@ void AFerryEnemy::ResolveAttackHit()
 	const float RangeCm = (AttackView != nullptr ? AttackView->RangeM : 2.0f) * 100.0f + GetBodyRadius() + 42.0f;
 	const FVector ToPlayer = Player->GetActorLocation() - GetActorLocation();
 	const bool bInRange = ToPlayer.SizeSquared2D() <= FMath::Square(RangeCm);
-	const bool bInFront = FVector::DotProduct(GetActorForwardVector().GetSafeNormal2D(), ToPlayer.GetSafeNormal2D()) >= FrontConeCos;
+	const bool bInFront = static_cast<float>(FVector::DotProduct(GetActorForwardVector().GetSafeNormal2D(), ToPlayer.GetSafeNormal2D())) >= FrontConeCos;
 	if (FerryCombat::IsDebugDrawEnabled())
 	{
 		DrawDebugCircle(GetWorld(), GetActorLocation(), RangeCm, 32, bInRange && bInFront ? FColor::Red : FColor::Orange, false, 0.3f,
@@ -528,7 +533,7 @@ FFerryHitReport AFerryEnemy::ReceivePlayerHit(const FFerryPlayerHit& Hit)
 	if (Hit.Attacker != nullptr)
 	{
 		const FVector ToAttacker = (Hit.Attacker->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
-		if (FVector::DotProduct(GetActorForwardVector().GetSafeNormal2D(), ToAttacker) >= FrontConeCos)
+		if (static_cast<float>(FVector::DotProduct(GetActorForwardVector().GetSafeNormal2D(), ToAttacker)) >= FrontConeCos)
 		{
 			Context.TargetDamageReduction = FMath::Clamp(1.0f - EnemyConfig.FrontDamageMult, 0.0f, 1.0f);
 		}

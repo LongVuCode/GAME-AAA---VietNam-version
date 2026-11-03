@@ -62,6 +62,9 @@ struct FFerryEnemyView
 	FName Rank;            // normal / elite / boss
 	FName DefeatBehavior;  // flee / dissipate / pry_then_walk_away
 	bool bRespawnsAtCheckpoint = true;
+	/** Boss: flag set when freed (khoen.on_pry_success.sets_flag) or when it flees (fallback_when_disabled). */
+	FName FreedFlag;
+	FName FledFlag;
 	TMap<FName, FFerryEnemyAttackView> Attacks;
 };
 

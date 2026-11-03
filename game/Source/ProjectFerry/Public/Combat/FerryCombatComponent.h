@@ -45,6 +45,8 @@ public:
 	/** Switches the moveset (weapons.json id). Resets the combo. */
 	bool EquipWeapon(FName WeaponId);
 	FName GetEquippedWeapon() const { return EquippedWeapon; }
+	/** Skill / world-flag unlocks for moves with RequiredUnlock (e.g. the house move after the boss is freed). */
+	void AddUnlock(FName UnlockId);
 
 	// --- Input (called by AFerryCharacter) -------------------------------------------------------
 	void PressLight();
@@ -121,4 +123,5 @@ private:
 	float BurstInterval = 0.0f;
 
 	TSet<TWeakObjectPtr<AActor>> HitThisAction;
+	TSet<FName> Unlocks; // survives respawn and weapon swaps (game-instance progress is not saved yet)
 };

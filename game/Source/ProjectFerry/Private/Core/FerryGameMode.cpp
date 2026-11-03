@@ -2,6 +2,7 @@
 #include "Core/FerryGameMode.h"
 
 #include "Combat/FerryCombatComponent.h"
+#include "Combat/FerryKhoenComponent.h"
 #include "Core/FerryCharacter.h"
 #include "Core/FerryHUD.h"
 #include "Data/FerryDataSubsystem.h"
@@ -143,6 +144,30 @@ void AFerryGameMode::NotifyEnemyFinished(AFerryEnemy* Enemy)
 	{
 		FinishedMarkers.Add(Enemy->SpawnMarker);
 	}
+	if (Enemy->IsBoss() && View != nullptr && Enemy->GetKhoen() != nullptr)
+	{
+		const EFerryBossOutcome Outcome = Enemy->GetKhoen()->GetOutcome();
+		const FName Flag = Outcome == EFerryBossOutcome::Freed ? View->FreedFlag : (Outcome == EFerryBossOutcome::Fled ? View->FledFlag : NAME_None);
+		if (!Flag.IsNone())
+		{
+			WorldFlags.Add(Flag);
+			ApplyWorldFlagsToPlayer();
+		}
+	}
+}
+
+void AFerryGameMode::ApplyWorldFlagsToPlayer()
+{
+	const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	const APawn* Pawn = PlayerController != nullptr ? PlayerController->GetPawn() : nullptr;
+	UFerryCombatComponent* Combat = Pawn != nullptr ? Pawn->FindComponentByClass<UFerryCombatComponent>() : nullptr;
+	if (Combat != nullptr)
+	{
+		for (const FName& Flag : WorldFlags)
+		{
+			Combat->AddUnlock(Flag);
+		}
+	}
 }
 
 void AFerryGameMode::NotifyPlayerDied(AController* Controller)
@@ -188,6 +213,7 @@ void AFerryGameMode::RespawnPlayer(TWeakObjectPtr<AController> Controller)
 	{
 		RestartPlayer(Controller.Get());
 	}
+	ApplyWorldFlagsToPlayer();
 	SpawnEnemiesFromMarkers();
 }
 

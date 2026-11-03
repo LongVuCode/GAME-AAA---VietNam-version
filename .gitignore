@@ -19,3 +19,10 @@ Thumbs.db
 
 # Local build output
 build/
+
+# Unreal (ProjectFerry, game/)
+# Packaging copy of design/data (source of truth stays in design/data, see docs/BUILD_GUIDE_UE.md §8)
+game/Content/Data/Design/
+*.code-workspace
+.vscode/
+.idea/

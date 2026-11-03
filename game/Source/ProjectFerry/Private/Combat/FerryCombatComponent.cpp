@@ -1,5 +1,6 @@
 // FerryCombatComponent.cpp - NOT YET BUILT IN UNREAL ENGINE ("chưa build trong UE").
 #include "Combat/FerryCombatComponent.h"
+#include "Combat/FerryCombatUtils.h"
 
 #include "Data/FerryDataSubsystem.h"
 #include "DrawDebugHelpers.h"
@@ -27,7 +28,7 @@ void UFerryCombatComponent::BeginPlay()
 bool UFerryCombatComponent::InitializeFromData()
 {
 	const UFerryDataSubsystem* DataSubsystem = UFerryDataSubsystem::Get(this);
-	Data = DataSubsystem != nullptr ? DataSubsystem->GetData() : nullptr;
+	Data = DataSubsystem != nullptr ? DataSubsystem->GetData() : TSharedPtr<const FFerryDesignData>();
 	if (!Data.IsValid())
 	{
 		return false;
@@ -88,10 +89,30 @@ void UFerryCombatComponent::ResetRunner()
 		return;
 	}
 	Runner = MakeUnique<ArpgCore::FComboRunner>(Graph, ArpgCore::MakeRunnerConfig(Data->Core.Combat));
-	// Skill unlocks (e.g. sk_vo_noi_don for the 4th light hit) are not tracked yet: nothing is unlocked,
-	// so moves with requires_skill stay unavailable, as at the start of the demo.
-	Runner->SetUnlocked({});
+	// Skill points / skill tree are not implemented yet, so skill-gated moves (e.g. sk_vo_noi_don) stay locked
+	// as at the start of the demo; world flags (e.g. flag_boss_lon_loi_freed for the house move) are added
+	// through AddUnlock.
+	std::set<std::string> Unlocked;
+	for (const FName& Id : Unlocks)
+	{
+		Unlocked.insert(FerryCombat::ToStd(Id));
+	}
+	Runner->SetUnlocked(std::move(Unlocked));
 	HitThisAction.Reset();
+}
+
+void UFerryCombatComponent::AddUnlock(FName UnlockId)
+{
+	if (UnlockId.IsNone() || Unlocks.Contains(UnlockId))
+	{
+		return;
+	}
+	Unlocks.Add(UnlockId);
+	UE_LOG(LogFerry, Log, TEXT("unlocked: %s"), *UnlockId.ToString());
+	if (Runner.IsValid() && !Runner->IsActing())
+	{
+		ResetRunner();
+	}
 }
 
 void UFerryCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -103,7 +124,7 @@ void UFerryCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	}
 	// DeltaTime is already scaled by the owner's CustomTimeDilation (our own hit-stop), so the clock is
 	// driven by the world delta instead; ArpgCore turns it into the game delta.
-	const float RealDt = GetWorld()->GetDeltaSeconds();
+	const float RealDt = static_cast<float>(GetWorld()->GetDeltaSeconds());
 	const float GameDt = HitStopClock.Advance(RealDt);
 	FerryCombat::ApplyHitStopDilation(GetOwner(), HitStopClock.IsStopped(), Data->Core.HitStop.TimeScaleDuringStop);
 	if (bDead)
@@ -171,7 +192,7 @@ void UFerryCombatComponent::SweepHit(const ArpgCore::FAttackData& Attack, float 
 			continue;
 		}
 		const FVector Dir = ToEnemy.GetSafeNormal2D();
-		if (!Dir.IsNearlyZero() && FVector::DotProduct(Forward, Dir) < HalfArcCos)
+		if (!Dir.IsNearlyZero() && static_cast<float>(FVector::DotProduct(Forward, Dir)) < HalfArcCos)
 		{
 			continue;
 		}

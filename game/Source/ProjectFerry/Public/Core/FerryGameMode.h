@@ -35,11 +35,13 @@ public:
 private:
 	void SpawnEnemiesFromMarkers();
 	void RespawnPlayer(TWeakObjectPtr<AController> Controller);
+	void ApplyWorldFlagsToPlayer();
 
 	TArray<TWeakObjectPtr<AFerryEnemy>> TokenHolders;
 	TSet<TWeakObjectPtr<AActor>> FinishedMarkers;
 	TArray<TWeakObjectPtr<AActor>> CheckpointMarkers;
 	TWeakObjectPtr<AActor> LastCheckpoint;
+	TSet<FName> WorldFlags; // e.g. flag_boss_lon_loi_freed; re-applied to the respawned player
 	FTimerHandle RespawnTimer;
 	float CheckpointScanTimer = 0.0f;
 	bool bPlayerDead = false;

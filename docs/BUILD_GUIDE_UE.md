@@ -120,12 +120,14 @@ Bấm **Play** (Alt+P). Nên chọn **Play → Selected Viewport** hoặc **New 
 | Đòn nhẹ | Chuột trái | X (trái) |
 | Đòn nặng | Chuột phải | Y (trên) |
 | Né | Space | B (phải) |
-| Đỡ nhịp (parry) | Q | LB |
+| Đỡ nhịp (bấm) / Đỡ (giữ) | Q | LB |
 | Khóa mục tiêu (bật/tắt) | Chuột giữa hoặc Tab | Bấm cần phải (R3) |
 | Hồi trống (khi đủ 4 nấc) | R | RB |
 | Cạy khoen (bấm theo nhịp) | E | RT |
 | Tương tác | F | A (dưới) |
 
+- **Q:** bấm đúng lúc đòn tới là Đỡ nhịp (parry); giữ nút là Đỡ (giảm sát thương, tốn Thế). Đỡ nhịp hoàn hảo mở cửa sổ phản đòn (bấm nhẹ) và Đòn nhà *Chống sào* (bấm nặng, chỉ mở sau khi giải thoát boss, cờ `flag_boss_lon_loi_freed`).
+- **Cạy:** khi boss đủ vết nứt và đang choáng, đứng gần (≤ 3 m, giá trị tạm) và bấm E để bắt đầu, rồi bấm E đúng các vạch nhịp trên thanh giữa màn hình. Mức `diff_nghe_chuyen` cạy tự động. Khi tắt khoen (`ferry.Khoen.Enabled 0`), E ở choáng cuối là cú đẩy (K0).
 - Bấm **Esc** (hoặc Shift+F1) để nhả chuột khỏi cửa sổ game.
 - Lệnh console (phím `~`):
   | Lệnh | Tác dụng |
@@ -199,7 +201,7 @@ Trong PIE hoặc bản đóng gói, mở console (`~`):
 | Quyết định | Lựa chọn | Lý do |
 |---|---|---|
 | Luật chơi | Gọi `ArpgCore` (combo, né/đỡ, Thế, sát thương, Nhịp trống, hit-stop, khoen/boss) | D-008: một nguồn luật, đã test ngoài engine |
-| Đọc dữ liệu | `FFerryDesignDataLoader` đọc file JSON bằng `FFileHelper`, đưa **chuỗi** JSON vào ArpgCore loader; các trường trình bày (tầm đánh, góc, khoảng cách lock-on, tên hiển thị) đọc bằng module `Json` của UE | ArpgCore không làm I/O (README ArpgCore §1) |
+| Đọc dữ liệu | `FFerryDesignDataLoader` đọc 7 file JSON bằng `FFileHelper`, đưa **chuỗi** JSON vào `ArpgCore::LoadDesignData` (luật + `ValidateConfig`); các trường trình bày mà ArpgCore bỏ qua (tầm đánh, góc, khoảng cách lock-on, tốc độ chạy, màu báo hiệu, tên hiển thị, `strings.json`) đọc bằng module `Json` của UE. Module editor nạp thử dữ liệu lúc khởi động và báo lỗi trong Output Log | ArpgCore không làm I/O (README ArpgCore §1) |
 | Vị trí dữ liệu | Đọc thẳng `<repo>/design/data` khi chạy từ repo; bản đóng gói dùng bản copy `Content/Data/Design` | Một nguồn sự thật, không phải đồng bộ tay khi làm việc hằng ngày |
 | Input | Enhanced Input; `UInputAction`/`UInputMappingContext` tạo bằng `NewObject` trong C++ lúc chạy | Không cần file `.uasset` cho input; đổi phím sau này chuyển sang asset + UI remap |
 | Hit-stop | `CustomTimeDilation` **từng actor** (người đánh và mục tiêu), không dùng global time dilation | Dữ liệu ghi `applies_to_attacker`/`applies_to_target`; global sẽ làm đứng cả quái khác và camera |
@@ -213,4 +215,35 @@ Trong PIE hoặc bản đóng gói, mở console (`~`):
 - Chưa có: hub bến Lau, chế tác, Thạp, bàn giao đời, chuỗi bí mật (chỉ có marker), Codex, người bị mê (chỉ marker), nắm cơm lá, đòn gồng, chế độ giữ nút khi cạy, menu, lưu game.
 - Lock-on dùng tia nhìn (line trace) đơn giản; chưa có đổi mục tiêu bằng cần.
 - Di chuyển của địch không dùng navmesh (đi thẳng tới người chơi).
-- Danh sách các điểm `VERIFY:` (API chưa chắc chắn) nằm ngay trong code: tìm `VERIFY:` trong `game/Source/ProjectFerry*`, `game/*.uproject`, `game/Source/*.Target.cs` và script Python.
+- Chưa có cây kỹ năng: các đòn cần kỹ năng (`sk_vo_noi_don`, gồng mức 2) bị khóa như lúc bắt đầu demo; đòn gồng chưa có (ArpgCore cũng chưa mô hình hóa).
+- Đổi vũ khí, đổi độ khó, bật/tắt khoen hiện chỉ qua console (chưa có menu).
+
+## 14. Điểm `VERIFY:` (API chưa chắc chắn, cần xác nhận khi build)
+| Nơi | Nội dung |
+|---|---|
+| `*.Target.cs` | `BuildSettingsVersion.Latest` / `EngineIncludeOrderVersion.Latest` có hợp với bản engine đã cài |
+| `ProjectFerry.uproject` | Khóa `TargetAllowList: ["Editor"]` cho PythonScriptPlugin/EditorScriptingUtilities (JSON không cho ghi chú). Nếu editor báo lỗi plugin, xóa hai dòng này |
+| `FerryCharacter.cpp` | `UInputAction::ValueType` là thành viên public; `UInputMappingContext::MapKey` trả về `FEnhancedActionKeyMapping&`; dấu trục dọc camera |
+| `FerryCharacter.cpp` | Né bằng `LaunchCharacter` + tắt ma sát tạm thời: quãng đường thực tế có đúng `dodge.distance_m` |
+| `FerryCharacter.h`, `FerryGameMode.h` | Hàm `UFUNCTION(Exec)` trên pawn và GameMode có nhận lệnh console |
+| `FerryCombatUtils.h` | Hit-stop dùng `CustomTimeDilation` tối thiểu 0,01 thay vì 0 |
+| `FerryEnemy.cpp`, script Python | `BasicShapeMaterial` có tham số màu tên `Color` (nếu không, địch không đổi màu khi báo hiệu; quả cầu báo hiệu vẫn hiện) |
+| `FerryDesignDataLoader.cpp` | Bản đóng gói đọc được `Content/Data/Design` bên trong `.pak` |
+| `FerryHUD.cpp` | Font mặc định hiển thị đủ dấu tiếng Việt |
+| Script Python | `LevelEditorSubsystem.new_level`, `Actor.set_folder_path`, tên thuộc tính đèn (`atmosphere_sun_light`, `real_time_capture`), `default_game_mode` |
+
+## 15. Giá trị tạm trong code (dữ liệu thiết kế chưa có trường tương ứng)
+Không phải luật combat (luật đến từ ArpgCore + `design/data`), nhưng là con số nằm trong code. Đề nghị designer bổ sung vào schema rồi đổi code đọc từ dữ liệu:
+
+| Giá trị | Hiện dùng | Đề xuất trường |
+|---|---|---|
+| Tầm bắt đầu cạy | 3 m (cảnh báo khi nạp dữ liệu) | `combat_tuning.pry.range_m` |
+| Tốc độ di chuyển của địch | = `movement.walk_speed_mps` × hệ số độ khó/pha | `enemies[].move_speed_mps` |
+| Bán kính phát hiện người chơi | = `lock_on.max_distance_m` | `enemies[].aggro_radius_m` |
+| Góc đánh của địch, góc "phía trước" cho `front_damage_mult` | ±60° | `attacks[].arc_deg`, `front_arc_deg` |
+| Đòn lao (tầm ≥ 4 m) di chuyển trong pha Active | ngưỡng 4 m | `attacks[].lunge` |
+| Thời gian bỏ chạy / tan vào bùn | 4 s / 1 s (+ `pry.silence_after_s` cho boss) | `defeat_behavior_duration_s` |
+| Khoảng nghỉ sau khi bị ngắt đòn | = `player.hitstun_light_s` | `enemies[].interrupt_recover_s` |
+| Thời gian hồi sinh, bán kính kích hoạt bếp lửa | 3 s, 3 m | `player.respawn_delay_s`, `checkpoint_radius_m` |
+| Chuỗi nhắc cú đẩy K0 | khóa `prompt_finisher_shove` chưa có trong `strings.json` (HUD hiện `#prompt_finisher_shove`) | thêm khóa vào `strings.json` |
+| Tốc độ xoay camera bằng tay cầm, độ dài cánh tay camera | 150°/s, 4,5 m | cài đặt người chơi |

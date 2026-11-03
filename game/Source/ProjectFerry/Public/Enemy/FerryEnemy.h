@@ -124,7 +124,7 @@ private:
 	ArpgCore::FActionTimeline AttackTimeline;
 	bool bHasToken = false;
 	float StateTimer = 0.0f;
-	int32 LastPhaseIndex = 0;
+	int32 LastPhaseIndex = -1; // -1: phase 0 moveset not resolved yet
 	FVector LeaveStartScale = FVector::OneVector;
 
 	UPROPERTY(Transient)

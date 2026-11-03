@@ -1,5 +1,5 @@
-// FerryCombatTypes.cpp - NOT YET BUILT IN UNREAL ENGINE.
-#include "Combat/FerryCombatTypes.h"
+// FerryCombatUtils.cpp - NOT YET BUILT IN UNREAL ENGINE.
+#include "Combat/FerryCombatUtils.h"
 
 #include "GameFramework/Actor.h"
 #include "HAL/IConsoleManager.h"

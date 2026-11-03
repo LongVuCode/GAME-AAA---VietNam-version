@@ -290,7 +290,7 @@ void AFerryCharacter::OnDrum()
 {
 	if (Combat->PressDrum())
 	{
-		UE_LOG(LogFerry, Log, TEXT("drum burst (Hồi trống) started"));
+		UE_LOG(LogFerry, Log, TEXT("drum burst started"));
 	}
 }
 
@@ -338,7 +338,7 @@ void AFerryCharacter::OnInteract()
 		{
 			if (It->ActorHasTag(Tag))
 			{
-				const float DistSq = FVector::DistSquared(It->GetActorLocation(), GetActorLocation());
+				const float DistSq = static_cast<float>(FVector::DistSquared(It->GetActorLocation(), GetActorLocation()));
 				if (DistSq < BestDistSq)
 				{
 					BestDistSq = DistSq;
@@ -442,7 +442,7 @@ void AFerryCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	// Camera / lock-on use the undilated world delta so they keep moving during our own hit-stop.
-	const float RealDt = GetWorld()->GetDeltaSeconds();
+	const float RealDt = static_cast<float>(GetWorld()->GetDeltaSeconds());
 	UpdateDodge(DeltaSeconds);
 	UpdateLockOn(RealDt);
 	UpdatePry();
@@ -468,8 +468,8 @@ AFerryEnemy* AFerryCharacter::FindLockOnCandidate() const
 			continue;
 		}
 		const FVector ToEnemy = Enemy->GetActorLocation() - GetActorLocation();
-		const float Dist = ToEnemy.Size2D();
-		const float Cos = FVector::DotProduct(ViewDir, ToEnemy.GetSafeNormal2D());
+		const float Dist = static_cast<float>(ToEnemy.Size2D());
+		const float Cos = static_cast<float>(FVector::DotProduct(ViewDir, ToEnemy.GetSafeNormal2D()));
 		if (Dist > MaxDistCm || Cos < HalfConeCos)
 		{
 			continue;
@@ -492,7 +492,7 @@ void AFerryCharacter::UpdateLockOn(float DeltaSeconds)
 	{
 		return;
 	}
-	const float Dist = FVector::Dist2D(Target->GetActorLocation(), GetActorLocation());
+	const float Dist = static_cast<float>(FVector::Dist2D(Target->GetActorLocation(), GetActorLocation()));
 	if (!Target->IsTargetable() || Dist > Tuning->LockBreakDistanceM * 100.0f)
 	{
 		LockOnTarget.Reset();

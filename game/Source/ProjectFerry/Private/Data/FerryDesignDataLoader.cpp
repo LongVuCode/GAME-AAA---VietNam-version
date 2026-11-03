@@ -38,7 +38,7 @@ struct FDesignFile
 	TSharedPtr<FJsonObject> Root;
 };
 
-bool ReadFile(const FString& Directory, const TCHAR* FileName, bool bRequired, FDesignFile& Out, FFerryDesignDataLoadReport& Report)
+bool ReadDesignFile(const FString& Directory, const TCHAR* FileName, bool bRequired, FDesignFile& Out, FFerryDesignDataLoadReport& Report)
 {
 	Out.Name = FileName;
 	const FString Path = FPaths::Combine(Directory, FileName);
@@ -245,6 +245,11 @@ void ReadEnemies(const TSharedPtr<FJsonObject>& Root, FFerryDesignData& Data, FF
 		View.Rank = FName(*StringAt(E, TEXT("rank"), TEXT("normal")));
 		View.DefeatBehavior = FName(*StringAt(E, TEXT("defeat_behavior"), TEXT("flee")));
 		View.bRespawnsAtCheckpoint = BoolOr(E, TEXT("respawns_at_checkpoint"), true);
+		const TSharedPtr<FJsonObject> KhoenData = ObjectAt(E, TEXT("khoen"));
+		const FString FreedFlag = StringAt(ObjectAt(KhoenData, TEXT("on_pry_success")), TEXT("sets_flag"));
+		const FString FledFlag = StringAt(ObjectAt(KhoenData, TEXT("fallback_when_disabled")), TEXT("sets_flag"));
+		View.FreedFlag = FreedFlag.IsEmpty() ? NAME_None : FName(*FreedFlag);
+		View.FledFlag = FledFlag.IsEmpty() ? NAME_None : FName(*FledFlag);
 		if (const FJsonArray* Attacks = ArrayAt(E, TEXT("attacks")))
 		{
 			for (int32 AttackIndex = 0; AttackIndex < Attacks->Num(); ++AttackIndex)
@@ -332,13 +337,13 @@ TSharedPtr<const FFerryDesignData> FFerryDesignDataLoader::LoadFromDirectory(con
 
 	FDesignFile Combat, Weapons, Enemies, Items, Lineage, Secrets, Strings;
 	bool bOk = true;
-	bOk &= ReadFile(Directory, TEXT("combat_tuning.json"), true, Combat, OutReport);
-	bOk &= ReadFile(Directory, TEXT("weapons.json"), true, Weapons, OutReport);
-	bOk &= ReadFile(Directory, TEXT("enemies.json"), true, Enemies, OutReport);
-	bOk &= ReadFile(Directory, TEXT("items.json"), true, Items, OutReport);
-	bOk &= ReadFile(Directory, TEXT("lineage.json"), true, Lineage, OutReport);
-	bOk &= ReadFile(Directory, TEXT("secrets.json"), true, Secrets, OutReport);
-	ReadFile(Directory, TEXT("strings.json"), false, Strings, OutReport); // HUD falls back to keys
+	bOk &= ReadDesignFile(Directory, TEXT("combat_tuning.json"), true, Combat, OutReport);
+	bOk &= ReadDesignFile(Directory, TEXT("weapons.json"), true, Weapons, OutReport);
+	bOk &= ReadDesignFile(Directory, TEXT("enemies.json"), true, Enemies, OutReport);
+	bOk &= ReadDesignFile(Directory, TEXT("items.json"), true, Items, OutReport);
+	bOk &= ReadDesignFile(Directory, TEXT("lineage.json"), true, Lineage, OutReport);
+	bOk &= ReadDesignFile(Directory, TEXT("secrets.json"), true, Secrets, OutReport);
+	ReadDesignFile(Directory, TEXT("strings.json"), false, Strings, OutReport); // HUD falls back to keys
 	if (!bOk)
 	{
 		FlushToLog(OutReport);
