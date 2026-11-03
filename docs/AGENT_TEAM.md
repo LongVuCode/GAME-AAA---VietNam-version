@@ -10,6 +10,7 @@
 |---|---|---|---|
 | Điều phối (phiên chính) | — | Lập kế hoạch, giao việc, tổng hợp, báo cáo giai đoạn, git | Product Owner (anh/chị) |
 | `narrative-researcher` | `.claude/agents/narrative-researcher.md` | Cốt truyện, lore, dị bản, canon | `historian-verifier` → PO → cố vấn sử học |
+| `vn-history-folklore-expert` | `.claude/agents/vn-history-folklore-expert.md` | Chuyên gia lịch sử, truyền thuyết, cổ tích, tín ngưỡng; hồ sơ chuyên sâu; duy trì `research/data` | `historian-verifier` → PO; tối đa mức B |
 | `historian-verifier` | `.claude/agents/historian-verifier.md` | Phản biện nguồn, nhãn, độ nhạy cảm | PO; mức A cần người thật |
 | `game-designer` | `.claude/agents/game-designer.md` | Combat, quái/boss, trang bị, bí mật, cân bằng (dạng dữ liệu) | `qa-lead`, PO qua playtest |
 | `ue-gameplay-engineer` | `.claude/agents/ue-gameplay-engineer.md` | C++ ArpgCore + UE5, test, CI | `qa-lead`; PO build trên máy thật |

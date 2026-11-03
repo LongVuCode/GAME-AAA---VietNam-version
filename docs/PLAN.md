@@ -14,6 +14,22 @@ Làm **một chương hoàn chỉnh ở chất lượng đích (vertical slice, 
 | **5** | Đánh bóng và tối ưu slice | PSO, streaming, VRAM, trợ năng, QA, playtest bên ngoài | Đạt chỉ tiêu FPS và 1% low đo thật theo TECH_SPEC §4; không hitch PSO > 50ms; playtest ≥ 20 người |
 | 6+ | Sản xuất mở rộng | Chương 2–9, tuần tự | Mỗi chương có tiêu chí riêng tương tự GĐ4–5 |
 
+## Demo và playtest (D-013)
+Nguyên tắc: **test demo liên tục**, mỗi bản build đều có kênh thu thập ý kiến. Trang Steam và trailer chỉ mở khi đạt điều kiện C2 (VERDICT §4).
+
+| Vòng | Khi nào | Kênh (đề xuất) | Người tham gia | Thu thập |
+|---|---|---|---|---|
+| Nội bộ | Mỗi mốc của GĐ2–GĐ5 | Bản build gửi trực tiếp | PO và người quen | Form chấm game feel, câu hỏi "có bị cướp công không", ghi lại video |
+| Playtest kín | Sau GĐ4 (vertical slice) | Steam Playtest (ứng dụng tách riêng khỏi trang game) và/hoặc bản tải từ itch.io có giới hạn | 20–100 người đăng ký | Form khảo sát, thống kê ẩn danh có xin phép, báo lỗi trong game |
+| Demo công khai | Sau GĐ5 và sau khi đạt C2 | Steam demo (có thể dự Steam Next Fest); các nền tảng khác nếu chính sách của nền tảng cho phép demo | Công chúng | Đánh giá, khảo sát, Discord |
+| Bản thu thập ý kiến riêng | Song song với demo | Một bản build "Feedback" tách riêng (có nút gửi ý kiến và chụp màn hình trong game), phát hành ở nơi phù hợp từng nền tảng | Người chơi demo | Gom về một kho chung (form hoặc issue tracker) |
+
+> **Chưa xác minh:** chính sách demo/playtest của Epic Games Store, GOG, Microsoft Store và quy định về thu thập dữ liệu người chơi (quyền riêng tư) cần kiểm tra trước khi triển khai.
+
+**Công cụ cần có ngay từ GĐ2:**
+- Nút "Gửi ý kiến" trong game, kèm build ID và thông tin phần cứng (người chơi đồng ý mới gửi).
+- Bảng câu hỏi chuẩn để so sánh kết quả giữa các vòng.
+
 ## Phần cần người thật (AI không thay được)
 | Hạng mục | Lý do | Pipeline / placeholder đề xuất |
 |---|---|---|

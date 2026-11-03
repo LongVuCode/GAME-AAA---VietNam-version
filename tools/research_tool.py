@@ -36,7 +36,7 @@ def load(name: str, base: Path = DATA) -> dict:
         return json.load(f)
 
 
-def check_item(item: dict, sources: dict[str, dict], rep: Report) -> None:
+def check_item(item: dict, sources: dict[str, dict], rep: Report, is_myth: bool = False) -> None:
     iid = item.get("id", "?")
     label = item.get("label")
     if label not in LABELS:
@@ -70,6 +70,17 @@ def check_item(item: dict, sources: dict[str, dict], rep: Report) -> None:
         if not item.get("citations"):
             rep.errors.append(f"{iid}: in_game requires page-level citations")
 
+    # Worship rules (VERDICT C1): a worshipped figure's artifacts never go to the player.
+    for key in ("worshipped", "player_can_wield"):
+        if key in item and not isinstance(item[key], bool):
+            rep.errors.append(f"{iid}: {key} must be a boolean")
+    if item.get("worshipped") is True and item.get("player_can_wield") is True:
+        rep.errors.append(f"{iid}: worshipped figures' artifacts cannot be player_can_wield")
+    if is_myth:
+        missing = [k for k in ("worshipped", "player_can_wield") if k not in item]
+        if missing:
+            rep.warnings.append(f"{iid}: missing {missing}")
+
     if label in HISTORICAL:
         lineages = {sources[s]["lineage"] for s in srcs if s in sources} - NON_EVIDENTIAL
         if len(lineages) < 2:
@@ -90,7 +101,7 @@ def lint(base: Path = DATA) -> Report:
             if iid in seen:
                 rep.errors.append(f"{iid}: duplicate id")
             seen.add(iid)
-            check_item(item, sources, rep)
+            check_item(item, sources, rep, is_myth=(key == "myths"))
     return rep
 
 

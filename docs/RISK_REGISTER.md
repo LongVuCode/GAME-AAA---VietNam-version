@@ -12,4 +12,5 @@
 | R-08 | Trùng nhãn hiệu tên game | TB | TB | Tra cứu nhãn hiệu ở GĐ1, có 2 tên dự phòng | Legal |
 | R-09 | Thiếu bản dịch chuẩn của nguồn để đối chiếu số trang | TB | Cao | Mua hoặc mượn bản in; cộng tác với thư viện hoặc viện | Narrative |
 | R-10 | Asset không rõ license, hoặc asset AI bị phát hành nhầm | Thấp | Cao | License register + tag PLACEHOLDER_AI + kiểm tra trước release | Production |
+| R-12 | Thay cố vấn sử học người thật bằng agent AI: AI có thể sai một cách tự tin, và không ai chịu trách nhiệm chuyên môn | Cao | Rất cao | Agent chuyên gia chỉ xác minh tới mức B. Trước khi mở trang Steam, tối thiểu cần một lượt người thật thẩm định (cố vấn trả phí theo chương, hoặc gửi văn bản xin ý kiến ban quản lý di tích, viện hay trường) | PO |
 | R-11 | Dòng thời gian Giai đoạn 0 chưa đối chiếu trang (mức B/C) | Chắc chắn | TB | Chưa đưa vào game; nâng lên mức A ở GĐ1/GĐ4 | Narrative |
