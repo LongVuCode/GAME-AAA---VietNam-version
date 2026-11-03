@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "_note": "Demo 0.1 (ch_longbien). Mọi con số là GIẢ ĐỊNH THIẾT KẾ, chờ playtest. Thời gian: giây; góc: độ; khoảng cách: mét.",
+  "input": {
+    "buffer_s": 0.15,
+    "combo_pause_threshold_s": 0.35,
+    "hold_threshold_s": 0.25
+  },
+  "movement": {
+    "walk_speed_mps": 2.2,
+    "run_speed_mps": 5.0,
+    "mud_speed_mult": 0.75,
+    "shallow_water_speed_mult": 0.85
+  },
+  "player": {
+    "hp_max": 300,
+    "the_max": 100,
+    "the_regen_per_s": 20,
+    "the_regen_delay_s": 1.0,
+    "guard_break_stun_s": 1.2,
+    "hitstun_light_s": 0.35,
+    "hitstun_heavy_s": 0.7,
+    "respawn_at": "last_checkpoint"
+  },
+  "dodge": {
+    "duration_s": 0.45,
+    "iframe_start_s": 0.05,
+    "iframe_duration_s": 0.2,
+    "perfect_dodge_window_s": 0.1,
+    "recovery_s": 0.15,
+    "distance_m": 3.5,
+    "cancel_attack_recovery_after_s": 0.1
+  },
+  "guard": {
+    "damage_reduction": 0.7,
+    "player_the_damage_mult": 1.0,
+    "parry_window_s": 0.15,
+    "perfect_parry_window_s": 0.06,
+    "parry_enemy_the_damage": 20,
+    "perfect_parry_enemy_the_damage": 40,
+    "perfect_parry_counter_window_s": 0.6
+  },
+  "enemy_the_defaults": {
+    "regen_delay_s": 1.5,
+    "regen_per_s": 12,
+    "stagger_duration_s": 2.5,
+    "post_stagger_the_ratio": 0.0
+  },
+  "drum_rhythm": {
+    "segments": 4,
+    "points_per_segment": 100,
+    "gain": {
+      "light_hit": 8,
+      "heavy_hit": 15,
+      "parry": 25,
+      "perfect_parry": 40,
+      "perfect_dodge": 30,
+      "the_break": 50,
+      "pry_beat": 0
+    },
+    "loss_on_hit_taken": 30,
+    "keeps_full_segments_on_hit": true,
+    "decay_delay_s": 6.0,
+    "decay_per_s": 10,
+    "decay_only_partial_segment": true,
+    "drum_burst_cost_segments": 4
+  },
+  "hit_stop": {
+    "light_s": 0.04,
+    "medium_s": 0.07,
+    "heavy_s": 0.1,
+    "finisher_s": 0.12,
+    "pry_beat_s": 0.08,
+    "pry_release_s": 0.12,
+    "applies_to_attacker": true,
+    "applies_to_target": true
+  },
+  "camera_shake": {
+    "enabled_default": true,
+    "max_amplitude": 0.6,
+    "light_amplitude": 0.1,
+    "heavy_amplitude": 0.35
+  },
+  "lock_on": {
+    "max_distance_m": 15.0,
+    "acquire_cone_deg": 60,
+    "break_distance_m": 20.0,
+    "break_after_los_lost_s": 1.5,
+    "switch_stick_threshold": 0.6,
+    "switch_cone_deg": 90,
+    "soft_lock_cone_deg": 30,
+    "toggle_mode_default": "toggle"
+  },
+  "pry": {
+    "beats": 3,
+    "bpm": 84,
+    "beat_window_s": 0.15,
+    "hold_option": true,
+    "hold_duration_per_beat_s": 0.5,
+    "miss_retries_per_beat": 2,
+    "on_fail": "boss_recovers_the_half",
+    "silence_after_s": 3.0,
+    "player_invulnerable_during": true
+  },
+  "enemy_ai": {
+    "max_simultaneous_attackers": 2,
+    "attack_token_cooldown_s": 1.2,
+    "max_delayed_attacks_per_moveset": 1,
+    "unparryable_telegraph": ["color_red_bronze", "audio_cue", "rumble"]
+  },
+  "healing": {
+    "item_id": "it_nam_com_la",
+    "use_time_s": 1.0,
+    "heal_ratio": 0.4,
+    "charges": 4,
+    "refill_at_checkpoint": true
+  },
+  "difficulty": {
+    "default": "diff_cheo_do",
+    "presets": [
+      {
+        "id": "diff_nghe_chuyen",
+        "name": {"vi": "Nghe chuyện", "en": "Storyteller"},
+        "description": {"vi": "Cho người muốn đi hết câu chuyện: địch chậm hơn, cửa sổ Đỡ nhịp rộng, cạy tự động.", "en": "For players who want the story: slower enemies, wide parry window, automatic pry."},
+        "damage_taken_mult": 0.4,
+        "damage_dealt_mult": 1.5,
+        "enemy_speed_mult": 0.85,
+        "parry_window_mult": 2.0,
+        "telegraph_time_mult": 1.3,
+        "pry_auto": true,
+        "aim_assist": true
+      },
+      {
+        "id": "diff_cheo_do",
+        "name": {"vi": "Chèo đò", "en": "Ferrying"},
+        "description": {"vi": "Mức chuẩn của thiết kế.", "en": "The intended balance."},
+        "damage_taken_mult": 1.0,
+        "damage_dealt_mult": 1.0,
+        "enemy_speed_mult": 1.0,
+        "parry_window_mult": 1.0,
+        "telegraph_time_mult": 1.0,
+        "pry_auto": false,
+        "aim_assist": true
+      },
+      {
+        "id": "diff_nguoc_nuoc",
+        "name": {"vi": "Ngược nước", "en": "Upstream"},
+        "description": {"vi": "Địch mạnh hơn, cửa sổ Đỡ nhịp hẹp hơn.", "en": "Stronger enemies, narrower parry window."},
+        "damage_taken_mult": 1.4,
+        "damage_dealt_mult": 0.9,
+        "enemy_speed_mult": 1.0,
+        "parry_window_mult": 0.8,
+        "telegraph_time_mult": 1.0,
+        "pry_auto": false,
+        "aim_assist": false
+      },
+      {
+        "id": "diff_thac_du",
+        "name": {"vi": "Thác dữ", "en": "Rapids"},
+        "description": {"vi": "Cho người đã thuộc bộ chiêu. Báo hiệu vẫn giữ nguyên.", "en": "For players who know the movesets. Telegraphs stay the same."},
+        "damage_taken_mult": 1.8,
+        "damage_dealt_mult": 0.8,
+        "enemy_speed_mult": 1.05,
+        "parry_window_mult": 0.67,
+        "telegraph_time_mult": 1.0,
+        "pry_auto": false,
+        "aim_assist": false
+      }
+    ],
+    "custom_ranges": {
+      "parry_window_s": {"min": 0.1, "max": 0.3, "step": 0.01},
+      "damage_taken_mult": {"min": 0.25, "max": 2.0, "step": 0.05},
+      "enemy_speed_mult": {"min": 0.8, "max": 1.1, "step": 0.05},
+      "telegraph_time_mult": {"min": 1.0, "max": 1.5, "step": 0.05},
+      "pry_auto": "bool",
+      "aim_assist": "bool"
+    }
+  },
+  "accessibility": {
+    "options": [
+      {"id": "acc_subtitle_size", "name": {"vi": "Cỡ phụ đề", "en": "Subtitle size"}, "type": "enum", "values": ["s", "m", "l", "xl"], "default": "m"},
+      {"id": "acc_subtitle_bg", "name": {"vi": "Nền phụ đề", "en": "Subtitle background"}, "type": "range", "min": 0.0, "max": 1.0, "default": 0.6},
+      {"id": "acc_colorblind_telegraph", "name": {"vi": "Báo hiệu đòn bằng hình dạng (không chỉ màu)", "en": "Shape-based attack telegraphs (not color only)"}, "type": "bool", "default": true},
+      {"id": "acc_camera_shake", "name": {"vi": "Rung camera", "en": "Camera shake"}, "type": "bool", "default": true},
+      {"id": "acc_reduce_flash", "name": {"vi": "Giảm nhấp nháy", "en": "Reduce flashing"}, "type": "bool", "default": false},
+      {"id": "acc_hold_instead_of_tap", "name": {"vi": "Giữ nút thay vì bấm theo nhịp (cạy)", "en": "Hold instead of timed presses (pry)"}, "type": "bool", "default": false},
+      {"id": "acc_lock_on_mode", "name": {"vi": "Khóa mục tiêu: bật/tắt hoặc giữ", "en": "Lock-on: toggle or hold"}, "type": "enum", "values": ["toggle", "hold"], "default": "toggle"},
+      {"id": "acc_attack_audio_cue", "name": {"vi": "Âm thanh báo hướng đòn", "en": "Directional attack audio cue"}, "type": "bool", "default": true},
+      {"id": "acc_remap", "name": {"vi": "Đổi phím", "en": "Remap controls"}, "type": "action"}
+    ]
+  }
+}
