@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "_note": "Kẻ địch Demo 0.1 (ch_longbien): Cua Càng Bùn, Bọ Ngựa Lau, Ụ Bùn (bộ chuẩn theo điều phối) và boss Lợn Lòi Đầm. Không có người (kể cả người bị mê), không cáo, không bò sát, không tên giao long/thuồng luồng (D-017, D-018, SB-01, SB-05). Thú hết sức thì bỏ chạy. Mọi con số là giả định, chờ playtest.",
+  "_note": "Kẻ địch Demo 0.1 (ch_longbien) theo Story Bible v1.2 §5: Cua Càng Bùn, Bọ Ngựa Lau, Ụ Bùn và boss Lợn Lòi Đầm. Quái thường không mang khoen: bị đánh động khi Lợn Lòi Đầm đau vì mảnh khoen mà càn phá đầm; hết sức thì trốn. Không có người (kể cả người bị mê), không cáo, không bò sát, không tên giao long/thuồng luồng. Chuỗi en không dùng \"collar\", \"bronze\" cho khoen (SB11-16). Mọi con số là giả định.",
   "enemies": [
     {
       "id": "en_cua_cang_bun",
@@ -9,8 +9,8 @@
         "en": "Mudclaw Crab"
       },
       "description": {
-        "vi": "Cua đầm to bằng cái nong, mai dày phía trước. Đánh từ bên hông hoặc chờ nó giơ càng rồi Đỡ nhịp. Hết sức thì bò xuống bùn trốn.",
-        "en": "A marsh crab as wide as a winnowing tray, with a thick front shell. Strike its flank, or parry when it raises its claws. When spent, it burrows away into the mud."
+        "vi": "Cua đầm cỡ lớn, mai dày phía trước. Bị đánh động khỏi hang khi Lợn Lòi Đầm, đau vì mảnh khoen, càn phá đầm; nó kẹp để tự vệ. Đánh từ bên hông hoặc Đỡ nhịp khi nó giơ càng. Hết sức thì chui xuống bùn trốn.",
+        "en": "A large marsh crab with a thick front shell. Driven from its burrow when the Marsh Boar, in pain from a piece of khoen, tore up the marsh; it pinches to defend itself. Strike its flank, or parry when it raises its claws. When spent, it burrows away into the mud."
       },
       "label": "SÁNG TẠO",
       "type": "beast",
@@ -113,8 +113,8 @@
         "en": "Reed Mantis"
       },
       "description": {
-        "vi": "Bọ ngựa cao ngang vai người, nấp trong bãi lau. Nhanh, máu mỏng; né đúng lúc để lấy Nhịp. Hết sức thì bay vụt vào lau.",
-        "en": "A shoulder-high mantis that hides in the reeds. Fast and frail; time your dodges to build Rhythm. When spent, it whirs off into the reeds."
+        "vi": "Bọ ngựa cao ngang vai người. Bị đánh động khỏi ổ trong bãi lau khi Lợn Lòi Đầm càn phá đầm; nó chém để tự vệ. Nhanh, máu mỏng; né đúng lúc để lấy Nhịp. Hết sức thì bay vụt vào lau.",
+        "en": "A shoulder-high mantis. Driven from its nest in the reeds when the Marsh Boar tore up the marsh; it slashes to defend itself. Fast and frail; time your dodges to build Rhythm. When spent, it whirs off into the reeds."
       },
       "label": "SÁNG TẠO",
       "type": "insect",
@@ -217,8 +217,8 @@
         "en": "Mud Mound"
       },
       "description": {
-        "vi": "Yêu đầm hư cấu: một ụ bùn và rễ lau tự đứng dậy. Chậm, chịu đòn; dùng đòn nặng để phá Thế. Hết sức thì sụp lại thành bùn.",
-        "en": "A fictional marsh spirit: a mound of mud and reed roots that stands up on its own. Slow and sturdy; use heavy attacks to break its Stance. When spent, it slumps back into mud."
+        "vi": "Yêu đầm hư cấu: một ụ bùn và rễ lau vốn ngủ trong bùn, thức dậy khi đầm bị xới tung. Không mặt, không thân người; không do khoen sinh ra, không phải thần đất. Chậm, chịu đòn; dùng đòn nặng để phá Thế. Hết sức thì sụp lại thành bùn.",
+        "en": "A fictional marsh spirit: a mound of mud and reed roots that slept in the mire and woke when the marsh was torn up. Faceless, with no human body; not born of the khoen, and not an earth god. Slow and sturdy; use heavy attacks to break its Stance. When spent, it slumps back into mud."
       },
       "label": "SÁNG TẠO",
       "type": "spirit",
@@ -293,7 +293,12 @@
           }
         }
       ],
-      "drops": []
+      "drops": [],
+      "body_rules": {
+        "face": false,
+        "human_torso": false,
+        "called_earth_deity": false
+      }
     },
     {
       "id": "boss_lon_loi_dam",
@@ -302,8 +307,8 @@
         "en": "Marsh Boar"
       },
       "description": {
-        "vi": "Con lợn lòi già càn phá bãi lầy quanh lò bỏ hoang. Nó từng giật đứt một cái bẫy; lưỡi bẫy đúc vụng còn mắc ở cổ, cắm vào thịt.",
-        "en": "An old boar rampaging across the mire by the abandoned kiln. It once tore free of a trap; the crudely cast trap blade is still caught in its neck, biting into the flesh."
+        "vi": "Con lợn lòi già càn phá bãi lầy quanh lò bỏ hoang. Nó từng giật đứt một cái bẫy; lưỡi bẫy đúc vụng từ mảnh khoen còn mắc ở cổ, cắm vào thịt.",
+        "en": "An old boar rampaging across the mire by the abandoned kiln. It once tore free of a trap; the crude trap blade, cast from a piece of khoen, is still caught in its neck, biting into the flesh."
       },
       "label": "SÁNG TẠO",
       "type": "beast",
@@ -563,7 +568,7 @@
           },
           "narrative": {
             "vi": "Khoen nứt; con thú khuỵu xuống, dụi cổ vào bùn. Đòn chậm hơn, dễ đọc hơn: nó đau chứ không ác.",
-            "en": "The collar cracks; the beast sinks to its knees and rubs its neck in the mud. Slower, readable blows: it is hurting, not cruel."
+            "en": "The khoen cracks; the beast sinks to its knees and rubs its neck in the mud. Slower, readable blows: it is hurting, not cruel."
           },
           "enter": {
             "type": "any",

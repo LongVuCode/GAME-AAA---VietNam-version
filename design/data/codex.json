@@ -1,44 +1,43 @@
 {
   "schema_version": 1,
-  "_note": "6 mục Codex tối thiểu của Demo 0.1 (Story Bible v1.1 §7). sources là ID trong research/data/sources.json; research_refs là ID trong myths.json/timeline.json. Mục SÁNG TẠO có thể để sources rỗng. Tất cả chờ historian-verifier; tối đa mức B, demo nội bộ.",
+  "_note": "6 mục Codex tối thiểu của Demo 0.1 (Story Bible v1.1 §7). sources là ID trong research/data/sources.json; research_refs là ID trong myths.json/timeline.json. Mục SÁNG TẠO có thể để sources rỗng. Tất cả chờ historian-verifier; tối đa mức B, demo nội bộ. Màn Codex luôn hiện dòng cố định ui.codex_notice_level_b (SB11-14). Codex là giao diện ngoài truyện: mục về khoen chỉ mở ở đời Cói (unlock_era), đọc lại được về sau, nhưng không mở mục khoen mới ở đời Hùng 6 (SB11-17).",
   "entries": [
     {
       "id": "cx_ben_lau",
       "title": {
         "vi": "Bến Lau",
-        "en": "Bến Lau"
+        "en": "Lau Landing"
       },
       "label": "SÁNG TẠO",
       "sources": [],
       "research_refs": [],
       "text": {
         "vi": "Bến Lau là địa danh hư cấu: một bến đò ở khúc sông xuôi, cách đầm nhiều ngày đò. Nó không phải Hồ Tây ngày nay, và không gắn với đền, miếu nào có thật. Nhà bến Lau giữ bến bằng tay mình.",
-        "en": "Bến Lau is a fictional place: a ferry landing on a downstream reach of the river, many days by boat from the marsh. It is not today's West Lake and is tied to no real temple or shrine. The bến Lau house keeps the landing with their own hands."
+        "en": "Lau Landing is a fictional place: a ferry landing on a downstream reach of the river, many days by boat from the marsh. It is not today's West Lake and is tied to no real temple or shrine. The Lau Landing family keeps the landing with their own hands."
       },
-      "review_status": "pending_historian_verifier"
+      "review_status": "pending_historian_verifier",
+      "unlock_era": "era_lac_long_quan"
     },
     {
       "id": "cx_khoen",
       "title": {
         "vi": "Khoen",
-        "en": "The Collar"
+        "en": "Khoen (binding ring)"
       },
       "label": "SÁNG TẠO",
       "sources": [],
       "research_refs": [],
       "text": {
         "vi": "Không phải bùa, không ai yểm. Khoen chỉ là đồng đúc vụng: nó làm thú đau và trói thú, và chính cơn đau cùng sự trói buộc làm thú hóa dữ. Cái sai nằm ở ý muốn bắt thú giữ bến thay mình.",
-        "en": "No charm, no curse. The collar is only clumsily cast bronze: it hurts and binds a beast, and that pain and binding are what turn it wild. The wrong lies in wanting a beast to keep the landing for you."
+        "en": "No charm, no curse. A khoen is only clumsily cast metal: it hurts and binds a beast, and that pain and binding are what turn it wild. The wrong lies in wanting a beast to keep the landing for you."
       },
       "text_extra": {
         "vi": "Ở lò bỏ hoang, đường cong miệng lò khớp với mép lưỡi bẫy. Đồng của khoen vỡ đã được người nấu lại thành bẫy. Mảnh không tự trôi đi; người mang nó đi.",
-        "en": "At the abandoned kiln, the curve of the kiln lip matches the trap blade's edge. Bronze from the broken collar was melted down into traps. The shards did not drift away; people carried them."
+        "en": "At the abandoned kiln, the curve of the kiln lip matches the trap blade's edge. Metal from the broken khoen was melted down into traps. The pieces did not drift away; people carried them."
       },
       "text_extra_unlock": "sec_lo_bo_hoang",
       "review_status": "pending_historian_verifier",
-      "hidden_in_eras": [
-        "era_hung_vuong_6"
-      ]
+      "unlock_era": "era_lac_long_quan"
     },
     {
       "id": "cx_lon_loi_dam",
@@ -53,22 +52,24 @@
         "vi": "Con thú hư cấu. Nó giật đứt bẫy của thợ săn, lưỡi bẫy đúc vụng mắc lại ở cổ. Đau mà hóa dữ, nó càn phá bãi lầy. Sau khi được cạy, nó rụng một chiếc nanh rồi đi vào lau.",
         "en": "A fictional beast. It tore free of a hunter's trap, and the crudely cast blade stayed caught in its neck. Maddened by pain, it ravaged the mire. Once pried free, it shed a tusk and walked into the reeds."
       },
-      "review_status": "pending_historian_verifier"
+      "review_status": "pending_historian_verifier",
+      "unlock_era": "era_lac_long_quan"
     },
     {
       "id": "cx_mui_sao",
       "title": {
         "vi": "Mũi Sào",
-        "en": "Pole Tip"
+        "en": "Pole-tip"
       },
       "label": "SÁNG TẠO",
       "sources": [],
       "research_refs": [],
       "text": {
-        "vi": "Bịt đồng đầu sào của nhà bến Lau, hư cấu. Mỗi đời lắp một cán tre mới; mỗi con thú được giải thoát để lại một vết khắc. Thế giới game dùng mỹ thuật Đông Sơn; thời truyền thuyết không đồng nhất với một văn hóa khảo cổ.",
-        "en": "The bronze pole cap of the bến Lau house, fictional. Each generation fits a new bamboo shaft; each beast set free leaves a notch. The game world uses Đông Sơn art; the legendary age is not identical to any single archaeological culture."
+        "vi": "Bịt đồng đầu sào của nhà bến Lau, hư cấu. Mỗi đời lắp một cán tre mới; mỗi con thú được giải thoát để lại một vết khắc. Thế giới game dùng mỹ thuật Đông Sơn; thời truyền thuyết không đồng nhất với một văn hóa khảo cổ; niên đại theo khảo cổ: chưa đối chiếu.",
+        "en": "The bronze pole cap of the Lau Landing family, fictional. Each generation fits a new bamboo shaft; each beast set free leaves a notch. The game world uses Đông Sơn art; the legendary age is not identical to any single archaeological culture; archaeological dating: not yet checked against sources."
       },
-      "review_status": "pending_historian_verifier"
+      "review_status": "pending_historian_verifier",
+      "unlock_era": "era_lac_long_quan"
     },
     {
       "id": "cx_bronze_weapons",
@@ -76,7 +77,7 @@
         "vi": "Giáo đồng và rìu xéo",
         "en": "Bronze Spear and Crescent Axe"
       },
-      "label": "SỬ LIỆU-TRANH LUẬN",
+      "label": "SÁNG TẠO",
       "sources": [
         "ARC_DS",
         "LSVN15"
@@ -85,12 +86,13 @@
         "T002"
       ],
       "text": {
-        "vi": "Giáo đồng và rìu xéo là những loại hiện vật tiêu biểu của văn hóa khảo cổ Đông Sơn. Mốc niên đại cụ thể và mối liên hệ với nhà nước Văn Lang còn đang tranh luận. Chiêu thức trong game là sáng tạo.",
-        "en": "Bronze spears and crescent axes are characteristic artifacts of the Đông Sơn archaeological culture. Exact dating and the link to the Văn Lang state are still debated. In-game techniques are invented."
+        "vi": "Giáo đồng và rìu xéo là vũ khí trong game, dáng lấy cảm hứng từ hiện vật văn hóa Đông Sơn (T002, sử liệu còn tranh luận: mới có 1 dòng nguồn, mức B; chưa đối chiếu bản gốc; niên đại còn tranh luận). Chiêu thức trong game là sáng tạo.",
+        "en": "The bronze spear and crescent axe are in-game weapons whose shapes are inspired by Đông Sơn culture artifacts (T002, debated record: only one source lineage so far, level B; not yet checked against the original reports; dating still debated). In-game techniques are invented."
       },
       "review_status": "pending_historian_verifier",
-      "notes": "Dựa trên T002: mới có 1 dòng nguồn (ARCHAEOLOGY; LSVN15 là nghiên cứu hiện đại, không tính là bằng chứng độc lập), mức B. Chưa đối chiếu bản gốc báo cáo khai quật (ARC_DS consulted=false).",
-      "verification": "B"
+      "notes": "SB11-07: nhãn SÁNG TẠO; cơ sở T002 [SỬ LIỆU-TRANH LUẬN] mới có 1 dòng nguồn (ARCHAEOLOGY; LSVN15 là nghiên cứu hiện đại, không tính), mức B. ARC_DS consulted=false.",
+      "verification": "B",
+      "unlock_era": "era_lac_long_quan"
     },
     {
       "id": "cx_ho_tinh",
@@ -110,7 +112,9 @@
         "en": "According to a legend in the Lĩnh Nam chích quái, a nine-tailed fox lived in a stone cave and took human form to seize people. Lạc Long Quân raised the waters, broke the cave and destroyed the spirit; the place became a marsh. One variant credits the deed to Huyền Thiên Trấn Vũ. \"Long Biên\" and \"Fox Corpse Marsh\" are later names."
       },
       "review_status": "pending_historian_verifier",
-      "notes": "Chưa đối chiếu nguyên văn LNCQ. Demo 0.1 không có trận Hồ Tinh; mục này chỉ để đặt bối cảnh."
+      "notes": "Chưa đối chiếu nguyên văn LNCQ. Demo 0.1 không có trận Hồ Tinh; mục này chỉ để đặt bối cảnh.",
+      "unlock_era": "era_lac_long_quan"
     }
-  ]
+  ],
+  "fixed_notice": "codex_notice_level_b"
 }

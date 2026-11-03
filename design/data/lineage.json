@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "_note": "Dòng họ trong Demo 0.1: nhà bến Lau là ba người cách nhau nhiều đời (Story Bible v1.1 §3); demo có Cói và Bương. Không huyết thống thần hay vua (G-02). Mọi con số là giả định. Đời Hùng Vương thứ 6 không có chữ \"khoen\" ở bất kỳ nội dung nào (validator kiểm).",
+  "_note": "Dòng họ trong Demo 0.1: nhà bến Lau là ba người cách nhau nhiều đời (Story Bible v1.2 §3); demo có Cói và Bương. Không huyết thống thần hay vua (G-02). Mọi con số là giả định. Nội dung đời Hùng Vương thứ 6 không chứa \"khoen\", \"mảnh\", \"chốt\" (validator kiểm, SB11-01).",
   "eras": [
     {
       "id": "era_lac_long_quan",
@@ -30,12 +30,30 @@
       ],
       "forbidden_content_tags": [
         "khoen",
+        "mảnh",
+        "chốt",
         "bear",
         "melting"
       ],
       "chapters": [
         "ch_phudong"
       ]
+    },
+    {
+      "id": "era_hung_vuong_18",
+      "name": {
+        "vi": "Đời Hùng Vương thứ 18 (theo nhiều bản kể)",
+        "en": "Reign of the 18th Hùng King (per many tellings)"
+      },
+      "label": "HUYỀN THOẠI",
+      "sources": [
+        "LNCQ"
+      ],
+      "chapters": [
+        "ch_bavi",
+        "ch_ben"
+      ],
+      "forbidden_content_tags": []
     }
   ],
   "characters": [
@@ -47,7 +65,7 @@
       },
       "description": {
         "vi": "Người lái đò bến Lau. Cầm giáo, chống sào, đi tìm người làng chưa về.",
-        "en": "The ferrywoman of bến Lau. Spear in hand, pole at the ready, searching for a villager who has not come home."
+        "en": "The ferrywoman of Lau Landing. Spear in hand, pole at the ready, searching for a villager who has not come home."
       },
       "label": "SÁNG TẠO",
       "generation": 1,
@@ -71,7 +89,7 @@
       },
       "description": {
         "vi": "Người nhà bến Lau nhiều đời sau. Mở ô vũ khí thứ hai: rìu xéo, cạnh cây giáo kế thừa.",
-        "en": "Of the bến Lau house, many generations later. Opens the second weapon slot: a crescent axe beside the inherited spear."
+        "en": "Of the Lau Landing family, many generations later. Opens the second weapon slot: a crescent axe beside the inherited spear."
       },
       "label": "SÁNG TẠO",
       "generation": 2,
@@ -92,7 +110,7 @@
       "id": "tool_mui_sao",
       "name": {
         "vi": "Mũi Sào",
-        "en": "Pole Tip"
+        "en": "Pole-tip"
       },
       "description": {
         "vi": "Bịt đồng đầu sào do thợ đúc làng đúc. Mỗi đời lắp cán tre mới. Dùng để chống đò và để cạy; không phải vũ khí.",
@@ -140,11 +158,11 @@
     "id": "thap_nha",
     "name": {
       "vi": "Thạp nhà",
-      "en": "House Jar"
+      "en": "Family Jar"
     },
     "description": {
-      "vi": "Thạp gốm đặt trong kho nhà bến Lau. Bảo khí của mỗi đời xếp vào đây; mở thạp thì đọc được lời kể về từng món.",
-      "en": "A pottery jar kept in the bến Lau storehouse. Each generation's keepsakes go inside; opening it shows their stories as text."
+      "vi": "Thạp gốm thô, trơn, miệng rộng, đặt trong kho nhà bến Lau. Bảo khí của mỗi đời xếp vào đây; mở thạp thì đọc được lời kể về từng món.",
+      "en": "A plain, rough, wide-mouthed pottery jar kept in the Lau Landing storehouse. Each generation's keepsakes go inside; opening it shows their stories as text."
     },
     "label": "SÁNG TẠO",
     "material": "gom",
@@ -154,7 +172,8 @@
     ],
     "group_by": "generation",
     "open_shows": "text_only",
-    "level": "lvl_hub_ben_lau"
+    "level": "lvl_hub_ben_lau",
+    "shape": "wide_mouth_plain_no_lid"
   },
   "skill_tree": {
     "branches": [
@@ -435,10 +454,27 @@
           }
         ],
         "goal": "swap_weapon_at_least_once",
-        "fail_state": "none_retry_freely"
+        "fail_state": "none_retry_freely",
+        "targets": [
+          {
+            "kind": "straw_training_dummy",
+            "count": 2
+          }
+        ],
+        "location": "hub_river_bank"
       },
       {
-        "id": "ho_08_end",
+        "id": "ho_08_ve",
+        "kind": "dialogue",
+        "line_ref": "dlg_06_ve_floor"
+      },
+      {
+        "id": "ho_09_theme",
+        "kind": "dialogue",
+        "line_ref": "dlg_07_theme_short"
+      },
+      {
+        "id": "ho_10_end",
         "kind": "demo_end",
         "options": [
           "replay_coi_memory",

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "_note": "Chuỗi UI tối thiểu và 5 câu thoại/vè của Demo 0.1. vi là gốc. Thoại và vè lấy nguyên văn Story Bible v1.1 §7; bản en là dịch nháp.",
+  "_note": "Chuỗi UI tối thiểu và thoại/vè của Demo 0.1 theo Story Bible v1.2 §7. vi là gốc; en là dịch nháp theo bảng thuật ngữ SB11-16 (chờ người đọc bản ngữ). Nội dung đời Hùng 6 không chứa \"khoen\", \"mảnh\", \"chốt\".",
   "ui": {
     "menu_new_game": {
       "vi": "Chơi mới",
@@ -88,7 +88,7 @@
     },
     "prompt_open_thap": {
       "vi": "Mở Thạp nhà",
-      "en": "Open the House Jar"
+      "en": "Open the Family Jar"
     },
     "craft_title": {
       "vi": "Lò đúc làng",
@@ -104,7 +104,7 @@
     },
     "skills_title": {
       "vi": "Nghề nhà",
-      "en": "House Craft"
+      "en": "Family Craft"
     },
     "skills_points": {
       "vi": "Điểm nghề",
@@ -177,6 +177,10 @@
     "you_fell": {
       "vi": "Ngã xuống bùn",
       "en": "Fallen in the mud"
+    },
+    "codex_notice_level_b": {
+      "vi": "Nội dung văn hóa chưa qua chuyên gia duyệt (mức B)",
+      "en": "Cultural content not yet reviewed by experts (level B)"
     }
   },
   "dialogue": [
@@ -208,8 +212,8 @@
       "trigger": "craft_rcp_nanh_dam",
       "label": "SÁNG TẠO",
       "text": {
-        "vi": "Đồng đúc sai thì đúc lại, thành cái cuốc cho ruộng.",
-        "en": "Bronze cast wrong gets cast again, into a hoe for the fields."
+        "vi": "Đồng đúc sai thì đúc lại, thành lưỡi cày cho ruộng.",
+        "en": "Metal cast wrong gets cast again, into a ploughshare for the fields."
       },
       "era": "era_lac_long_quan"
     },
@@ -220,10 +224,15 @@
       "label": "SÁNG TẠO",
       "form": "luc_bat",
       "text": {
-        "vi": "Ai đem khoen trói thú rừng\nThú đau hóa dữ, bến chừng chẳng êm\nSào nhà cạy mảnh đêm đêm\nGiữ bến bằng tay, chẳng thèm khoen ai",
-        "en": "Who put a collar on the wild beast?\nIn pain it turned fierce, and the landing knew no peace.\nNight after night, the house pole pries the shards away;\nkeep the landing by hand, and want no one's collar."
+        "vi": "Ai đem khoen trói thú rừng\nThú đau hóa dữ, bến chừng chẳng êm\nSào nhà cạy mảnh đêm đêm\nTay người giữ bến, chẳng thèm khoen ai",
+        "en": "Who bound the wild beast with a khoen?\nIn pain it turned fierce, and the landing knew no peace.\nNight after night, the family pole pries the pieces free;\nhuman hands keep the landing, wanting no one's khoen."
       },
-      "era": "era_lac_long_quan"
+      "era": "era_lac_long_quan",
+      "allowed_eras": [
+        "era_lac_long_quan",
+        "era_hung_vuong_18"
+      ],
+      "review_note": "Cần người viết vè người thật đọc lại."
     },
     {
       "id": "dlg_05_handoff",
@@ -235,6 +244,30 @@
         "en": "Many generations ago, someone kept this landing. Now it is your turn."
       },
       "era": "era_hung_vuong_6"
+    },
+    {
+      "id": "dlg_06_ve_floor",
+      "speaker": "narration_ve",
+      "trigger": "handoff_end",
+      "era": "era_hung_vuong_6",
+      "label": "SÁNG TẠO",
+      "form": "luc_bat",
+      "review_note": "Vè bản sàn (SB11-01). Cần người viết vè người thật đọc lại.",
+      "text": {
+        "vi": "Bến này ai giữ đêm ngày\nSào tre một cán, đôi tay chẳng rời\nNhiều đời nối bước không lơi\nTay người giữ bến, người ơi nhớ lời",
+        "en": "Who keeps this landing night and day?\nOne bamboo pole, two hands that never let go.\nGeneration after generation, the steps never slacken;\nhuman hands keep the landing — remember this, friend."
+      }
+    },
+    {
+      "id": "dlg_07_theme_short",
+      "speaker": "chr_buong",
+      "trigger": "demo_end",
+      "era": "era_hung_vuong_6",
+      "label": "SÁNG TẠO",
+      "text": {
+        "vi": "Giữ bến bằng tay mình.",
+        "en": "Keep the landing with your own hands."
+      }
     }
   ]
 }

@@ -105,7 +105,7 @@
       },
       "description": {
         "vi": "Một thỏi đồng của thợ đúc làng bến Lau, trao cho việc tử tế.",
-        "en": "A bronze ingot from the bến Lau village caster, given for honest work."
+        "en": "A bronze ingot from the Lau Landing village caster, given for honest work."
       },
       "label": "SÁNG TẠO",
       "rarity": "fine",
@@ -157,11 +157,11 @@
       "category": "bao_khi",
       "name": {
         "vi": "Nanh Đầm",
-        "en": "Marsh Tusk"
+        "en": "Marsh Fang"
       },
       "description": {
-        "vi": "Nanh rụng của Lợn Lòi Đầm, chuôi đồng lò làng, buộc mây. Con thú đã vào lau, không ngoảnh lại.",
-        "en": "The Marsh Boar's shed tusk, set in village bronze and bound with rattan. The beast went into the reeds without looking back."
+        "vi": "Nanh lợn lòi rụng lại ở bãi lầy, gắn chuôi đồng lò làng, buộc mây. Con thú đã vào lau, không ngoảnh lại.",
+        "en": "A boar's tusk shed on the mire, set in a village-cast hilt and bound with rattan. The beast went into the reeds without looking back."
       },
       "label": "SÁNG TẠO",
       "rarity": "rare",

@@ -163,20 +163,33 @@ class RealData(unittest.TestCase):
 
     def test_khoen_text_in_later_era_is_error(self):
         b = self.fresh()
-        b["lineage"]["thap"]["description"]["vi"] += " Có cả mảnh khoen."
+        b["lineage"]["thap"]["description"]["vi"] += " Có cả khoen."
         self.assertTrue(any("SB-02" in e for e in self.errors(b)))
 
     def test_khoen_in_hung6_dialogue_is_error(self):
         b = self.fresh()
         b["strings"]["dialogue"][0]["era"] = "era_hung_vuong_6"
         b["strings"]["dialogue"][0]["text"]["vi"] = "Mảnh khoen ở đây."
-        self.assertTrue(any("khoen-free era" in e for e in self.errors(b)))
+        self.assertTrue(any("in era era_hung_vuong_6" in e for e in self.errors(b)))
 
-    def test_codex_khoen_must_hide_in_hung6(self):
+    def test_codex_khoen_cannot_unlock_in_hung6(self):
         b = self.fresh()
         cx = next(e for e in b["codex"]["entries"] if e["id"] == "cx_khoen")
-        del cx["hidden_in_eras"]
-        self.assertTrue(any("hidden_in_eras" in e for e in self.errors(b)))
+        cx["unlock_era"] = "era_hung_vuong_6"
+        self.assertTrue(any("SB11-17" in e for e in self.errors(b)))
+
+    def test_manh_or_chot_in_hung6_is_error(self):
+        for word in ("mảnh", "chốt"):
+            b = self.fresh()
+            line = next(d for d in b["strings"]["dialogue"] if d["id"] == "dlg_06_ve_floor")
+            line["text"]["vi"] += f" Còn {word} dưới vực."
+            self.assertTrue(any("SB11-01" in e for e in self.errors(b)), word)
+
+    def test_inherited_item_text_checked_on_handoff(self):
+        b = self.fresh()
+        it = next(i for i in b["items"]["items"] if i["id"] == "bk_nanh_dam")
+        it["description"]["en"] += " A shard remains."
+        self.assertTrue(any("lineage.handoff" in e for e in self.errors(b)))
 
     def test_entranced_human_must_be_non_combat(self):
         b = self.fresh()

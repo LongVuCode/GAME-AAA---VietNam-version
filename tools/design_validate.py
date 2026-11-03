@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from collections import deque
 from dataclasses import dataclass, field
@@ -306,39 +307,73 @@ def loc_texts(obj: Any) -> Iterable[tuple[str, str]]:
             yield from loc_texts(v)
 
 
-def mentions_khoen(obj: Any) -> bool:
-    return any("khoen" in vi.lower() or "collar" in en.lower() for vi, en in loc_texts(obj))
+# Words that betray a forbidden content tag (Story Bible v1.2 §2, SB11-01, SB11-16).
+TAG_WORDS = {
+    "khoen": (["khoen"], ["khoen", "collar", "binding ring"]),
+    "mảnh": (["mảnh"], ["shard", "shards"]),
+    "chốt": (["chốt"], ["pin", "linchpin"]),
+    "bear": (["gấu"], ["bear", "bears"]),
+    "melting": (["nấu chảy", "nấu mảnh"], ["melt", "melted", "melting"]),
+}
+
+
+def forbidden_hits(obj: Any, tags: Iterable[str]) -> list[str]:
+    hits: list[str] = []
+    for vi, en in loc_texts(obj):
+        for tag in tags:
+            vi_words, en_words = TAG_WORDS.get(tag, ([tag], []))
+            for w in vi_words:
+                if re.search(rf"(?<!\w){re.escape(w)}(?!\w)", vi.lower()):
+                    hits.append(w)
+            for w in en_words:
+                if re.search(rf"(?<!\w){re.escape(w)}(?!\w)", en.lower()):
+                    hits.append(w)
+    return sorted(set(hits))
 
 
 def check_khoen_free_eras(b: dict, rep: Report) -> None:
-    """SB-02 / coordinator rule: no 'khoen' in any content belonging to a khoen-free era."""
+    """SB-02 / SB11-01: content belonging to an era must not use that era's forbidden words."""
     eras = b["lineage"].get("eras", [])
-    bad_eras = {e["id"] for e in eras if "khoen" in e.get("forbidden_content_tags", [])}
-    bad_chapters = {c for e in eras if e["id"] in bad_eras for c in e.get("chapters", [])}
-    if not bad_eras:
+    era_tags = {e["id"]: e.get("forbidden_content_tags", []) for e in eras}
+    chapter_era = {c: e["id"] for e in eras for c in e.get("chapters", [])}
+    restricted = {eid for eid, tags in era_tags.items() if tags}
+    if not restricted:
         return
 
-    def belongs(o: dict) -> bool:
-        chs = o.get("chapters", []) if isinstance(o.get("chapters"), list) else []
-        return (o.get("era") in bad_eras or o.get("chapter") in bad_chapters
-                or any(c in bad_chapters for c in chs))
+    def eras_of(o: dict) -> set[str]:
+        out = set()
+        if o.get("era") in restricted:
+            out.add(o["era"])
+        if o.get("chapter") in chapter_era:
+            out.add(chapter_era[o["chapter"]])
+        chs = o.get("chapters") if isinstance(o.get("chapters"), list) else []
+        out.update(chapter_era[c] for c in chs if c in chapter_era)
+        return out & restricted
 
     def walk(o: Any, path: str) -> None:
         if isinstance(o, dict):
-            if belongs(o) and mentions_khoen(o):
-                rep.err(f"{path} ({o.get('id', '?')}): mentions khoen in khoen-free era {sorted(bad_eras)} (SB-02)")
-                return
+            for era in eras_of(o):
+                hits = forbidden_hits(o, era_tags[era])
+                if hits:
+                    rep.err(f"{path} ({o.get('id', '?')}): uses {hits} in era {era} (SB-02, SB11-01)")
+                    return
             for k, v in o.items():
-                walk(v, f"{path}.{k}")
+                if not k.startswith("_"):
+                    walk(v, f"{path}.{k}")
         elif isinstance(o, list):
             for i, v in enumerate(o):
                 walk(v, f"{path}[{i}]")
 
     for name in FILES:
         walk(b[name], name)
+    # Codex is out-of-story UI (SB11-17): an entry may be read later, but an entry
+    # mentioning forbidden words must unlock in an era where they are allowed.
     for e in b["codex"].get("entries", []):
-        if mentions_khoen(e) and not bad_eras <= set(e.get("hidden_in_eras", [])):
-            rep.err(f"codex.{e.get('id')}: mentions khoen, must set hidden_in_eras {sorted(bad_eras)} (SB-02)")
+        ue = e.get("unlock_era")
+        if ue not in era_tags:
+            rep.err(f"codex.{e.get('id')}: unlock_era {ue!r} unknown")
+        elif era_tags[ue] and forbidden_hits(e, era_tags[ue]):
+            rep.err(f"codex.{e.get('id')}: unlocks in {ue} but uses {forbidden_hits(e, era_tags[ue])} (SB11-17)")
 
 
 # ---------------------------------------------------------------- main checks
@@ -602,17 +637,21 @@ def validate(b: dict, research: dict) -> Report:
                 rep.err(f"lineage.handoff.{sid}: weapon {step['weapon']!r} unknown")
             if step.get("kind") == "receive_tool" and step.get("ref") not in ids(lineage.get("tools", [])):
                 rep.err(f"lineage.handoff.{sid}: tool {step.get('ref')!r} unknown")
-        # Era rule (SB-02): text seen in a khoen-free era must not mention khoen.
+        # Era rule (SB-02, SB11-01): text shown when handing off into an era must respect its tags.
         to_era = era_map.get(char_map.get(ho.get("to"), {}).get("era"), {})
-        if "khoen" in to_era.get("forbidden_content_tags", []):
-            seen_text = [lineage.get("thap", {}).get("description", {})]
-            seen_text += [t.get("description", {}) for t in lineage.get("tools", [])]
-            seen_text += [i.get("description", {}) for i in items.get("items", []) if i.get("inheritable_via")]
-            seen_text += [s.get("text", {}) for s in ho.get("steps", []) if isinstance(s.get("text"), dict)]
-            seen_text += [d.get("text", {}) for d in strings.get("dialogue", []) if d.get("trigger") == "handoff"]
-            for txt in seen_text:
-                if "khoen" in str(txt.get("vi", "")).lower() or "collar" in str(txt.get("en", "")).lower():
-                    rep.err(f"lineage: text shown in era {to_era.get('id')} mentions khoen (SB-02): {txt.get('vi', '')[:40]!r}")
+        tags = to_era.get("forbidden_content_tags", [])
+        if tags:
+            dlg = {d.get("id"): d for d in strings.get("dialogue", [])}
+            seen = {"thap": lineage.get("thap", {}).get("description", {})}
+            seen.update({t.get("id"): t.get("description", {}) for t in lineage.get("tools", [])})
+            seen.update({i.get("id"): [i.get("name", {}), i.get("description", {}), i.get("effect_text", {})]
+                         for i in items.get("items", []) if i.get("inheritable_via")})
+            for step in ho.get("steps", []):
+                seen[step.get("id")] = [step.get("text", {}), dlg.get(step.get("line_ref"), {}).get("text", {})]
+            for key, obj in seen.items():
+                hits = forbidden_hits(obj, tags)
+                if hits:
+                    rep.err(f"lineage.handoff: {key} shown in era {to_era.get('id')} uses {hits} (SB-02, SB11-01)")
     check_khoen_free_eras(b, rep)
     for hm in lineage.get("house_moves", []):
         if hm.get("learned_by") not in char_map:
