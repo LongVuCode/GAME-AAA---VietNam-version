@@ -9,6 +9,7 @@ import { Outcome } from '../logic/defense.js';
 import { enemyHitDamage, parryTheDamage, playerHitDamage, burstHitDamage } from '../logic/damage.js';
 import { pickLockTarget, shouldBreakLock, softAimTarget, angleBetween } from '../logic/lockon.js';
 import { SecretChain } from '../logic/secrets.js';
+import { INPUT_GRACE_S } from '../logic/shackle.js';
 import { Inventory, craft, missingFor, baoKhiEffect } from '../logic/crafting.js';
 import { newGeneration, handoff, handoffWarnings, skillPointsFor, eraTags, forbiddenHits } from '../logic/lineage.js';
 import { PROTO } from '../logic/proto.js';
@@ -434,7 +435,7 @@ export class Game {
 
   enemyHitsPlayer(enemy, atk) {
     const p = this.player, g = this.data.combat.guard;
-    if (!p.alive || p.state === 'pry' || this.locked) return;
+    if (!p.alive || p.state === 'pry' || this.locked || p.invulnDebug) return;
     if (atk.damage <= 0) {
       if (!p.defense.invulnerable && atk.pushback_m) {
         const dx = p.x - enemy.x, dz = p.z - enemy.z, l = Math.hypot(dx, dz) || 1;
@@ -719,14 +720,17 @@ export class Game {
     const { judge, boss } = this.pry;
     const events = [];
     if (i.pressed('interact') && !judge.holdMode && !judge.auto) {
-      const lag = Math.max(0, Math.min(realDt, (i.pressTime.interact - this.frameStart) / 1000));
-      events.push(...judge.tick(lag), ...judge.press(0), ...judge.tick(realDt - lag));
+      // Judge the press at its event timestamp, not at frame time (frame-rate independent).
+      const lag = Math.max(-INPUT_GRACE_S, Math.min(realDt, (i.pressTime.interact - this.frameStart) / 1000));
+      if (lag <= 0) events.push(...judge.press(lag), ...judge.tick(realDt));
+      else events.push(...judge.tick(lag), ...judge.press(0), ...judge.tick(realDt - lag));
     } else {
       judge.setHeld(i.isDown('interact'));
       events.push(...judge.tick(realDt));
     }
     const T = this.i18n.t;
     for (const ev of events) {
+      if (ev.type !== 'drum') (this.pryLog ??= []).push({ ...ev, t: +judge.t.toFixed(3) });
       if (ev.type === 'drum') this.sfx.drum(true);
       if (ev.type === 'hit') {
         this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'pry_beat')); this.sfx.crackSnap();
@@ -973,10 +977,10 @@ export class Game {
           player: { x: g.player.x, z: g.player.z, yaw: g.player.yaw, hp: g.player.hp, state: g.player.state, drum: g.player.drum.points, alive: g.player.alive },
           enemies: g.enemies.filter((e) => !e.isBoss).map(enemyInfo), practice: (g.practiceEnemies ?? []).map(enemyInfo),
           boss: { ...enemyInfo(b), cracks: b.enc.khoen.cracks, khoen: b.enc.khoen.state, phase: b.enc.phase.id, canFinish: b.enc.canFinish(), outcome: b.enc.outcome },
-          pry: g.pry ? { timeToSlot: g.pry.judge.timeToSlot, beat: g.pry.judge.beat, window: g.pry.judge.window, interval: g.pry.judge.interval, hold: g.pry.judge.holdMode, auto: g.pry.judge.auto } : null,
+          pageNow: performance.now(), pry: g.pry ? { slotAtMs: g.lastNow + g.pry.judge.timeToSlot * 1000, timeToSlot: g.pry.judge.timeToSlot, beat: g.pry.judge.beat, window: g.pry.judge.window, interval: g.pry.judge.interval, hold: g.pry.judge.holdMode, auto: g.pry.judge.auto } : null,
           flags: [...g.gen.flags], inventory: g.inv.toJSON(), owned: g.gen.owned, codex: [...g.codex], secret: g.secret.toJSON(),
           skills: g.gen.skills.toJSON(), practiceState: g.practice ? { swaps: g.practice.swaps, done: g.practice.done } : null,
-          fps: g.fps, missingStrings: g.i18n.missingKeys(), buildId: g.buildId };
+          pryLog: (g.pryLog ?? []).slice(-12), fps: g.fps, missingStrings: g.i18n.missingKeys(), buildId: g.buildId };
       },
       teleport(x, z, yaw) { g.player.x = x; g.player.z = z; if (yaw != null) { g.player.yaw = yaw; } },
       faceEnemy(uid) {

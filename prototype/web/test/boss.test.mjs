@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DATA } from '../src/data.js';
 import { BossEncounter } from '../src/logic/boss.js';
-import { Khoen, KhoenState, PryJudge } from '../src/logic/shackle.js';
+import { Khoen, KhoenState, PryJudge, INPUT_GRACE_S } from '../src/logic/shackle.js';
 import { attackTimeline, telegraphKind, chooseAttack, delayedCount, AttackTokens } from '../src/logic/enemyAi.js';
 
 const T = DATA.combat;
@@ -54,10 +54,10 @@ test('pry: a beat may be retried miss_retries_per_beat times; then the boss reco
   j.tick(j.timeToSlot); j.press();                // beat 1 hit
   j.tick(j.timeToSlot - 0.4); let ev = j.press();   // early: miss 1
   assert.equal(ev[0].type, 'miss');
-  ev = j.tick(j.timeToSlot + j.window + 0.01);     // next slot passes without input: miss 2
+  ev = j.tick(j.timeToSlot + j.window + INPUT_GRACE_S + 0.01); // next slot passes without input: miss 2
   assert.deepEqual(ev.filter((e) => e.type === 'miss').map((e) => e.retriesLeft), [1]);
   assert.equal(j.done, false, 'still retrying beat 2');
-  ev = j.tick(j.timeToSlot + j.window + 0.01);     // miss 3 > miss_retries_per_beat (2): fail
+  ev = j.tick(j.timeToSlot + j.window + INPUT_GRACE_S + 0.01); // miss 3 > miss_retries_per_beat (2): fail
   assert.ok(ev.some((e) => e.type === 'failed'));
   assert.equal(j.result, 'failed');
   assert.equal(b.resolvePry(), 'failed');
@@ -67,6 +67,9 @@ test('pry: a beat may be retried miss_retries_per_beat times; then the boss reco
 });
 
 test('pry judge window, input lag precision, hold mode, auto mode', () => {
+  const late = new PryJudge(T.pry);
+  late.tick(late.timeToSlot + 0.2);                 // frame arrives 0.2 s after the slot centre...
+  assert.equal(late.press(-0.15)[0].type, 'hit', '...but the press happened at +0.05 s: judged by timestamp');
   const j = new PryJudge(T.pry);
   j.tick(j.timeToSlot + T.pry.beat_window_s - 0.01); assert.equal(j.press()[0].type, 'hit', 'late but inside window');
   const j2 = new PryJudge(T.pry, { windowAddS: 0.05 });

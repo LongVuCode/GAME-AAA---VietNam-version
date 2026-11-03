@@ -1,9 +1,12 @@
 // shackle.js - "Khoen" state machine and the 3-beat pry rhythm judge.
 // Mirrors ArpgCore FShackle (Shackle.h): every posture break cracks one stage; with enough cracks and
-// the boss staggered the pry opens. Differences, following design data (enemies.json khoen +
-// combat_tuning.pry): a missed beat can be retried miss_retries_per_beat times before the pry fails
-// (ArpgCore currently aborts on the first miss); hold mode and auto mode (difficulty) are supported.
+// the boss staggered the pry opens; beats on a drum grid (lead-in = one beat), a missed beat is
+// retried miss_retries_per_beat times before the pry fails; Timed / Hold / Auto input modes.
+// Prototype addition: presses are judged at their input timestamp (see press(offsetS), INPUT_GRACE_S).
 // The khoen never yields an item or power (V9): nothing here touches inventory.
+
+/** Max input-processing delay (s) tolerated when judging a press by its timestamp. */
+export const INPUT_GRACE_S = 0.25;
 
 export const KhoenState = Object.freeze({
   DISABLED: 'disabled', INTACT: 'intact', CRACKING: 'cracking', READY: 'ready', PRYING: 'prying', FREED: 'freed',
@@ -106,18 +109,21 @@ export class PryJudge {
       }
       return events;
     }
-    while (!this.auto && !this.done && this.t > this.slotTime(this.slot) + this.window) {
+    // A slot counts as missed only after window + INPUT_GRACE_S, so a press whose event was handled a
+    // frame late is still judged by its own timestamp in press(offset).
+    while (!this.auto && !this.done && this.t > this.slotTime(this.slot) + this.window + INPUT_GRACE_S) {
       this.slot += 1;
       this._miss(events);
     }
     return events;
   }
 
-  /** A press of the pry button. offsetS: seconds since the last tick (input timestamp precision). */
+  /** A press of the pry button. offsetS: press time relative to the judge clock (negative = the press
+   *  happened before the last tick; lets the game judge by input timestamp, not frame time). */
   press(offsetS = 0) {
     const events = [];
     if (this.done || this.holdMode || this.auto) return events;
-    const at = this.t + Math.max(0, offsetS);
+    const at = this.t + Math.max(-INPUT_GRACE_S, offsetS);
     const centre = this.slotTime(this.slot);
     this.slot += 1;
     if (Math.abs(at - centre) <= this.window) this._hit(events);

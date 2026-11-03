@@ -15,6 +15,7 @@ mkdirSync(SHOTS, { recursive: true });
 const url = `${pathToFileURL(join(here, '..', 'dist', 'index.html')).href}?debug=1`;
 
 const errors = [];
+const external = [];
 const log = (...a) => console.log('[smoke]', ...a);
 const checks = [];
 const check = (name, ok, detail = '') => { checks.push({ name, ok: !!ok, detail }); log(ok ? 'PASS' : 'FAIL', name, detail); };
@@ -24,6 +25,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
 page.on('console', (m) => { if (m.type() === 'error') errors.push(`console.error: ${m.text()}`); });
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+page.on('request', (r) => { if (!/^(file|data|blob):/.test(r.url())) external.push(r.url()); });
 const S = () => page.evaluate(() => window.__demo.state());
 const D = (fn, ...args) => page.evaluate(([f, a]) => window.__demo[f](...a), [fn, args]);
 const shot = async (name) => { await page.screenshot({ path: join(SHOTS, name) }); log('shot', join(SHOTS, name)); };
@@ -79,6 +81,38 @@ try {
   await sleep(600);
   await shot('05_enemy_fled.png');
 
+  // ---- Drum Burst ("Hồi trống") when the 4 notches are full.
+  await page.evaluate(() => { window.__demo.game.player.drum.points = 400; });
+  await press('r');
+  s = await waitFor((x) => x.player.state === 'burst', 2000, 20);
+  check('Hồi trống with 4 full notches', !!s);
+  await waitFor((x) => x.player.state === 'free', 8000);
+
+  // ---- Hints (player-initiated, 3 tiers) from the old ferrywoman.
+  await D('teleport', -4, 20.5, 0);
+  await sleep(300); await press('f');
+  s = await waitFor((x) => x.screen === 'hints', 3000);
+  await page.click('[data-tier="1"]'); await page.click('[data-tier="3"]');
+  const hint = await page.textContent('[data-hint]');
+  check('3-tier hint shown on request', !!s && hint.length > 10, hint.slice(0, 60));
+  await shot('05b_hints.png');
+  await page.click('[data-screen=hints] [data-act=back]');
+
+  // ---- Secret chain: trap marks → bronze scrap → kiln lip (match) → hollow.
+  for (const [x, z] of [[-17.5, -29.5], [6.5, -75.5], [-31, -114.6], [-31, -112.2]]) {
+    await D('teleport', x, z, 0); await sleep(300); await press('f'); await sleep(400);
+  }
+  s = await S();
+  check('secret chain finished (Sáp ong cũ + Codex extra)', s.secret.completed.includes('sn_end') && s.inventory.mat_sap_ong_cu === 1, JSON.stringify(s.secret.completed));
+
+  // ---- Entranced villager: hold E "Gọi tên" (non-combat).
+  await D('teleport', 10, -79, Math.PI);
+  await sleep(300);
+  await page.keyboard.down('e');
+  s = await waitFor((x) => x.flags.includes('flag_nguoi_bi_me_saved'), 30000, 100);
+  await page.keyboard.up('e');
+  check('villager called back by holding E (no combat)', !!s);
+
   // ---- Boss: bring it to the pry (posture breaks crack the khoen) and complete the 3-beat pry.
   await D('teleport', 0, -127, Math.PI);
   await D('setCameraYaw', 0);
@@ -115,19 +149,24 @@ try {
     if (attempt === 0) check('pry prompt shown', /Cạy/.test(promptText), promptText);
     await press('f');
     s = await waitFor((x) => !!x.pry, 3000, 30);
-    if (!s) continue;
+    if (!s) { log('pry did not start', JSON.stringify((await S()).boss)); continue; }
     let shotPry = false;
-    for (let guard = 0; guard < 400; guard++) {
+    // Presses are timed on the page clock (slot centre in performance.now() ms); the game judges each
+    // press by its event timestamp, so low headless frame rates do not shift the judgement.
+    for (let guard = 0; guard < 60; guard++) {
       s = await S();
       if (!s.pry) break;
-      if (s.pry.timeToSlot < 0.045 && s.pry.timeToSlot > -0.08) { await press('f'); await sleep(Math.max(150, s.pry.interval * 1000 * 0.5)); }
-      else if (s.pry.timeToSlot > 0.25) await sleep(Math.min(150, (s.pry.timeToSlot - 0.2) * 1000));
-      else await sleep(5);
-      if (!shotPry && s.pry.beat >= 1) { await shot('08_pry.png'); shotPry = true; }
+      if (!shotPry && s.pry.beat >= 1) { await shot('08_pry.png'); shotPry = true; continue; }
+      const wait = s.pry.slotAtMs - s.pageNow;
+      if (wait > 120) { await sleep(wait - 100); continue; }
+      if (wait < -s.pry.window * 1000) { await sleep(30); continue; }
+      await sleep(Math.max(0, wait - 5));
+      await press('f');
+      await sleep(250);
     }
     s = await S();
     pryOk = s.boss.outcome === 'freed';
-    log('pry attempt', attempt + 1, s.boss.outcome);
+    log('pry attempt', attempt + 1, s.boss.outcome, JSON.stringify({ khoen: s.boss.khoen, fps: s.fps, log: s.pryLog }));
   }
   check('pry completed → boss freed (not killed)', pryOk);
   await sleep(4500);
@@ -222,6 +261,7 @@ try {
   errors.push(`smoke exception: ${e.stack ?? e}`);
 } finally {
   check('no console errors / page errors', errors.length === 0, errors.join('\n'));
+  check('no network requests outside the single file', external.length === 0, external.slice(0, 3).join(', '));
   await browser.close();
   const failed = checks.filter((c) => !c.ok);
   log(`${checks.length - failed.length}/${checks.length} checks passed`);
