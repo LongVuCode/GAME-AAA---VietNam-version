@@ -54,7 +54,9 @@
             "visual": "giơ càng phải lên cao",
             "audio": "tiếng lách cách vỏ",
             "color_cue": "none"
-          }
+          },
+          "shape": "melee",
+          "player_knockback_m": 0.3
         },
         {
           "id": "cua_kep_doi",
@@ -78,7 +80,9 @@
             "audio": "lách cách hai lần",
             "color_cue": "none"
           },
-          "hits": 2
+          "hits": 2,
+          "shape": "melee",
+          "player_knockback_m": 0.3
         },
         {
           "id": "cua_ui_ngang",
@@ -101,10 +105,80 @@
             "visual": "hạ thấp mai, chân cào bùn",
             "audio": "tiếng bùn sục",
             "color_cue": "red_bronze"
-          }
+          },
+          "shape": "charge",
+          "player_knockback_m": 1.8,
+          "player_knockdown": true
         }
       ],
-      "drops": []
+      "drops": [],
+      "behavior": {
+        "_note": "FUN_PASS_0_2 §3.4. Thay PROTO.enemyMoveSpeedMps/enemyRadiusM/aggroRadiusM của prototype. Giả định.",
+        "move_speed_mps": 2.4,
+        "radius_m": 0.8,
+        "aggro_radius_m": 12,
+        "leash_radius_m": 20,
+        "turn_rate_deg_s": 200,
+        "preferred_range_m": 1.4,
+        "sidestep_locomotion": true,
+        "circle": {
+          "enabled": true,
+          "speed_mps": 2.2,
+          "dir_change_s": {
+            "min": 1.5,
+            "max": 3.0
+          }
+        },
+        "retreat_after_attack_chance": 0.25,
+        "retreat_distance_m": 1.5,
+        "group_role": "anchor",
+        "on_own_the_high": {
+          "the_ratio_at_least": 0.7,
+          "action": "turtle_front",
+          "front_damage_mult": 0.4,
+          "duration_s": 2.0
+        },
+        "rear_punish": {
+          "attack": "cua_kep_xoay",
+          "player_in_rear_s": 1.2,
+          "rear_arc_deg": 120
+        },
+        "hit_react": {
+          "knockback_mult": 0.6,
+          "flinch_mult": 1.0
+        },
+        "finisher_motion": "Cán giáo lật ngửa mai cua; cua giãy, lật lại rồi chui xuống bùn",
+        "flee_style": "burrow"
+      },
+      "attacks_0_2": [
+        {
+          "id": "cua_kep_xoay",
+          "name": {
+            "vi": "Kẹp xoay",
+            "en": "Pivot Pinch"
+          },
+          "damage": 16,
+          "player_the_damage": 14,
+          "windup_s": 0.75,
+          "active_s": 0.2,
+          "recovery_s": 0.7,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 1.8,
+          "cooldown_s": 5.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "chân cua dồn một bên, thân xoay ngang",
+            "audio": "tiếng chân cào bùn liên tiếp",
+            "color_cue": "none"
+          },
+          "shape": "rear_arc",
+          "player_knockback_m": 0.4,
+          "label": "SÁNG TẠO",
+          "_purpose": "Chống đứng lì sau lưng: đánh hông vẫn đúng nhưng không được đứng yên một chỗ"
+        }
+      ]
     },
     {
       "id": "en_bo_ngua_lau",
@@ -158,7 +232,9 @@
             "audio": "tiếng cánh rít ngắn",
             "color_cue": "none"
           },
-          "hits": 2
+          "hits": 2,
+          "shape": "melee",
+          "player_knockback_m": 0.2
         },
         {
           "id": "bn_vo_phuc",
@@ -181,7 +257,9 @@
             "visual": "lau rẽ thành vệt, bọ nhô đầu",
             "audio": "tiếng lau xào xạc gấp",
             "color_cue": "red_bronze"
-          }
+          },
+          "shape": "charge",
+          "player_knockback_m": 1.2
         },
         {
           "id": "bn_rinh",
@@ -205,10 +283,79 @@
             "audio": "tiếng rít dừng đột ngột",
             "color_cue": "none"
           },
-          "hold_s": 0.35
+          "hold_s": 0.35,
+          "shape": "melee",
+          "player_knockback_m": 0.3
         }
       ],
-      "drops": []
+      "drops": [],
+      "behavior": {
+        "_note": "FUN_PASS_0_2 §3.4. Đánh rồi rút; đi vòng ra cạnh; phục từ lau có âm báo.",
+        "move_speed_mps": 3.6,
+        "radius_m": 0.5,
+        "aggro_radius_m": 12,
+        "leash_radius_m": 22,
+        "turn_rate_deg_s": 420,
+        "preferred_range_m": 2.6,
+        "ambush_aggro_radius_m": 7,
+        "circle": {
+          "enabled": true,
+          "speed_mps": 3.0,
+          "dir_change_s": {
+            "min": 0.8,
+            "max": 1.8
+          }
+        },
+        "retreat_after_attack_chance": 0.6,
+        "retreat_distance_m": 3.0,
+        "group_role": "flanker",
+        "on_own_the_high": {
+          "the_ratio_at_least": 0.7,
+          "action": "hop_away",
+          "front_damage_mult": 1.0,
+          "duration_s": 1.0
+        },
+        "punish_chase": {
+          "attack": "bn_nhay_lui",
+          "player_closing_speed_mps_at_least": 4.0
+        },
+        "hit_react": {
+          "knockback_mult": 1.4,
+          "flinch_mult": 1.2
+        },
+        "finisher_motion": "Gạt cán quét hai chân trước; bọ ngựa văng ngửa, vỗ cánh vụt vào lau",
+        "flee_style": "fly_into_reeds"
+      },
+      "attacks_0_2": [
+        {
+          "id": "bn_nhay_lui",
+          "name": {
+            "vi": "Nhảy lùi chém",
+            "en": "Backleap Slash"
+          },
+          "damage": 14,
+          "player_the_damage": 12,
+          "windup_s": 0.45,
+          "active_s": 0.15,
+          "recovery_s": 0.6,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.2,
+          "cooldown_s": 6.0,
+          "dodge_hint": "forward",
+          "telegraph": {
+            "visual": "cánh xòe, thân ngả ra sau rồi bật lùi",
+            "audio": "tiếng cánh rít dài",
+            "color_cue": "none"
+          },
+          "shape": "melee",
+          "self_move_m": -3.0,
+          "player_knockback_m": 0.2,
+          "label": "SÁNG TẠO",
+          "_purpose": "Phạt đuổi theo mù quáng; né tới trước để bám sát"
+        }
+      ]
     },
     {
       "id": "en_u_bun",
@@ -262,7 +409,9 @@
             "visual": "giơ khối bùn lên quá đầu",
             "audio": "tiếng bùn nhóp nhép",
             "color_cue": "none"
-          }
+          },
+          "shape": "melee",
+          "player_knockback_m": 1.0
         },
         {
           "id": "ub_lan",
@@ -290,7 +439,9 @@
             "status": "slow",
             "speed_mult": 0.6,
             "duration_s": 3.0
-          }
+          },
+          "shape": "aoe",
+          "player_knockback_m": 0.0
         }
       ],
       "drops": [],
@@ -298,7 +449,75 @@
         "face": false,
         "human_torso": false,
         "called_earth_deity": false
-      }
+      },
+      "behavior": {
+        "_note": "FUN_PASS_0_2 §3.4. Giữ vùng; chậm; ép người chơi áp sát.",
+        "move_speed_mps": 1.4,
+        "radius_m": 1.1,
+        "aggro_radius_m": 10,
+        "leash_radius_m": 16,
+        "turn_rate_deg_s": 120,
+        "preferred_range_m": 2.0,
+        "circle": {
+          "enabled": false,
+          "speed_mps": 0.0,
+          "dir_change_s": {
+            "min": 0.0,
+            "max": 0.0
+          }
+        },
+        "retreat_after_attack_chance": 0.0,
+        "retreat_distance_m": 0.0,
+        "group_role": "zone_control",
+        "keep_away_attack": {
+          "attack": "ub_lan_vien",
+          "player_farther_than_m": 5.0
+        },
+        "reposition_burrow": {
+          "enabled": true,
+          "cooldown_s": 12.0,
+          "distance_m": 5.0,
+          "duration_s": 2.0,
+          "telegraph": "bùn sủi bọt ở chỗ sắp trồi lên"
+        },
+        "hit_react": {
+          "knockback_mult": 0.2,
+          "flinch_mult": 0.3,
+          "flinch_min_weight": "medium"
+        },
+        "finisher_motion": "Chọc sâu mũi giáo vào lõi rễ lau; ụ bùn rung, sụp thành vũng",
+        "flee_style": "slump"
+      },
+      "attacks_0_2": [
+        {
+          "id": "ub_lan_vien",
+          "name": {
+            "vi": "Lăn ụ",
+            "en": "Rolling Clod"
+          },
+          "damage": 14,
+          "player_the_damage": 10,
+          "windup_s": 0.9,
+          "active_s": 1.2,
+          "recovery_s": 0.8,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 8.0,
+          "cooldown_s": 7.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "ụ bùn tách ra một cục, lăn trên mặt đất để lại vệt",
+            "audio": "tiếng ục và tiếng lăn lụp bụp",
+            "color_cue": "red_bronze"
+          },
+          "shape": "projectile",
+          "projectile_speed_mps": 6.0,
+          "player_knockback_m": 0.6,
+          "label": "SÁNG TẠO",
+          "_purpose": "Không cho đứng xa chờ; ép người chơi lại gần để phá Thế"
+        }
+      ]
     },
     {
       "id": "boss_lon_loi_dam",
@@ -366,7 +585,9 @@
             "visual": "cúi đầu, nanh lóe sáng",
             "audio": "khịt mũi mạnh",
             "color_cue": "none"
-          }
+          },
+          "shape": "melee",
+          "player_knockback_m": 1.5
         },
         {
           "id": "ll_quat_doi",
@@ -390,7 +611,9 @@
             "visual": "lắc đầu sang trái rồi phải",
             "audio": "hai tiếng khịt ngắn",
             "color_cue": "none"
-          }
+          },
+          "shape": "melee",
+          "player_knockback_m": 0.8
         },
         {
           "id": "ll_can_lay",
@@ -413,7 +636,10 @@
             "visual": "cào móng ba lần, hạ đầu, bùn bắn sau chân",
             "audio": "rống trầm kéo dài",
             "color_cue": "red_bronze"
-          }
+          },
+          "shape": "charge",
+          "player_knockback_m": 3.0,
+          "player_knockdown": true
         },
         {
           "id": "ll_dam_lay",
@@ -437,7 +663,9 @@
             "visual": "chồm hai chân trước, khựng lại trên không",
             "audio": "tiếng thở hắt rồi im",
             "color_cue": "none"
-          }
+          },
+          "shape": "aoe",
+          "player_knockback_m": 1.5
         },
         {
           "id": "ll_ui_bun",
@@ -460,7 +688,10 @@
             "visual": "dúi mõm xuống bùn, vai gồng",
             "audio": "tiếng ủi bùn sồn sột",
             "color_cue": "red_bronze"
-          }
+          },
+          "shape": "charge",
+          "player_knockback_m": 2.0,
+          "player_knockdown": true
         },
         {
           "id": "ll_giay_dau",
@@ -484,7 +715,9 @@
             "visual": "dụi cổ xuống đất, mảnh khoen lóe",
             "audio": "tiếng rên đứt quãng",
             "color_cue": "none"
-          }
+          },
+          "shape": "aoe",
+          "player_knockback_m": 1.0
         },
         {
           "id": "ll_can_khuyu",
@@ -508,7 +741,10 @@
             "audio": "rống khàn, đứt hơi",
             "color_cue": "red_bronze"
           },
-          "ends_in_stumble_s": 1.5
+          "ends_in_stumble_s": 1.5,
+          "shape": "charge",
+          "player_knockback_m": 2.5,
+          "player_knockdown": true
         },
         {
           "id": "ll_rong_dau",
@@ -532,7 +768,66 @@
             "visual": "ngửa cổ, mảnh khoen rung",
             "audio": "tiếng rống vỡ giọng",
             "color_cue": "none"
-          }
+          },
+          "shape": "aoe",
+          "player_knockback_m": 0.0
+        },
+        {
+          "id": "ll_quay_hong",
+          "name": {
+            "vi": "Quay hông",
+            "en": "Hip Swing"
+          },
+          "damage": 24,
+          "player_the_damage": 22,
+          "windup_s": 0.5,
+          "active_s": 0.2,
+          "recovery_s": 0.6,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.6,
+          "cooldown_s": 6.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "hai chân sau dậm, mông hạ thấp, đầu ngoái lại",
+            "audio": "khịt mũi ngắn hai lần",
+            "color_cue": "none"
+          },
+          "shape": "rear_arc",
+          "player_knockback_m": 1.2,
+          "since": "0.2",
+          "_purpose": "Pha 1 và 2: chống đứng sau lưng; người chơi phải đổi góc chứ không bám đuôi mãi"
+        },
+        {
+          "id": "ll_dui_co",
+          "name": {
+            "vi": "Dụi cổ",
+            "en": "Neck Rub"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.7,
+          "active_s": 2.0,
+          "recovery_s": 0.8,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 6.0,
+          "cooldown_s": 14.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "con thú hạ cổ sát bùn, lết một vệt dài, lưỡi bẫy ở cổ cào bùn",
+            "audio": "tiếng rên trầm, tiếng đồng cào sỏi",
+            "color_cue": "none"
+          },
+          "shape": "charge",
+          "pushback_m": 1.5,
+          "player_knockback_m": 0.0,
+          "exposed_neck_the_mult": 1.5,
+          "exposed_side_arc_deg": 90,
+          "since": "0.2",
+          "_purpose": "Pha 2 kể chuyện: nó không nhắm vào Cói mà cố tự gỡ cái đang hành nó; đòn vào cổ từ bên hông được x1,5 Thế, tức người chơi nhắm vào cái trói chứ không vào con thú"
         }
       ],
       "phases": [
@@ -558,7 +853,10 @@
           ],
           "speed_mult": 1.0,
           "telegraph_time_mult": 1.0,
-          "the_max": 320
+          "the_max": 320,
+          "moveset_add_0_2": [
+            "ll_quay_hong"
+          ]
         },
         {
           "id": "ph2_noi_dau",
@@ -590,7 +888,30 @@
           ],
           "speed_mult": 0.85,
           "telegraph_time_mult": 1.25,
-          "the_max": 260
+          "the_max": 260,
+          "moveset_add_0_2": [
+            "ll_quay_hong",
+            "ll_dui_co"
+          ],
+          "transition_set_piece_0_2": {
+            "id": "tsp_huc_coc_bay",
+            "label": "SÁNG TẠO",
+            "duration_s": 4.0,
+            "replaces_transition_beat": true,
+            "boss_invulnerable": true,
+            "player_control": "move_guard_dodge_no_attack",
+            "camera": "soft_frame_neck",
+            "camera_skippable": true,
+            "beats": [
+              "0,0 s: con thú bỏ mặc Cói, quay đầu về cọc bẫy gãy ở mép bãi (cọc đã thấy trong 3 dấu vết trước trận)",
+              "0,8 s: càn thẳng vào cọc, cọc gãy đôi; lưỡi bẫy ở cổ va cọc, tóe tia đồng cọ gỗ (vật lý, không phép)",
+              "2,0 s: khuỵu xuống, dụi cổ vào bùn, rên trầm; nhạc rút còn một tiếng trống thưa",
+              "2,6 s: Cói: \"Ai trói mày thế này?\" (dlg_02_see_shard)",
+              "3,4 s: con thú đứng dậy, chậm hơn; vũng lầy thứ 4 lan ra chỗ cọc đổ"
+            ],
+            "arena_change": "mud_pool_added_at_stake",
+            "_purpose": "Pha 2 kể chuyện bằng hành động (N6): kẻ thù thật là cái bẫy, không phải Cói"
+          }
         }
       ],
       "khoen": {
@@ -632,7 +953,39 @@
       },
       "finish": "pry",
       "drops": [],
-      "defeat_behavior": "pry_then_walk_away"
+      "defeat_behavior": "pry_then_walk_away",
+      "behavior": {
+        "_note": "FUN_PASS_0_2 §3.5. Đánh hơi, đi vòng, lùi lấy đà để càn; không bị đẩy lùi.",
+        "move_speed_mps": 3.8,
+        "radius_m": 1.6,
+        "aggro_radius_m": 20,
+        "leash_radius_m": 28,
+        "turn_rate_deg_s": 185,
+        "preferred_range_m": 3.0,
+        "circle": {
+          "enabled": true,
+          "speed_mps": 1.6,
+          "dir_change_s": {
+            "min": 2.0,
+            "max": 4.0
+          }
+        },
+        "retreat_after_attack_chance": 0.3,
+        "retreat_distance_m": 6.0,
+        "retreat_then_prefers": "ll_can_lay",
+        "group_role": "solo",
+        "rear_punish": {
+          "attack": "ll_quay_hong",
+          "player_in_rear_s": 1.5,
+          "rear_arc_deg": 120
+        },
+        "hit_react": {
+          "knockback_mult": 0.0,
+          "flinch_mult": 0.5,
+          "additive_flinch_only": true
+        },
+        "flee_style": "walk_into_reeds"
+      }
     }
   ],
   "non_combat_encounters": [
@@ -663,5 +1016,84 @@
         "clears_vfx": "vfx_illusion_mist"
       }
     }
-  ]
+  ],
+  "encounters_0_2": {
+    "_note": "FUN_PASS_0_2 §3.4. Nhóm giao tranh cho Demo 0.2 (thay danh sách SPAWNS cứng trong prototype). Mỗi nhóm dạy một điều hoặc trộn hai điều đã học. Giả định.",
+    "groups": [
+      {
+        "id": "enc_ben_cua_don",
+        "zone": "z_ben_say",
+        "members": [
+          {
+            "enemy": "en_cua_cang_bun",
+            "count": 1
+          }
+        ],
+        "teaches": "Đỡ nhịp, đánh hông"
+      },
+      {
+        "id": "enc_dam_cua_doi",
+        "zone": "z_dam_nong",
+        "members": [
+          {
+            "enemy": "en_cua_cang_bun",
+            "count": 2
+          }
+        ],
+        "teaches": "Lượt đánh có token; khóa và đổi mục tiêu"
+      },
+      {
+        "id": "enc_dam_ub_cua",
+        "zone": "z_dam_nong",
+        "members": [
+          {
+            "enemy": "en_u_bun",
+            "count": 1
+          },
+          {
+            "enemy": "en_cua_cang_bun",
+            "count": 1
+          }
+        ],
+        "teaches": "Đòn nặng phá Thế trong khi bị giữ vùng"
+      },
+      {
+        "id": "enc_lau_bo_ngua_phuc",
+        "zone": "z_bai_lau",
+        "members": [
+          {
+            "enemy": "en_bo_ngua_lau",
+            "count": 2
+          }
+        ],
+        "teaches": "Né hoàn hảo, đọc đòn trễ, phục kích có âm báo"
+      },
+      {
+        "id": "enc_lau_hon_hop",
+        "zone": "z_bai_lau",
+        "members": [
+          {
+            "enemy": "en_bo_ngua_lau",
+            "count": 1
+          },
+          {
+            "enemy": "en_cua_cang_bun",
+            "count": 1
+          }
+        ],
+        "teaches": "Trộn: kẻ giữ trước mặt, kẻ đánh bên sườn"
+      },
+      {
+        "id": "enc_lo_ub_tinh_anh",
+        "zone": "z_lo_bo_hoang",
+        "members": [
+          {
+            "enemy": "en_u_bun",
+            "count": 1
+          }
+        ],
+        "teaches": "Thử thách tùy chọn trước phần thưởng bí mật"
+      }
+    ]
+  }
 }

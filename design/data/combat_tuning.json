@@ -122,7 +122,82 @@
     "enabled_default": true,
     "max_amplitude": 0.6,
     "light_amplitude": 0.1,
-    "heavy_amplitude": 0.35
+    "heavy_amplitude": 0.35,
+    "medium_amplitude": 0.22,
+    "duration_s": 0.25,
+    "directional": true,
+    "frequency_hz": 22
+  },
+  "attack_motion": {
+    "_note": "FUN_PASS_0_2 §3.3. Giá trị chung; từng đòn ghi đè trong weapons.json moves[].motion. Giả định.",
+    "hit_detection": "swept_over_active",
+    "magnetism_max_m": 1.5,
+    "magnetism_stop_gap_m": 0.3,
+    "reaim_turn_rate_deg_s": 540,
+    "reaim_until": "active_start",
+    "whiff_extra_recovery_s": 0.0,
+    "sprint_attack_min_sprint_s": 0.4
+  },
+  "weapon_swap": {
+    "_note": "FUN_PASS_0_2 §3.3. Đổi vũ khí giữa combo (khi có 2 ô).",
+    "allowed_states": ["free", "attack_recovery"],
+    "swap_time_s": 0.15,
+    "swap_attack_window_s": 0.35,
+    "keeps_chain": false
+  },
+  "hit_react": {
+    "_note": "FUN_PASS_0_2 §3.3. Phản ứng trúng đòn của địch (mặc định; enemies[].behavior.hit_react ghi đè hệ số).",
+    "flinch_light_s": 0.18,
+    "flinch_medium_s": 0.3,
+    "flinch_heavy_s": 0.45,
+    "knockback_light_m": 0.15,
+    "knockback_medium_m": 0.35,
+    "knockback_heavy_m": 0.8,
+    "knockback_finisher_m": 1.5,
+    "knockback_duration_s": 0.12,
+    "flinch_cancels_windup": false,
+    "hit_flash_s": 0.06,
+    "stagger_enter_pose_s": 0.35,
+    "player_knockback_light_m": 0.3,
+    "player_knockback_heavy_m": 1.2,
+    "player_knockdown_get_up_s": 0.8,
+    "player_knockdown_iframes": true
+  },
+  "finisher": {
+    "_note": "FUN_PASS_0_2 §3.3. Đòn kết quái thường khi vỡ Thế: không giết; con vật lật, văng, rồi trốn (SB-05, v1.2 §5).",
+    "normal_duration_s": 0.9,
+    "player_invulnerable": true,
+    "contact_time_scale": 0.3,
+    "contact_slowmo_s": 0.15,
+    "camera_orbit_deg": 30,
+    "camera_distance_m": 4.8,
+    "camera_fov_deg": 52,
+    "camera_return_s": 0.35
+  },
+  "feel": {
+    "_note": "FUN_PASS_0_2 §3.6. Lớp juice. Tôn trọng tùy chọn acc_camera_shake và acc_reduce_flash; slow-mo tắt được (đề xuất tùy chọn mới, xem FUN_PASS_0_2 §4).",
+    "perfect_parry_time_scale": 0.25,
+    "perfect_parry_slowmo_s": 0.2,
+    "perfect_dodge_time_scale": 0.4,
+    "perfect_dodge_slowmo_s": 0.25,
+    "the_break_time_scale": 0.3,
+    "the_break_slowmo_s": 0.3,
+    "fov_base_deg": 60,
+    "fov_sprint_add_deg": 6,
+    "fov_heavy_hit_kick_deg": 3,
+    "fov_kick_return_s": 0.2,
+    "camera_distance_m": 6.5,
+    "camera_sprint_distance_m": 7.3,
+    "camera_lock_on_distance_m": 7.0,
+    "camera_boss_distance_m": 8.5,
+    "camera_follow_lag_s": 0.08,
+    "rumble_light_strength": 0.25,
+    "rumble_light_s": 0.06,
+    "rumble_heavy_strength": 0.6,
+    "rumble_heavy_s": 0.15,
+    "rumble_perfect_parry_strength": 0.8,
+    "rumble_perfect_parry_s": 0.08,
+    "min_feedback_layers_per_hit": 6
   },
   "lock_on": {
     "max_distance_m": 15.0,
@@ -143,13 +218,30 @@
     "miss_retries_per_beat": 2,
     "on_fail": "boss_recovers_the_half",
     "silence_after_s": 3.0,
-    "player_invulnerable_during": true
+    "player_invulnerable_during": true,
+    "camera_distance_m": 4.5,
+    "camera_orbit_per_beat_deg": 12,
+    "camera_push_per_beat_m": 0.25,
+    "release_time_scale": 0.3,
+    "release_slowmo_s": 0.4
   },
   "enemy_ai": {
     "max_simultaneous_attackers": 2,
     "attack_token_cooldown_s": 1.2,
     "max_delayed_attacks_per_moveset": 1,
-    "unparryable_telegraph": ["color_red_bronze", "audio_cue", "rumble"]
+    "unparryable_telegraph": ["color_red_bronze", "audio_cue", "rumble"],
+    "_note_0_2": "FUN_PASS_0_2 §3.4. Hành vi nhóm: kẻ chờ lượt đi vòng thay vì đứng yên; đòn từ ngoài khung hình phải có âm báo và báo hiệu dài hơn.",
+    "token_wait_ring_m": 3.5,
+    "circle_when_waiting": true,
+    "flank_angle_deg": 70,
+    "token_priority": "in_camera_front_first",
+    "offscreen_attack_extra_windup_s": 0.25,
+    "offscreen_attack_requires_audio_cue": true,
+    "attack_selection": "weighted_range_recency",
+    "repeat_weight_mult": 0.5,
+    "max_same_attack_in_row": 2,
+    "player_low_the_ratio": 0.3,
+    "player_low_the_aggression_mult": 1.4
   },
   "healing": {
     "item_id": "it_nam_com_la",
@@ -230,6 +322,18 @@
       {"id": "acc_lock_on_mode", "name": {"vi": "Khóa mục tiêu: bật/tắt hoặc giữ", "en": "Lock-on: toggle or hold"}, "type": "enum", "values": ["toggle", "hold"], "default": "toggle"},
       {"id": "acc_attack_audio_cue", "name": {"vi": "Âm thanh báo hướng đòn", "en": "Directional attack audio cue"}, "type": "bool", "default": true},
       {"id": "acc_remap", "name": {"vi": "Đổi phím", "en": "Remap controls"}, "type": "action"}
+    ]
+  },
+  "tuning_changes_0_2": {
+    "_note": "FUN_PASS_0_2 §3.7. Đề xuất ĐỔI GIÁ TRỊ cho Demo 0.2, CHƯA áp dụng (giữ bản 0.1 tái lập được). Người triển khai 0.2 áp dụng cùng lúc với mã; mục có pinned_by phải sửa test đó cùng lúc. Giả định, chờ playtest.",
+    "changes": [
+      {"file": "combat_tuning", "path": "drum_rhythm.gain.light_hit", "from": 8, "to": 12, "reason": "Hồi trống gần như không tới được trong trận thường (cua ≈ 1,8 nấc/trận); tuyệt kỹ phải xuất hiện ≥ 1 lần trước boss"},
+      {"file": "combat_tuning", "path": "drum_rhythm.gain.parry", "from": 25, "to": 30, "reason": "Thưởng quyết định phòng thủ chủ động hơn đánh bừa"},
+      {"file": "combat_tuning", "path": "drum_rhythm.decay_delay_s", "from": 6.0, "to": 12.0, "reason": "Nấc dở không rụng hết trong 10 s đi bộ giữa hai trận"},
+      {"file": "combat_tuning", "path": "hit_stop.light_s", "from": 0.04, "to": 0.05, "reason": "Đâm giáo nhẹ quá mỏng; 0,04 s gần bằng 2 khung hình 60 Hz"},
+      {"file": "enemies", "path": "boss_lon_loi_dam.hp", "from": 2000, "to": 1600, "reason": "Trận kết bằng cạy theo Thế; HP dài chỉ kéo dài pha đánh bao cát", "pinned_by": "game/Source/ArpgCore/Tests/ConfigTests.cpp (Boar.MaxHealth == 2000)"},
+      {"file": "enemies", "path": "boss_lon_loi_dam.phases[1].speed_mult", "from": 0.85, "to": 0.95, "reason": "Pha 2 vẫn 'đau, dễ đọc' nhờ báo hiệu dài, nhưng không được xẹp nhịp ở cao trào"},
+      {"file": "enemies", "path": "boss_lon_loi_dam.phases[1].telegraph_time_mult", "from": 1.25, "to": 1.15, "reason": "Giữ báo hiệu dài hơn pha 1 mà không thành chờ đợi"}
     ]
   }
 }

@@ -43,7 +43,19 @@
           "combo_window_s": 0.35,
           "hit_weight": "light",
           "range_m": 2.6,
-          "arc_deg": 20
+          "arc_deg": 20,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.5,
+            "target_react": "flinch",
+            "target_knockback_m": 0.15,
+            "trail": "thin_tip",
+            "hitbox": "line",
+            "anticipation": "Thu cán về hông sau, mũi hạ ngang thắt lưng, trọng tâm dồn chân sau",
+            "active": "Bước chân trước, cán trượt qua tay trước, mũi lao thẳng như sào chống đò",
+            "follow_through": "Cán rung nhẹ, rút về nửa chừng, sẵn nối đòn",
+            "lunge_start_s": 0.06
+          }
         },
         {
           "id": "sp_l2",
@@ -61,7 +73,20 @@
           "combo_window_s": 0.35,
           "hit_weight": "light",
           "range_m": 2.6,
-          "arc_deg": 20
+          "arc_deg": 20,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.3,
+            "target_react": "flinch",
+            "target_knockback_m": 0.15,
+            "trail": "thin_tip",
+            "hitbox": "line",
+            "anticipation": "Xoay hông ngược chiều, giật cán về sát sườn",
+            "active": "Đâm thấp vào chân rồi giật rút ngay",
+            "follow_through": "Lùi nửa bước, mũi giáo vẫn chĩa vào đối thủ",
+            "lunge_start_s": 0.05,
+            "self_move_after_m": -0.3
+          }
         },
         {
           "id": "sp_l3",
@@ -79,7 +104,19 @@
           "combo_window_s": 0.35,
           "hit_weight": "medium",
           "range_m": 2.2,
-          "arc_deg": 120
+          "arc_deg": 120,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.2,
+            "target_react": "push_side",
+            "target_knockback_m": 0.35,
+            "trail": "wide_shaft",
+            "hitbox": "arc",
+            "anticipation": "Đổi tay, xoay giáo ngang người, đuôi cán ra trước",
+            "active": "Quét đuôi cán tre vòng ngang gối, đánh bật sang bên",
+            "follow_through": "Giáo về thế cầm chéo trước ngực, chân trụ xoay trên bùn",
+            "lunge_start_s": 0.1
+          }
         },
         {
           "id": "sp_l4",
@@ -98,7 +135,19 @@
           "hit_weight": "medium",
           "range_m": 2.8,
           "arc_deg": 20,
-          "requires_skill": "sk_vo_noi_don"
+          "requires_skill": "sk_vo_noi_don",
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 1.0,
+            "target_react": "push",
+            "target_knockback_m": 0.5,
+            "trail": "spiral_tip",
+            "hitbox": "line",
+            "anticipation": "Gập gối thấp, cán xoay trong lòng bàn tay",
+            "active": "Lao cả người, mũi xoáy, đòn kết chuỗi",
+            "follow_through": "Trượt chân 0,4 m trên bùn, phải gượng lại",
+            "lunge_start_s": 0.12
+          }
         },
         {
           "id": "sp_h1",
@@ -122,6 +171,21 @@
             "time_per_level_s": 0.6,
             "damage_mult_per_level": 0.5,
             "level_2_requires_skill": "sk_vo_gong_suc"
+          },
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 2.0,
+            "target_react": "push",
+            "target_knockback_m": 0.8,
+            "trail": "thick_tip",
+            "hitbox": "line",
+            "anticipation": "Ngả người ra sau, giáo ngang vai, chân sau cào đất; mỗi mức gồng: lóe ở mũi giáo, một tiếng trống nhỏ, camera hơi dí vào",
+            "active": "Phóng cả người theo mũi giáo như thuyền lao khỏi bến",
+            "follow_through": "Quỳ một gối, đuôi cán chống đất, thở ra",
+            "lunge_start_s": 0.3,
+            "lunge_per_charge_level_m": 0.8,
+            "charge_armor_from_level": 2,
+            "charge_armor_max_weight": "light"
           }
         },
         {
@@ -140,7 +204,20 @@
           "combo_window_s": 0.0,
           "hit_weight": "heavy",
           "range_m": 2.4,
-          "arc_deg": 60
+          "arc_deg": 60,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.4,
+            "target_react": "push_up",
+            "target_knockback_m": 0.6,
+            "trail": "wide_shaft",
+            "hitbox": "arc",
+            "anticipation": "Cắm đuôi cán xuống đất như chống sào",
+            "active": "Lấy cán làm đòn bẩy, hất mũi giáo từ dưới lên",
+            "follow_through": "Cói bật lùi theo đà cán, đáp chân vững",
+            "lunge_start_s": 0.15,
+            "self_move_after_m": -0.6
+          }
         },
         {
           "id": "sp_d1",
@@ -158,7 +235,19 @@
           "combo_window_s": 0.3,
           "hit_weight": "light",
           "range_m": 2.6,
-          "arc_deg": 20
+          "arc_deg": 20,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 1.2,
+            "target_react": "flinch",
+            "target_knockback_m": 0.2,
+            "trail": "thin_tip",
+            "hitbox": "line",
+            "anticipation": "Đang lăn thì chống tay, bật dậy",
+            "active": "Đâm ngay từ thế bật dậy",
+            "follow_through": "Đứng thẳng, giáo ngang",
+            "lunge_start_s": 0.0
+          }
         },
         {
           "id": "sp_c1",
@@ -176,7 +265,19 @@
           "combo_window_s": 0.0,
           "hit_weight": "heavy",
           "range_m": 2.6,
-          "arc_deg": 30
+          "arc_deg": 30,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.6,
+            "target_react": "push",
+            "target_knockback_m": 0.6,
+            "trail": "thick_tip",
+            "hitbox": "line",
+            "anticipation": "Cán giáo gạt đòn sang bên, cổ tay xoay mũi về khe hở",
+            "active": "Đâm vào khe hở vừa mở",
+            "follow_through": "Giữ mũi giáo tại chỗ một nhịp rồi rút",
+            "lunge_start_s": 0.0
+          }
         }
       ],
       "drum_burst": {
@@ -197,7 +298,37 @@
         "super_armor": true,
         "invulnerable": false,
         "hit_weight": "heavy"
-      }
+      },
+      "motion_style": {
+        "label": "SÁNG TẠO",
+        "stance": "Hai tay, thế thấp, cán tre dài; dáng như người chống sào đò",
+        "basis_note": "Chỉ dáng vũ khí có cơ sở (T002, mức B); động tác là sáng tạo, không có nguồn võ cổ"
+      },
+      "sprint_attack": {
+        "label": "SÁNG TẠO",
+        "base_move": "sp_l1",
+        "extra_lunge_m": 1.5,
+        "the_damage_mult": 1.25,
+        "anticipation": "Đang chạy thì hạ mũi giáo",
+        "active": "Lao tới bằng đà chạy",
+        "follow_through": "Trượt hai bước trên bùn"
+      },
+      "swap_attack": {
+        "label": "SÁNG TẠO",
+        "base_move": "sp_l1",
+        "the_damage_mult": 1.3,
+        "anticipation": "Rút giáo từ lưng trong lúc cất vũ khí kia",
+        "active": "Đâm ngay khi giáo vào tay",
+        "follow_through": "Về thế giáo"
+      },
+      "drum_burst_motion": {
+        "label": "SÁNG TẠO",
+        "step_per_hit_m": 0.4,
+        "anticipation": "Dậm chân theo nhịp trống đầu",
+        "active": "Bốn mũi đâm trên bốn nhịp, mỗi mũi một bước tới, mũi cuối dồn cả thân",
+        "follow_through": "Đứng thẳng, giáo dựng, nhịp trống tắt"
+      },
+      "trail_default": true
     },
     {
       "id": "wp_riu_xeo",
@@ -240,7 +371,19 @@
           "combo_window_s": 0.35,
           "hit_weight": "medium",
           "range_m": 1.8,
-          "arc_deg": 90
+          "arc_deg": 90,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.6,
+            "target_react": "flinch",
+            "target_knockback_m": 0.35,
+            "trail": "wide_arc",
+            "hitbox": "arc",
+            "anticipation": "Rìu kéo qua vai phải, lưỡi xéo chúc xuống",
+            "active": "Bổ chéo từ vai xuống hông bên kia",
+            "follow_through": "Đà lưỡi kéo thân xoay theo, chân sau bước lên",
+            "lunge_start_s": 0.1
+          }
         },
         {
           "id": "ax_l2",
@@ -258,7 +401,19 @@
           "combo_window_s": 0.35,
           "hit_weight": "medium",
           "range_m": 1.8,
-          "arc_deg": 90
+          "arc_deg": 90,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.4,
+            "target_react": "flinch",
+            "target_knockback_m": 0.35,
+            "trail": "wide_arc",
+            "hitbox": "arc",
+            "anticipation": "Mượn đà xoay tiếp, rìu vòng ra sau lưng",
+            "active": "Bổ ngược từ hông lên vai bằng mặt lưỡi bên kia",
+            "follow_through": "Rìu dừng trên vai, sẵn nhát thứ ba",
+            "lunge_start_s": 0.08
+          }
         },
         {
           "id": "ax_l3",
@@ -276,7 +431,20 @@
           "combo_window_s": 0.35,
           "hit_weight": "heavy",
           "range_m": 1.9,
-          "arc_deg": 40
+          "arc_deg": 40,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.5,
+            "target_react": "push",
+            "target_knockback_m": 0.8,
+            "trail": "wide_arc",
+            "hitbox": "arc",
+            "anticipation": "Hai tay nâng rìu quá đầu, kiễng chân",
+            "active": "Chặt thẳng xuống, chân trước dậm, đất hoặc nước bắn",
+            "follow_through": "Lưỡi cắm đất 0,15 s rồi giật ra",
+            "lunge_start_s": 0.15,
+            "ground_impact": true
+          }
         },
         {
           "id": "ax_l4",
@@ -295,7 +463,20 @@
           "hit_weight": "heavy",
           "range_m": 1.9,
           "arc_deg": 360,
-          "requires_skill": "sk_vo_noi_don"
+          "requires_skill": "sk_vo_noi_don",
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.3,
+            "target_react": "spin_push",
+            "target_knockback_m": 0.8,
+            "trail": "full_circle",
+            "hitbox": "circle",
+            "anticipation": "Hạ thấp người, rìu kéo sát đất ra sau",
+            "active": "Xoay một vòng rưỡi, lưỡi quét quanh người",
+            "follow_through": "Loạng choạng nửa bước vì đà rìu",
+            "lunge_start_s": 0.1,
+            "self_drift_m": 0.5
+          }
         },
         {
           "id": "ax_h1",
@@ -319,6 +500,22 @@
             "time_per_level_s": 0.7,
             "damage_mult_per_level": 0.5,
             "level_2_requires_skill": "sk_vo_gong_suc"
+          },
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 1.2,
+            "target_react": "push",
+            "target_knockback_m": 1.0,
+            "trail": "wide_arc",
+            "hitbox": "arc",
+            "anticipation": "Ngửa người, rìu ra sau gáy, vai siết lại; mỗi mức gồng: lóe ở lưỡi, một tiếng trống nhỏ",
+            "active": "Bước dài một nhịp và bổ xuống bằng cả sức nặng thân",
+            "follow_through": "Rìu cắm, đất tung; được hủy bằng né sau 0,25 s",
+            "lunge_start_s": 0.35,
+            "lunge_per_charge_level_m": 0.4,
+            "ground_impact": true,
+            "charge_armor_from_level": 1,
+            "charge_armor_max_weight": "light"
           }
         },
         {
@@ -337,7 +534,20 @@
           "combo_window_s": 0.0,
           "hit_weight": "heavy",
           "range_m": 1.8,
-          "arc_deg": 60
+          "arc_deg": 60,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.3,
+            "target_react": "pull",
+            "target_knockback_m": -0.8,
+            "trail": "hook_arc",
+            "hitbox": "arc",
+            "anticipation": "Xoay cán cho mũi lưỡi xéo quay vào trong",
+            "active": "Móc mũi lưỡi vào đối thủ rồi kéo về phía mình",
+            "follow_through": "Lùi nửa bước, đối thủ mất thăng bằng trước mặt",
+            "lunge_start_s": 0.15,
+            "self_move_after_m": -0.4
+          }
         },
         {
           "id": "ax_d1",
@@ -355,7 +565,19 @@
           "combo_window_s": 0.3,
           "hit_weight": "medium",
           "range_m": 1.8,
-          "arc_deg": 90
+          "arc_deg": 90,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 1.0,
+            "target_react": "flinch",
+            "target_knockback_m": 0.35,
+            "trail": "wide_arc",
+            "hitbox": "arc",
+            "anticipation": "Đang lăn thì xoay người, rìu sẵn ngang hông",
+            "active": "Bật dậy bổ ngang",
+            "follow_through": "Rìu về vai",
+            "lunge_start_s": 0.0
+          }
         },
         {
           "id": "ax_c1",
@@ -373,7 +595,19 @@
           "combo_window_s": 0.0,
           "hit_weight": "heavy",
           "range_m": 1.8,
-          "arc_deg": 60
+          "arc_deg": 60,
+          "motion": {
+            "label": "SÁNG TẠO",
+            "lunge_m": 0.5,
+            "target_react": "push",
+            "target_knockback_m": 0.9,
+            "trail": "wide_arc",
+            "hitbox": "arc",
+            "anticipation": "Cán rìu gạt đòn, lưỡi lật về phía đối thủ",
+            "active": "Bổ ngang vào chỗ hở",
+            "follow_through": "Giữ thế một nhịp, thở ra",
+            "lunge_start_s": 0.0
+          }
         }
       ],
       "drum_burst": {
@@ -394,7 +628,37 @@
         "super_armor": true,
         "invulnerable": false,
         "hit_weight": "heavy"
-      }
+      },
+      "motion_style": {
+        "label": "SÁNG TẠO",
+        "stance": "Hai tay, cán ngắn, đà xoay hông; lưỡi lệch nên đường bổ cong",
+        "basis_note": "Chỉ dáng vũ khí có cơ sở (T002, mức B); động tác là sáng tạo, không có nguồn võ cổ"
+      },
+      "sprint_attack": {
+        "label": "SÁNG TẠO",
+        "base_move": "ax_l1",
+        "extra_lunge_m": 1.2,
+        "the_damage_mult": 1.25,
+        "anticipation": "Đang chạy thì vung rìu lên vai",
+        "active": "Bổ xéo bằng đà chạy",
+        "follow_through": "Đà kéo thân xoay nửa vòng"
+      },
+      "swap_attack": {
+        "label": "SÁNG TẠO",
+        "base_move": "ax_l1",
+        "the_damage_mult": 1.3,
+        "anticipation": "Rút rìu từ hông trong lúc cất giáo",
+        "active": "Bổ xéo ngay khi rìu vào tay",
+        "follow_through": "Về thế rìu"
+      },
+      "drum_burst_motion": {
+        "label": "SÁNG TẠO",
+        "step_per_hit_m": 0.5,
+        "anticipation": "Dậm chân theo nhịp trống đầu",
+        "active": "Ba nhát bổ trên ba nhịp, nhát cuối dồn cả thân",
+        "follow_through": "Rìu cắm đất, nhịp trống tắt"
+      },
+      "trail_default": true
     }
   ]
 }
