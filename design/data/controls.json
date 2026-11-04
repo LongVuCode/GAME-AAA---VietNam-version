@@ -1,0 +1,305 @@
+{
+  "schema_version": 1,
+  "_note": "ĐỀ XUẤT sơ đồ phím Demo 0.1 (UX/Controls Researcher, 2026-11-04), chờ Product Owner duyệt và playtest. Lý do, so sánh và nguồn: design/CONTROLS_STUDY.md. Chưa nằm trong FILES của tools/design_validate.py; prototype chưa đọc file này (input.js vẫn dùng KEYMAP cũ).",
+  "_schema": {
+    "actions[]": "id, name{vi,en}, context (gameplay|ui|debug), kbm{inputs[], type}, pad{inputs[], type}, shares_input_with?, hold_s?, accessibility_option?, reserved?, note{vi,en}",
+    "type": "press = bấm một lần; hold = giữ (thả là dừng); toggle_option = mặc định giữ, có tùy chọn trợ năng đổi sang bật/tắt; axis = trục analog/chuột (không phải nút)",
+    "kbm.inputs": "KeyboardEvent.code (KeyW, Space, ShiftLeft...) hoặc Mouse0 (trái) / Mouse1 (giữa) / Mouse2 (phải) / WheelUp / WheelDown / MouseMove — cùng cách đánh số với MouseEvent.button",
+    "pad.inputs": "{index, id} theo Gamepad API mapping \"standard\" (W3C): button = buttons[index], axis = axes[index]",
+    "display_key": "Dùng khóa name (không dùng label) vì label trong repo này là nhãn nội dung (SÁNG TẠO...)"
+  },
+  "pad_buttons": [
+    {"index": 0, "id": "face_bottom", "glyph": {"xbox": "A", "playstation": "✕"}, "name": {"vi": "Nút mặt dưới", "en": "Bottom face button"}},
+    {"index": 1, "id": "face_right", "glyph": {"xbox": "B", "playstation": "○"}, "name": {"vi": "Nút mặt phải", "en": "Right face button"}},
+    {"index": 2, "id": "face_left", "glyph": {"xbox": "X", "playstation": "□"}, "name": {"vi": "Nút mặt trái", "en": "Left face button"}},
+    {"index": 3, "id": "face_top", "glyph": {"xbox": "Y", "playstation": "△"}, "name": {"vi": "Nút mặt trên", "en": "Top face button"}},
+    {"index": 4, "id": "bumper_left", "glyph": {"xbox": "LB", "playstation": "L1"}, "name": {"vi": "Nút vai trái", "en": "Left bumper"}},
+    {"index": 5, "id": "bumper_right", "glyph": {"xbox": "RB", "playstation": "R1"}, "name": {"vi": "Nút vai phải", "en": "Right bumper"}},
+    {"index": 6, "id": "trigger_left", "glyph": {"xbox": "LT", "playstation": "L2"}, "name": {"vi": "Cò trái", "en": "Left trigger"}},
+    {"index": 7, "id": "trigger_right", "glyph": {"xbox": "RT", "playstation": "R2"}, "name": {"vi": "Cò phải", "en": "Right trigger"}},
+    {"index": 8, "id": "center_left", "glyph": {"xbox": "View", "playstation": "Create"}, "name": {"vi": "Nút giữa bên trái", "en": "Left center button"}},
+    {"index": 9, "id": "center_right", "glyph": {"xbox": "Menu", "playstation": "Options"}, "name": {"vi": "Nút giữa bên phải", "en": "Right center button"}},
+    {"index": 10, "id": "stick_left_press", "glyph": {"xbox": "LS", "playstation": "L3"}, "name": {"vi": "Nhấn cần trái", "en": "Left stick press"}},
+    {"index": 11, "id": "stick_right_press", "glyph": {"xbox": "RS", "playstation": "R3"}, "name": {"vi": "Nhấn cần phải", "en": "Right stick press"}},
+    {"index": 12, "id": "dpad_up", "glyph": {"xbox": "D-pad ↑", "playstation": "↑"}, "name": {"vi": "Phím hướng lên", "en": "D-pad up"}},
+    {"index": 13, "id": "dpad_down", "glyph": {"xbox": "D-pad ↓", "playstation": "↓"}, "name": {"vi": "Phím hướng xuống", "en": "D-pad down"}},
+    {"index": 14, "id": "dpad_left", "glyph": {"xbox": "D-pad ←", "playstation": "←"}, "name": {"vi": "Phím hướng trái", "en": "D-pad left"}},
+    {"index": 15, "id": "dpad_right", "glyph": {"xbox": "D-pad →", "playstation": "→"}, "name": {"vi": "Phím hướng phải", "en": "D-pad right"}},
+    {"index": 16, "id": "center_home", "glyph": {"xbox": "Guide", "playstation": "PS"}, "name": {"vi": "Nút hệ thống (không gán)", "en": "System button (never bound)"}}
+  ],
+  "pad_axes": [
+    {"index": 0, "id": "left_x", "name": {"vi": "Cần trái ngang", "en": "Left stick X"}},
+    {"index": 1, "id": "left_y", "name": {"vi": "Cần trái dọc", "en": "Left stick Y"}},
+    {"index": 2, "id": "right_x", "name": {"vi": "Cần phải ngang", "en": "Right stick X"}},
+    {"index": 3, "id": "right_y", "name": {"vi": "Cần phải dọc", "en": "Right stick Y"}}
+  ],
+  "key_names": {
+    "Space": {"vi": "Phím cách", "en": "Space"},
+    "ShiftLeft": {"vi": "Shift trái", "en": "Left Shift"},
+    "CapsLock": {"vi": "Caps Lock", "en": "Caps Lock"},
+    "Tab": {"vi": "Tab", "en": "Tab"},
+    "Escape": {"vi": "Esc", "en": "Esc"},
+    "Enter": {"vi": "Enter", "en": "Enter"},
+    "Backspace": {"vi": "Xóa lùi", "en": "Backspace"},
+    "Backquote": {"vi": "Phím `", "en": "` key"},
+    "Mouse0": {"vi": "Chuột trái", "en": "Left mouse"},
+    "Mouse1": {"vi": "Chuột giữa", "en": "Middle mouse"},
+    "Mouse2": {"vi": "Chuột phải", "en": "Right mouse"},
+    "WheelUp": {"vi": "Lăn chuột lên", "en": "Wheel up"},
+    "WheelDown": {"vi": "Lăn chuột xuống", "en": "Wheel down"},
+    "MouseMove": {"vi": "Rê chuột", "en": "Mouse movement"}
+  },
+  "actions": [
+    {
+      "id": "move", "context": "gameplay",
+      "name": {"vi": "Di chuyển", "en": "Move"},
+      "kbm": {"inputs": ["KeyW", "KeyA", "KeyS", "KeyD"], "type": "axis"},
+      "pad": {"inputs": [{"index": 0, "id": "left_x", "axis": true}, {"index": 1, "id": "left_y", "axis": true}], "type": "axis"},
+      "note": {"vi": "Nghiêng cần nhẹ là đi chậm, nghiêng hết là chạy thường (analog).", "en": "Light stick tilt walks, full tilt runs (analog)."}
+    },
+    {
+      "id": "camera", "context": "gameplay",
+      "name": {"vi": "Xoay camera", "en": "Camera"},
+      "kbm": {"inputs": ["MouseMove", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"], "type": "axis"},
+      "pad": {"inputs": [{"index": 2, "id": "right_x", "axis": true}, {"index": 3, "id": "right_y", "axis": true}], "type": "axis"},
+      "accessibility_option": "acc_invert_camera",
+      "note": {"vi": "Phím mũi tên cho người chơi một tay hoặc không dùng chuột.", "en": "Arrow keys for one-handed or mouse-free play."}
+    },
+    {
+      "id": "sprint", "context": "gameplay",
+      "name": {"vi": "Chạy nhanh", "en": "Sprint"},
+      "kbm": {"inputs": ["ShiftLeft"], "type": "toggle_option"},
+      "pad": {"inputs": [{"index": 10, "id": "stick_left_press"}], "type": "press"},
+      "accessibility_option": "acc_sprint_mode",
+      "note": {"vi": "Nút riêng, không chung với né. Tay cầm: nhấn L3 một lần là chạy, tự dừng khi buông cần (không phải giữ L3). Tốn Sức theo thiết kế. Cần thêm movement.sprint_speed_mps vào combat_tuning.", "en": "Dedicated input, not shared with dodge. Pad: click L3 once to sprint; stops when the stick is released (no need to hold L3). Costs stamina per design. Needs movement.sprint_speed_mps in combat_tuning."}
+    },
+    {
+      "id": "walk", "context": "gameplay",
+      "name": {"vi": "Đi chậm", "en": "Walk"},
+      "kbm": {"inputs": ["CapsLock"], "type": "press"},
+      "pad": {"inputs": [], "type": "axis"},
+      "accessibility_option": "acc_walk_mode",
+      "note": {"vi": "Tùy chọn. Bàn phím: Caps Lock bật/tắt đi chậm (thay Shift cũ). Tay cầm: nghiêng cần nhẹ, không cần nút. Không dùng Ctrl/Alt trong bản web vì Ctrl+W đóng tab, Alt+D nhảy lên thanh địa chỉ.", "en": "Optional. Keyboard: Caps Lock toggles walk (replaces old Shift). Pad: light stick tilt, no button. Avoid Ctrl/Alt in the web build: Ctrl+W closes the tab, Alt+D focuses the address bar."}
+    },
+    {
+      "id": "dodge", "context": "gameplay",
+      "name": {"vi": "Né", "en": "Dodge"},
+      "kbm": {"inputs": ["Space"], "type": "press"},
+      "pad": {"inputs": [{"index": 1, "id": "face_right"}], "type": "press"},
+      "note": {"vi": "Kích hoạt lúc NHẤN (không đợi thả) để giữ cửa sổ né hoàn hảo 0,10 s chính xác.", "en": "Fires on PRESS (not release) so the 0.10 s perfect-dodge window stays precise."}
+    },
+    {
+      "id": "jump", "context": "gameplay", "reserved": true,
+      "name": {"vi": "Nhảy", "en": "Jump"},
+      "kbm": {"inputs": [], "type": "press"},
+      "pad": {"inputs": [], "type": "press"},
+      "note": {"vi": "Không có trong Demo 0.1 (khuyến nghị). Vượt chướng ngại theo ngữ cảnh bằng nút Tương tác. Nếu thêm sau: bàn phím chưa chốt (tránh Ctrl trên web), tay cầm A/✕.", "en": "Not in Demo 0.1 (recommended). Contextual traversal uses Interact. If added later: keyboard TBD (avoid Ctrl on web), pad A/✕."}
+    },
+    {
+      "id": "attack_light", "context": "gameplay",
+      "name": {"vi": "Đòn nhẹ", "en": "Light attack"},
+      "kbm": {"inputs": ["Mouse0"], "type": "press"},
+      "pad": {"inputs": [{"index": 2, "id": "face_left"}], "type": "press"},
+      "note": {"vi": "Chuỗi 3 nhịp, có input buffer.", "en": "3-hit chain with input buffer."}
+    },
+    {
+      "id": "attack_heavy", "context": "gameplay",
+      "name": {"vi": "Đòn nặng (giữ để gồng)", "en": "Heavy attack (hold to charge)"},
+      "kbm": {"inputs": ["Mouse2"], "type": "toggle_option"},
+      "pad": {"inputs": [{"index": 3, "id": "face_top"}], "type": "toggle_option"},
+      "hold_s": 0.25,
+      "accessibility_option": "acc_heavy_charge_mode",
+      "note": {"vi": "Bấm nhanh = đòn nặng gốc; giữ ≥ hold_threshold_s = gồng (2 mức). Bật/tắt: bấm lần 1 bắt đầu gồng, bấm lần 2 tung đòn.", "en": "Tap = base heavy; hold ≥ hold_threshold_s = charge (2 levels). Toggle mode: first press starts charging, second press releases."}
+    },
+    {
+      "id": "parry", "context": "gameplay",
+      "name": {"vi": "Đỡ nhịp", "en": "Rhythm parry"},
+      "kbm": {"inputs": ["KeyQ"], "type": "press"},
+      "pad": {"inputs": [{"index": 4, "id": "bumper_left"}], "type": "press"},
+      "note": {"vi": "Cửa sổ tính từ lúc NHẤN.", "en": "Window starts on PRESS."}
+    },
+    {
+      "id": "guard", "context": "gameplay", "shares_input_with": "parry",
+      "name": {"vi": "Đỡ (giữ)", "en": "Guard (hold)"},
+      "kbm": {"inputs": ["KeyQ"], "type": "toggle_option"},
+      "pad": {"inputs": [{"index": 4, "id": "bumper_left"}], "type": "toggle_option"},
+      "accessibility_option": "acc_guard_mode",
+      "note": {"vi": "Nhấn = Đỡ nhịp, giữ tiếp = Đỡ (giảm 70%, tốn Thế). Ở chế độ bật/tắt, nhấn vẫn là Đỡ nhịp.", "en": "Press = parry, keep holding = guard (70% reduction, costs posture). In toggle mode the press is still a parry."}
+    },
+    {
+      "id": "lock_on", "context": "gameplay",
+      "name": {"vi": "Khóa mục tiêu", "en": "Lock on"},
+      "kbm": {"inputs": ["Mouse1", "Tab"], "type": "toggle_option"},
+      "pad": {"inputs": [{"index": 11, "id": "stick_right_press"}], "type": "toggle_option"},
+      "accessibility_option": "acc_lock_on_mode",
+      "note": {"vi": "Không có mục tiêu trong tầm thì đưa camera về sau lưng. Tab dành cho chuột không có nút giữa dễ bấm.", "en": "With no target in range it recenters the camera behind the player. Tab is for mice without a comfortable middle button."}
+    },
+    {
+      "id": "lock_switch_target", "context": "gameplay",
+      "name": {"vi": "Đổi mục tiêu", "en": "Switch target"},
+      "kbm": {"inputs": ["WheelUp", "WheelDown"], "type": "press"},
+      "pad": {"inputs": [{"index": 2, "id": "right_x", "axis": true}], "type": "axis"},
+      "note": {"vi": "Chỉ khi đang khóa. Tay cầm: gạt cần phải qua ngưỡng lock_on.switch_stick_threshold. Chuột: lăn, hoặc rê mạnh sang ngang.", "en": "Only while locked. Pad: flick the right stick past lock_on.switch_stick_threshold. Mouse: wheel, or a sharp horizontal flick."}
+    },
+    {
+      "id": "drum_burst", "context": "gameplay",
+      "name": {"vi": "Hồi trống", "en": "Drum Burst"},
+      "kbm": {"inputs": ["KeyF"], "type": "press"},
+      "pad": {"inputs": [{"index": 7, "id": "trigger_right"}], "type": "press"},
+      "note": {"vi": "Chỉ khi đủ 4 nấc. F nằm sát WASD; cò phải cho cảm giác đòn lớn. Không dùng tổ hợp hai nút.", "en": "Only with 4 full segments. F sits next to WASD; right trigger gives a big-move feel. No two-button chord."}
+    },
+    {
+      "id": "interact", "context": "gameplay",
+      "name": {"vi": "Tương tác / Đòn kết / Cạy", "en": "Interact / Finisher / Pry"},
+      "kbm": {"inputs": ["KeyE"], "type": "press"},
+      "pad": {"inputs": [{"index": 0, "id": "face_bottom"}], "type": "press"},
+      "note": {"vi": "Một nút ngữ cảnh, luôn có lời nhắc kèm glyph. Ưu tiên: Đòn kết \"Đuổi đi\" > Cạy > Tương tác > Gọi tên.", "en": "One context button, always prompted with a glyph. Priority: \"Drive off\" finisher > Pry > Interact > Call by name."}
+    },
+    {
+      "id": "pry_beat", "context": "gameplay", "shares_input_with": "interact",
+      "name": {"vi": "Cạy (bấm theo nhịp trống)", "en": "Pry (press on the drum beat)"},
+      "kbm": {"inputs": ["KeyE"], "type": "press"},
+      "pad": {"inputs": [{"index": 0, "id": "face_bottom"}], "type": "press"},
+      "accessibility_option": "acc_hold_instead_of_tap",
+      "note": {"vi": "Phán định theo dấu thời gian sự kiện phím. Có tùy chọn giữ nút; mức Nghe chuyện cạy tự động.", "en": "Judged by input event timestamp. Hold option available; Story difficulty pries automatically."}
+    },
+    {
+      "id": "call_name", "context": "gameplay", "shares_input_with": "interact",
+      "name": {"vi": "Gọi tên (giữ)", "en": "Call by name (hold)"},
+      "kbm": {"inputs": ["KeyE"], "type": "toggle_option"},
+      "pad": {"inputs": [{"index": 0, "id": "face_bottom"}], "type": "toggle_option"},
+      "hold_s": 2.0,
+      "accessibility_option": "acc_call_name_mode",
+      "note": {"vi": "Chỉ hiện khi đứng gần người bị mê (không có tương tác nào khác ở đó). Có vòng tiến độ.", "en": "Only offered next to an entranced person (no other interaction there). Shows a progress ring."}
+    },
+    {
+      "id": "heal", "context": "gameplay",
+      "name": {"vi": "Ăn nắm cơm lá", "en": "Eat rice parcel"},
+      "kbm": {"inputs": ["KeyR"], "type": "press"},
+      "pad": {"inputs": [{"index": 12, "id": "dpad_up"}], "type": "press"},
+      "note": {"vi": "R là phím dùng vật phẩm quen thuộc trên PC. Tay cầm: phím hướng lên — phải rời ngón cái khỏi cần camera, đúng ý \"hồi máu là một cam kết\" (1 s), lại khó bấm nhầm.", "en": "R is the familiar PC use-item key. Pad: D-pad up — the thumb leaves the camera stick, matching \"healing is a commitment\" (1 s), and is hard to press by accident."}
+    },
+    {
+      "id": "weapon_slot_1", "context": "gameplay",
+      "name": {"vi": "Vũ khí ô 1", "en": "Weapon slot 1"},
+      "kbm": {"inputs": ["Digit1"], "type": "press"},
+      "pad": {"inputs": [{"index": 14, "id": "dpad_left"}], "type": "press"},
+      "note": {"vi": "Mở từ đời Bương.", "en": "Unlocked from Bương's life."}
+    },
+    {
+      "id": "weapon_slot_2", "context": "gameplay",
+      "name": {"vi": "Vũ khí ô 2", "en": "Weapon slot 2"},
+      "kbm": {"inputs": ["Digit2"], "type": "press"},
+      "pad": {"inputs": [{"index": 15, "id": "dpad_right"}], "type": "press"},
+      "note": {"vi": "Khi có hơn 2 vũ khí: phím hướng trái/phải chuyển thành xoay vòng.", "en": "With more than 2 weapons, D-pad left/right becomes cycle."}
+    },
+    {
+      "id": "codex", "context": "gameplay",
+      "name": {"vi": "Codex", "en": "Codex"},
+      "kbm": {"inputs": ["KeyC"], "type": "press"},
+      "pad": {"inputs": [{"index": 8, "id": "center_left"}], "type": "press"},
+      "note": {"vi": "Tay cầm: View/Create mở sổ chung có thẻ Codex | Sổ tay | Nghề nhà, đổi thẻ bằng LB/RB.", "en": "Pad: View/Create opens one hub with Codex | Journal | Crafts tabs, switched with LB/RB."}
+    },
+    {
+      "id": "journal", "context": "gameplay",
+      "name": {"vi": "Sổ tay", "en": "Journal"},
+      "kbm": {"inputs": ["KeyJ"], "type": "press"},
+      "pad": {"inputs": [], "type": "press"},
+      "note": {"vi": "Tay cầm: thẻ trong sổ chung (View).", "en": "Pad: a tab in the hub (View)."}
+    },
+    {
+      "id": "skills", "context": "gameplay",
+      "name": {"vi": "Nghề nhà", "en": "Family crafts"},
+      "kbm": {"inputs": ["KeyK"], "type": "press"},
+      "pad": {"inputs": [], "type": "press"},
+      "note": {"vi": "Tay cầm: thẻ trong sổ chung (View).", "en": "Pad: a tab in the hub (View)."}
+    },
+    {
+      "id": "map", "context": "gameplay", "reserved": true,
+      "name": {"vi": "Bản đồ", "en": "Map"},
+      "kbm": {"inputs": ["KeyM"], "type": "press"},
+      "pad": {"inputs": [], "type": "press"},
+      "note": {"vi": "Demo 0.1 chưa có bản đồ; giữ chỗ M. Tay cầm sau này: thẻ trong sổ chung.", "en": "Demo 0.1 has no map; M is reserved. Pad later: a hub tab."}
+    },
+    {
+      "id": "menu", "context": "gameplay",
+      "name": {"vi": "Tạm dừng / Cài đặt", "en": "Pause / Settings"},
+      "kbm": {"inputs": ["Escape"], "type": "press"},
+      "pad": {"inputs": [{"index": 9, "id": "center_right"}], "type": "press"},
+      "note": {"vi": "Esc không đổi được (trình duyệt dùng Esc để thoát khóa chuột).", "en": "Esc is not remappable (the browser uses Esc to exit pointer lock)."}
+    },
+    {
+      "id": "ui_confirm", "context": "ui",
+      "name": {"vi": "Chọn", "en": "Confirm"},
+      "kbm": {"inputs": ["Enter", "Space"], "type": "press"},
+      "pad": {"inputs": [{"index": 0, "id": "face_bottom"}], "type": "press"},
+      "note": {"vi": "Chuẩn Xbox/Steam: A/✕ là chọn.", "en": "Xbox/Steam standard: A/✕ confirms."}
+    },
+    {
+      "id": "ui_back", "context": "ui",
+      "name": {"vi": "Quay lại", "en": "Back"},
+      "kbm": {"inputs": ["Escape", "Backspace"], "type": "press"},
+      "pad": {"inputs": [{"index": 1, "id": "face_right"}], "type": "press"},
+      "note": {"vi": "B/○ là quay lại.", "en": "B/○ goes back."}
+    },
+    {
+      "id": "ui_tab_prev", "context": "ui",
+      "name": {"vi": "Thẻ trước", "en": "Previous tab"},
+      "kbm": {"inputs": ["KeyQ"], "type": "press"},
+      "pad": {"inputs": [{"index": 4, "id": "bumper_left"}], "type": "press"},
+      "note": {"vi": "Chỉ trong menu.", "en": "Menus only."}
+    },
+    {
+      "id": "ui_tab_next", "context": "ui",
+      "name": {"vi": "Thẻ sau", "en": "Next tab"},
+      "kbm": {"inputs": ["KeyE"], "type": "press"},
+      "pad": {"inputs": [{"index": 5, "id": "bumper_right"}], "type": "press"},
+      "note": {"vi": "Chỉ trong menu.", "en": "Menus only."}
+    },
+    {
+      "id": "fps", "context": "debug",
+      "name": {"vi": "Hiện/ẩn FPS", "en": "Toggle FPS"},
+      "kbm": {"inputs": ["Backquote"], "type": "press"},
+      "pad": {"inputs": [], "type": "press"},
+      "note": {"vi": "Chỉ bản prototype.", "en": "Prototype only."}
+    }
+  ],
+  "pad_presets": [
+    {
+      "id": "preset_action", "default": true,
+      "name": {"vi": "Hành động (mặc định)", "en": "Action (default)"},
+      "overrides": {},
+      "note": {"vi": "Đòn trên nút mặt (X/□ nhẹ, Y/△ nặng) như nhóm game hành động; Đỡ trên LB/L1.", "en": "Attacks on face buttons (X/□ light, Y/△ heavy) like action games; guard on LB/L1."}
+    },
+    {
+      "id": "preset_shoulder",
+      "name": {"vi": "Đòn trên vai (kiểu Souls)", "en": "Shoulder attacks (Souls-style)"},
+      "overrides": {
+        "attack_light": [{"index": 5, "id": "bumper_right"}],
+        "attack_heavy": [{"index": 7, "id": "trigger_right"}],
+        "drum_burst": [{"index": 6, "id": "trigger_left"}],
+        "heal": [{"index": 2, "id": "face_left"}]
+      },
+      "note": {"vi": "Đòn trên RB/RT, ngón cái luôn ở cần camera. Hồi trống chuyển sang LT, ăn sang X/□.", "en": "Attacks on RB/RT so the thumb stays on the camera stick. Drum Burst moves to LT, eating to X/□."}
+    }
+  ],
+  "accessibility_options": [
+    {"id": "acc_sprint_mode", "name": {"vi": "Kiểu chạy nhanh", "en": "Sprint mode"}, "type": "enum", "values": ["hold", "toggle", "auto"], "default_kbm": "hold", "default_pad": "toggle", "note": {"vi": "Bật/tắt: tự dừng khi đứng yên. Tự động: tự chạy nhanh sau khi đẩy hết cần/giữ hướng một lúc (độ trễ chỉnh được).", "en": "Toggle: stops when you stand still. Auto: sprints after full stick/held direction for a moment (adjustable delay)."}},
+    {"id": "acc_sprint_auto_delay_s", "name": {"vi": "Độ trễ chạy tự động", "en": "Auto-sprint delay"}, "type": "range", "min": 0.0, "max": 2.0, "step": 0.1, "default": 0.6, "note": {"vi": "Chỉ dùng khi kiểu chạy là Tự động.", "en": "Only used when sprint mode is Auto."}},
+    {"id": "acc_sprint_on_dodge_hold", "name": {"vi": "Giữ nút né để chạy nhanh", "en": "Hold dodge to sprint"}, "type": "bool", "default": false, "note": {"vi": "Kiểu Souls, cho người quen tay. Né vẫn kích hoạt lúc nhấn.", "en": "Souls-style, for players used to it. Dodge still fires on press."}},
+    {"id": "acc_walk_mode", "name": {"vi": "Kiểu đi chậm", "en": "Walk mode"}, "type": "enum", "values": ["toggle", "hold"], "default": "toggle", "note": {"vi": "Áp dụng cho phím bàn phím.", "en": "Applies to the keyboard key."}},
+    {"id": "acc_guard_mode", "name": {"vi": "Đỡ: giữ hoặc bật/tắt", "en": "Guard: hold or toggle"}, "type": "enum", "values": ["hold", "toggle"], "default": "hold", "note": {"vi": "Bật/tắt: nhấn để Đỡ nhịp và vào thế Đỡ, nhấn lại để thôi.", "en": "Toggle: press to parry and enter guard, press again to drop it."}},
+    {"id": "acc_heavy_charge_mode", "name": {"vi": "Gồng đòn nặng: giữ hoặc bật/tắt", "en": "Heavy charge: hold or toggle"}, "type": "enum", "values": ["hold", "toggle"], "default": "hold", "note": {"vi": "Bật/tắt: bấm lần 1 gồng, lần 2 tung đòn.", "en": "Toggle: first press charges, second press releases."}},
+    {"id": "acc_call_name_mode", "name": {"vi": "Gọi tên: giữ hoặc bấm một lần", "en": "Call by name: hold or single press"}, "type": "enum", "values": ["hold", "toggle"], "default": "hold", "note": {"vi": "Bấm một lần: tiến độ tự chạy tới khi xong, bị đánh hoặc đi xa.", "en": "Single press: progress runs until done, hit, or out of range."}},
+    {"id": "acc_hold_instead_of_tap", "uses_existing": "combat_tuning.accessibility", "name": {"vi": "Giữ nút thay vì bấm theo nhịp (cạy)", "en": "Hold instead of timed presses (pry)"}, "type": "bool", "default": false, "note": {"vi": "Đã có trong combat_tuning; ghi lại để màn phím liệt kê đủ.", "en": "Already in combat_tuning; listed so the controls screen is complete."}},
+    {"id": "acc_lock_on_mode", "uses_existing": "combat_tuning.accessibility", "name": {"vi": "Khóa mục tiêu: bật/tắt hoặc giữ", "en": "Lock-on: toggle or hold"}, "type": "enum", "values": ["toggle", "hold"], "default": "toggle", "note": {"vi": "Đã có trong combat_tuning.", "en": "Already in combat_tuning."}},
+    {"id": "acc_invert_camera", "name": {"vi": "Đảo trục camera", "en": "Invert camera axes"}, "type": "flags", "values": ["mouse_x", "mouse_y", "pad_x", "pad_y"], "default": [], "note": {"vi": "Đảo riêng từng trục, chuột và tay cầm tách nhau.", "en": "Each axis separately, mouse and pad independent."}},
+    {"id": "acc_mouse_sensitivity", "name": {"vi": "Độ nhạy chuột", "en": "Mouse sensitivity"}, "type": "range", "min": 0.1, "max": 3.0, "step": 0.05, "default": 1.0, "note": {"vi": "Có thêm hệ số riêng cho trục dọc.", "en": "Plus a separate vertical multiplier."}},
+    {"id": "acc_pad_sensitivity", "name": {"vi": "Độ nhạy cần phải (ngang/dọc)", "en": "Right stick sensitivity (X/Y)"}, "type": "range", "min": 0.1, "max": 3.0, "step": 0.05, "default": 1.0, "note": {"vi": "Ngang và dọc chỉnh riêng.", "en": "Horizontal and vertical set separately."}},
+    {"id": "acc_stick_deadzone", "name": {"vi": "Vùng chết cần analog", "en": "Stick deadzone"}, "type": "range", "min": 0.05, "max": 0.4, "step": 0.01, "default": 0.18, "note": {"vi": "0,18 là giá trị input.js đang dùng.", "en": "0.18 is the value input.js uses today."}},
+    {"id": "acc_swap_sticks", "name": {"vi": "Đổi chức năng hai cần", "en": "Swap sticks"}, "type": "bool", "default": false, "note": {"vi": "Cho người thuận tay trái hoặc chơi một tay.", "en": "For left-handed or one-handed players."}},
+    {"id": "acc_glyph_style", "name": {"vi": "Biểu tượng nút", "en": "Button prompts"}, "type": "enum", "values": ["auto", "xbox", "playstation", "keyboard"], "default": "auto", "note": {"vi": "Tự động theo thiết bị dùng gần nhất.", "en": "Auto follows the most recently used device."}},
+    {"id": "acc_vibration", "name": {"vi": "Cường độ rung tay cầm", "en": "Controller vibration"}, "type": "range", "min": 0.0, "max": 1.0, "step": 0.1, "default": 1.0, "note": {"vi": "0 là tắt.", "en": "0 turns it off."}},
+    {"id": "acc_remap", "uses_existing": "combat_tuning.accessibility", "name": {"vi": "Đổi phím", "en": "Remap controls"}, "type": "action", "note": {"vi": "Mọi hành động, cả bàn phím/chuột lẫn tay cầm; 2 phím mỗi hành động trên bàn phím; báo trùng phím; nút khôi phục mặc định.", "en": "Every action, keyboard/mouse and pad; 2 keys per action on keyboard; conflict warning; reset to defaults."}}
+  ]
+}
