@@ -1,8 +1,8 @@
 {
   "name": "ngb-demo-0-1-web-prototype",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Track W: graybox web prototype of Demo 0.1 (three.js). Not final art.",
+  "description": "Track W: graybox web prototype of Demo 0.2 (three.js). Not final art.",
   "type": "module",
   "license": "UNLICENSED",
   "scripts": {

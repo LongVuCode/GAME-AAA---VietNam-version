@@ -69,7 +69,14 @@ export class Enemy {
   get alive() { return this.state !== 'gone' && this.state !== 'fleeing' && this.state !== 'freed'; }
   get lockable() { return this.alive && this.state !== 'pried' && this.state !== 'finished' && this.state !== 'burrow'; }
   get staggered() { return this.posture.staggered; }
-  get moveset() { return this.isBoss ? phaseMoveset(this.enc.phase) : this.attacks.map((a) => a.id); }
+  get moveset() {
+    // Cached (no per-frame allocation): base ids, or the boss phase list + moveset_add_0_2.
+    if (!this.isBoss) return this._ids ?? (this._ids = this.attacks.map((a) => a.id));
+    if (this._msPhase !== this.enc.phaseIndex) { this._msPhase = this.enc.phaseIndex; this._ms = phaseMoveset(this.enc.phase); }
+    return this._ms;
+  }
+  /** Shortest damaging melee reach (cached). */
+  get meleeRange() { return this._melee ?? (this._melee = Math.max(0.8, Math.min(...this.attacks.filter((a) => a.shape !== 'charge' && a.shape !== 'projectile' && a.damage > 0).map((a) => a.range_m)))); }
   get speedMult() { return this.game.diff.enemySpeed * (this.isBoss ? this.enc.phase.speed_mult : 1); }
   get telegraphMult() { return this.game.diff.telegraphMult * (this.isBoss ? this.enc.phase.telegraph_time_mult : 1); }
   get telegraphKind() { return this.attack && this.state === 'attack' && this.atkT < this.tl.windup + this.tl.hold ? telegraphKind(this.attack) : null; }
@@ -308,7 +315,7 @@ export class Enemy {
   /** Approach / circle / hold the ring / burrow while not attacking. */
   _locomote(dt, dx, dz, dist, surface, hasToken) {
     const g = this.game, beh = this.beh, ai = g.data.combat.enemy_ai;
-    const melee = Math.max(0.8, Math.min(...this.attacks.filter((a) => a.shape !== 'charge' && a.shape !== 'projectile' && a.damage > 0).map((a) => a.range_m)));
+    const melee = this.meleeRange;
     const speed = this.moveSpeed * this.speedMult * (this._aggro ?? 1);
     // Mound: repositions by sinking into the mud and rising elsewhere (behavior.reposition_burrow).
     const rb = beh.reposition_burrow;
@@ -507,12 +514,12 @@ export class Enemy {
   _separate() {
     // Keep clear of the player and of other enemies (no stacking).
     const g = this.game, p = g.player;
-    const push = (ox, oz, min) => {
-      const dx = this.x - ox, dz = this.z - oz, dd = Math.hypot(dx, dz);
-      if (dd < min && dd > 1e-3) { const r2 = g.walk.move(this.x, this.z, (dx / dd) * (min - dd), (dz / dd) * (min - dd), this.radius * 0.6); this.x = r2.x; this.z = r2.z; }
-    };
-    if (this.state !== 'freed' && this.state !== 'transition') push(p.x, p.z, this.radius + 0.45);
-    for (const e of g.allEnemies()) if (e !== this && e.alive && e.state !== 'pried') push(e.x, e.z, (this.radius + e.radius) * 0.9);
+    if (this.state !== 'freed' && this.state !== 'transition') this._pushFrom(p.x, p.z, this.radius + 0.45);
+    for (const e of g.allEnemies()) if (e !== this && e.alive && e.state !== 'pried') this._pushFrom(e.x, e.z, (this.radius + e.radius) * 0.9);
+  }
+  _pushFrom(ox, oz, min) {
+    const dx = this.x - ox, dz = this.z - oz, dd = Math.hypot(dx, dz);
+    if (dd < min && dd > 1e-3) { const r2 = this.game.walk.move(this.x, this.z, (dx / dd) * (min - dd), (dz / dd) * (min - dd), this.radius * 0.6); this.x = r2.x; this.z = r2.z; }
   }
   _applyKnock(dt) {
     const k = this.knock; if (!k) return;
@@ -528,7 +535,6 @@ export class Enemy {
     c.state = this.state; c.stateT = this.stateT; c.speed = this.speed;
     if (this.attack && this.state === 'attack') { const a = this.atkCtx; a.id = this.attack.id; a.t = this.atkT; a.tl = this.tl; c.attack = a; } else c.attack = null;
     if (this.state === 'transition') c.state = this.stateT < 0.8 ? 'transition_run' : 'transition';
-    if (this.state === 'transition' && this.stateT >= 0.8) c.state = 'transition';
     this.mesh.update(dt, c);
     if (this.isBoss) this.mesh.setCracks(this.enc.khoen.cracks, this.enc.khoen.enabled);
     const kind = this.telegraphKind;

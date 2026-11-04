@@ -86,6 +86,10 @@ Giá trị slow-mo/FOV đọc từ `combat_tuning.feel` (`perfect_parry_time_sca
 | `drumBurst()` | `game.onBurst` | Vòng trống lớn, FOV mở, vệt vũ khí suốt Hồi trống |
 | `finisher(e)` | đòn kết quái thường, `shoveBoss` | Impact nặng + slow-mo chạm (`finisher.contact_*`) |
 | `enemyDefeated(e)` | `game.onEnemyDefeated` | Cua chui bùn, bọ ngựa bay (dăm lau), Ụ Bùn sụp |
+| `playerFootPlant(p, side, speed)` | `anim/animator.js` (nhịp chân) qua `player.js` | Bụi/bùn/nước ở bàn chân; chạy nhanh thêm một cụm; thay poller bước chân của người chơi |
+| `chargeLevel(p, level)` | `game.onChargeLevel` (gồng đòn nặng) | Lóe ở mũi vũ khí, trống nhỏ, FOV thu |
+| `stakeHit(boss, stake)` | `game.onBossTransition('stake_hit')` | "Húc cọc": tia đồng cọ gỗ, dăm gỗ, rung |
+| `projectileBurst(x, z)`, `burrowMark(x, z)` | `enemy.js` (Ụ Bùn) | Cục bùn vỡ; bùn sủi chỗ sắp trồi |
 
 Poller `fxh.update(wallDt)` (gọi trong `game.update`): tắt/bật vệt vũ khí theo khung active, tiếng bước chân theo quãng đường (dải sải theo tốc độ, bề mặt bùn/nước/gỗ bến/đất), bước chân lợn lòi và cua, tàn lửa ở bếp, vignette + nhịp tim khi máu < 30%, vòng trống khi Nhịp trống đầy, khoen bắt sáng theo số nấc, mood theo khu/pha boss/cạy.
 

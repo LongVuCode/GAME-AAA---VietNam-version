@@ -15,6 +15,9 @@ import { HumanoidAnimator } from '../anim/animator.js';
 import { LIB, GRIPS } from '../anim/humanoidPoses.js';
 import { makeAxe, makePole, makeSpear } from './meshes.js';
 
+const DODGE_FROM = new Set(['free', 'guard', 'charge', 'parry', 'heal', 'swap']);
+const BUFFER_IN = new Set(['attack', 'dodge', 'parry', 'swap']);
+
 export class Player {
   constructor(game) {
     this.game = game;
@@ -231,7 +234,7 @@ export class Player {
   // ---------------------------------------------------------------- attacks
   _canDodge() {
     if (!this.dodgeChain.canStart(this.now)) return false;
-    if (['free', 'guard', 'charge', 'parry', 'heal', 'swap'].includes(this.state)) return true;
+    if (DODGE_FROM.has(this.state)) return true;
     if (this.state === 'attack' && this.cur) {
       const intoRecovery = this.cur.t - (this.cur.tl.startup + this.cur.tl.active);
       return intoRecovery >= this.tun.dodge.cancel_attack_recovery_after_s;
@@ -241,7 +244,7 @@ export class Player {
 
   _attackInput(type, now, mv) {
     if (this.state === 'free' || this.state === 'guard') this._beginAttack(type, now, false, mv);
-    else if (['attack', 'dodge', 'parry', 'swap'].includes(this.state)) this.buffer.push(type, now);
+    else if (BUFFER_IN.has(this.state)) this.buffer.push(type, now);
   }
 
   _tryBuffered(now, input) {
@@ -522,7 +525,7 @@ export class Player {
     const rig = this.rig, c = this.animCtx, l = this.loco;
     rig.root.position.set(this.x, 0, this.z); rig.root.rotation.y = this.yaw;
     const poleOn = this.pole.visible;
-    if (!poleOn) for (const [id, m] of Object.entries(this.weaponMeshes)) m.visible = id === this.weaponId;
+    if (!poleOn) for (const id in this.weaponMeshes) this.weaponMeshes[id].visible = id === this.weaponId;
     const wid = poleOn ? 'pole' : this.weaponId;
     rig.gripLeft = (GRIPS[wid] ?? GRIPS.wp_giao_dong).left;
     this.anim.setWeapon(poleOn ? 'wp_giao_dong' : this.weaponId);

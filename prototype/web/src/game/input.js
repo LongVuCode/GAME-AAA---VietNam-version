@@ -108,7 +108,11 @@ export class Input {
     if (this._wheelRelease) { for (const a of this._wheelRelease) this._refresh(a); this._wheelRelease.clear(); }
     const pad = this._pad();
     this.padConnected = !!pad;
-    if (!pad) { this.padAxes[0] = this.padAxes[1] = this.padAxes[2] = this.padAxes[3] = 0; return; }
+    if (!pad) {
+      this.padAxes[0] = this.padAxes[1] = this.padAxes[2] = this.padAxes[3] = 0;
+      if (this.padPrev.size) { for (const i of this.padPrev) { this.pads.delete(i); for (const a of this.bindings.actionsForPad(i)) this._refresh(a); } this.padPrev.clear(); }
+      return;
+    }
     if (pad.id !== this.padId) { this.padId = pad.id; this.padStyle = padStyleFromId(pad.id); }
     const s = this.getSettings();
     const dz = s.acc_stick_deadzone ?? 0.18;

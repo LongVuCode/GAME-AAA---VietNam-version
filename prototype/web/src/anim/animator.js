@@ -29,7 +29,7 @@ export class HumanoidAnimator {
   get lib() { return LIB[this.weapon]?.moves ? LIB[this.weapon] : LIB.wp_giao_dong; }
 
   /** Recoil: strength 0..1, side -1 (hit from the left) .. +1 (from the right). */
-  hitReact(strength = 1, side = 0) { this.hit.kick(-9 * strength); this.side.kick(7 * side * strength); }
+  hitReact(strength = 1, side = 0) { this.hit.kick(-50 * strength); this.side.kick(40 * side * strength); }
   /** One pry beat landed (lever pushed down). */
   pryBeat() { this.lever.kick(-14); }
 
@@ -72,8 +72,8 @@ export class HumanoidAnimator {
     else copyPose(this.pose, cur);
     // Additive layers.
     const h = this.hit.update(dt), s = this.side.update(dt);
-    if (Math.abs(h) > 1e-4) addPose(this.pose, this.pose, BODY.hitAdd, -h * 0.12);
-    if (Math.abs(s) > 1e-4) addPose(this.pose, this.pose, BODY.hitSideAdd, s * 0.12);
+    if (Math.abs(h) > 1e-4) addPose(this.pose, this.pose, BODY.hitAdd, -h);
+    if (Math.abs(s) > 1e-4) addPose(this.pose, this.pose, BODY.hitSideAdd, s);
     if (ctx.skid > 0) addPose(this.pose, this.pose, BODY.skidAdd, ctx.skid);
     if (ctx.pivot) addPose(this.pose, this.pose, BODY.pivotAdd, 1);
     return this.pose;

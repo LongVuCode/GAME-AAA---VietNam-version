@@ -4,17 +4,10 @@
 export const PROTO = Object.freeze({
   // Mirrors ArpgCore FParryConfig::Duration default (anti-spam lockout of a parry press).
   parryActionS: 0.4,
-  // Enemy locomotion speeds (m/s): design data has none yet. Graybox guesses, not balance.
-  enemyMoveSpeedMps: { en_cua_cang_bun: 2.4, en_bo_ngua_lau: 3.6, en_u_bun: 1.4, boss_lon_loi_dam: 3.8 },
-  // Enemy body radius (m) for collision / hit tests. Graybox only.
-  enemyRadiusM: { en_cua_cang_bun: 0.8, en_bo_ngua_lau: 0.5, en_u_bun: 1.1, boss_lon_loi_dam: 1.6 },
+  // Demo 0.2: enemy speed, radius, aggro / leash radius now come from enemies[].behavior (data).
   playerRadiusM: 0.4,
   // Front arc (deg) in which a crab's front shell applies front_damage_mult.
   frontArcDeg: 120,
-  // Enemy aggro radius (m).
-  aggroRadiusM: 12,
-  // Boss engages when the player is inside the mire arena (r≈18 m around its spawn).
-  bossAggroRadiusM: 20,
   // Fraction of attack arc used for enemy melee hit tests (deg).
   enemyHitArcDeg: 100,
 });

@@ -85,6 +85,35 @@ export class GameFxHooks {
     this.g.sfx.whoosh(1.6, last ? 'heavy' : 'medium');
     for (const e of targets) { const c = this._contact(e); this.fx.impact(c.pos, c.normal, { weight, surface: c.surface, ground: this._ground(e.x, e.z), sound: true }); this.fx.hitFlash(e.mesh?.root); }
   }
+  /** Player foot plant from the animation cycle (anim/animator.js): dust / mud / water at the foot.
+   *  Sprinting kicks up a second, bigger puff. Replaces the distance poller for the player. */
+  playerFootPlant(p, side, speed) {
+    this.playerStepsExternal = true;
+    const yaw = p.yaw, ox = Math.cos(yaw) * 0.12 * side, oz = -Math.sin(yaw) * 0.12 * side;
+    const pos = { x: p.x + ox, z: p.z + oz }, surf = this.surfaceAt(p.x, p.z);
+    this.fx.footstep(pos, surf, speed);
+    if (p.sprinting) this.fx.footstep({ x: pos.x - Math.sin(yaw) * 0.3, z: pos.z - Math.cos(yaw) * 0.3 }, surf, speed + 3, { sound: false });
+  }
+  /** Rolling mud clod (Ụ Bùn "Lăn ụ") breaks up. */
+  projectileBurst(x, z) { this.fx.impact({ x, y: 0.4, z }, { x: 0, y: 1, z: 0 }, { weight: 'medium', surface: 'mud', scale: 0.8 }); }
+  /** Bubbling mud where the Ụ Bùn will rise (reposition_burrow telegraph). */
+  burrowMark(x, z) { this.fx.footstep({ x, z }, 'mud', 8, { sound: false }); this.fx.drumPulse({ x, z }, { strength: 0.3, color: 0x47392a }); }
+  /** Charge level reached (heavy hold): a glint at the weapon tip, a small drum tap, lens pushes in. */
+  chargeLevel(p, level) {
+    const [obj] = this._weaponObj(p);
+    if (obj) { obj.updateWorldMatrix(true, false); const e = obj.matrixWorld.elements; const k = p.weaponId === 'wp_riu_xeo' ? 0.85 : 1.9;
+      this.fx.impact({ x: e[12] + e[8] * k, y: e[13] + e[9] * k, z: e[14] + e[10] * k }, null, { weight: 'parry', surface: 'bronze', sound: false, scale: 0.35 + 0.15 * level }); }
+    this.g.sfx.drum(false);
+    this.fx.fovKick(-1.5 * level, 0.3);
+  }
+  /** Boss rams the trap stake (set piece "Húc cọc"): bronze-on-wood sparks (physical, not magic). */
+  stakeHit(boss, stake) {
+    const pos = { x: stake.x, y: 1.2, z: stake.z };
+    this.fx.impact(pos, { x: boss.x - stake.x, y: 0.5, z: boss.z - stake.z }, { weight: 'heavy', surface: 'bronze' });
+    this.fx.impact(pos, null, { weight: 'medium', surface: 'wood', sound: false, scale: 1.2 });
+    this.fx.cameraShake(0.3, 0.35);
+  }
+
   /** Training dummy struck (game.hitDummies). */
   dummyHit(d) { this.fx.impact({ x: d.position.x, y: 1.3, z: d.position.z }, null, { weight: 'light', surface: 'wood' }); this.fx.hitFlash(d); }
   /** Parry / perfect parry of an enemy attack (game.enemyHitsPlayer). */
@@ -236,6 +265,7 @@ export class GameFxHooks {
 
   _footsteps(dt, p) {
     const st = this.step;
+    if (this.playerStepsExternal) return; // the animator places foot plants (playerFootPlant)
     if (st.x === null || !(dt > 0)) { st.x = p.x; st.z = p.z; return; }
     const d = Math.hypot(p.x - st.x, p.z - st.z);
     st.x = p.x; st.z = p.z;

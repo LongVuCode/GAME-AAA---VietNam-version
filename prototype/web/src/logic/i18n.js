@@ -29,6 +29,7 @@ export function createI18n(strings, initialLang = 'vi') {
       if (!d) { missing.add(`dialogue:${id}`); return null; }
       return d;
     },
+    has(key) { return !!strings.ui[key]; },
     missingKeys() { return [...missing]; },
   };
 }

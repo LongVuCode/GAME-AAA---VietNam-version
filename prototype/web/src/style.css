@@ -116,3 +116,17 @@ textarea.copy { width: 100%; min-height: 110px; font-family: ui-monospace, "Deja
   .panel h1 { font-size: 24px; }
   .settings label { grid-template-columns: 1fr; }
 }
+
+/* ---------- Demo 0.2: remap, popups */
+table.controls th { text-align: left; padding: 4px 8px; color: var(--ink-dim); font-weight: 600; border-bottom: 1px solid var(--line); }
+table.remap button.bind { min-width: 7em; padding: 4px 10px; }
+table.remap button.bind.empty { color: var(--ink-dim); border-style: dashed; }
+table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); }
+.remap-msg { min-height: 1.4em; color: var(--focus); }
+.settings .flags { display: flex; gap: 10px; flex-wrap: wrap; }
+.settings label.flag { display: inline-flex; gap: 4px; padding: 0; border: 0; grid-template-columns: none; }
+#popups { position: absolute; inset: 0; overflow: hidden; }
+.pop { position: absolute; left: 0; top: 0; display: none; font-weight: 800; font-size: 18px; color: var(--the); text-shadow: 0 1px 3px #000, 0 0 6px rgba(0,0,0,0.6); will-change: transform; }
+.pop.on { display: block; }
+.pop.break { font-size: 24px; color: #fff0c8; }
+.pop.neck { color: #ffd37a; font-size: 22px; }

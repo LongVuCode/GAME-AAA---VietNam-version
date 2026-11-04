@@ -7,7 +7,6 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DATA } from '../src/data.js';
 import { forbiddenHits, eraTags } from '../src/logic/lineage.js';
-import { CONTROL_ROWS } from '../src/game/input.js';
 
 const src = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
 const files = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? files(join(d, f)) : f.endsWith('.js') ? [join(d, f)] : []));
@@ -21,7 +20,10 @@ function referencedKeys() {
     for (const m of s.matchAll(/data-t="([a-z0-9_]+)"/g)) keys.add(m[1]);
     for (const m of s.matchAll(/'((?:ctl|tut|fb|legend|obj|prompt|msg|set|pry|hint|craft|codex_label|speaker|key)_[a-z0-9_]+)'/g)) keys.add(m[1]);
   }
-  for (const [k, s] of CONTROL_ROWS) { keys.add(s); for (const w of k.split(' ')) if (w.startsWith('@')) keys.add(w.slice(1)); }
+  // Keys built at run time: split axis action names (act_*), option values (opt_val_*), remap messages.
+  for (const id of ['move_up', 'move_left', 'move_down', 'move_right', 'camera_left', 'camera_right', 'camera_up', 'camera_down', 'lock_prev', 'lock_next']) keys.add(`act_${id}`);
+  for (const o of DATA.controls.accessibility_options) for (const v of [...(o.values ?? [])]) if (!['s', 'm', 'l', 'xl'].includes(v)) keys.add(`opt_val_${v}`);
+  for (const k of ['remap_press', 'remap_press_pad', 'remap_reserved', 'remap_fixed', 'remap_conflict', 'remap_done', 'tut2_move', 'tut2_parry', 'tut2_unparryable', 'tut2_lock', 'tut2_drum', 'prompt_call_name_press']) keys.add(k);
   // dynamic keys
   for (const id of ['npc_tho_duc_lang', 'npc_nguoi_gia_ben', 'narration_ve']) keys.add(`speaker_${id}`);
   keys.add(DATA.codex.fixed_notice);

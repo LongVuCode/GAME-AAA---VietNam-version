@@ -25,22 +25,54 @@ export const AREAS = [
   { id: 'hub_bank', rect: { x0: HUB_X - 15, x1: HUB_X + 15, z0: 15, z1: 35 }, color: 0x8a8462 },
 ];
 
-export const MUD_POOLS = [{ cx: -7, cz: -131, r: 3.2 }, { cx: 8, cz: -140, r: 3.6 }, { cx: -2, cz: -147, r: 2.8 }];
+export const MUD_POOLS_BASE = [{ cx: -7, cz: -131, r: 3.2 }, { cx: 8, cz: -140, r: 3.6 }, { cx: -2, cz: -147, r: 2.8 }];
+export const MUD_POOLS = MUD_POOLS_BASE; // kept for callers; the live list is Walkable.mudPools
+
+/** Graybox placement of each encounters_0_2 group (members are placed around the anchor). */
+export const ENCOUNTER_LAYOUT = {
+  enc_ben_cua_don: { x: -6, z: 6 },
+  enc_dam_cua_doi: { x: -9, z: -22 },
+  enc_dam_ub_cua: { x: 6, z: -37 },
+  enc_lau_bo_ngua_phuc: { x: -8, z: -76 },
+  enc_lau_hon_hop: { x: 1, z: -91 },
+  enc_lo_ub_tinh_anh: { x: -35, z: -106 },
+};
+/** Spawn list from enemies.json encounters_0_2 (first member of the first group is the Bến Sậy crab). */
+export function encounterSpawns(enemiesData) {
+  const groups = enemiesData.encounters_0_2?.groups ?? [];
+  const out = [];
+  for (const g of groups) {
+    const a = ENCOUNTER_LAYOUT[g.id]; if (!a) continue;
+    let k = 0;
+    for (const m of g.members) for (let i = 0; i < m.count; i++, k++) {
+      const ang = k * 2.2, r = k === 0 ? 0 : 3.2;
+      out.push({ def: m.enemy, x: a.x + Math.cos(ang) * r, z: a.z + Math.sin(ang) * r, group: g.id });
+    }
+  }
+  SPAWNS.enemies = out;
+  return out;
+}
+
+/** Contextual vault obstacles (combat_tuning.movement.contextual_vault): a fallen log and a ditch.
+ *  Segment a->b with half width hw; height <= max_height_m / gap <= max_gap_m. */
+export const VAULTS = [
+  { id: 'log_dam', kind: 'log', ax: -23.1, az: -34.6, bx: -14.9, bz: -31.4, hw: 0.5 },
+  { id: 'ditch_ben', kind: 'ditch', ax: 3.5, az: 2.2, bx: 13, bz: 2.2, hw: 0.7 },
+];
+function segDist(px, pz, v) {
+  const dx = v.bx - v.ax, dz = v.bz - v.az, l2 = dx * dx + dz * dz;
+  const t = Math.max(0, Math.min(1, ((px - v.ax) * dx + (pz - v.az) * dz) / l2));
+  return Math.hypot(px - (v.ax + dx * t), pz - (v.az + dz * t));
+}
+
 export const GATE = { x0: 30.5, x1: 37.5, z0: -53.2, z1: -51.6 };
 
 export const SPAWNS = {
   player_start: { x: 0, z: 18 },
   hub_arrive: { x: HUB_X - 10, z: 0 },
   bank_start: { x: HUB_X, z: 18 },
-  enemies: [
-    { def: 'en_cua_cang_bun', x: -6, z: 6 },
-    { def: 'en_cua_cang_bun', x: -8, z: -22 },
-    { def: 'en_cua_cang_bun', x: 14, z: -30 },
-    { def: 'en_u_bun', x: 2, z: -40 },
-    { def: 'en_bo_ngua_lau', x: -8, z: -75 },
-    { def: 'en_bo_ngua_lau', x: -3, z: -86 },
-    { def: 'en_u_bun', x: -35, z: -106 },
-  ],
+  // Filled from enemies.json encounters_0_2 by encounterSpawns() (positions are graybox layout only).
+  enemies: [],
   boss: { def: 'boss_lon_loi_dam', x: 0, z: -142 },
   practice: [
     { def: 'en_cua_cang_bun', x: HUB_X - 8, z: 29 },
@@ -89,9 +121,27 @@ export function zoneAt(x, z) {
 }
 
 export class Walkable {
-  constructor() { this.gateOpen = false; }
+  constructor() { this.gateOpen = false; this.mudPools = MUD_POOLS_BASE.map((m) => ({ ...m })); }
+  resetMud() { this.mudPools = MUD_POOLS_BASE.map((m) => ({ ...m })); }
+  addMudPool(cx, cz, r) { this.mudPools.push({ cx, cz, r, added: true }); }
+  /** A vault obstacle in front within `gap` m: returns the landing point beyond it, or null. */
+  vaultAhead(x, z, yaw, gap = 2.5) {
+    const fx = Math.sin(yaw), fz = Math.cos(yaw);
+    for (const v of VAULTS) {
+      if (segDist(x, z, v) > v.hw + 0.9) continue;
+      const side = (px, pz) => Math.sign((v.bx - v.ax) * (pz - v.az) - (v.bz - v.az) * (px - v.ax));
+      const s0 = side(x, z);
+      for (let d = v.hw + 0.4; d <= gap + v.hw + 0.6; d += 0.2) {
+        const tx = x + fx * d, tz = z + fz * d;
+        if (side(tx, tz) !== s0 && segDist(tx, tz, v) > v.hw + 0.35 && this.inside(tx, tz, 0.3)) return { x: tx, z: tz, id: v.id };
+      }
+    }
+    return null;
+  }
+  nearVault(x, z, r = 1.4) { return VAULTS.find((v) => segDist(x, z, v) <= v.hw + r) ?? null; }
   inside(x, z, margin = 0.3) {
     if (!this.gateOpen && x >= GATE.x0 && x <= GATE.x1 && z >= GATE.z0 && z <= GATE.z1) return false;
+    if (margin > 0) for (const v of VAULTS) if (segDist(x, z, v) < v.hw + margin * 0.5) return false;
     for (const a of AREAS) {
       if (a.rect) {
         if (x >= a.rect.x0 + margin && x <= a.rect.x1 - margin && z >= a.rect.z0 + margin && z <= a.rect.z1 - margin) return true;
@@ -113,7 +163,7 @@ export class Walkable {
     return { x, z };
   }
   speedMult(x, z) {
-    for (const m of MUD_POOLS) if (Math.hypot(x - m.cx, z - m.cz) <= m.r) return 'mud';
+    for (const m of this.mudPools) if (Math.hypot(x - m.cx, z - m.cz) <= m.r) return 'mud';
     const a = AREAS.find((ar) => ar.shallow && ar.rect && x >= ar.rect.x0 && x <= ar.rect.x1 && z >= ar.rect.z0 && z <= ar.rect.z1);
     return a ? 'shallow' : null;
   }
@@ -165,7 +215,7 @@ export function buildWorld() {
       m.rotation.x = -Math.PI / 2; m.position.set(a.circle.cx, 0, a.circle.cz); scene.add(m); layers.ground.push(m);
     }
   }
-  for (const p of MUD_POOLS) {
+  for (const p of MUD_POOLS_BASE) {
     const m = new THREE.Mesh(new THREE.CircleGeometry(p.r, 28), lam(0x3b2e22));
     m.rotation.x = -Math.PI / 2; m.position.set(p.cx, 0.02, p.cz); scene.add(m); layers.mud.push(m);
   }
@@ -218,7 +268,13 @@ export function buildWorld() {
     g.position.set(p.x, 0, p.z); scene.add(g); props.fires[p.id] = flame;
   }
   // Fallen gáo tree near trap A, stakes, blade, villager marker etc.
-  const log = addCyl(scene, 0.45, 0.55, 9, 0x5b4a36, -19, 0.45, -33); log.rotation.z = Math.PI / 2; log.rotation.y = 0.4;
+  const lv = VAULTS[0], llen = Math.hypot(lv.bx - lv.ax, lv.bz - lv.az);
+  const log = addCyl(scene, 0.42, 0.5, llen, 0x5b4a36, (lv.ax + lv.bx) / 2, 0.45, (lv.az + lv.bz) / 2); log.rotation.z = Math.PI / 2; log.rotation.y = -Math.atan2(lv.bz - lv.az, lv.bx - lv.ax);
+  // Ditch ("rạch nước") at Bến Sậy: a narrow water channel to vault over.
+  const dv = VAULTS[1];
+  const ditch = new THREE.Mesh(new THREE.PlaneGeometry(Math.hypot(dv.bx - dv.ax, dv.bz - dv.az), dv.hw * 2), lam(0x2f4846));
+  ditch.rotation.x = -Math.PI / 2; ditch.position.set((dv.ax + dv.bx) / 2, 0.035, (dv.az + dv.bz) / 2); scene.add(ditch); layers.shallow.push(ditch);
+  for (const s2 of [-1, 1]) addBox(scene, Math.hypot(dv.bx - dv.ax, dv.bz - dv.az), 0.12, 0.12, 0x4c3e2c, (dv.ax + dv.bx) / 2, 0.06, dv.az + s2 * dv.hw);
   const stake = (x, z, broken) => { const s = addCyl(scene, 0.09, 0.11, broken ? 0.7 : 1.3, 0x7a6748, x, broken ? 0.35 : 0.65, z, 6); s.rotation.z = broken ? 0.4 : 0; return s; };
   stake(-18, -30, true); stake(-2.3, -117.5, true);
   stake(-6, -60, false); stake(0, -68, false); stake(6, -76, false);
@@ -238,6 +294,11 @@ export function buildWorld() {
     return m;
   });
   props.hollow = addBox(scene, 0.9, 0.7, 0.2, 0x4a3426, -31, 0.6, -113.2);
+  // Broken trap stake at the edge of the mire (seen as trace 2 before the fight): the boss rams it in
+  // the phase-2 set piece "Húc cọc" (enemies.json transition_set_piece_0_2).
+  props.trapStake = addCyl(scene, 0.13, 0.16, 1.5, 0x7a6748, -6, 0.75, -121.5, 6); props.trapStake.rotation.z = 0.25;
+  props.trapStakeTop = addCyl(scene, 0.11, 0.13, 0.7, 0x7a6748, -6, 1.75, -121.5, 6); props.trapStakeTop.rotation.z = 0.25;
+  props.addedMud = new THREE.Mesh(new THREE.CircleGeometry(1, 28), lam(0x3b2e22)); props.addedMud.rotation.x = -Math.PI / 2; props.addedMud.visible = false; scene.add(props.addedMud); layers.mud.push(props.addedMud);
   // Mire gate posts.
   addCyl(scene, 0.15, 0.15, 2.2, 0x5a4a36, -3.4, 1.1, -119); addCyl(scene, 0.15, 0.15, 2.2, 0x5a4a36, 3.4, 1.1, -119);
 

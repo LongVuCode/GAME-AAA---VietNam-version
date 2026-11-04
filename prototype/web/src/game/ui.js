@@ -1,6 +1,6 @@
 // ui.js - DOM HUD and screens. Every visible string comes from strings.json (ui/dialogue), codex.json
 // or another design data {vi, en} object via i18n.
-import { CONTROL_ROWS } from './input.js';
+import { keyLabel, padLabel, glyphDevice, KBM_SLOTS } from '../logic/controls.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const h = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
@@ -17,6 +17,9 @@ const LABEL_ICONS = {
   'CỔ TÍCH': '<svg viewBox="0 0 16 16"><path d="M8 1l2 5h5l-4 3 2 6-5-4-5 4 2-6-4-3h5z" fill="currentColor"/></svg>',
   'SÁNG TẠO': '<svg viewBox="0 0 16 16"><path d="M8 1l7 7-7 7-7-7z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>',
 };
+
+// Enum values whose string key would end in _s (read as seconds by design_validate).
+const OPT_ALIAS = { s: 'size_small', m: 'size_medium', l: 'size_large', xl: 'size_xlarge' };
 
 export class UI {
   constructor(root, game) {
@@ -47,9 +50,10 @@ export class UI {
         <div class="bar the"><i id="the"></i></div>
         <div class="barlabel"><span data-t="hud_drum"></span><span id="drumready"></span></div>
         <div class="drum" id="drum"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
-        <div class="hudrow"><span><span data-t="hud_heal_charges"></span> × <b id="heals"></b> <span class="kbd">H</span></span><span id="points" class="dim"></span></div>
+        <div class="hudrow"><span><span data-t="hud_heal_charges"></span> × <b id="heals"></b> <span class="kbd" id="healkey"></span></span><span id="points" class="dim"></span></div>
       </div>
       <div id="markers"></div>
+      <div id="popups"></div>
       <div id="prompt" class="hidden"></div>
       <div id="pry" class="hidden"></div>
       <div id="toasts"></div>
@@ -63,7 +67,10 @@ export class UI {
     this.el = { zone: q('zone'), obj: q('obj'), fps: q('fps'), build: q('build'), boss: q('bossbar'), bossname: q('bossname'), bossphase: q('bossphase'),
       bosshp: q('bosshp'), bossthe: q('bossthe'), cracks: q('cracks'), weapon: q('weapon'), slot: q('slot'), hp: q('hp'), hptext: q('hptext'), the: q('the'),
       drum: q('drum'), drumready: q('drumready'), heals: q('heals'), points: q('points'), markers: q('markers'), prompt: q('prompt'), pry: q('pry'),
-      toasts: q('toasts'), center: q('center-msg'), subs: q('subs') };
+      toasts: q('toasts'), center: q('center-msg'), subs: q('subs'), healkey: q('healkey'), popups: q('popups') };
+    // Thế number popups (fixed pool, reused).
+    this.popPool = Array.from({ length: 8 }, () => { const d = h('<div class="pop"></div>'); this.el.popups.appendChild(d); return { d, t: 0, x: 0, y: 0 }; });
+    this.popIdx = 0;
     this.el.build.textContent = this.g.buildId;
     this.markerPool = new Map();
     this.applyI18n();
@@ -94,8 +101,8 @@ export class UI {
     const segs = e.drum.children;
     for (let i = 0; i < 4; i++) segs[i].firstChild.style.width = `${(100 * s.drum[i]).toFixed(0)}%`;
     e.drum.classList.toggle('ready', s.drumReady);
-    e.drumready.textContent = s.drumReady ? `${this.t('hud_drum_ready')} [R]` : '';
-    e.heals.textContent = s.heals;
+    e.drumready.textContent = s.drumReady ? `${this.t('hud_drum_ready')} [${s.burstKey}]` : '';
+    e.heals.textContent = s.heals; e.healkey.textContent = s.healKey;
     e.weapon.textContent = s.weaponName; e.slot.textContent = s.slotText;
     e.points.textContent = s.points;
     e.zone.textContent = s.zone; e.obj.textContent = s.objective;
@@ -161,7 +168,27 @@ export class UI {
   center(text, seconds = 2) { this.el.center.textContent = text ?? ''; this.centerT = seconds; }
   fade(on) { this.fadeEl.style.opacity = on ? '1' : '0'; }
 
+  /** Floating Thế damage number over an enemy (layer of the hit feedback). kind: '' | 'break' | 'neck'. */
+  popup(enemy, value, kind = '') {
+    if (!(value > 0) && !kind) return;
+    const p = this.popPool[this.popIdx++ % this.popPool.length];
+    p.t = 0.75; p.x = (enemy.screenX ?? innerWidth / 2) + (Math.random() - 0.5) * 30; p.y = (enemy.screenY ?? innerHeight / 2) + 20;
+    p.d.className = `pop on ${kind}`; p.d.textContent = kind === 'break' ? this.t('pop_the_break') : `+${value}`;
+    this.popsActive = true;
+  }
+
   tick(dt) {
+    if (this.popsActive) {
+      let any = false;
+      for (const p of this.popPool) {
+        if (p.t <= 0) continue;
+        p.t -= dt; any = true;
+        if (p.t <= 0) { p.d.className = 'pop'; continue; }
+        const u = 1 - p.t / 0.75;
+        p.d.style.transform = `translate(${p.x.toFixed(0)}px, ${(p.y - 40 * u).toFixed(0)}px)`; p.d.style.opacity = (1 - u * u).toFixed(2);
+      }
+      this.popsActive = any;
+    }
     if (this.subT > 0) { this.subT -= dt; if (this.subT <= 0) this.el.subs.innerHTML = ''; }
     if (this.centerT > 0) { this.centerT -= dt; if (this.centerT <= 0) this.el.center.textContent = ''; }
   }
@@ -229,21 +256,134 @@ export class UI {
     this._bind('[data-act=lang]', () => g.setLang(this.i18n.lang === 'vi' ? 'en' : 'vi'));
   }
 
+  // ------------------------------------------------------------- glyphs (controls.json bindings)
+  _keyNames() { return this.g.data.controls.key_names; }
+  _glyphStyle() {
+    const inp = this.g.input;
+    return glyphDevice(this.g.settings.acc.acc_glyph_style ?? 'auto', inp?.device ?? 'kbm', inp?.padStyle ?? 'xbox');
+  }
+  /** Label of one input on a device ('kbm' code or pad index). */
+  inputLabel(device, input, padStyle) {
+    if (input == null) return '';
+    if (device === 'pad') return padLabel(input, padStyle ?? this._glyphStyle().padStyle, this.g.data.controls.pad_buttons);
+    return keyLabel(input, this.i18n.lang, this._keyNames());
+  }
+  /** Plain-text glyph of an action for the device in use (first binding). */
+  glyphText(action) {
+    const st = this._glyphStyle(), b = this.g.input.bindings;
+    if (st.device === 'pad') {
+      if (action.startsWith('move_')) return this.t('glyph_left_stick');
+      const pad = b.padFor(action);
+      if (pad.length) return this.inputLabel('pad', pad[0], st.padStyle);
+    }
+    const k = b.kbmFor(action);
+    return k.length ? this.inputLabel('kbm', k[0]) : '—';
+  }
+  /** <span class="kbd"> glyph of an action. */
+  kbd(action) { return `<span class="kbd" data-glyph="${esc(action)}">${esc(this.glyphText(action))}</span>`; }
+
+  /** Display name of a bindable action (controls.json name; split axis parts use act_* strings). */
+  actionName(id) {
+    const info = this.g.input.bindings.desc.info[id];
+    if (info?.part) return this.t(`act_${id}`);
+    const a = this.g.data.controls.actions.find((x) => x.id === id);
+    const aliases = this.g.input.bindings.aliasesOf(id).map((al) => this.loc(this.g.data.controls.actions.find((x) => x.id === al).name));
+    return [this.loc(a?.name ?? { vi: id, en: id }), ...aliases].join(' / ');
+  }
+
   controlsHtml() {
-    const keyLabel = (k) => k.split(' ').map((w) => (w.startsWith('@') ? esc(this.t(w.slice(1))) : esc(w))).join(' ');
-    const rows = CONTROL_ROWS.map(([k, s]) => `<tr><td><span class="kbd">${keyLabel(k)}</span></td><td>${esc(this.t(s))}</td></tr>`).join('');
-    return `<table class="controls">${rows}</table>
+    const g = this.g, b = g.input.bindings, st = this._glyphStyle();
+    const kb = (id) => { const l = b.kbmFor(id); return l.length ? l.map((k) => `<span class="kbd">${esc(this.inputLabel('kbm', k))}</span>`).join(' ') : `<span class="dim">${esc(this.t('remap_unbound'))}</span>`; };
+    const pd = (id) => {
+      if (id.startsWith('move_')) return `<span class="kbd">${esc(this.t('glyph_left_stick'))}</span>`;
+      if (id.startsWith('camera_')) return `<span class="kbd">${esc(this.t('glyph_right_stick'))}</span>`;
+      if (id === 'lock_prev' || id === 'lock_next') return `<span class="kbd">${esc(this.t('glyph_right_stick_flick'))}</span>`;
+      const l = b.padFor(id); return l.length ? `<span class="kbd">${esc(this.inputLabel('pad', l[0], st.padStyle))}</span>` : '<span class="dim">—</span>';
+    };
+    const rows = [...b.desc.rebindable, 'menu'].filter((id) => id !== 'fps' || g.opts.debug || true)
+      .map((id) => `<tr><td>${esc(this.actionName(id))}</td><td>${kb(id)}</td><td>${pd(id)}</td></tr>`).join('');
+    return `<p class="dim">${esc(this.t('controls_device_now', { device: this.t(st.device === 'pad' ? 'remap_pad' : 'remap_kbm') }))}</p>
+      <table class="controls"><tr><th></th><th>${esc(this.t('remap_kbm'))}</th><th>${esc(this.t('remap_pad'))}</th></tr>
+      <tr><td>${esc(this.t('act_camera_mouse'))}</td><td><span class="kbd">${esc(keyLabel('MouseMove', this.i18n.lang, this._keyNames()))}</span></td><td><span class="kbd">${esc(this.t('glyph_right_stick'))}</span></td></tr>${rows}</table>
+      <p class="dim">${esc(this.t('controls_shared_note'))}</p>
+      <div class="row"><button data-act="remap">${esc(this.t('remap_title'))}</button></div>
       <h3>${esc(this.t('legend_title'))}</h3>
       <p><span class="tg parryable" style="display:inline-grid;vertical-align:middle"></span> ${esc(this.t('legend_parryable'))}</p>
       <p><span class="tg delayed" style="display:inline-grid;vertical-align:middle"></span> ${esc(this.t('legend_delayed'))}</p>
-      <p><span class="tg unparryable" style="display:inline-block;vertical-align:middle"></span> ${esc(this.t('legend_unparryable'))}</p>
-      <p class="dim">${esc(this.t('ctl_gamepad_note'))}</p>`;
+      <p><span class="tg unparryable" style="display:inline-block;vertical-align:middle"></span> ${esc(this.t('legend_unparryable'))}</p>`;
   }
+  bindControls(back) { this._bind('[data-act=remap]', () => this.showRemap(back)); }
 
   showControls(back) {
     this.rerender = () => this.showControls(back);
     this._screen('controls', `<h2>${esc(this.t('controls_title'))}</h2>${this.controlsHtml()}<div class="row"><button data-act="back">${esc(this.t('btn_back'))}</button></div>`);
+    this.bindControls(() => this.showControls(back));
     this._bind('[data-act=back]', () => (back ? back() : this.close()));
+  }
+
+  // ------------------------------------------------------------- remap screen (acc_remap)
+  showRemap(back, msg = '') {
+    this.rerender = () => this.showRemap(back, msg);
+    const g = this.g, b = g.input.bindings, st = this._glyphStyle();
+    const cell = (dev, id, slot) => {
+      const v = dev === 'kbm' ? b.kbm[id][slot] : b.pad[id];
+      const lab = v == null ? this.t('remap_unbound') : this.inputLabel(dev, v, st.padStyle);
+      return `<button class="bind${v == null ? ' empty' : ''}" data-bind="${esc(id)}" data-dev="${dev}" data-slot="${slot}">${esc(lab)}</button>`;
+    };
+    const rows = b.desc.rebindable.map((id) => {
+      const padCell = b.desc.info[id].padAxis ? `<span class="dim">${esc(this.t('remap_fixed'))}</span>` : cell('pad', id, 0);
+      return `<tr data-row="${esc(id)}"><td>${esc(this.actionName(id))}</td>${Array.from({ length: KBM_SLOTS }, (_, k) => `<td>${cell('kbm', id, k)}</td>`).join('')}<td>${padCell}</td></tr>`;
+    }).join('');
+    const presets = (g.data.controls.pad_presets ?? []).map((pp) => `<option value="${esc(pp.id)}"${b.padPreset === pp.id ? ' selected' : ''}>${esc(this.loc(pp.name))}</option>`).join('');
+    const unbound = [...b.unbound('kbm'), ...b.unbound('pad')];
+    this._screen('remap', `<h2>${esc(this.t('remap_title'))}</h2>
+      <p class="dim">${esc(this.t('remap_hint'))}</p>
+      ${g.input.storageOk ? '' : `<p class="notice">${esc(this.t('remap_storage_off'))}</p>`}
+      <p class="remap-msg" data-remap-msg>${esc(msg)}</p>
+      ${unbound.length ? `<p class="notice">${esc(this.t('remap_unbound_warn', { list: [...new Set(unbound)].map((a) => this.actionName(a)).join(', ') }))}</p>` : ''}
+      <label class="settings"><span>${esc(this.t('remap_pad_preset'))}</span><select data-preset><option value="">${esc(this.t('remap_custom'))}</option>${presets}</select></label>
+      <table class="controls remap"><tr><th></th><th>${esc(this.t('remap_kbm'))}</th><th>${esc(this.t('remap_slot_alt'))}</th><th>${esc(this.t('remap_pad'))}</th></tr>${rows}</table>
+      <div class="row"><button data-act="reset">${esc(this.t('remap_reset'))}</button><button data-act="back">${esc(this.t('btn_back'))}</button></div>`);
+    this._bind('[data-bind]', (e, btn) => {
+      const id = btn.dataset.bind, dev = btn.dataset.dev, slot = +btn.dataset.slot;
+      btn.textContent = this.t(dev === 'pad' ? 'remap_press_pad' : 'remap_press'); btn.classList.add('wait');
+      g.input.startCapture(dev, (input) => {
+        if (input == null) { this.showRemap(back, this.t('remap_cancelled')); return; }
+        const r = b.assign(dev, id, slot, input);
+        let m;
+        if (!r.ok) m = this.t(r.reason === 'reserved' ? 'remap_reserved' : 'remap_fixed');
+        else {
+          g.input.saveBindings();
+          m = r.conflict ? this.t('remap_conflict', { key: this.inputLabel(dev, input, st.padStyle), action: this.actionName(r.conflict.action) })
+            : this.t('remap_done', { action: this.actionName(id), key: this.inputLabel(dev, input, st.padStyle) });
+        }
+        this.showRemap(back, m);
+      }, btn);
+    });
+    this.screen.querySelector('[data-preset]').addEventListener('change', (e) => {
+      if (e.target.value && b.applyPadPreset(e.target.value)) { g.input.saveBindings(); this.showRemap(back, this.t('remap_preset_done')); }
+    });
+    this._bind('[data-act=reset]', () => { g.input.resetBindings(); this.showRemap(back, this.t('remap_reset_done')); });
+    this._bind('[data-act=back]', () => { g.input.cancelCapture(); (back ? back() : this.close()); });
+  }
+
+  /** Menu navigation with the pad / keyboard UI actions (controls.json context "ui"). */
+  menuNav(input) {
+    if (!this.screen) return;
+    const items = [...this.screen.querySelectorAll('button:not([disabled]), select, input')];
+    if (!items.length) return;
+    let i = items.indexOf(document.activeElement);
+    const pads = input.padAxes;
+    const up = input.pads.has(12) && !this._navHeld, down = input.pads.has(13) && !this._navHeld;
+    this._navHeld = input.pads.has(12) || input.pads.has(13);
+    if (down || up) { i = i < 0 ? 0 : (i + (down ? 1 : -1) + items.length) % items.length; items[i].focus(); }
+    if (input.ui('ui_confirm') && input.device === 'pad' && i >= 0) items[i].click();
+    if (input.ui('ui_back') && input.device === 'pad') { const back = this.screen.querySelector('[data-act=back], [data-act=resume]'); back?.click(); }
+    if (this.screenName === 'pause' && (input.ui('ui_tab_prev') || input.ui('ui_tab_next')) && input.device === 'pad') {
+      const tabs = [...this.screen.querySelectorAll('[data-tab]')], cur = tabs.findIndex((t) => t.classList.contains('on'));
+      tabs[(cur + (input.ui('ui_tab_next') ? 1 : -1) + tabs.length) % tabs.length]?.click();
+    }
+    void pads;
   }
 
   feedbackInfo() {
@@ -288,6 +428,7 @@ export class UI {
     if (tab === 'settings') this.bindSettings();
     if (tab === 'skills') this.bindSkills(() => this.showPause('skills'));
     if (tab === 'codex') this.bindCodex(() => this.showPause('codex'));
+    if (tab === 'controls') this.bindControls(() => this.showPause('controls'));
   }
 
   settingsHtml() {
@@ -300,7 +441,7 @@ export class UI {
     const acc = tun.accessibility.options.map((o) => {
       const v = s.acc[o.id];
       if (o.type === 'bool') return `<label><span>${esc(this.loc(o.name))}</span><input type="checkbox" data-acc="${o.id}" ${v ? 'checked' : ''}></label>`;
-      if (o.type === 'enum') return `<label><span>${esc(this.loc(o.name))}</span><select data-acc="${o.id}">${o.values.map((x) => opt(x, x.toUpperCase(), x === v)).join('')}</select></label>`;
+      if (o.type === 'enum') return `<label><span>${esc(this.loc(o.name))}</span><select data-acc="${o.id}">${o.values.map((x) => opt(x, this.optLabel(x), x === v)).join('')}</select></label>`;
       if (o.type === 'range') return `<label><span>${esc(this.loc(o.name))}</span><input type="range" data-acc="${o.id}" min="${o.min}" max="${o.max}" step="0.05" value="${v}"></label>`;
       return `<label><span>${esc(this.loc(o.name))}</span><span class="dim">${esc(this.t('set_not_in_proto'))}</span></label>`;
     }).join('');
@@ -318,6 +459,8 @@ export class UI {
       <label><span>${esc(this.t('set_aim_assist'))}</span><input type="checkbox" data-custom="aim_assist" ${c.aimAssist ? 'checked' : ''} ${s.difficulty === 'custom' ? '' : 'disabled'}></label>
       <h3>${esc(this.t('menu_accessibility'))}</h3>
       ${acc}
+      <h3>${esc(this.t('menu_controls_settings'))}</h3>
+      ${this.controlOptionsHtml()}
       <h3>${esc(this.t('menu_settings'))}</h3>
       <label><span>${esc(this.t('set_show_fps'))}</span><input type="checkbox" data-set="showFps" ${s.showFps ? 'checked' : ''}></label>
       <label><span>${esc(this.t('set_hints'))}</span><input type="checkbox" data-set="hints" ${s.hints ? 'checked' : ''}></label>
@@ -328,8 +471,32 @@ export class UI {
     </div>`;
   }
 
+  optLabel(v) { const k = `opt_val_${OPT_ALIAS[v] ?? v}`; return this.i18n.has(k) ? this.t(k) : String(v).toUpperCase(); }
+  /** controls.json accessibility_options (sprint / walk / guard / heavy / call modes, camera, pad...). */
+  controlOptionsHtml() {
+    const s = this.g.settings.acc;
+    const opt = (v, label, sel) => `<option value="${esc(v)}"${sel ? ' selected' : ''}>${esc(label)}</option>`;
+    return this.g.data.controls.accessibility_options.filter((o) => !o.uses_existing && o.type !== 'action').map((o) => {
+      const v = s[o.id];
+      if (o.type === 'bool') return `<label><span>${esc(this.loc(o.name))}</span><input type="checkbox" data-acc="${o.id}" ${v ? 'checked' : ''}></label>`;
+      if (o.type === 'enum') {
+        const vals = o.id === 'acc_sprint_mode' ? ['device', ...o.values] : o.values;
+        return `<label><span>${esc(this.loc(o.name))}</span><select data-acc="${o.id}">${vals.map((x) => opt(x, this.optLabel(x), x === v)).join('')}</select></label>`;
+      }
+      if (o.type === 'range') return `<label><span>${esc(this.loc(o.name))}: <b data-accval="${o.id}">${(+v).toFixed(2)}</b></span><input type="range" data-acc="${o.id}" min="${o.min}" max="${o.max}" step="${o.step ?? 0.05}" value="${v}"></label>`;
+      if (o.type === 'flags') return `<label><span>${esc(this.loc(o.name))}</span><span class="flags">${o.values.map((f) => `<label class="flag"><input type="checkbox" data-flag="${o.id}" value="${f}" ${(v ?? []).includes(f) ? 'checked' : ''}> ${esc(this.optLabel(f))}</label>`).join('')}</span></label>`;
+      return '';
+    }).join('');
+  }
+
   bindSettings() {
     const g = this.g, root = this.screen;
+    for (const el of root.querySelectorAll('[data-flag]')) {
+      el.addEventListener('change', () => {
+        const id = el.dataset.flag, vals = [...root.querySelectorAll(`[data-flag="${id}"]:checked`)].map((x) => x.value);
+        g.updateSettings({ acc: { [id]: vals } });
+      });
+    }
     for (const el of root.querySelectorAll('[data-set]')) {
       el.addEventListener('change', () => {
         const k = el.dataset.set;
@@ -339,7 +506,10 @@ export class UI {
       });
     }
     for (const el of root.querySelectorAll('[data-acc]')) {
-      el.addEventListener('change', () => g.updateSettings({ acc: { [el.dataset.acc]: el.type === 'checkbox' ? el.checked : el.type === 'range' ? +el.value : el.value } }));
+      el.addEventListener('change', () => {
+        g.updateSettings({ acc: { [el.dataset.acc]: el.type === 'checkbox' ? el.checked : el.type === 'range' ? +el.value : el.value } });
+        const lab = root.querySelector(`[data-accval="${el.dataset.acc}"]`); if (lab) lab.textContent = (+el.value).toFixed(2);
+      });
     }
     for (const el of root.querySelectorAll('[data-custom]')) {
       el.addEventListener('input', () => {

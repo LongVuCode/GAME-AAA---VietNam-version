@@ -35,7 +35,7 @@ class CreatureBase {
     this.phase = 0; this.time = 0;
   }
   /** Hit reaction: strength 0..1 (weight), side -1..1 (hit from the left / right). */
-  hitReact(strength, side = 0) { this.flinch.kick(-10 * strength); this.flinchSide.kick(8 * side * strength); }
+  hitReact(strength, side = 0) { this.flinch.kick(-60 * strength); this.flinchSide.kick(45 * side * strength); }
   _gait(dt, speed, stride) { this.phase = (this.phase + speed * dt / Math.max(0.2, stride)) % 1; return this.phase; }
   _springs(dt) { return { f: this.flinch.update(dt), s: this.flinchSide.update(dt) }; }
 }
@@ -101,8 +101,8 @@ export class CrabRig extends CreatureBase {
       bodyRz = Math.PI * u; bodyY = 0.45 + 0.35 * u;
     }
     if (c.state === 'fleeing') bodyY -= Math.max(0, c.stateT - 0.5) * 0.9; // burrows into the mud
-    this.body.position.set(0, bodyY + lift + f * 0.012, f * 0.02);
-    this.body.rotation.set(bodyRx + f * 0.03, bodyRy, bodyRz + sway * (1 - moving) + fs * 0.04, 'YXZ');
+    this.body.position.set(0, bodyY + lift + f * 0.08, f * 0.15);
+    this.body.rotation.set(bodyRx + f * 0.35, bodyRy, bodyRz + sway * (1 - moving) + fs * 0.3, 'YXZ');
     this.claws.forEach((cl, i) => {
       const k = clawPose[i];
       cl.sh.rotation.set(k.p, k.y * cl.s, 0, 'YXZ');
@@ -183,9 +183,9 @@ export class MantisRig extends CreatureBase {
     if (c.state === 'fleeing') { wing = 1; bodyP = -1.3 * (1 - clamp01(c.stateT / 0.3)); bodyY = 0.62 + c.stateT * 1.6; }
     if (wing > 0) for (const w of this.wings) { w.w.rotation.set(-0.3 * wing, w.s * 1.0 * wing, w.s * 0.5 * wing * (1 + 0.3 * Math.sin(this.time * 60))); }
     else for (const w of this.wings) w.w.rotation.set(0, 0, 0);
-    this.body.position.set(0, bodyY, -0.1 + bodyZ + f * 0.02);
-    this.body.rotation.set(bodyP, 0, fs * 0.05, 'YXZ');
-    this.thorax.rotation.set(thoraxP + rock + f * 0.06, fs * 0.08, 0, 'YXZ');
+    this.body.position.set(0, bodyY, -0.1 + bodyZ + f * 0.15);
+    this.body.rotation.set(bodyP, 0, fs * 0.3, 'YXZ');
+    this.thorax.rotation.set(thoraxP + rock + f * 0.5, fs * 0.4, 0, 'YXZ');
     this.head.rotation.set(headP - rock * 0.8, Math.sin(this.time * 1.3) * 0.25 * (a ? 0 : 1), 0, 'YXZ');
     for (const ar of this.arms) { ar.sh.rotation.set(armP, ar.s * 0.08, 0, 'YXZ'); ar.el.rotation.set(armE, 0, 0); }
     for (const L of this.legs) {
@@ -235,7 +235,7 @@ export class MoundRig extends CreatureBase {
     if (c.state === 'fleeing') { const u = clamp01(c.stateT / 1.4); sy = 0.75 * (1 - u) + 0.08; sxz = 1.1 + 0.6 * u; }
     this.body.scale.set(sxz, sy * (1 - sink * 0.9), sxz);
     this.body.position.y = -sink * 0.6;
-    this.body.rotation.set(lean + f * 0.05, 0, roll + fs * 0.05, 'YXZ');
+    this.body.rotation.set(lean + f * 0.3, 0, roll + fs * 0.2, 'YXZ');
     for (const ar of this.arms) { ar.sh.rotation.set(armP + Math.sin(this.time * 1.7 + ar.s) * 0.08, 0, ar.s * 0.25, 'YXZ'); ar.el.rotation.x = armE; }
   }
 }
@@ -321,10 +321,10 @@ export class BoarRig extends CreatureBase {
       else { frontKneel = 1 - Ease.inOutQuad(clamp01((t - 3.4) / 0.6)); neckP = 0.5; }
     }
     if (c.state === 'idle' && !a) tailW = 0.5;
-    this.body.position.set(0, bodyY - 0.35 * frontKneel + f * 0.015, -0.2 + f * 0.01);
-    this.body.rotation.set(bodyP + 0.22 * frontKneel - 0.55 * rearUp + f * 0.02, bodyYaw, bodyR + fs * 0.03, 'YXZ');
-    this.neck.rotation.set(neckP, neckY + fs * 0.08, 0, 'YXZ');
-    this.head.rotation.x = f * 0.04;
+    this.body.position.set(0, bodyY - 0.35 * frontKneel + f * 0.08, -0.2 + f * 0.06);
+    this.body.rotation.set(bodyP + 0.22 * frontKneel - 0.55 * rearUp + f * 0.12, bodyYaw, bodyR + fs * 0.12, 'YXZ');
+    this.neck.rotation.set(neckP + f * 0.25, neckY + fs * 0.3, 0, 'YXZ');
+    this.head.rotation.x = f * 0.2;
     this.jaw.rotation.x = jaw;
     this.tail.rotation.z = Math.sin(this.time * (4 + tailW * 6)) * 0.35 * tailW;
     for (const L of this.legs) {

@@ -11,7 +11,7 @@ const git = (cmd) => { try { return execSync(cmd, { cwd: here, stdio: ['ignore',
 const hash = git('git rev-parse --short HEAD') || 'nogit';
 const dirty = git('git status --porcelain -- .') || git('git status --porcelain -- ../../design/data') ? '-dirty' : '';
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
-const buildId = `demo0.1-web-${hash}${dirty}-${stamp}`;
+const buildId = `demo0.2-web-${hash}${dirty}-${stamp}`;
 
 const result = await build({
   entryPoints: [join(here, 'src/main.js')],
@@ -31,7 +31,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Người Giữ Bến Demo 0.1</title>
+<title>Người Giữ Bến Demo 0.2</title>
 <meta name="description" content="Graybox gameplay prototype (three.js). Not final art. Build ${buildId}">
 <style>${css}</style>
 </head>

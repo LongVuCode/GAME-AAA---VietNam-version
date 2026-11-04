@@ -52,7 +52,7 @@ try {
   // Feedback screen (no network): build id visible for copying.
   await page.click('[data-act=feedback]');
   const fb = await page.inputValue('textarea.copy');
-  check('feedback shows build id + browser info', fb.includes('build: demo0.1-web') && fb.includes('ua: '));
+  check('feedback shows build id + browser info', fb.includes('build: demo0.2-web') && fb.includes('ua: '));
   await shot('02_feedback.png');
   await page.click('[data-act=back]');
 
@@ -88,18 +88,129 @@ try {
   await page.click('[data-act=resume]');
   await waitFor((x) => x.mode === 'playing', 3000);
 
-  // ---- Bot: drive off the nearest normal enemy with real light attacks (mouse) + finisher (F).
+  // ---- Demo 0.2 movement / animation / controls (keys from design/data/controls.json).
+  const P = () => D('playerInfo');
+  await D('teleport', -9, 21, Math.PI); await D('setCameraYaw', 0); await sleep(300);
+  await page.keyboard.down('KeyW'); await sleep(1500);
+  let pi = await P();
+  const runSpeed = pi.speed, runGait = pi.gait;
+  // Joint angles change while running (jointed rig, gait cycle).
+  const thighs = [];
+  for (let k = 0; k < 6; k++) { thighs.push((await P()).joints.thighL); await sleep(70); }
+  const swing = Math.max(...thighs) - Math.min(...thighs);
+  check('rig: thigh joint swings while running', swing > 0.3, `thighL samples ${thighs.join(',')}`);
+  await page.keyboard.down('ShiftLeft'); await sleep(1500);
+  pi = await P();
+  const fxS = await D('fx');
+  check('sprint (hold Shift) is faster than running; FOV widens', pi.sprinting && pi.speed > runSpeed + 1.5 && fxS.fov > 61, `run ${runSpeed.toFixed(2)} (${runGait}) sprint ${pi.speed.toFixed(2)} (${pi.gait}) fov ${fxS.fov}`);
+  await shot('03c_sprint.png');
+  await page.keyboard.up('ShiftLeft'); await page.keyboard.up('KeyW');
+  await waitFor(() => true, 10); await sleep(600);
+  // Directional dodge: hold A (camera-left) + Space; the roll goes left, not forward.
+  await D('teleport', 0, 14, 0); await D('setCameraYaw', 0); await sleep(300);
+  pi = await P();
+  const x0 = pi.x, z0 = pi.z;
+  await page.keyboard.down('KeyA'); await page.keyboard.press('Space');
+  await waitFor((x) => x.player.state === 'dodge', 2000, 20);
+  await page.keyboard.up('KeyA');
+  await waitFor((x) => x.player.state === 'free', 4000, 50);
+  pi = await P();
+  // Camera yaw 0 looks along -z: camera-left is -x.
+  check('dodge follows the input direction (left roll)', pi.x < x0 - 1.5 && Math.abs(pi.z - z0) < 1.0 && pi.dodge?.kind === 'roll', `moved ${(pi.x - x0).toFixed(2)}, ${(pi.z - z0).toFixed(2)} ${JSON.stringify(pi.dodge)}`);
+  await sleep(400);
+  await page.keyboard.press('Space'); // neutral = backstep
+  s = await waitFor((x) => x.player.state === 'dodge', 2000, 20);
+  pi = await P();
+  check('neutral dodge is a backstep', pi.dodge?.kind === 'backstep', JSON.stringify(pi.dodge));
+  await waitFor((x) => x.player.state === 'free', 4000, 50);
+  // Attack lunge: a light attack steps forward (weapons.json moves[].motion.lunge_m).
+  await D('teleport', 0, 14, Math.PI); await sleep(300);
+  pi = await P();
+  const ax0 = pi.x, az0 = pi.z;
+  await click();
+  s = await waitFor((x) => x.player.state === 'attack', 2000, 20);
+  const atk = (await P()).attack;
+  await waitFor((x) => x.player.state === 'free', 4000, 50);
+  pi = await P();
+  const lungeD = Math.hypot(pi.x - ax0, pi.z - az0);
+  check('light attack lunges forward (sp_l1 motion)', !!atk && lungeD > 0.3, `${JSON.stringify(atk)} moved ${lungeD.toFixed(2)} m`);
+
+  // ---- Remap: pause → Controls → Remap → dodge = V; V then dodges; reset to defaults.
+  await press('Escape');
+  await waitFor((x) => x.screen === 'pause', 3000);
+  await page.click('[data-tab=controls]');
+  await shot('03d_controls.png');
+  await page.click('[data-screen=pause] [data-act=remap]');
+  await page.waitForSelector('[data-screen=remap]');
+  await page.click('[data-bind=dodge][data-dev=kbm][data-slot="0"]');
+  await sleep(100); await page.keyboard.press('KeyV'); await sleep(200);
+  let bnd = await D('bindings');
+  const msgRemap = await page.textContent('[data-remap-msg]');
+  // Conflict: give dodge the Q key → parry receives V (swap).
+  await page.click('[data-bind=dodge][data-dev=kbm][data-slot="0"]');
+  await sleep(100); await page.keyboard.press('KeyQ'); await sleep(200);
+  const bnd2 = await D('bindings');
+  const conflictMsg = await page.textContent('[data-remap-msg]');
+  await shot('03e_remap.png');
+  check('remap: key assigned and saved, conflicts swap', bnd.kbm.dodge[0] === 'KeyV' && bnd2.kbm.dodge[0] === 'KeyQ' && bnd2.kbm.parry[0] === 'KeyV' && conflictMsg.length > 5,
+    `${msgRemap} | ${conflictMsg} | ${JSON.stringify({ d: bnd2.kbm.dodge, p: bnd2.kbm.parry })}`);
+  const stored = await page.evaluate(() => { try { return localStorage.getItem('ngb_demo02_bindings_v1'); } catch { return null; } });
+  await page.click('[data-screen=remap] [data-act=back]');
+  await page.click('[data-act=resume]');
+  await waitFor((x) => x.mode === 'playing', 3000);
+  await sleep(300);
+  await page.keyboard.press('KeyQ');
+  s = await waitFor((x) => x.player.state === 'dodge', 1500, 20);
+  check('remapped key works in game (Q now dodges)', !!s && !!stored && stored.includes('KeyQ'));
+  await waitFor((x) => x.player.state === 'free', 4000, 50);
+  await press('Escape'); await waitFor((x) => x.screen === 'pause', 3000);
+  await page.click('[data-tab=controls]'); await page.click('[data-screen=pause] [data-act=remap]');
+  await page.waitForSelector('[data-screen=remap]');
+  await page.click('[data-screen=remap] [data-act=reset]'); await sleep(200);
+  bnd = await D('bindings');
+  check('remap: reset to defaults', bnd.kbm.dodge[0] === 'Space' && bnd.kbm.parry[0] === 'KeyQ');
+  await page.click('[data-screen=remap] [data-act=back]');
+  await page.click('[data-act=resume]');
+  await waitFor((x) => x.mode === 'playing', 3000);
+
+  // ---- Gamepad (Gamepad API "standard" mapping, faked in the page): B dodges, glyphs switch to the pad.
+  await page.evaluate(() => {
+    const pad = { id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)', connected: true, index: 0, mapping: 'standard',
+      axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };
+    window.__fakePad = pad; navigator.getGamepads = () => [window.__fakePad];
+  });
+  await sleep(200);
+  await page.evaluate(() => { window.__fakePad.buttons[1] = { pressed: true, value: 1 }; });
+  s = await waitFor((x) => x.player.state === 'dodge', 2000, 20);
+  await page.evaluate(() => { window.__fakePad.buttons[1] = { pressed: false, value: 0 }; });
+  const padGlyph = await page.evaluate(() => window.__demo.game.glyphText('interact'));
+  const padDevice = (await P()).device;
+  check('gamepad: B (button 1) dodges; prompts show pad glyphs', !!s && padDevice === 'pad' && padGlyph === 'A', `device=${padDevice} interact glyph=${padGlyph}`);
+  await waitFor((x) => x.player.state === 'free', 4000, 50);
+  // Left stick half tilt walks (analog), full tilt runs.
+  await page.evaluate(() => { window.__fakePad.axes = [0, -0.45, 0, 0]; });
+  await sleep(900);
+  const padWalk = (await P()).speed;
+  await page.evaluate(() => { window.__fakePad.axes = [0, -1, 0, 0]; });
+  await sleep(900);
+  const padRun = (await P()).speed;
+  await page.evaluate(() => { window.__fakePad.axes = [0, 0, 0, 0]; window.__fakePad = null; navigator.getGamepads = () => []; });
+  check('gamepad: light stick tilt walks, full tilt runs', padWalk > 1 && padWalk < 3 && padRun > 4.5, `walk ${padWalk.toFixed(2)} run ${padRun.toFixed(2)}`);
+  await page.keyboard.press('KeyW'); await sleep(200);
+
+  // ---- Bot: drive off the nearest normal enemy with real light attacks (mouse) + finisher (E).
   await D('setGod', true);
   s = await S();
   const crab = s.enemies[0];
   await D('teleport', crab.x + 1.6, crab.z + 1.6);
-  let shotCombat = false, fled = null;
+  let shotCombat = false, shotFinisher = false, fled = null;
   const t0 = Date.now();
   while (Date.now() - t0 < 60000) {
     s = await S();
     const e = s.enemies.find((x) => x.uid === crab.uid);
     if (e.state === 'fleeing' || e.state === 'gone') { fled = e; break; }
-    if (e.staggered) { await D('faceEnemy', crab.uid); await press('f'); await sleep(150); continue; }
+    if (e.state === 'finished') { if (!shotFinisher) { await shot('04b_finisher.png'); shotFinisher = true; } await sleep(100); continue; }
+    if (e.staggered) { await D('faceEnemy', crab.uid); await press('e'); await sleep(150); continue; }
     const d = Math.hypot(e.x - s.player.x, e.z - s.player.z);
     if (d > 2.4) await D('teleport', e.x + 1.4, e.z + 1.4);
     await D('faceEnemy', crab.uid);
@@ -108,6 +219,10 @@ try {
     await sleep(120);
   }
   check('bot drove off a normal enemy (flee, not killed)', !!fled, fled ? `${fled.uid} ${fled.state} hp=${fled.hp.toFixed(0)}` : 'timeout');
+  const flog = await D('feedbackLog');
+  const minLayers = Math.min(...flog.map((f) => f.layers.length));
+  check('every landed hit has >= 6 feedback layers', flog.length > 0 && minLayers >= 6, `${flog.length} hits, min ${minLayers}: ${flog[0]?.layers.join(',')}`);
+  check('finisher used (camera finisher, enemy flees after)', (await D('finisherCount')) >= 1 || (fled && fled.hp <= 0), `finishers=${await D('finisherCount')}`);
   const fxAfterFight = await D('fx');
   check('fx hooks fired on real hits (impacts)', fxAfterFight.impacts >= 3, JSON.stringify({ i: fxAfterFight.impacts, f: fxAfterFight.footsteps }));
   await sleep(600);
@@ -115,14 +230,14 @@ try {
 
   // ---- Drum Burst ("Hồi trống") when the 4 notches are full.
   await page.evaluate(() => { window.__demo.game.player.drum.points = 400; });
-  await press('r');
+  await press('f');
   s = await waitFor((x) => x.player.state === 'burst', 2000, 20);
   check('Hồi trống with 4 full notches', !!s);
   await waitFor((x) => x.player.state === 'free', 40000); // game time runs slower at headless frame rates
 
   // ---- Hints (player-initiated, 3 tiers) from the old ferrywoman.
   await D('teleport', -4, 20.5, 0);
-  for (let k = 0; k < 3 && !s?.screen; k++) { await sleep(300); await press('f'); s = await waitFor((x) => x.screen === 'hints', 3000); }
+  for (let k = 0; k < 3 && !s?.screen; k++) { await sleep(300); await press('e'); s = await waitFor((x) => x.screen === 'hints', 3000); }
   await page.click('[data-tier="1"]'); await page.click('[data-tier="3"]');
   const hint = await page.textContent('[data-hint]');
   check('3-tier hint shown on request', !!s && hint.length > 10, hint.slice(0, 60));
@@ -131,7 +246,7 @@ try {
 
   // ---- Secret chain: trap marks → bronze scrap → kiln lip (match) → hollow.
   for (const [x, z] of [[-17.5, -29.5], [6.5, -75.5], [-31, -114.6], [-31, -112.2]]) {
-    await D('teleport', x, z, 0); await sleep(300); await press('f'); await sleep(400);
+    await D('teleport', x, z, 0); await sleep(300); await press('e'); await sleep(400);
   }
   s = await S();
   check('secret chain finished (Sáp ong cũ + Codex extra)', s.secret.completed.includes('sn_end') && s.inventory.mat_sap_ong_cu === 1, JSON.stringify(s.secret.completed));
@@ -155,14 +270,22 @@ try {
   check('boss telegraph shown (shape + color + sound cue)', !!s, s ? `${s.boss.attack} ${s.boss.tele}` : 'none');
   await shot('06_boss_telegraph.png');
   const bossUid = (await S()).boss.uid;
+  let sawTransition = false;
   for (let k = 1; k <= 3; k++) {
     await waitFor((x) => !x.boss.staggered && x.boss.state !== 'pried', 20000);
+    if (k === 3) {
+      // Phase 2 opens with the set piece "Húc cọc" (4 s, boss invulnerable): wait it out.
+      s = await waitFor((x) => x.boss.state === 'transition', 4000, 40);
+      if (s) { sawTransition = true; await sleep(900); await shot('07b_huc_coc.png'); }
+      await waitFor((x) => x.boss.state !== 'transition' && !x.boss.staggered, 20000);
+    }
     s = await S();
     await D('hitEnemy', bossUid, 0, s.boss.theMax + 1);
     s = await S();
     check(`boss posture break ${k} cracks khoen`, s.boss.cracks === k, `cracks=${s.boss.cracks} phase=${s.boss.phase}`);
     if (k === 2) { await sleep(400); await shot('07_boss_phase2.png'); }
   }
+  check('boss phase 2 set piece "Húc cọc" played (stake rammed)', sawTransition, `transitionSeen=${(await D('enemyDetail', bossUid))?.transitionSeen}`);
   fx = await D('fx');
   check('fx: posture breaks trigger slow-mo hooks (game step only)', fx.slowMo >= 3, `slowMo calls=${fx.slowMo}`);
   s = await S();
@@ -171,7 +294,7 @@ try {
   for (let attempt = 0; attempt < 3 && !pryOk; attempt++) {
     s = await S();
     if (!s.boss.canFinish) {
-      await waitFor((x) => !x.boss.staggered, 20000);
+      await waitFor((x) => !x.boss.staggered && x.boss.state !== 'transition', 20000);
       await D('hitEnemy', bossUid, 0, (await S()).boss.theMax + 1);
     }
     s = await S();
@@ -180,7 +303,7 @@ try {
     await sleep(200);
     const promptText = await page.textContent('#prompt');
     if (attempt === 0) check('pry prompt shown', /Cạy/.test(promptText), promptText);
-    await press('f');
+    await press('e');
     s = await waitFor((x) => !!x.pry, 3000, 30);
     if (!s) { log('pry did not start', JSON.stringify((await S()).boss)); continue; }
     let shotPry = false;
@@ -194,7 +317,7 @@ try {
       if (wait > 120) { await sleep(wait - 100); continue; }
       if (wait < -s.pry.window * 1000) { await sleep(30); continue; }
       await sleep(Math.max(0, wait - 5));
-      await press('f');
+      await press('e');
       await sleep(250);
     }
     s = await S();
@@ -236,11 +359,11 @@ try {
   // ---- Hub: ferry, craft Nanh Đầm, handoff to Bương, practice, end.
   await D('gather');
   await D('teleport', 0, 31);
-  await sleep(300); await press('f');
+  await sleep(300); await press('e');
   s = await waitFor((x) => x.zone === 'hub', 5000);
   check('ferry to hub (Lau Landing)', !!s);
   await D('teleport', 292, -5.5);
-  await sleep(300); await press('f');
+  await sleep(300); await press('e');
   await waitFor((x) => x.screen === 'craft', 3000);
   await page.click('[data-rcp=rcp_nanh_dam]');
   await sleep(300);
@@ -249,10 +372,15 @@ try {
   check('crafted Nanh Đầm', !!s.owned.bk_nanh_dam, JSON.stringify(s.owned));
   await page.click('[data-screen=craft] [data-act=back]');
   await D('teleport', 300, -8.6);
-  await sleep(300); await press('f');
+  await sleep(300); await press('e');
   await waitFor((x) => x.screen === 'confirm', 3000);
   await shot('14_handoff_confirm.png');
   await page.click('[data-act=yes]');
+  s = await waitFor((x) => x.player.state === 'handover', 2000, 30);
+  const handoverSeen = !!s;
+  if (s) { await sleep(500); await shot('14b_handover.png'); }
+  await waitFor((x) => (x.screen ?? '').startsWith('handoff'), 6000, 50);
+  check('in-world handover beat (Cói offers the Mũi Sào) before the cards', handoverSeen);
   const forbidden = /khoen|mảnh|chốt|collar|shard/i;
   let leak = [];
   for (let k = 0; k < 6; k++) {
@@ -266,7 +394,7 @@ try {
   s = await waitFor((x) => x.character === 'chr_buong' && x.mode === 'playing', 5000);
   check('handoff to Bương (era Hùng 6), practice on the river bank', !!s && s.era === 'era_hung_vuong_6');
   await press('1');
-  await sleep(300);
+  await sleep(600);
   for (const e of (await S()).practice) await D('hitEnemy', e.uid, 9999, 0);
   s = await waitFor((x) => x.practiceState?.done, 8000);
   check('practice goal: swap weapon once + crabs driven off', !!s);
@@ -274,7 +402,7 @@ try {
   const hudBuong = await page.evaluate(() => document.getElementById('hud').innerText);
   if (forbidden.test(hudBuong)) leak.push('hud');
   await D('teleport', 300, -8.6);
-  await sleep(300); await press('f');
+  await sleep(300); await press('e');
   for (let k = 0; k < 3; k++) {
     await sleep(300);
     const txt = await page.evaluate(() => document.querySelector('.screen')?.innerText ?? '');

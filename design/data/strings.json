@@ -765,6 +765,246 @@
     "prompt_finisher_shove": {
       "vi": "Đẩy con thú ra",
       "en": "Shove the beast away"
+    },
+    "tut2_move": {
+      "vi": "{move} để đi, chuột để xoay camera. Giữ {sprint} để chạy nhanh (Thế ngừng hồi khi chạy nhanh), {walk} để đi chậm. Bấm vào màn hình để khóa chuột.",
+      "en": "{move} to move, mouse to turn the camera. Hold {sprint} to sprint (Stance stops recovering while sprinting), {walk} to walk. Click the screen to capture the mouse."
+    },
+    "tut2_parry": {
+      "vi": "Cua giơ càng là sắp kẹp: bấm {key} đúng lúc để Đỡ nhịp, giữ {key} để Đỡ.",
+      "en": "A raised claw means a pinch is coming: tap {key} on time to parry, hold {key} to guard."
+    },
+    "tut2_unparryable": {
+      "vi": "Tam giác đỏ đồng và tiếng rền: không Đỡ nhịp được, bấm {key} để né (né theo hướng đang bấm).",
+      "en": "Red-bronze triangle and a rumble: cannot be parried, press {key} to dodge (in the direction you hold)."
+    },
+    "tut2_lock": {
+      "vi": "{key} để khóa mục tiêu; lăn chuột hoặc gạt cần phải để đổi mục tiêu.",
+      "en": "{key} to lock on; mouse wheel or flick the right stick to switch target."
+    },
+    "tut2_drum": {
+      "vi": "Đỡ nhịp, né đúng lúc và đánh trúng làm đầy Nhịp trống. Đủ 4 nấc: bấm {key} để Hồi trống.",
+      "en": "Parries, timed dodges and hits fill the Drum Rhythm. With 4 notches full, press {key} for a Drum Burst."
+    },
+    "prompt_call_name_press": {
+      "vi": "Bấm để gọi tên",
+      "en": "Press to call by name"
+    },
+    "prompt_vault": {
+      "vi": "Vượt qua",
+      "en": "Vault over"
+    },
+    "pop_the_break": {
+      "vi": "Vỡ Thế!",
+      "en": "Stance broken!"
+    },
+    "glyph_left_stick": {
+      "vi": "Cần trái",
+      "en": "Left stick"
+    },
+    "glyph_right_stick": {
+      "vi": "Cần phải",
+      "en": "Right stick"
+    },
+    "glyph_right_stick_flick": {
+      "vi": "Gạt cần phải",
+      "en": "Flick right stick"
+    },
+    "act_move_up": {
+      "vi": "Đi tới",
+      "en": "Move forward"
+    },
+    "act_move_left": {
+      "vi": "Sang trái",
+      "en": "Move left"
+    },
+    "act_move_down": {
+      "vi": "Lùi lại",
+      "en": "Move back"
+    },
+    "act_move_right": {
+      "vi": "Sang phải",
+      "en": "Move right"
+    },
+    "act_camera_left": {
+      "vi": "Xoay camera sang trái",
+      "en": "Camera left"
+    },
+    "act_camera_right": {
+      "vi": "Xoay camera sang phải",
+      "en": "Camera right"
+    },
+    "act_camera_up": {
+      "vi": "Ngẩng camera",
+      "en": "Camera up"
+    },
+    "act_camera_down": {
+      "vi": "Hạ camera",
+      "en": "Camera down"
+    },
+    "act_camera_mouse": {
+      "vi": "Xoay camera",
+      "en": "Camera"
+    },
+    "act_lock_prev": {
+      "vi": "Đổi mục tiêu (trước)",
+      "en": "Switch target (previous)"
+    },
+    "act_lock_next": {
+      "vi": "Đổi mục tiêu (sau)",
+      "en": "Switch target (next)"
+    },
+    "controls_device_now": {
+      "vi": "Đang hiện phím cho: {device}. Biểu tượng tự đổi theo thiết bị bấm gần nhất (chỉnh trong Cài đặt → Điều khiển).",
+      "en": "Showing prompts for: {device}. Prompts follow the last device used (change in Settings → Controls)."
+    },
+    "controls_shared_note": {
+      "vi": "Một nút nhiều việc: Đỡ nhịp bấm / giữ là Đỡ; Tương tác bấm, giữ cạnh người bị mê là Gọi tên, bấm theo nhịp trống là Cạy. Không có nút nhảy: chạy nhanh vào khúc gỗ hay rạch nước thì tự vượt.",
+      "en": "One button, several jobs: Parry tap / hold to guard; Interact press, hold next to an entranced person to call by name, press on the drumbeat to pry. There is no jump: sprinting into a log or a ditch vaults it."
+    },
+    "remap_title": {
+      "vi": "Đổi phím",
+      "en": "Remap controls"
+    },
+    "remap_kbm": {
+      "vi": "Bàn phím + chuột",
+      "en": "Keyboard + mouse"
+    },
+    "remap_pad": {
+      "vi": "Tay cầm",
+      "en": "Controller"
+    },
+    "remap_slot_alt": {
+      "vi": "Phím phụ",
+      "en": "Alternate"
+    },
+    "remap_unbound": {
+      "vi": "(chưa gán)",
+      "en": "(unbound)"
+    },
+    "remap_fixed": {
+      "vi": "Không đổi được",
+      "en": "Not remappable"
+    },
+    "remap_hint": {
+      "vi": "Bấm vào ô rồi bấm phím hoặc nút mới (Esc để hủy). Trùng phím thì hai hành động đổi chỗ cho nhau. Phím lưu trong trình duyệt này.",
+      "en": "Click a cell, then press the new key or button (Esc cancels). If the input is taken, the two actions swap. Bindings are saved in this browser."
+    },
+    "remap_storage_off": {
+      "vi": "Trình duyệt chặn bộ nhớ: phím mới chỉ giữ tới khi tải lại trang.",
+      "en": "The browser blocks storage: new bindings only last until the page reloads."
+    },
+    "remap_unbound_warn": {
+      "vi": "Chưa có phím: {list}",
+      "en": "No input bound: {list}"
+    },
+    "remap_pad_preset": {
+      "vi": "Kiểu tay cầm",
+      "en": "Controller layout"
+    },
+    "remap_custom": {
+      "vi": "Tùy chỉnh",
+      "en": "Custom"
+    },
+    "remap_reset": {
+      "vi": "Khôi phục mặc định",
+      "en": "Reset to defaults"
+    },
+    "remap_reset_done": {
+      "vi": "Đã khôi phục phím mặc định.",
+      "en": "Default bindings restored."
+    },
+    "remap_press": {
+      "vi": "Bấm phím…",
+      "en": "Press a key…"
+    },
+    "remap_press_pad": {
+      "vi": "Bấm nút tay cầm…",
+      "en": "Press a button…"
+    },
+    "remap_cancelled": {
+      "vi": "Đã hủy.",
+      "en": "Cancelled."
+    },
+    "remap_reserved": {
+      "vi": "Phím này dành cho trình duyệt hoặc menu, chọn phím khác.",
+      "en": "That input is reserved for the browser or the menu; pick another."
+    },
+    "remap_conflict": {
+      "vi": "{key} đang dùng cho “{action}”: đã đổi chỗ hai phím.",
+      "en": "{key} was used by “{action}”: the two were swapped."
+    },
+    "remap_done": {
+      "vi": "“{action}”: {key}",
+      "en": "“{action}”: {key}"
+    },
+    "remap_preset_done": {
+      "vi": "Đã đổi kiểu tay cầm.",
+      "en": "Controller layout changed."
+    },
+    "menu_controls_settings": {
+      "vi": "Điều khiển",
+      "en": "Controls"
+    },
+    "opt_val_hold": {
+      "vi": "Giữ",
+      "en": "Hold"
+    },
+    "opt_val_toggle": {
+      "vi": "Bật/tắt",
+      "en": "Toggle"
+    },
+    "opt_val_auto": {
+      "vi": "Tự động",
+      "en": "Automatic"
+    },
+    "opt_val_device": {
+      "vi": "Theo thiết bị",
+      "en": "Per device"
+    },
+    "opt_val_xbox": {
+      "vi": "Xbox",
+      "en": "Xbox"
+    },
+    "opt_val_playstation": {
+      "vi": "PlayStation",
+      "en": "PlayStation"
+    },
+    "opt_val_keyboard": {
+      "vi": "Bàn phím",
+      "en": "Keyboard"
+    },
+    "opt_val_mouse_x": {
+      "vi": "Chuột ngang",
+      "en": "Mouse X"
+    },
+    "opt_val_mouse_y": {
+      "vi": "Chuột dọc",
+      "en": "Mouse Y"
+    },
+    "opt_val_pad_x": {
+      "vi": "Cần phải ngang",
+      "en": "Stick X"
+    },
+    "opt_val_pad_y": {
+      "vi": "Cần phải dọc",
+      "en": "Stick Y"
+    },
+    "opt_val_size_small": {
+      "vi": "Nhỏ",
+      "en": "Small"
+    },
+    "opt_val_size_medium": {
+      "vi": "Vừa",
+      "en": "Medium"
+    },
+    "opt_val_size_large": {
+      "vi": "Lớn",
+      "en": "Large"
+    },
+    "opt_val_size_xlarge": {
+      "vi": "Rất lớn",
+      "en": "Extra large"
     }
   },
   "dialogue": [
