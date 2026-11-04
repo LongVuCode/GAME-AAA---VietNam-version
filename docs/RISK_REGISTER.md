@@ -14,3 +14,8 @@
 | R-10 | Asset không rõ license, hoặc asset AI bị phát hành nhầm | Thấp | Cao | License register + tag PLACEHOLDER_AI + kiểm tra trước release | Production |
 | R-12 | Thay cố vấn sử học người thật bằng agent AI: AI có thể sai một cách tự tin, và không ai chịu trách nhiệm chuyên môn | Cao | Rất cao | Agent chuyên gia chỉ xác minh tới mức B. Trước khi mở trang Steam, tối thiểu cần một lượt người thật thẩm định (cố vấn trả phí theo chương, hoặc gửi văn bản xin ý kiến ban quản lý di tích, viện hay trường) | PO |
 | R-11 | Dòng thời gian Giai đoạn 0 chưa đối chiếu trang (mức B/C) | Chắc chắn | TB | Chưa đưa vào game; nâng lên mức A ở GĐ1/GĐ4 | Narrative |
+| R-13 | Lau sậy dày cộng VSM và sương vượt 8 GB VRAM trên máy RTX 5050 | TB | Cao | Ngân sách preset Cao ≤ 7 GB; đo bằng harness; lau xa dùng LOD/impostor | Tech |
+| R-14 | Nanite Foliage còn Experimental ở UE 5.7; Substrate chưa kiểm chứng | TB | TB | Không phụ thuộc vào hai tính năng này cho vertical slice; có phương án dự phòng | Tech |
+| R-15 | MetaHuman lệch phong cách Đông Sơn cách điệu | TB | TB | Chỉ dùng MetaHuman cho dân làng nền; nhân vật chính làm riêng theo concept | Art |
+| R-16 | Khó tìm họa sĩ concept am hiểu vật chất văn hóa Đông Sơn | Cao | Cao | Gói tham chiếu hiện vật trong `ART_DIRECTION.md`; cố vấn duyệt concept | Art/PO |
+
