@@ -714,6 +714,22 @@
       "vi": "Chưa có trong bản prototype",
       "en": "Not in this prototype"
     },
+    "set_quality": {
+      "vi": "Chất lượng đồ họa",
+      "en": "Graphics quality"
+    },
+    "set_quality_high": {
+      "vi": "Cao",
+      "en": "High"
+    },
+    "set_quality_low": {
+      "vi": "Thấp",
+      "en": "Low"
+    },
+    "set_quality_note": {
+      "vi": "Cao: bóng mềm, phát sáng nhẹ ở chỗ sáng gắt, nhiều hạt hiệu ứng hơn. Thấp: tắt bóng và hậu kỳ, ít hạt hơn (cho máy yếu).",
+      "en": "High: soft shadows, light bloom on bright highlights, more effect particles. Low: no shadows or post-processing, fewer particles (for weaker machines)."
+    },
     "tut_move": {
       "vi": "WASD để đi, chuột để xoay camera. Bấm vào màn hình để khóa chuột.",
       "en": "WASD to move, mouse to turn the camera. Click the screen to capture the mouse."
