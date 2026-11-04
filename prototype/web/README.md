@@ -52,6 +52,7 @@ Tay cầm (thử nghiệm, Gamepad API chuẩn): cần trái/phải, X nhẹ, Y 
 - **Chuỗi bí mật "Lò bỏ hoang"** (`secrets.json`): vết bẫy (2 nguồn thay thế) → đồng vụn → chọn mảnh miệng lò khớp (sai không phạt) → hốc lò (Sáp ong cũ + đoạn Codex thêm). Manh mối ghi trong Sổ tay, không mất. Gợi ý 3 tầng chỉ khi người chơi hỏi bà lái đò; tắt được.
 - **Chế tác ở hub**: thợ đúc tặng Đồng lò làng; Nanh Đầm = Nanh rụng + Đồng lò làng + Dây mây ×2 (6 điểm tước mây); nâng cấp bằng Sáp ong cũ. Bảo khí tự trang bị (+15%/+20% sát thương Thế cho đòn nặng/nhánh).
 - **Bàn giao đời** (`lineage.json`): hộp xác nhận liệt kê việc còn dở → thẻ "Nhiều đời sau" → lời người giữ bến → mở Thạp (chỉ chữ) → nhận Mũi Sào → cây kỹ năng giữ nguyên (+1 điểm) → mở ô 2 rìu xéo → Bương luyện ở bãi sông với 2 hình nộm rơm và 2 Cua Càng Bùn (không thua được, mục tiêu đổi vũ khí ít nhất 1 lần) → vè bản sàn → "Giữ bến bằng tay mình." → hết demo (Ký ức: chơi lại đời Cói / về màn đầu). Nội dung đời Hùng 6 không chứa "khoen/mảnh/chốt" (unit test + smoke test kiểm), Codex không mở mục khoen mới ở đời này.
+- **Hiệu ứng và ánh sáng** (`src/fx`, Demo 0.2): trời gradient + nắng thấp, sương theo độ sâu, bóng mềm, tone mapping ACES, nước nông phản chiếu giả, lau lay theo gió, "mood" theo khu và pha boss; tia lửa/bụi/bùn/nước bắn, vòng sóng, vệt vũ khí, nháy trúng đòn, slow-mo (chỉ thời gian game, không ảnh hưởng nhịp cạy), rung/FOV (tắt theo "Rung camera"), vignette khi máu thấp; âm thanh trúng đòn nhiều lớp theo vật liệu, gió vung, bước chân theo bề mặt. Cài đặt → **Chất lượng đồ họa** Cao/Thấp (Thấp: tắt bóng và bloom). Smoke test kiểm tra Cao rồi chạy phần bot ở Thấp (SwiftShader chậm, không đại diện).
 - **UI**: HUD (Sức, Thế, Nhịp trống 4 nấc, nắm cơm lá, vũ khí, điểm nghề, khu vực, mục tiêu, thanh boss + nấc khoen), menu tạm dừng (vi/en, 4 mức độ khó + tùy chỉnh trong `custom_ranges`, các tùy chọn trợ năng trong dữ liệu: cỡ/nền phụ đề, rung camera, giảm nhấp nháy, giữ nút khi cạy, kiểu khóa mục tiêu, âm báo hướng), Codex (nhãn có biểu tượng hình + chữ, nguồn, dòng cố định "mức B"), Sổ tay, Nghề nhà, màn phím. Màn mở đầu ghi rõ bản prototype/graybox, nhãn nội dung, ghi chú nội bộ và nút **Phản hồi** (hướng dẫn gửi ý kiến + khối build ID / trình duyệt để tự sao chép; không gửi dữ liệu đi đâu).
 
 ## Kiến trúc
@@ -73,6 +74,8 @@ src/logic/   logic thuần, không phụ thuộc three.js (test bằng node --te
   lineage.js   cây kỹ năng, bàn giao đời (Handover), luật chữ cấm theo đời
   difficulty.js, i18n.js, proto.js
 src/game/    three.js, DOM, WebAudio: world, meshes, player, enemy, ui, audio, input, game
+src/fx/      hiệu ứng, ánh sáng/khí quyển, âm thanh trúng đòn nhiều lớp, slow-mo/rung/FOV; hook sự kiện
+             (API + danh sách hook: src/fx/README.md; logic thuần trong fx/logic.js có test)
 test/        *.test.mjs (unit), smoke.mjs (Playwright)
 ```
 

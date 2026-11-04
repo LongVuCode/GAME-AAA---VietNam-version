@@ -1,6 +1,10 @@
 // smoke.mjs - Playwright smoke test of dist/index.html (Track W acceptance: game starts without
 // console errors, a bot drives off a normal enemy, the boss is brought to the pry and freed, the
 // Codex opens, the language switches; then the hub, crafting, handoff to Bương and the demo end).
+// FX (src/fx): High quality (shadows + bloom) is checked and photographed first, the menu switches to
+// Low, and the long bot sections run at Low: headless Chromium renders with SwiftShader on the CPU,
+// where High is several times slower than on a GPU (not representative either way, no FPS claims);
+// every gameplay check is the same at either quality. FX hooks are checked on the real events.
 // Run: npm run smoke   (builds first). Screenshots go OUTSIDE the repo (SHOTS_DIR or the default).
 import { createRequire } from 'node:module';
 import { mkdirSync } from 'node:fs';
@@ -58,6 +62,32 @@ try {
   await sleep(1500);
   await shot('03_play_start.png');
 
+  // ---- FX at High quality (default): lighting/shadows/bloom on, effects spawn from fixed pools.
+  let fx = await D('fx');
+  check('fx: High quality by default (shadows + bloom)', fx.quality === 'high' && fx.shadows && fx.bloom, JSON.stringify(fx));
+  await D('setGod', true);
+  await D('teleport', 0, 12, Math.PI); await D('setCameraYaw', 0.35); await sleep(400);
+  const spawned0 = fx.spawned;
+  await D('fxDemo', 'perfect_parry', 'bronze', false, 2.2);
+  await D('fxDemo', 'heavy', 'mud', false, 1.4);
+  fx = await D('fxDemo', 'khoen_crack', 'bronze', true, 1.8);
+  check('fx: impacts spawn particles and rings (bounded pools)', fx.spawned > spawned0 + 40 && fx.rings > 0 && fx.sparks <= fx.limits[0] && fx.dust <= fx.limits[1], JSON.stringify(fx));
+  await shot('03b_fx_impacts_high.png');
+  await D('freezeFx', false);
+  await D('setAcc', 'acc_camera_shake', false); await sleep(200);
+  fx = await D('fx');
+  check('fx: camera shake follows the accessibility option', fx.shakeOn === false, JSON.stringify(fx.shakeOn));
+  await D('setAcc', 'acc_camera_shake', true);
+  // Quality switch from the pause menu (strings in vi + en): run the rest at Low (see header).
+  await press('Escape');
+  await waitFor((x) => x.screen === 'pause', 3000);
+  await page.selectOption('select[data-set=gfx]', 'low');
+  await sleep(300);
+  fx = await D('fx');
+  check('fx: quality menu switches to Low (no shadows, no bloom, smaller pools)', fx.quality === 'low' && !fx.shadows && !fx.bloom && fx.limits[0] < 700, JSON.stringify(fx));
+  await page.click('[data-act=resume]');
+  await waitFor((x) => x.mode === 'playing', 3000);
+
   // ---- Bot: drive off the nearest normal enemy with real light attacks (mouse) + finisher (F).
   await D('setGod', true);
   s = await S();
@@ -78,6 +108,8 @@ try {
     await sleep(120);
   }
   check('bot drove off a normal enemy (flee, not killed)', !!fled, fled ? `${fled.uid} ${fled.state} hp=${fled.hp.toFixed(0)}` : 'timeout');
+  const fxAfterFight = await D('fx');
+  check('fx hooks fired on real hits (impacts)', fxAfterFight.impacts >= 3, JSON.stringify({ i: fxAfterFight.impacts, f: fxAfterFight.footsteps }));
   await sleep(600);
   await shot('05_enemy_fled.png');
 
@@ -131,6 +163,8 @@ try {
     check(`boss posture break ${k} cracks khoen`, s.boss.cracks === k, `cracks=${s.boss.cracks} phase=${s.boss.phase}`);
     if (k === 2) { await sleep(400); await shot('07_boss_phase2.png'); }
   }
+  fx = await D('fx');
+  check('fx: posture breaks trigger slow-mo hooks (game step only)', fx.slowMo >= 3, `slowMo calls=${fx.slowMo}`);
   s = await S();
   check('boss staggered with 3 cracks → pry available', s.boss.canFinish && s.boss.khoen === 'ready', JSON.stringify({ c: s.boss.canFinish, k: s.boss.khoen }));
   let pryOk = false;

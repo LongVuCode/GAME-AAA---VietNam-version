@@ -26,9 +26,9 @@ export { MOODS };
 // telegraphs (art direction P4) and is never used by these effects.
 const C = (hex, k = 1) => new THREE.Color(hex).multiplyScalar(k);
 const PAL = {
-  gold: C(0xf1c78a, 2.6), white: C(0xf4f1e6, 2.0), ivory: C(0xe7dec7, 1.7), bronze: C(0xb5864a, 2.2),
+  gold: C(0xf1c78a, 1.9), white: C(0xf4f1e6, 2.0), ivory: C(0xe7dec7, 1.7), bronze: C(0xb5864a, 2.2),
   drum: C(0x7fb3a6, 1.4), dirt: C(0x8a7658), mud: C(0x47392a), mist: C(0xd8dacb), water: C(0xc9d3cc),
-  splinter: C(0xb59b6a), ember: C(0xffb35a, 2.2), dust: C(0x9c8a68),
+  splinter: C(0xb59b6a), ember: C(0xffb35a, 2.2), dust: C(0x9c8a68), glow: C(0xf1c78a, 0.9),
 };
 const QUALITY = {
   high: { add: 700, alpha: 1000, bloom: true, pixelRatio: 1.5, msaa: 4 },
@@ -58,8 +58,6 @@ export class Fx {
     this.flashes = new Map();   // mesh -> { t, dur, color, hex, intensity }
     this.glows = new Map();     // object -> { level, shown, meshes }
     this.queue = [];            // delayed fx calls { t, fn }
-    this.lights = [0, 1].map(() => { const l = new THREE.PointLight(0xffe2b0, 0, 14, 2); l.userData.fxOwned = true; scene.add(l); return { l, k: 0, peak: 0 }; });
-    this.lightCursor = 0;
     this.clock = 0; this.quality = 'high'; this.atmo = null; this.composer = null;
     this.counters = { impacts: 0, footsteps: 0, rings: 0, slowMo: 0, shakes: 0, flashes: 0 };
     this._camOffset = { x: 0, y: 0, roll: 0 };
@@ -73,7 +71,10 @@ export class Fx {
   setMood(id, instant = false) { this.atmo?.setMood(id, instant); }
 
   setQuality(q) {
-    this.quality = q === 'low' ? 'low' : 'high';
+    const want = q === 'low' ? 'low' : 'high';
+    if (want === this.quality && this._qualityApplied) return; // settings changes (volume...) must not recompile
+    this._qualityApplied = true;
+    this.quality = want;
     const Q = QUALITY[this.quality];
     this.add.setLimit(Q.add); this.alpha.setLimit(Q.alpha);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, Q.pixelRatio));
@@ -130,7 +131,6 @@ export class Fx {
     this.add.update(dt); this.alpha.update(dt);
     this.rings.update(dt, this.camera);
     for (const tr of this.trails) tr.update(dt);
-    this._updateLights(dt);
     this._updateGlows();
     this._updateFlashes(dt);
     this._updateOverlays(dt);
@@ -177,18 +177,12 @@ export class Fx {
         o.drag ?? 0, o.gravity ?? 0, o.floor ?? NaN);
     }
   }
-  _flashLight(x, y, z, strength, color = 0xffe2b0) {
+  /** Light flash at a contact: a large, short, soft additive glow (no real light: real point lights
+   *  would cost every lit pixel every frame and recompile shaders when toggled). */
+  _flashLight(x, y, z, strength) {
     if (!(strength > 0)) return;
     const k = this.opts.reduceFlash() ? 0.4 : 1;
-    const L = this.lights[this.lightCursor]; this.lightCursor = (this.lightCursor + 1) % this.lights.length;
-    L.l.position.set(x, y, z); L.l.color.set(color); L.peak = 18 * strength * k; L.k = 1;
-  }
-  _updateLights(dt) {
-    for (const L of this.lights) {
-      if (L.k <= 0) { L.l.intensity = 0; continue; }
-      L.k = Math.max(0, L.k - dt / 0.14);
-      L.l.intensity = L.peak * L.k * L.k;
-    }
+    this.add.spawn(x, y, z, 0, 0, 0, 0.14, 0.7 * strength, 1.4 * strength, 0.22 * k, PAL.glow.r, PAL.glow.g, PAL.glow.b);
   }
 
   // ------------------------------------------------------------------ effects (public API)
@@ -204,16 +198,16 @@ export class Fx {
     const q = this.quality === 'high' ? 1 : 0.6;
     this.counters.impacts++;
     // Bright core point.
-    this._burst(this.add, x, y, z, 1, { dir: null, speed: [0, 0], life: [0.09, 0.12], size: [sp.flare * scale, sp.flare * 1.8 * scale], color: PAL[sp.sparkColor] ?? PAL.gold, alpha: 1, jitter: 0 });
+    this._burst(this.add, x, y, z, 1, { dir: null, speed: [0, 0], life: [0.07, 0.1], size: [sp.flare * 0.32 * scale, sp.flare * 0.5 * scale], color: PAL[sp.sparkColor] ?? PAL.gold, alpha: 0.85, jitter: 0 });
     if (sp.sparks) this._burst(this.add, x, y, z, Math.round(sp.sparks * q * scale), { dir, spread: 0.55, speed: [sp.speed * 0.4, sp.speed], up: 1.2, life: [0.16, 0.38],
-      size: [0.09, 0.02], color: PAL[sp.sparkColor] ?? PAL.gold, jitter: 0.15, drag: 3.5, gravity: 9 });
+      size: [0.16, 0.04], color: PAL[sp.sparkColor] ?? PAL.gold, jitter: 0.15, drag: 3.0, gravity: 9 });
     if (sp.dust) this._burst(this.alpha, x, Math.max(0.3, y * 0.5), z, Math.round(sp.dust * q * scale), { dir, spread: 0.85, speed: [0.4, 1.8], up: 0.5, life: [0.5, 1.1],
       size: [0.35, 1.3], color: PAL[sp.dustKind] ?? PAL.dust, alpha: 0.42, jitter: 0.12, drag: 2.5, gravity: -0.15, offset: 0.25 });
     if (sp.debris) this._debris(sp.debrisKind, x, y, z, Math.round(sp.debris * q * scale), dir);
     const gk = ground && ground !== surface ? ground : null;
     if (gk === 'mud' || gk === 'water') this._debris(gk, x, 0.1, z, Math.round(8 * q * scale), null);
-    if (sp.ringV) { this.rings.spawn(x, y, z, { r0: 0.15, r1: sp.ringV * scale, life: 0.28, color: PAL[sp.sparkColor] ?? PAL.gold, alpha: 0.9, thick: 0.25, billboard: true }); this.counters.rings++; }
-    if (sp.ringG) { this.rings.spawn(x, 0.06, z, { r0: 0.3, r1: sp.ringG * scale, life: 0.55, color: PAL.ivory, alpha: 0.55, thick: 0.18 }); this.counters.rings++; }
+    if (sp.ringV) { this.rings.spawn(x, y, z, { r0: 0.25, r1: sp.ringV * scale, life: 0.26, color: PAL[sp.sparkColor] ?? PAL.gold, alpha: 0.7, thick: 0.14, billboard: true }); this.counters.rings++; }
+    if (sp.ringG) { this.rings.spawn(x, 0.06, z, { r0: 0.3, r1: sp.ringG * scale, life: 0.55, color: PAL.ivory, alpha: 0.4, thick: 0.12 }); this.counters.rings++; }
     if (sp.ripple || gk === 'water') this.rings.spawn(x, 0.06, z, { r0: 0.2, r1: 1.4, life: 0.8, color: PAL.water, alpha: 0.35, thick: 0.12 });
     this._flashLight(x, y + 0.3, z, sp.light);
     if (sp.flash) this.screenFlash(sp.flash);
@@ -334,7 +328,7 @@ export class Fx {
   _buildOverlays() {
     const parent = this.opts.overlayParent;
     if (!parent || typeof document === 'undefined') { this.ov = null; return; }
-    const mk = (css) => { const d = document.createElement('div'); d.className = 'fx-overlay'; d.style.cssText = `position:absolute;inset:0;pointer-events:none;opacity:0;${css}`; return d; };
+    const mk = (css) => { const d = document.createElement('div'); d.className = 'fx-overlay'; d.style.cssText = `position:absolute;inset:0;pointer-events:none;opacity:0;display:none;${css}`; return d; };
     const vignette = mk('background:radial-gradient(ellipse at center, rgba(29,27,25,0) 50%, rgba(29,27,25,0.92) 100%);');
     const flash = mk('background:#f4efe2;mix-blend-mode:screen;');
     const canvas = this.renderer.domElement;
@@ -351,8 +345,9 @@ export class Fx {
     const o = this.ov; if (!o) return;
     o.vA = Math.max(0, o.vA - dt * 1.6); o.fA = Math.max(0, o.fA - dt * 3.5);
     const v = Math.min(1, o.vBase * 0.6 + o.vA);
-    if (o._v !== v) { o.vignette.style.opacity = v.toFixed(3); o._v = v; }
-    if (o._f !== o.fA) { o.flash.style.opacity = o.fA.toFixed(3); o._f = o.fA; }
+    // display:none at rest so idle overlays cost nothing in the compositor.
+    if (o._v !== v) { o.vignette.style.opacity = v.toFixed(3); o.vignette.style.display = v > 0 ? '' : 'none'; o._v = v; }
+    if (o._f !== o.fA) { o.flash.style.opacity = o.fA.toFixed(3); o.flash.style.display = o.fA > 0 ? '' : 'none'; o._f = o.fA; }
   }
 
   // ------------------------------------------------------------------ diagnostics

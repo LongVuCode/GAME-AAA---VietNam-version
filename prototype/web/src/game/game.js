@@ -20,6 +20,8 @@ import { Input } from './input.js';
 import { Sfx } from './audio.js';
 import { UI } from './ui.js';
 import { makeHumanoid, makeTusk } from './meshes.js';
+import { createFx, gameStep } from '../fx/index.js';
+import { GameFxHooks } from '../fx/hooks.js';
 
 const SETTINGS_KEY = 'ngb_demo01_settings_v1';
 const START_CODEX = ['cx_ben_lau', 'cx_mui_sao', 'cx_bronze_weapons', 'cx_ho_tinh'];
@@ -42,7 +44,7 @@ export class Game {
   loadSettings() {
     const acc = Object.fromEntries(this.data.combat.accessibility.options.filter((o) => 'default' in o).map((o) => [o.id, o.default]));
     acc.acc_camera_shake = this.data.combat.camera_shake.enabled_default && acc.acc_camera_shake;
-    const def = { lang: 'vi', difficulty: this.data.combat.difficulty.default, custom: {}, acc, showFps: false, hints: true, volume: 0.7, sens: 1 };
+    const def = { lang: 'vi', difficulty: this.data.combat.difficulty.default, custom: {}, acc, showFps: false, hints: true, volume: 0.7, sens: 1, gfx: 'high' };
     try {
       const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? 'null');
       if (s) return { ...def, ...s, acc: { ...acc, ...(s.acc ?? {}) }, custom: { ...(s.custom ?? {}) } };
@@ -73,6 +75,7 @@ export class Game {
     this.sfx?.setVolume(s.volume);
     if (this.sfx) this.sfx.directional = !!s.acc.acc_attack_audio_cue;
     if (this.secret) this.secret.hintsEnabled = !!s.hints;
+    this.fx?.setQuality(s.gfx);
     this.ui?.applySettings(s);
   }
   setLang(l) { this.settings.lang = l; this.i18n.setLang(l); this.saveSettings(); if (this.mode !== 'title' && this.player) this.updateHud(); }
@@ -99,6 +102,13 @@ export class Game {
     this.walk = new Walkable();
     this.input = new Input(r.domElement);
     this.sfx = new Sfx();
+    // VFX / lighting / hit sounds (src/fx). Hooks: this.fxh.<event>(...) — list in src/fx/README.md.
+    this.fx = createFx(this.scene, this.camera, r, this.sfx, {
+      overlayParent: this.container, feel: this.data.combat.feel, shake: this.data.combat.camera_shake,
+      shakeEnabled: () => !!this.settings.acc.acc_camera_shake, reduceFlash: () => !!this.settings.acc.acc_reduce_flash,
+    });
+    this.fx.attachWorld(w);
+    this.fx.setQuality(this.settings.gfx);
     this.hitstop = new HitStopClock(0);
     this.cam = { yaw: 0, pitch: 0.38, dist: 6.5, shake: 0, shakeT: 0 };
     this.ui = new UI(this.container, this);
@@ -106,6 +116,7 @@ export class Game {
     this.applySettings();
     this.newGameState();
     this.player = new Player(this);
+    this.fxh = new GameFxHooks(this, this.fx);
     this.applySettings();
     this.spawnWorldEnemies();
     this.buildNpcs();
@@ -172,6 +183,7 @@ export class Game {
   resize() {
     const w = innerWidth, h = innerHeight;
     this.renderer.setSize(w, h, false); this.camera.aspect = w / h; this.camera.updateProjectionMatrix();
+    this.fx?.setSize(w, h);
   }
 
   checkpointPos() {
@@ -245,7 +257,7 @@ export class Game {
     if (this.mode === 'playing') this.update(realDt, now / 1000, wallDt);
     else this.handleMenuKeys();
     this.ui.tick(wallDt);
-    this.render(realDt);
+    this.render(wallDt);
     this.input.endFrame();
   }
 
@@ -269,7 +281,9 @@ export class Game {
     if (i.pressed('skills')) { this.openScreen('skills'); return; }
     if (i.pressed('fps')) this.updateSettings({ showFps: !this.settings.showFps });
 
-    const dt = this.hitstop.advance(realDt);
+    // Game step: hit-stop, then FX slow-mo (fx.timeScale). The pry rhythm and timers below use
+    // wallDt and are never scaled (QA S2; contract in src/fx/logic.js TimeScale).
+    const dt = gameStep(realDt, this.hitstop, this.fx.time);
     this.gameNow = (this.gameNow ?? 0) + dt;
     const p = this.player;
     this.updateLock(i);
@@ -285,6 +299,7 @@ export class Game {
     if (!this.locked) this.updateInteractions(realDt, i); else this.ui.prompt(null);
     this.updatePractice();
     this.updateCamera(realDt, i);
+    this.fxh.update(wallDt);
     this.updateHud();
   }
 
@@ -301,21 +316,19 @@ export class Game {
     }
     if (this.pry) { c.dist += (4.5 - c.dist) * Math.min(1, dt * 3); } else c.dist += (6.5 - c.dist) * Math.min(1, dt * 3);
     const fx = p.x, fy = 1.6, fz = p.z;
-    let ox = 0, oy = 0;
-    if (c.shakeT > 0 && this.settings.acc.acc_camera_shake) {
-      c.shakeT -= dt; const a = c.shake * Math.max(0, c.shakeT / 0.25);
-      ox = (Math.random() - 0.5) * a; oy = (Math.random() - 0.5) * a;
-    }
-    this.camera.position.set(fx + Math.sin(c.yaw) * Math.cos(c.pitch) * c.dist + ox, fy + Math.sin(c.pitch) * c.dist + oy, fz + Math.cos(c.yaw) * Math.cos(c.pitch) * c.dist);
+    this.camera.position.set(fx + Math.sin(c.yaw) * Math.cos(c.pitch) * c.dist, fy + Math.sin(c.pitch) * c.dist, fz + Math.cos(c.yaw) * Math.cos(c.pitch) * c.dist);
     this.camera.lookAt(fx, fy, fz);
+    this.fx.applyCamera(); // shake offset (obeys acc_camera_shake)
   }
-  shake(weight) { this.cam.shake = shakeFor(this.data.combat.camera_shake, weight); this.cam.shakeT = 0.25; }
+  shake(weight) { this.fx.cameraShake(shakeFor(this.data.combat.camera_shake, weight), this.data.combat.camera_shake.duration_s ?? 0.25); }
 
-  render() {
+  render(wallDt = 0) {
     if (!this.renderer) return;
     const t = performance.now() / 1000;
     for (const f of Object.values(this.props.fires)) f.scale.y = 1 + Math.sin(t * 9 + f.id) * (this.settings.acc.acc_reduce_flash ? 0.02 : 0.12);
-    this.renderer.render(this.scene, this.camera);
+    // FX run on real time and freeze while paused / in menus.
+    this.fx.update(this.mode === 'playing' && !this.debugFxFrozen ? wallDt : 0, this.player);
+    this.fx.render();
     if (this.mode === 'playing' || this.mode === 'paused') this.updateMarkers();
   }
 
@@ -386,11 +399,12 @@ export class Game {
         frontal: toP <= PROTO.frontArcDeg / 2, frontMult: e.def.front_damage_mult ?? 1, postPerfectDodge });
       const r = e.receiveHit(dmg);
       if (kind === 'house' && r) { const l = Math.hypot(e.x - p.x, e.z - p.z) || 1; const m = this.walk.move(e.x, e.z, (e.x - p.x) / l * 2, (e.z - p.z) / l * 2, e.radius * 0.6); e.x = m.x; e.z = m.z; }
+      this.fxh.playerHitEnemy(e, weight, r, kind); // sparks/dust/flash + layered hit sound
       this.onHitResult(e, r);
     }
     p.drum.gain(kind === 'chain' || kind === 'dodge_attack' ? 'light_hit' : 'heavy_hit');
     this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, weight));
-    this.shake(weight); this.sfx.hit(weight);
+    this.shake(weight);
   }
 
   playerBurstHit(burst, last) {
@@ -400,7 +414,8 @@ export class Game {
     this.sfx.drum(last);
     for (const e of targets) this.onHitResult(e, e.receiveHit(burstHitDamage(burst, this.diff, this.mods)));
     const weight = last ? burst.hit_weight : 'medium';
-    if (targets.length) { this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, weight)); this.shake(weight); this.sfx.hit(weight); }
+    this.fxh.burstHit(targets, last, weight);
+    if (targets.length) { this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, weight)); this.shake(weight); }
   }
 
   hitDummies(range, arc) {
@@ -409,15 +424,15 @@ export class Game {
     for (const d of this.props.dummies) {
       const dx = d.position.x - p.x, dz = d.position.z - p.z;
       if (Math.hypot(dx, dz) <= range + 0.4 && angleBetween(Math.sin(p.yaw), Math.cos(p.yaw), dx, dz) <= Math.max(arc, 40) / 2) {
-        d.rotation.z = 0.3; setTimeout(() => { d.rotation.z = 0; }, 160); this.sfx.hit('light');
+        d.rotation.z = 0.3; setTimeout(() => { d.rotation.z = 0; }, 160); this.fxh.dummyHit(d);
       }
     }
   }
 
   onHitResult(e, r) {
     if (!r) return;
-    if (r.broke) { this.player.drum.gain('the_break'); this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'heavy')); }
-    if (r.cracked) { this.sfx.crackSnap(); this.ui.center(this.i18n.t('msg_khoen_crack', { n: e.enc.khoen.cracks }), 1.6); }
+    if (r.broke) { this.player.drum.gain('the_break'); this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'heavy')); this.fxh.postureBreak(e); }
+    if (r.cracked) { this.fxh.khoenCrack(e); this.ui.center(this.i18n.t('msg_khoen_crack', { n: e.enc.khoen.cracks }), 1.6); }
     if (r.phaseChanged) this.onBossPhase2(e);
   }
 
@@ -452,7 +467,7 @@ export class Game {
     const T = this.i18n.t;
     switch (outcome) {
       case Outcome.PERFECT_DODGE:
-        p.drum.gain('perfect_dodge'); this.sfx.dodge(true); this.ui.toast(T('msg_perfect_dodge'), 1.5);
+        p.drum.gain('perfect_dodge'); this.sfx.dodge(true); this.fxh.perfectDodge(); this.ui.toast(T('msg_perfect_dodge'), 1.5);
         p.postPerfectDodgeUntil = this.gameNow + this.mods.postPerfectDodgeWindowS;
         return;
       case Outcome.DODGED: return;
@@ -460,7 +475,7 @@ export class Game {
         const perfect = outcome === Outcome.PERFECT_PARRY;
         this.onHitResult(enemy, enemy.receiveTheDamage(parryTheDamage(outcome, g)));
         p.drum.gain(perfect ? 'perfect_parry' : 'parry');
-        this.sfx.parry(perfect); this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, perfect ? 'medium' : 'light'));
+        this.fxh.parry(enemy, perfect); this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, perfect ? 'medium' : 'light'));
         this.ui.toast(T(perfect ? 'msg_perfect_parry' : 'msg_parry'), 1.5);
         if (perfect) p.perfectParryUntil = this.gameNow + g.perfect_parry_counter_window_s;
         return;
@@ -468,8 +483,8 @@ export class Game {
       default: {
         const dmg = enemyHitDamage(atk, outcome, g, this.diff);
         p.takeHit(dmg, !atk.parryable, outcome);
-        if (outcome === Outcome.GUARDED) this.sfx.parry(false);
-        else { this.shake(atk.parryable ? 'light' : 'heavy'); this.callProgress *= this.villagerHoldKept(); }
+        if (outcome === Outcome.GUARDED) this.fxh.guardBlock(enemy);
+        else { this.shake(atk.parryable ? 'light' : 'heavy'); this.fxh.playerHurt(enemy, !atk.parryable); this.callProgress *= this.villagerHoldKept(); }
         if (atk.applies?.status === 'slow' && outcome === Outcome.HIT) { p.slowT = atk.applies.duration_s; p.slowMult = atk.applies.speed_mult; }
       }
     }
@@ -480,11 +495,12 @@ export class Game {
     return nc.progress_kept_on_interrupt;
   }
 
-  onBurst() { this.sfx.drum(true); this.ui.center(this.loc(this.player.weapon.drum_burst.name), 1.2); }
+  onBurst() { this.sfx.drum(true); this.fxh.drumBurst(); this.ui.center(this.loc(this.player.weapon.drum_burst.name), 1.2); }
 
   onEnemyDefeated(e) {
     const key = e.def.defeat_behavior === 'dissipate' ? 'msg_enemy_dissipated' : 'msg_enemy_fled';
     this.ui.toast(this.i18n.t(key, { name: this.loc(e.def.name) }), 2.5);
+    this.fxh.enemyDefeated(e);
     if (this.lockTarget === e) this.lockTarget = null;
     this.tokens.release(e.uid);
   }
@@ -616,7 +632,7 @@ export class Game {
       this.ui.prompt(`<span class="kbd">F</span> ${this.ui.esc(T(key))}`);
       if (i.pressed('interact') && p.state !== 'attack') {
         if (foe.isBoss) { if (foe.enc.khoen.enabled) this.startPry(foe); else this.shoveBoss(foe); }
-        else { this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'finisher')); this.shake('heavy'); this.sfx.hit('heavy'); foe.defeat(); }
+        else { this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'finisher')); this.shake('heavy'); this.fxh.finisher(foe); foe.defeat(); }
       }
       return;
     }
@@ -736,14 +752,14 @@ export class Game {
     const T = this.i18n.t;
     for (const ev of events) {
       if (ev.type !== 'drum') (this.pryLog ??= []).push({ ...ev, t: +judge.t.toFixed(3) });
-      if (ev.type === 'drum') this.sfx.drum(true);
+      if (ev.type === 'drum') { this.sfx.drum(true); this.fxh.pryDrum(boss); }
       if (ev.type === 'hit') {
-        this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'pry_beat')); this.sfx.crackSnap();
+        this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'pry_beat')); this.fxh.pryBeat(boss, ev.beat);
         this.player.pryLever = -0.18 * ev.beat; this.shake('medium');
         boss.mesh.cracks.forEach((c) => { c.scale.y = 1 + ev.beat * 0.6; });
         this.pry.msg = T('pry_beat_hit'); this.player.drum.gain('pry_beat');
       }
-      if (ev.type === 'miss') { this.sfx.miss(); this.pry.msg = T('pry_beat_miss'); }
+      if (ev.type === 'miss') { this.sfx.miss(); this.fxh.pryMiss(boss); this.pry.msg = T('pry_beat_miss'); }
     }
     const slotFrac = judge.holdMode ? 0 : Math.max(0, Math.min(1, judge.timeToSlot / judge.interval));
     this.ui.pryWidget({ beats: judge.beats, hit: judge.beat, slotFrac, hold: judge.holdMode, holdProgress: judge.holdProgress / judge.holdDuration, msg: this.pry.msg });
@@ -764,7 +780,7 @@ export class Game {
     const tun = this.data.combat, T = this.i18n.t, kh = boss.def.khoen;
     this.pry = null;
     this.hitstop.trigger(hitStopFor(tun.hit_stop, 'pry_release'));
-    this.shake('heavy'); this.sfx.crackSnap();
+    this.shake('heavy'); this.fxh.bossFreed(boss);
     // The khoen falls apart; pieces are narrative only (no item, no counter: V9).
     boss.mesh.khoen.visible = false;
     this.ui.showHud(false);
@@ -793,7 +809,7 @@ export class Game {
   shoveBoss(boss) {
     if (!boss.enc.shove()) return;
     const fb = boss.def.khoen.fallback_when_disabled;
-    this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'finisher')); this.shake('heavy');
+    this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'finisher')); this.shake('heavy'); this.fxh.finisher(boss);
     boss.walkOff();
     this.after(2, () => {
       for (const d of fb.drops) this.give(d.item, d.count);
@@ -1000,6 +1016,19 @@ export class Game {
       freezeEnemy(uid, on) { const e = g.enemies.find((x) => x.uid === uid); if (e) e.engaged = !on && e.engaged; if (e && on) { e.state = 'idle'; e.spawn = { x: e.x, z: e.z }; } },
       setDifficulty(id) { g.updateSettings({ difficulty: id }); },
       setAcc(k, v) { g.updateSettings({ acc: { [k]: v } }); },
+      /** FX diagnostics (particle counts, quality, time scale...). */
+      fx: () => g.fx.stats(),
+      setQuality(q) { g.updateSettings({ gfx: q }); },
+      /** Test-only: fire one effect in front of the player (screenshots / smoke). With freeze, the FX
+       *  clock is advanced 0.07 s and then held (headless frames are slow: short sparks would expire
+       *  before the screenshot). Unfreeze with freezeFx(false). */
+      fxDemo(weight, surface = 'bronze', freeze = false, dist = 1.6) {
+        const p = g.player, f = { x: Math.sin(p.yaw), z: Math.cos(p.yaw) };
+        g.fx.impact({ x: p.x + f.x * dist, y: 1.2, z: p.z + f.z * dist }, { x: -f.x, y: 0.4, z: -f.z }, { weight, surface });
+        if (freeze) { g.fx.update(0.07, g.player); g.debugFxFrozen = true; }
+        return g.fx.stats();
+      },
+      freezeFx(on) { g.debugFxFrozen = !!on; },
       give(id, n) { g.give(id, n); },
       gather() { for (const pt of POINTS.filter((x) => x.kind === 'gather')) if (!g.gathered.has(pt.id)) { g.gathered.add(pt.id); g.props.rattan[pt.id].visible = false; g.inv.add('mat_day_may', 1); } },
       points: () => POINTS.map((p) => ({ id: p.id, kind: p.kind, x: p.x, z: p.z })),

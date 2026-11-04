@@ -186,7 +186,7 @@ export class Player {
     this.cur = { ...sel, t: 0, tl: moveTimeline(sel.move), hitDone: false, level };
     this.state = 'attack'; this.stateT = 0;
     if (sel.kind === 'chain') this.chainIndex = sel.move.chain_index;
-    this.game.sfx.whoosh();
+    if (this.game.fxh) this.game.fxh.swingStart(this, this.cur); else this.game.sfx.whoosh(); // fx: trail + whoosh timed to the swing
   }
 
   _updateAttack(dt, now) {
@@ -209,6 +209,7 @@ export class Player {
     this.dodgeDir = mv.len > 0.05 ? { x: mv.x / mv.len, z: mv.z / mv.len } : { x: -Math.sin(this.yaw), z: -Math.cos(this.yaw) };
     this.state = 'dodge'; this.stateT = 0; this.cur = null; this.chainIndex = 0;
     this.game.sfx.dodge(false);
+    this.game.fxh?.dodgeStart(this, this.dodgeDir); // fx: dust/water burst
   }
 
   _updateDodge(dt, now) {

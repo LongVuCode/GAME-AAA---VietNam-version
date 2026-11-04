@@ -22,7 +22,7 @@ export const MOODS = {
 const COLOR_KEYS = ['zenith', 'horizon', 'fog', 'sun', 'sky', 'ground'];
 const NUM_KEYS = ['density', 'sunI', 'hemiI', 'wind', 'glow', 'exposure'];
 
-const SUN_DIR = new THREE.Vector3(-0.72, 0.4, -0.57).normalize(); // low sun, west-north-west
+const SUN_DIR = new THREE.Vector3(-0.72, 0.42, 0.22).normalize(); // low sun from the west: long side shadows, readable lit faces
 const SHADOW_HALF = 24; // m, half size of the shadow frustum around the player
 
 const NOISE = /* glsl */`
@@ -75,12 +75,14 @@ void main() {
   vec2 p = vWorld.xz; float t = uTime;
   float w = 0.4 + 0.6 * uWind;
   vec2 g = vec2(cos(p.x * 0.9 + t * 1.1) + 0.6 * cos(p.y * 1.3 - t * 0.8), cos(p.y * 0.7 - t * 0.9) + 0.6 * cos(p.x * 1.1 + t * 1.3)) * 0.035 * w;
+  #ifndef FX_LOW
   g += vec2(cos((p.x + p.y) * 2.6 + t * 2.1), cos((p.x - p.y) * 2.3 - t * 1.7)) * 0.018 * w;
   g += (vec2(fxNoise(p * 1.7 + t * 0.3), fxNoise(p.yx * 1.9 - t * 0.25)) - 0.5) * 0.05 * uRipple;
+  #endif
   vec3 N = normalize(vec3(-g.x, 1.0, -g.y));
   float fres = 0.04 + 0.96 * pow(1.0 - max(dot(N, V), 0.0), 5.0);
   vec3 R = reflect(-V, N);
-  vec3 sky = mix(uHorizon, uZenith, pow(clamp(R.y, 0.0, 1.0), 0.6));
+  vec3 sky = mix(uHorizon, uZenith, pow(clamp(R.y, 0.0, 1.0), 0.6)) * 0.85; // murky water darkens the reflection
   float spec = pow(max(dot(R, uSunDir), 0.0), 220.0) * 2.5 * uSunI;
   vec3 base = uDeep * (0.25 + 0.22 * uSunI);
   vec3 col = mix(base, sky, clamp(fres * uReflect + 0.12 * uReflect, 0.0, 1.0)) + uSunColor * spec * uReflect;
@@ -105,10 +107,15 @@ function patchGround(mat) {
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>\nvarying vec3 vFxWorld;\n${NOISE}`)
       .replace('#include <map_fragment>', `#include <map_fragment>
-        { vec2 q = vFxWorld.xz; float n = fxNoise(q * 0.16) * 0.55 + fxNoise(q * 0.85) * 0.3 + fxNoise(q * 3.7) * 0.15;
-          diffuseColor.rgb *= 0.8 + 0.4 * n; }`);
+        #ifdef FX_LOW
+          { vec2 q = vFxWorld.xz; diffuseColor.rgb *= 0.8 + 0.4 * fxNoise(q * 0.2); }
+        #else
+          { vec2 q = vFxWorld.xz; float n = fxNoise(q * 0.16) * 0.55 + fxNoise(q * 0.85) * 0.3 + fxNoise(q * 3.7) * 0.15;
+            diffuseColor.rgb *= 0.8 + 0.4 * n; }
+        #endif`);
   };
   mat.customProgramCacheKey = () => 'fx_ground_v1';
+  mat.userData.fxQualityDefines = true;
   mat.needsUpdate = true;
 }
 
@@ -127,7 +134,7 @@ function patchReeds(mat, u) {
         float fxPh = dot(fxBase, vec2(0.37, 0.21));
         float fxGust = sin(dot(fxBase, uWindDir) * 0.16 - uTime * 1.5) * 0.5 + 0.5;
         float fxSway = uWind * (0.06 + 0.2 * fxGust * fxGust) + sin(uTime * 2.2 + fxPh) * 0.035 * (0.3 + uWind);
-        float fxK = fxH * fxH;
+        float fxK = pow(fxH, 1.3);
         transformed.x += uWindDir.x * fxSway * fxK;
         transformed.z += uWindDir.y * fxSway * fxK;
         vFxH = fxH;`);
@@ -161,7 +168,8 @@ export class Atmosphere {
       uSunColor: { value: new THREE.Color() }, uSunDir: { value: SUN_DIR.clone() }, uGlow: { value: 0.4 } };
     this.sky = new THREE.Mesh(new THREE.SphereGeometry(300, 32, 16), new THREE.ShaderMaterial({
       vertexShader: SKY_VERT, fragmentShader: SKY_FRAG, uniforms: this.skyU, side: THREE.BackSide, depthWrite: false, fog: false }));
-    this.sky.frustumCulled = false; this.sky.renderOrder = -10; this.sky.userData.fxOwned = true;
+    // Drawn after the opaque world (depth = far plane): only uncovered pixels run the sky shader.
+    this.sky.frustumCulled = false; this.sky.renderOrder = 1000; this.sky.userData.fxOwned = true;
     this.scene.add(this.sky);
 
     // Sun + fill; the sun follows the player for a tight shadow frustum.
@@ -186,11 +194,13 @@ export class Atmosphere {
           uSunColor: { value: new THREE.Color() }, uSunDir: { value: SUN_DIR.clone() }, uSunI: { value: 2 }, uReflect: { value: reflect },
           uOpacity: { value: opacity }, uRipple: { value: ripple }, uWind: { value: 1 }, uTime: { value: 0 } }]),
       });
+      m.userData.fxQualityDefines = true;
+      if (opacity >= 1) mesh.renderOrder = 900; // after ground/props: hidden water pixels are depth-rejected
       mesh.material = m; mesh.receiveShadow = false; mesh.userData.fxShadowTagged = true;
       this.waterMats.push(m);
     };
-    water(L.water, { deep: 0x55573f, reflect: 0.85 });
-    for (const s of L.shallow ?? []) water(s, { deep: 0x6a694d, opacity: 0.72, reflect: 0.75 });
+    water(L.water, { deep: 0x55573f, reflect: 0.6 });
+    for (const s of L.shallow ?? []) water(s, { deep: 0x6a694d, opacity: 0.72, reflect: 0.5 });
     for (const s of L.mud ?? []) water(s, { deep: 0x2f2820, reflect: 0.3, ripple: 0.2 });
     for (const g of L.ground ?? []) { g.receiveShadow = true; g.userData.fxShadowTagged = true; patchGround(g.material); }
     if (L.reeds) {
@@ -228,7 +238,15 @@ export class Atmosphere {
     this.sun.shadow.mapSize.set(2048, 2048);
     if (this.sun.shadow.map) { this.sun.shadow.map.dispose(); this.sun.shadow.map = null; }
     for (const f of this.flames) f.mesh.material.color.copy(f.base).multiplyScalar(high ? 2.4 : 1.2);
-    this.scene.traverse((o) => { if (o.userData?.blobShadow) o.material.opacity = high ? 0.12 : 0.28; });
+    this.scene.traverse((o) => {
+      if (o.userData?.blobShadow) o.material.opacity = high ? 0.12 : 0.28;
+      const m = o.material;
+      if (m?.userData?.fxQualityDefines) {
+        m.defines = m.defines ?? {};
+        if (high) delete m.defines.FX_LOW; else m.defines.FX_LOW = '';
+        m.needsUpdate = true; // recompiles once, when the menu option changes
+      }
+    });
   }
 
   apply(k) {

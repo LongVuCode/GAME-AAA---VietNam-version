@@ -109,7 +109,8 @@ export class Sfx {
   }
   /** Bronze-like inharmonic partials (struck metal). */
   _bronze(t, base, dur, peak, dest) {
-    for (const [m, g] of [[1, 1], [2.76, 0.55], [5.4, 0.3], [8.93, 0.16]]) this._osc('sine', base * m, base * m * 0.997, t, dur / Math.sqrt(m), peak * g * 0.5, dest);
+    const nyq = this.ctx.sampleRate * 0.45;
+    for (const [m, g] of [[1, 1], [2.76, 0.55], [5.4, 0.3], [8.93, 0.16]]) if (base * m < nyq) this._osc('sine', base * m, base * m * 0.997, t, dur / Math.sqrt(m), peak * g * 0.5, dest);
   }
   /**
    * Layered impact: transient (click) + body by material (wood / bronze / flesh / mud / water) +

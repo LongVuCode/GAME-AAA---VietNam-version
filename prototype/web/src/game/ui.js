@@ -323,6 +323,8 @@ export class UI {
       <label><span>${esc(this.t('set_hints'))}</span><input type="checkbox" data-set="hints" ${s.hints ? 'checked' : ''}></label>
       <label><span>${esc(this.t('set_volume'))}</span><input type="range" data-set="volume" min="0" max="1" step="0.05" value="${s.volume}"></label>
       <label><span>${esc(this.t('set_camera_sens'))}</span><input type="range" data-set="sens" min="0.3" max="2" step="0.05" value="${s.sens}"></label>
+      <label><span>${esc(this.t('set_quality'))}</span><select data-set="gfx">${opt('high', this.t('set_quality_high'), s.gfx !== 'low')}${opt('low', this.t('set_quality_low'), s.gfx === 'low')}</select></label>
+      <p class="dim">${esc(this.t('set_quality_note'))}</p>
     </div>`;
   }
 

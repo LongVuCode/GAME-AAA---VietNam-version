@@ -171,7 +171,7 @@ export function buildWorld() {
   }
 
   // Reeds (instanced): dense in the reed beds, sparse elsewhere, ring around the mire.
-  const reedGeo = new THREE.BoxGeometry(0.06, 1, 0.06, 1, 4, 1); // 4 height segments: wind bend in fx/atmosphere.js
+  const reedGeo = new THREE.BoxGeometry(0.06, 1, 0.06, 1, 2, 1); // 2 height segments: wind bend in fx/atmosphere.js
   const reedMat = lam(0xa59a5a);
   const spots = [];
   const rnd = mulberry32(7);

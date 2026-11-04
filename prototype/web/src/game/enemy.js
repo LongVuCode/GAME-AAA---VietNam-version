@@ -277,7 +277,7 @@ export class Enemy {
     const tint = kind === 'unparryable' ? 0xd0442a : this.flash > 0 ? 0xffffff : this.state === 'stagger' ? 0x806a20 : 0x000000;
     for (const p of this.mesh.tintParts) {
       p.material.emissive?.setHex(tint);
-      if (p.material.emissive) p.material.emissiveIntensity = kind === 'unparryable' ? 0.35 + 0.25 * Math.sin(t * (this.game.settings.reduceFlash ? 4 : 18)) : 0.5;
+      if (p.material.emissive) p.material.emissiveIntensity = kind === 'unparryable' ? 0.35 + 0.25 * Math.sin(t * (this.game.settings.acc.acc_reduce_flash ? 4 : 18)) : 0.5;
     }
   }
 
