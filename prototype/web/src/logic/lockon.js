@@ -45,3 +45,24 @@ export function softAimTarget(from, facing, candidates, tuning, maxDist) {
   }
   return best?.id ?? null;
 }
+
+/**
+ * Switch target left/right of the current one (lock_on.switch_cone_deg around the camera forward).
+ * dir: -1 left / +1 right as seen from `from` looking along `forward`. Returns id or null.
+ */
+export function pickSwitchTarget(from, forward, current, candidates, tuning, dir) {
+  const fwdA = Math.atan2(forward.x, forward.z);
+  const rel = (c) => { let a = Math.atan2(c.x - from.x, c.z - from.z) - fwdA; while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; };
+  const curA = current ? rel(current) : 0;
+  let best = null, bestD = Infinity;
+  for (const c of candidates) {
+    if (c.lockable === false || (current && c.id === current.id)) continue;
+    if (Math.hypot(c.x - from.x, c.z - from.z) > tuning.max_distance_m) continue;
+    const a = rel(c);
+    if (Math.abs(a) > (tuning.switch_cone_deg ?? 90) * Math.PI / 180) continue;
+    // Positive angle = to the left (yaw convention); dir +1 = right => want a < curA.
+    const delta = (curA - a) * dir;
+    if (delta > 1e-3 && delta < bestD) { bestD = delta; best = c; }
+  }
+  return best?.id ?? null;
+}
