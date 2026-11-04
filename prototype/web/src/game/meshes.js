@@ -7,7 +7,7 @@ function part(parent, geo, color, x, y, z) {
 }
 function blobShadow(parent, r) {
   const m = new THREE.Mesh(new THREE.CircleGeometry(r, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false }));
-  m.rotation.x = -Math.PI / 2; m.position.y = 0.03; parent.add(m); return m;
+  m.rotation.x = -Math.PI / 2; m.position.y = 0.03; m.userData.blobShadow = true; parent.add(m); return m; // fx: dimmed when real shadows are on
 }
 
 /** Stylized person (Cói, Bương, NPCs). Returns { root, body, rightArm, weaponMount, parts }. */

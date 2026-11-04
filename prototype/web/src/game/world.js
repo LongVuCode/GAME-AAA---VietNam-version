@@ -134,13 +134,15 @@ export function buildWorld() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x9fb4b8);
   scene.fog = new THREE.Fog(0x9fb4b8, 45, 140);
-  scene.add(new THREE.HemisphereLight(0xdfe8e6, 0x4a4030, 1.6));
+  const hemi = new THREE.HemisphereLight(0xdfe8e6, 0x4a4030, 1.6); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff1d6, 1.6);
   sun.position.set(-30, 60, 20); scene.add(sun);
+  // Surfaces the FX/atmosphere layer restyles (src/fx/atmosphere.js): water, shallow sheets, ground, mud.
+  const layers = { water: null, shallow: [], ground: [], mud: [], reeds: null };
 
   // Murky water / marsh beyond the walkable areas.
   const water = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), lam(0x3c5552));
-  water.rotation.x = -Math.PI / 2; water.position.y = -0.25; scene.add(water);
+  water.rotation.x = -Math.PI / 2; water.position.y = -0.25; scene.add(water); layers.water = water;
 
   for (const a of AREAS) {
     let g;
@@ -149,27 +151,27 @@ export function buildWorld() {
       const m = new THREE.Mesh(g, lam(a.color));
       m.rotation.x = -Math.PI / 2;
       m.position.set((a.rect.x0 + a.rect.x1) / 2, a.dock ? 0.02 : 0, (a.rect.z0 + a.rect.z1) / 2);
-      scene.add(m);
+      scene.add(m); layers.ground.push(m);
       if (a.shallow) {
         // Shallow water sheets inside the marsh (visual hint of the speed multiplier).
         for (const [x, z, w, d] of [[-14, -18, 14, 10], [10, -36, 16, 9], [18, -14, 8, 7]]) {
           const w2 = new THREE.Mesh(new THREE.PlaneGeometry(w, d), lam(0x4f6d6a, { transparent: true, opacity: 0.8 }));
-          w2.rotation.x = -Math.PI / 2; w2.position.set(x, 0.03, z); scene.add(w2);
+          w2.rotation.x = -Math.PI / 2; w2.position.set(x, 0.03, z); scene.add(w2); layers.shallow.push(w2);
         }
       }
     } else {
       g = new THREE.CircleGeometry(a.circle.r, 48);
       const m = new THREE.Mesh(g, lam(a.color));
-      m.rotation.x = -Math.PI / 2; m.position.set(a.circle.cx, 0, a.circle.cz); scene.add(m);
+      m.rotation.x = -Math.PI / 2; m.position.set(a.circle.cx, 0, a.circle.cz); scene.add(m); layers.ground.push(m);
     }
   }
   for (const p of MUD_POOLS) {
     const m = new THREE.Mesh(new THREE.CircleGeometry(p.r, 28), lam(0x3b2e22));
-    m.rotation.x = -Math.PI / 2; m.position.set(p.cx, 0.02, p.cz); scene.add(m);
+    m.rotation.x = -Math.PI / 2; m.position.set(p.cx, 0.02, p.cz); scene.add(m); layers.mud.push(m);
   }
 
   // Reeds (instanced): dense in the reed beds, sparse elsewhere, ring around the mire.
-  const reedGeo = new THREE.BoxGeometry(0.06, 1, 0.06);
+  const reedGeo = new THREE.BoxGeometry(0.06, 1, 0.06, 1, 4, 1); // 4 height segments: wind bend in fx/atmosphere.js
   const reedMat = lam(0xa59a5a);
   const spots = [];
   const rnd = mulberry32(7);
@@ -195,7 +197,7 @@ export function buildWorld() {
     mtx.compose(new THREE.Vector3(x, h / 2, z), q, new THREE.Vector3(1, h, 1));
     reeds.setMatrixAt(i, mtx);
   });
-  scene.add(reeds);
+  scene.add(reeds); layers.reeds = reeds;
 
   const props = {};
   // Bến Sậy: dock posts, ferry boat, hut.
@@ -271,7 +273,7 @@ export function buildWorld() {
   props.mist = new THREE.Mesh(new THREE.SphereGeometry(2.4, 18, 12), new THREE.MeshBasicMaterial({ color: 0xd8e4ec, transparent: true, opacity: 0.35, depthWrite: false }));
   props.mist.position.set(10, 1.2, -81); scene.add(props.mist);
 
-  return { scene, props, sun };
+  return { scene, props, sun, hemi, layers };
 }
 
 export function mulberry32(a) {
