@@ -428,7 +428,9 @@ export class Enemy {
       }
     }
     // Chains (combos_0_3): mostly up close (combo_chance near / far).
-    const combos = phaseCombos03(this.def, this.enc.phaseIndex, row, g.data.combat.boss_rules_0_3);
+    const ck = `${this.enc.phaseIndex}|${g.diff?.id}`;
+    if (this._combosKey !== ck) { this._combosKey = ck; this._combos = phaseCombos03(this.def, this.enc.phaseIndex, row, g.data.combat.boss_rules_0_3); }
+    const combos = this._combos;
     const avail = combos.filter((c) => surface <= (c.range_m ?? 3) && (this.comboCd[c.id] ?? 0) <= 0);
     // One roll per decision (the frame the beast is free to act and something is in reach).
     if (avail.length && g.rng() < comboChance(beh, dist)) {

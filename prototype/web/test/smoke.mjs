@@ -132,6 +132,8 @@ try {
   await waitFor(() => true, 10); await sleep(600);
   // Demo 0.3 controls (controls.json scheme_0_3): Space jumps, C dodges.
   const G3 = () => D('gp03');
+  // Keep the Bến Sậy crab out of the movement checks (slow headless frames give it time to walk over).
+  await page.evaluate(() => { for (const e of window.__demo.game.enemies) if (!e.isBoss && Math.hypot(e.x, e.z - 14) < 16) e.reset(); });
   await D('teleport', 0, 14, Math.PI); await D('setCameraYaw', 0); await sleep(300);
   await page.keyboard.down('Space');
   let g3 = null, peak = 0;
@@ -158,7 +160,8 @@ try {
   check('neutral dodge is a backstep', pi.dodge?.kind === 'backstep', JSON.stringify(pi.dodge));
   await waitFor((x) => x.player.state === 'free', 4000, 50);
   // Attack lunge: a light attack steps forward (weapons.json moves[].motion.lunge_m).
-  await D('teleport', 0, 14, Math.PI); await sleep(300);
+  await page.evaluate(() => { for (const e of window.__demo.game.enemies) if (!e.isBoss && Math.hypot(e.x, e.z - 14) < 16) e.reset(); });
+  await D('teleport', 0, 18, Math.PI); await sleep(300);
   pi = await P();
   const ax0 = pi.x, az0 = pi.z;
   await click();

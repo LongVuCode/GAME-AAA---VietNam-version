@@ -22,6 +22,8 @@ import { buildWorld, Walkable, SPAWNS, mulberry32 } from '../src/game/world.js';
 import { HitStopClock } from '../src/logic/hitstop.js';
 import { AttackTokens } from '../src/logic/enemyAi.js';
 import { TimeScale, gameStep } from '../src/fx/logic.js';
+import { pathToFileURL } from 'node:url';
+export { BotInput };
 
 const RUNS = +(process.argv[2] ?? 12), CAP = +(process.argv[3] ?? 300), DIFF = process.argv[4] ?? 'diff_cheo_do';
 const DT = 1 / 60;
@@ -41,7 +43,7 @@ class BotInput {
   endFrame() { this.pr.clear(); }
 }
 
-function makeGame(seed, boss03) {
+export function makeGame(seed, boss03) {
   try { globalThis.localStorage?.clear?.(); } catch { /* none */ }
   const g = new Game(null, DATA_02, { debug: false, khoenEnabled: true, buildId: 'bench' });
   g.settings.difficulty = DIFF;
@@ -131,6 +133,8 @@ function run(seed, boss03, kind) {
   return { win: false, t, hpLost, hits, busy: busy / Math.max(1e-6, total), heals: g.data.combat.healing.charges - p.heals, dead: !!g.dead, s3: e.stats03, gp: g.gp.stats };
 }
 
+const MAIN = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (MAIN) {
 const mean = (xs) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
 const rows = [];
 for (const [label, boss03, kind] of [['boss 0.2 / bot02', false, 'bot02'], ['boss 0.3 / bot02', true, 'bot02'], ['boss 0.3 / bot03', true, 'bot03']]) {
@@ -153,3 +157,4 @@ for (const [label, boss03, kind] of [['boss 0.2 / bot02', false, 'bot02'], ['bos
 }
 console.log(`difficulty=${DIFF} cap=${CAP}s step=1/60 s seeds=1..${RUNS}`);
 if (process.env.BENCH_DEBUG) { const r = run(1, true, 'bot02'); console.log(JSON.stringify({ t: r.t, s3: r.s3, gp: r.gp })); }
+}

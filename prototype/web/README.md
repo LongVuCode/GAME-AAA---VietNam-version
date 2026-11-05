@@ -30,19 +30,22 @@ Phím lấy từ `controls.json` (đề xuất của UX/Controls Researcher, ch�
 | **Chạy nhanh** | Shift trái (giữ; tùy chọn bật/tắt hoặc tự động) | L3 (bấm một lần, tự dừng khi buông cần) |
 | Đi chậm | Caps Lock (bật/tắt; tùy chọn giữ) | nghiêng cần nhẹ |
 | Camera | Chuột (bấm màn hình để khóa chuột), phím mũi tên | Cần phải |
-| Né (lăn theo hướng đang bấm; không bấm hướng = lùi bước) | Phím cách | B / ○ |
+| **Nhảy** (giữ lâu nhảy cao; 0.3) | Phím cách | A / ✕ |
+| Né (lăn theo hướng đang bấm; không bấm hướng = lùi bước; đang chạy nhanh = trượt) | **C** (preset: Shift kiểu Souls, V, chuột cạnh sau) | B / ○ |
 | Đòn nhẹ / đòn nặng (giữ để gồng) | Chuột trái / chuột phải | X / Y |
 | Đỡ nhịp (bấm) / Đỡ (giữ) | Q | LB |
 | Khóa mục tiêu / đổi mục tiêu | Chuột giữa hoặc Tab / lăn chuột | R3 / gạt cần phải |
 | Hồi trống (đủ 4 nấc) | F | RT |
-| Tương tác, đòn kết "Đuổi đi", Cạy (bấm đúng tiếng trống), Vượt; **giữ** cạnh người bị mê = Gọi tên | E | A / ✕ |
+| Tương tác, **Phản nhịp**, đòn kết "Đuổi đi", Cạy, **Ghì nanh** (bấm đúng tiếng trống), Vượt; **giữ** cạnh người bị mê = Gọi tên | E | RB / R1 |
+| **Thế võ 1 / 2** (0.3) | 3 / 4 | giữ LT + X / Y (theo nút đòn; tùy chọn bấm LT một lần) |
+| **Hành trang / Bản đồ** (0.3) | B / M | View bấm / giữ 0,4 s |
 | Ăn nắm cơm lá | R | D-pad ↑ |
 | Vũ khí ô 1 / 2 (đổi được giữa combo) | 1 / 2 | D-pad ← / → |
-| Codex / Sổ tay / Nghề nhà | C / J / K | View (Codex) |
+| Sổ tay / Kỹ năng (Codex là thẻ trong Hành trang) | J / K | — |
 | Tạm dừng (không đổi được) | Esc | Menu |
 | FPS | ` | — |
 
-Không có nút nhảy (`movement.jump_enabled = false`): chạy nhanh vào khúc gỗ đổ ở đầm nông hoặc rạch nước ở Bến Sậy thì tự **vượt**; đứng sát rồi bấm Tương tác cũng vượt. Kiểu tay cầm "Đòn trên vai" (`pad_presets`) chọn trong màn Đổi phím. Tùy chọn điều khiển (Cài đặt → Điều khiển, từ `controls.json accessibility_options`): kiểu chạy nhanh/đi chậm/đỡ/gồng/gọi tên (giữ hoặc bật/tắt), độ trễ chạy tự động, giữ nút né để chạy, đảo trục từng thiết bị, độ nhạy chuột/cần, vùng chết, đổi hai cần, biểu tượng nút, cường độ rung. Rung tay cầm qua `gamepad.vibrationActuator` nếu trình duyệt hỗ trợ.
+Sơ đồ 0.3 (`controls.json scheme_0_3`) được **gộp lúc khởi động** (`logic/controls.js applyScheme03`, gọi trong `logic/tuning.js`); JSON giữ nguyên. Phím đã lưu theo sơ đồ 0.2 (Space = né) bị bỏ một lần. Preset bàn phím (`kbm_presets`) có trong `Bindings.applyKbmPreset` (chưa có ô chọn trong màn Đổi phím: màn đó thuộc agent UI). Nút chuột cạnh: chặn điều hướng Quay lại khi đang chơi, **chưa kiểm trên mọi trình duyệt**. Vẫn **vượt theo ngữ cảnh**: chạy nhanh vào khúc gỗ đổ / rạch nước, hoặc đứng sát bấm Tương tác; nhảy cao ≥ 0,6 m cũng qua được. Kiểu tay cầm "Đòn trên vai" (`pad_presets`) chọn trong màn Đổi phím. Tùy chọn điều khiển (Cài đặt → Điều khiển, từ `controls.json accessibility_options`): kiểu chạy nhanh/đi chậm/đỡ/gồng/gọi tên (giữ hoặc bật/tắt), độ trễ chạy tự động, giữ nút né để chạy, đảo trục từng thiết bị, độ nhạy chuột/cần, vùng chết, đổi hai cần, biểu tượng nút, cường độ rung. Rung tay cầm qua `gamepad.vibrationActuator` nếu trình duyệt hỗ trợ.
 
 ## Demo 0.2: chuyển động, animation, combat feel (FUN_PASS_0_2 P0)
 
@@ -58,6 +61,19 @@ Không có nút nhảy (`movement.jump_enabled = false`): chạy nhanh vào khú
 - **Boss**: thêm Quay hông (2 pha) và Dụi cổ (pha 2; đánh vào cổ từ bên hông ×1,5 Thế, số Thế vàng); **chuyển pha "Húc cọc"** 4 s (`transition_set_piece_0_2`): con thú bỏ mặc Cói, càn vào cọc bẫy gãy ở mép bãi (tóe tia đồng cọ gỗ, cọc gãy), khuỵu dụi cổ, 2,6 s Cói nói "Ai trói mày thế này?", vũng lầy thứ 4 lan ra; người chơi đi/đỡ/né được, không đánh được; boss bất tử trong cảnh.
 - **Nhóm giao tranh** theo `encounters_0_2` (cua đơn, cua đôi, Ụ Bùn + cua, bọ ngựa phục đôi, bọ ngựa + cua, Ụ Bùn ở lò).
 - **`tuning_changes_0_2`** (HP boss 1600, pha 2 tốc độ 0,95 / báo hiệu 1,15, Nhịp trống, hit-stop nhẹ 0,05) chỉ áp **trong prototype** qua lớp override (`logic/tuning.js`, `DATA_02`); JSON gốc giữ nguyên để không vỡ `ConfigTests.cpp`. Unit test kiểm cả hai.
+
+## Demo 0.3: gameplay & combat (`logic/jump.js`, `logic/skills.js`, `logic/boss03.js`, `game/gameplay03.js`)
+
+- **Nhảy** (`movement.jump`): cao 1,1 m / tối thiểu 0,5 m (thả sớm cắt 45 % vận tốc lên), lên đỉnh 0,32 s, rơi ×1,4 (bay ≈ 0,59 s), lấy đà 0,05 s, đệm nhấn 0,12 s, coyote 0,10 s (graybox phẳng nên coyote chỉ có ý nghĩa ở mép vượt), điều khiển trên không 35 %, xoay 240°/s, giữ đà chạy nhanh. Không i-frame, không né/đỡ/ăn/Thế võ trên không; nhảy hủy hồi đòn (sau 0,1 s) và hồi né. Tiếp đất: khựng theo độ cao (> 1,2 m), nén thân, camera hạ, bụi/bùn/nước theo bề mặt. Rig: nhún lấy đà → co gối → duỗi ở đỉnh → chân với xuống; bóng tròn ở lại mặt đất.
+- **Đòn trên không** (`air_moves_0_3`): một đòn nhẹ mỗi lần nhảy (treo 0,12 s); đòn nặng từ ≥ 0,6 m = **bổ xuống** 18 m/s, sóng xung kích 2,5 / 3,0 m, +15 Nhịp, hồi 0,45 / 0,55 s (né hủy sau 0,25 s).
+- **Hủy bằng né** (`dodge_cancel_0_3`): hồi đòn, gồng, Thế võ sau pha chạm, khựng tiếp đất, hồi bổ xuống; né hoàn hảo ngay sau khi hủy +10 Nhịp; chuỗi đòn nhẹ giữ 0,6 s. Né khi đang chạy nhanh về phía trước = **trượt** thấp.
+- **Phản nhịp** (`riposte_0_3`): Đỡ nhịp hoàn hảo bước có `riposte_on_perfect_parry` (hoặc Dậm chậm) → con thú hở 1 s, lời nhắc E trong 0,6 s → 30 sát thương / 70 Thế, bất tử 0,8 s, chậm ×0,3, camera xoay 25°, +40 Nhịp, 1 lần mỗi chuỗi.
+- **Thế võ** (`skills.json`): 2 mỗi vũ khí (Cắm sào vọt, Quét sóng, Bổ đốn cây, Móc thuyền) theo bậc `game.progress.getSkillLevel` (0 = khóa), hồi chiêu `levels[].cooldown_s × stats.skill_cooldown_mult` bắt đầu lúc kết thúc, chạy cả khi đổi vũ khí; HUD qua `hud.setSkills/setCooldown`. Giáp (`damageReduction`), `hpMax`, `theMax`, chống lún đọc từ `getStats()`.
+- **Hồi trống điện ảnh**: mở 0,45 s chậm ×0,2, camera thấp trước mặt theo `drum_burst_0_3.camera_script`, mỗi nhịp một sóng xung kích (25 % sát thương nhịp cho địch trong vòng), nhịp cuối 6–7 m + đẩy quái thường + chậm 0,45 s + FOV +6°; bất tử, HUD ẩn, địch trong 8 m đứng yên. Tôn trọng `acc_slowmo`, `acc_burst_camera_simple`, "Rung camera", "Giảm nhấp nháy".
+- **Lợn Lòi Đầm 0.3** (`?boss03=0` chạy lại boss 0.2 để so sánh): 5 đòn mới (Sóng bùn = vòng 1,5→9 m chỉ nhảy ≥ 0,35 m hoặc né xuyên mới thoát; Càn xuyên bãi tới mép bãi để **vệt bùn** 8 s ×0,6 cấm chạy nhanh; Cào móng giả không rống; Càn hai lượt quay lại nhắm ≤ 35°; Dậm chậm giữ 0,6 s), 4 chuỗi (bước sau nhanh hơn nhưng không dưới 0,3 / 0,9 s), không dùng chung token với quái thường, nghỉ 0,4–1,0 s, phạt ăn gần / lăn liên tục (Ngược nước+) / đứng xa / đứng sau lưng; độ khó theo `difficulty_0_3` (báo hiệu không bao giờ ngắn đi). **Pha 2**: tốc độ 1,0, báo hiệu ×1,1, bỏ Càn khuỵu, vũng lầy co 60 % trong 6 s, **3 cọc** trồi lên; đứng trước cọc để dụ càn → cọc gãy, con thú khựng 2,2 s, −60 Thế; lúc đó **Ghì nanh** (E, 2 nhịp trống theo luật cạy, chấm theo **thời gian thực**, 1 lần mỗi trận, tự động ở Nghe chuyện): đúng = vỡ Thế + một vết nứt khoen, trượt = bị hất 2,5 m, −10 Sức. Camera điện ảnh khi chuyển pha. Vẫn kết bằng cạy.
+- **Rơi đồ** khi quái bỏ chạy/tan (`drops` + `xp_sources`) thành gói nhặt được tại chỗ → `progress.addItem/addXp`.
+- **Đo "khó hơn"**: `node test/bossbench.mjs [lượt] [giây] [độ khó]` chạy thật Player/Enemy/BossEncounter trong node (60 Hz, không render) với cùng bot và cùng seed cho boss 0.2 và 0.3.
+- Hằng prototype chưa có trong dữ liệu: tốc độ càn xuyên bãi trần 22 m/s, hồi chuỗi 8 s, dụ cọc 7 s, cửa sổ chọn chuỗi một lần mỗi quyết định; chưa có lời thoại khẽ của Cói khi Ghì nanh (thiếu chuỗi trong `strings.json`).
 
 ## Demo 0.3: Hành trang, bản đồ, minimap (`src/ui/inventory`, `src/ui/map`)
 
