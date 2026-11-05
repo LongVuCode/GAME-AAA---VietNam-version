@@ -13,9 +13,15 @@ import { PROTO } from '../logic/proto.js';
 import { makeCreatureRig } from '../anim/creatures.js';
 import { makeDecal } from './meshes.js';
 import * as THREE from 'three';
+import { difficultyRow03, phaseMoveset03, phaseMults03, phaseCombos03, comboStepAttack, PunishTracker, postAttackIdle, comboChance,
+  distanceToArenaEdge, stakeOnPath, reaimLimited, attackCooldown03 } from '../logic/boss03.js';
+import { ringWaveTouches, airborneAvoids, chargeHitsAirborne } from '../logic/jump.js';
 
 const FAMILY = { en_cua_cang_bun: 'crab', en_bo_ngua_lau: 'mantis', en_u_bun: 'mud' };
-const BOAR_AUDIO = { ll_can_lay: 'boar_roar', ll_can_khuyu: 'boar_roar', ll_giay_dau: 'boar_pain', ll_rong_dau: 'boar_pain', ll_dui_co: 'boar_pain' };
+// The real charges always roar; the feint (ll_cao_mong_gia) only snorts (feint_requires_distinct_audio).
+const BOAR_AUDIO = { ll_can_lay: 'boar_roar', ll_can_khuyu: 'boar_roar', ll_giay_dau: 'boar_pain', ll_rong_dau: 'boar_pain', ll_dui_co: 'boar_pain',
+  ll_can_xuyen: 'boar_roar', ll_can_hai_luot: 'boar_roar', ll_dam_cham: 'boar_pain', ll_song_bun: 'boar_snort' };
+const CHARGE_SPEED_CAP = 22; // m/s, graybox cap for the 34 m crossing charges (prototype value, see README 0.3)
 const WEIGHT_STRENGTH = { light: 0.45, medium: 0.7, heavy: 1, finisher: 1.2 };
 
 let uidSeq = 0;
@@ -46,6 +52,10 @@ export class Enemy {
     this.vx = 0; this.vz = 0; this.speed = 0; this.knock = null; this.flinchT = 0; this.rearT = 0;
     this.circleDir = this.game.rng() < 0.5 ? -1 : 1; this.circleT = 1; this.defendCd = 0; this.burrowCd = (this.beh.reposition_burrow?.cooldown_s ?? 12) * 0.5;
     this.preferNext = null; this.pendingTransition = false; this.neckExposed = false; this.projectile = null;
+    // Demo 0.3 boss state
+    this.idleT = 0; this.combo = null; this.comboCd = {}; this.chargeRun = null; this.wave = null; this.stakeStunT = 0;
+    this.openT = 0; this.tuskLockUsed = 0; this.lureCd = 0; this.punish = null; this.burstPaused = false; this.exposedUntil = -Infinity; this.exposedMult = 1;
+    this.stats03 = { attacks: 0, combos: [], waves: 0, stakeHits: 0, punishes: [] };
     if (this.isBoss) {
       this.enc = new BossEncounter(d, tun, { khoenEnabled: this.game.opts.khoenEnabled });
       this.posture = this.enc.posture;
@@ -69,16 +79,24 @@ export class Enemy {
   get alive() { return this.state !== 'gone' && this.state !== 'fleeing' && this.state !== 'freed'; }
   get lockable() { return this.alive && this.state !== 'pried' && this.state !== 'finished' && this.state !== 'burrow'; }
   get staggered() { return this.posture.staggered; }
+  /** Demo 0.3 boss behaviour (enemies.json *_0_3 blocks); off with ?boss03=0 (benchmark of the old boss). */
+  get v03() { return this.isBoss && !!this.game.gp?.boss03Enabled; }
+  get row03() { return difficultyRow03(this.def, this.game.diff?.id); }
   get moveset() {
     // Cached (no per-frame allocation): base ids, or the boss phase list + moveset_add_0_2.
     if (!this.isBoss) return this._ids ?? (this._ids = this.attacks.map((a) => a.id));
+    if (this.v03) {
+      const key = `${this.enc.phaseIndex}|${this.game.diff?.id}`;
+      if (this._ms03Key !== key) { this._ms03Key = key; this._ms03 = phaseMoveset03(this.def, this.enc.phaseIndex, this.row03); }
+      return this._ms03;
+    }
     if (this._msPhase !== this.enc.phaseIndex) { this._msPhase = this.enc.phaseIndex; this._ms = phaseMoveset(this.enc.phase); }
     return this._ms;
   }
   /** Shortest damaging melee reach (cached). */
   get meleeRange() { return this._melee ?? (this._melee = Math.max(0.8, Math.min(...this.attacks.filter((a) => a.shape !== 'charge' && a.shape !== 'projectile' && a.damage > 0).map((a) => a.range_m)))); }
-  get speedMult() { return this.game.diff.enemySpeed * (this.isBoss ? this.enc.phase.speed_mult : 1); }
-  get telegraphMult() { return this.game.diff.telegraphMult * (this.isBoss ? this.enc.phase.telegraph_time_mult : 1); }
+  get speedMult() { return this.game.diff.enemySpeed * (this.isBoss ? (this.v03 ? phaseMults03(this.enc.phase).speed : this.enc.phase.speed_mult) : 1); }
+  get telegraphMult() { return this.game.diff.telegraphMult * (this.isBoss ? (this.v03 ? phaseMults03(this.enc.phase).telegraph : this.enc.phase.telegraph_time_mult) : 1); }
   get telegraphKind() { return this.attack && this.state === 'attack' && this.atkT < this.tl.windup + this.tl.hold ? telegraphKind(this.attack) : null; }
   /** Front-shell damage multiplier (crab turtling raises it: behavior.on_own_the_high.front_damage_mult). */
   get frontMult() { return this.state === 'turtle' ? this.beh.on_own_the_high?.front_damage_mult ?? this.def.front_damage_mult ?? 1 : this.def.front_damage_mult ?? 1; }
@@ -101,7 +119,9 @@ export class Enemy {
       if (phaseChanged) this._queueTransition();
     } else {
       this.hp = Math.max(0, this.hp - hp);
-      broke = this.posture.applyDamage(the);
+      // Móc thuyền: a hooked foe shows its flank (exposed_side_the_mult for exposed_s).
+      const k = (this.game.gameNow ?? 0) < this.exposedUntil ? this.exposedMult : 1;
+      broke = this.posture.applyDamage(the * k);
     }
     if (broke) this._cancelAttack();
     else if (this.state === 'attack' && this.atkT < this.tl.windup && the >= (this.def.interrupt_threshold ?? Infinity)) this._cancelAttack();
@@ -148,6 +168,12 @@ export class Enemy {
   _cancelAttack() {
     if (this.attack) { this.cooldowns[this.attack.id] = this.attack.cooldown_s; this.game.tokens.release(this.uid); }
     this.attack = null; this.neckExposed = false; this._setState(this.posture.staggered ? 'stagger' : 'chase'); this._hideDecals();
+    this.combo = null; this.chargeRun = null; this._endWave();
+  }
+  /** Quét sóng: interrupts a normal enemy's wind-up (base.interrupts_normal_windup). */
+  interruptWindup() {
+    if (this.isBoss || this.state !== 'attack' || !this.tl || this.atkT >= this.tl.windup) return false;
+    this._cancelAttack(); return true;
   }
 
   /** Normal enemies: out of strength (or finished) → flee / dissipate (never killed). */
@@ -174,6 +200,7 @@ export class Enemy {
     this.stateT += dt;
     const aggro = this._aggro ?? 1;
     for (const k in this.cooldowns) this.cooldowns[k] = Math.max(0, this.cooldowns[k] - dt * aggro);
+    if (this.burstPaused && this.alive && this.state !== 'pried') { this._sync(0); return; } // Hồi trống điện ảnh: frozen in the radius
     this._applyKnock(dt);
     this._updateProjectile(dt);
     if (this.state === 'gone') { root.visible = false; return; }
@@ -203,6 +230,7 @@ export class Enemy {
       if (this.enc.outcome !== 'in_progress') { this._setState('stagger'); this._hideDecals(); this._sync(dt); return; }
       if (this.state === 'pried') this._setState('stagger');
       this.enc.tick(dt);
+      this.stakeStunT = Math.max(0, this.stakeStunT - dt);
       this.transitionT = Math.max(0, (this.transitionT ?? 0) - (this.posture.staggered ? 0 : dt));
     } else this.posture.tick(dt);
 
@@ -222,6 +250,7 @@ export class Enemy {
     this.flinchT = Math.max(0, this.flinchT - dt);
 
     if (this.state === 'attack') { this._updateAttack(dt, dx, dz, dist); this._sync(dt); return; }
+    if (this.v03 && this.engaged && sameWorld && p.state !== 'pry' && this._update03(dt, dx, dz, dist)) { this._sync(dt); return; }
     if (!this.engaged || !sameWorld || p.state === 'pry') {
       // Drift back home.
       const hx = this.spawn.x - this.x, hz = this.spawn.z - this.z, hl = Math.hypot(hx, hz);
@@ -351,10 +380,185 @@ export class Enemy {
     }
   }
 
+  // ---------------------------------------------------------------- Demo 0.3 boss (DEMO_0_3_DESIGN §5.2)
+  /**
+   * Boss decision layer 0.3: no shared attack token (behavior_0_3.token_exempt), short idle after each
+   * attack / chain (difficulty_0_3.post_attack_idle_s), chains (combos_0_3) opened mostly up close,
+   * habit punishes (heal nearby, dodge spam, kiting, standing behind), stake lure in phase 2.
+   * Returns true when it handled this frame.
+   */
+  _update03(dt, dx, dz, dist) {
+    const g = this.game, p = g.player, beh = this.def.behavior_0_3 ?? {}, row = this.row03;
+    if (this.state === 'tusk_lock') { this.speed = 0; return true; }
+    if (this.state === 'stake_stun') { this.speed = 0; if (this.stakeStunT <= 0) { this._setState('chase'); this.idleT = 0.3; } return true; }
+    if (this.state === 'riposte_open') { this.speed = 0; this.openT -= dt; if (this.openT <= 0) { this._setState('chase'); this.idleT = 0.2; } return true; }
+    if (this.state === 'combo_hop') {
+      const h = this.hop, k = Math.min(1, this.stateT / h.dur), want = h.dist * Math.sin(k * Math.PI / 2) - h.done;
+      this._face(dx, dz, dt); this._move(-dx / (dist || 1), -dz / (dist || 1), want); h.done += want; this.speed = 0;
+      if (this.stateT >= h.dur) { this.hop = null; this._startStep03(); }
+      return true;
+    }
+    if (this.transitionT > 0 || this.flinchT > 0 || ['turtle', 'hop', 'burrow'].includes(this.state)) return false;
+    if (this.state === 'retreat') return false;
+    if (this.state === 'idle') this._setState('chase');
+    for (const k in this.comboCd) this.comboCd[k] = Math.max(0, this.comboCd[k] - dt);
+    this.lureCd = Math.max(0, this.lureCd - dt);
+    if (!this.punish) this.punish = new PunishTracker(beh, row);
+    this.punish.setRow(row);
+    const rp = this.def.behavior?.rear_punish;
+    const rear = dist < 4.5 && inRearArc(this, p, rp?.rear_arc_deg ?? 120);
+    const surface = Math.max(0, dist - this.radius - 0.4);
+    const pun = this.punish.update(dt, g.gameNow ?? 0, { dist, healing: p.state === 'heal', rear });
+    this.idleT -= dt;
+    if (pun) {
+      const atk = this._punishAttack(pun, surface);
+      if (atk) { this.stats03.punishes.push(pun.reason); this._startSingle03(atk, pun.windupMult ?? 1); return true; }
+      if (pun.reason === 'heal') this.closeT = 2; // fallback: close the distance fast (punish_heal.close_speed_mult)
+    }
+    this.closeT = Math.max(0, (this.closeT ?? 0) - dt);
+    this._aggro = this.closeT > 0 ? beh.punish_heal?.close_speed_mult ?? 1.3 : this._aggro;
+    if (this.idleT > 0) { this._locomote(dt, dx, dz, dist, surface, true); return true; }
+    // Phase 2 stake lure: the player stands near an intact stake, the beast charges (and may ram it).
+    if (this.enc.phaseIndex >= 1 && this.lureCd <= 0 && dist > 6 && dist < 20) {
+      const st = g.gp?.stakeNear(p.x, p.z, 3.5);
+      if (st) {
+        const id = (this.cooldowns.ll_can_hai_luot ?? 0) <= 0 && this.moveset.includes('ll_can_hai_luot') ? 'll_can_hai_luot' : 'll_can_lay';
+        this.lureCd = 7; this.stats03.punishes.push('stake_lure');
+        this._startSingle03(this.attacks.find((a) => a.id === id)); return true;
+      }
+    }
+    // Chains (combos_0_3): mostly up close (combo_chance near / far).
+    const combos = phaseCombos03(this.def, this.enc.phaseIndex, row, g.data.combat.boss_rules_0_3);
+    const avail = combos.filter((c) => surface <= (c.range_m ?? 3) && (this.comboCd[c.id] ?? 0) <= 0);
+    // One roll per decision (the frame the beast is free to act and something is in reach).
+    if (avail.length && g.rng() < comboChance(beh, dist)) {
+      const tot = avail.reduce((a, c) => a + (c.weight ?? 1), 0); let r = g.rng() * tot, pick = avail[0];
+      for (const c of avail) { r -= c.weight ?? 1; if (r <= 0) { pick = c; break; } }
+      this.combo = { def: pick, index: 0 }; this.comboCd[pick.id] = 8; this.stats03.combos.push(pick.id);
+      this._startStep03(); return true;
+    }
+    const ready = this._readyInRange(surface);
+    if (ready.length) {
+      const atk = chooseAttackWeighted(this.attacks, ready, this.cooldowns, surface + 0.01, this.history, g.data.combat.enemy_ai, g.rng, this.preferNext);
+      if (atk) { this.preferNext = null; this._startSingle03(atk); return true; }
+    }
+    this._locomote(dt, dx, dz, dist, surface, true);
+    return true;
+  }
+  _punishAttack(pun, surface) {
+    const set = this.moveset, find = (id) => this.attacks.find((a) => a.id === id);
+    let id = pun.attack;
+    if (pun.reason === 'kite' && !set.includes(id)) id = set.includes('ll_can_hai_luot') ? 'll_can_hai_luot' : 'll_can_lay';
+    const a = find(id); if (!a) return null;
+    if (pun.reason === 'rear' && surface > a.range_m) return null;
+    // Heal / dodge-spam punishes may skip the cooldown (they are rare and fully telegraphed); others respect it.
+    if (pun.reason !== 'heal' && pun.reason !== 'dodge_spam' && (this.cooldowns[id] ?? 0) > 0) return null;
+    return a;
+  }
+  _startSingle03(atk, windupMult = 1) {
+    this.combo = null;
+    const a = windupMult !== 1 ? { ...atk, windup_s: Math.max(atk.parryable ? 0.3 : 0.9, atk.windup_s * windupMult) } : atk;
+    this._startAttack(a);
+  }
+  _startStep03() {
+    const c = this.combo; if (!c) return;
+    const st = c.def.steps[c.index];
+    let base = this.attacks.find((a) => a.id === st.attack);
+    if (st.branch_if_player_behind && inRearArc(this, this.game.player, 120)) base = this.attacks.find((a) => a.id === st.branch_if_player_behind) ?? base;
+    this._startAttack(comboStepAttack(base, c.def, c.index, this.game.data.combat.boss_rules_0_3));
+  }
+  /** End of a 0.3 boss attack: next chain step (with the hop back), or a short idle. */
+  _endAttack03(a) {
+    const g = this.game, beh = this.def.behavior_0_3 ?? {};
+    this.cooldowns[a.id] = attackCooldown03(a, this.enc.phase);
+    const c = this.combo;
+    if (c && a._combo && !a._combo.last) {
+      c.index += 1;
+      const mv = c.def.steps[c.index]?.self_move_before_m ?? 0;
+      if (mv < 0) { this.hop = { dist: -mv, done: 0, dur: Math.max(0.35, c.def.steps[c.index].gap_s ?? 0.45) }; this.attack = null; this._setState('combo_hop'); return; }
+      this.attack = null; this._startStep03(); return;
+    }
+    this.combo = null; this.attack = null;
+    this.idleT = postAttackIdle(this.row03, beh, g.rng);
+    if (g.rng() < (beh.retreat_after_attack_chance ?? 0.15)) this._setState('retreat'); else this._setState('chase');
+  }
+  /** Phản nhịp: a perfect parry on a marked chain step opens the beast for riposte_0_3.enemy_open_s. */
+  openForRiposte(s) { this._cancelAttack(); this._setState('riposte_open'); this.openT = s; }
+  /** Rammed a phase-2 stake: the stake snaps, the beast reels (boss_stun_s) and loses boss_the_damage Thế. */
+  _stakeHit(stake) {
+    const g = this.game, rules = this.enc.phase.phase2_0_3?.arena_change_0_3?.stake_rules ?? {};
+    stake.broken = true; this.stats03.stakeHits += 1;
+    const a = this.attack;
+    if (a?.mud_trail && this.chargeRun) g.gp?.addTrail({ ax: this.chargeRun.sx, az: this.chargeRun.sz, bx: this.x, bz: this.z }, a.mud_trail);
+    this._cancelAttack();
+    this.stakeStunT = a?.stake_collision_stun_s ?? rules.boss_stun_s ?? 2.2;
+    this._setState('stake_stun');
+    g.gp?.onStakeHit(this, stake);
+    const r = this.receiveTheDamage(rules.boss_the_damage ?? 60);
+    g.onHitResult(this, r);
+  }
+  _endWave() { if (this.wave) { this.game.gp?.ringWave(this, null); this.wave = null; } }
+  /** Sóng bùn (ring_wave): the ring edge sweeps outward; jumping above 0.35 m or dodging through avoids it. */
+  _updateWave(a, t, windEnd, tl) {
+    const g = this.game, p = g.player, rw = a.ring_wave;
+    if (t < windEnd || this.waveDone) return;
+    if (t >= windEnd + tl.active) { this._endWave(); this.waveDone = true; return; }
+    if (!this.wave) { this.wave = { r: rw.start_radius_m, hit: false, x: this.x, z: this.z }; this.stats03.waves += 1; g.gp?.onWaveStart(this, a); }
+    const w = this.wave, u = Math.min(1, (t - windEnd) / Math.max(0.05, tl.active));
+    const r0 = w.r, r1 = rw.start_radius_m + (rw.end_radius_m - rw.start_radius_m) * u; w.r = r1;
+    if (t < windEnd + tl.active) {
+      g.gp?.ringWave(this, { x: w.x, z: w.z, r: r1, thick: rw.thickness_m, u });
+      const d = Math.hypot(p.x - w.x, p.z - w.z);
+      if (!w.hit && ringWaveTouches(d, r0, r1, rw.thickness_m, 0.4)) {
+        w.hit = true;
+        if (airborneAvoids('ring_wave', p.y ?? 0, g.data.combat.movement.jump)) g.gp?.onWaveAvoided(this, 'jump');
+        else g.enemyHitsPlayer(this, a);
+      }
+    } else this._endWave();
+  }
+  /** Crossing charges (ends_at_arena_edge): run to the mire edge; the double charge turns and runs again. */
+  _updateEdgeCharge(dt, a, t, windEnd, tl) {
+    const g = this.game, p = g.player;
+    if (t < windEnd) return false;
+    const arena = g.gp?.arenaCircle ?? { cx: 0, cz: -136, r: 18 };
+    let run = this.chargeRun;
+    const spd = Math.min(CHARGE_SPEED_CAP, a.range_m / Math.max(0.3, tl.active));
+    const begin = () => {
+      const dx = Math.sin(this.yaw), dz = Math.cos(this.yaw);
+      this.chargeRun = run = { ...(run ?? {}), sx: this.x, sz: this.z, dist: Math.min(a.range_m, Math.max(2, distanceToArenaEdge(this.x, this.z, dx, dz, arena.cx, arena.cz, arena.r, this.radius))), done: 0, hit: false, pauseT: 0, pass: (run?.pass ?? 0) + 1 };
+    };
+    if (!run) begin();
+    if (run.pauseT > 0) {
+      // Skid at the edge, paw, roar again, re-aim at most second_pass.reaim_max_deg off the reverse heading.
+      run.pauseT -= dt; this.speed = 0;
+      const want = Math.atan2(p.x - this.x, p.z - this.z);
+      this.yaw = turnToward(this.yaw, reaimLimited(run.heading, want, a.second_pass.reaim_max_deg ?? 35), 6 * dt);
+      if (run.pauseT <= 0) begin();
+      this.atkT = Math.min(this.atkT, windEnd + tl.active - 0.01);
+      return true;
+    }
+    const step = Math.min(spd * dt, run.dist - run.done);
+    const nx = this.x + Math.sin(this.yaw) * step, nz = this.z + Math.cos(this.yaw) * step;
+    const stake = g.gp?.stakes && stakeOnPath(this.x, this.z, nx, nz, g.gp.stakes, this.radius);
+    if (stake) { this._stakeHit(stake); return true; }
+    this._move(Math.sin(this.yaw), Math.cos(this.yaw), step); run.done += step; this.speed = spd;
+    if (!run.hit && p.distanceTo(this.x, this.z) <= this.radius + 0.9 && chargeHitsAirborne(p.y ?? 0, g.data.combat.movement.jump)) { run.hit = true; g.enemyHitsPlayer(this, a); }
+    if (run.done >= run.dist - 1e-3 || step < 1e-4) {
+      if (a.mud_trail) g.gp?.addTrail({ ax: run.sx, az: run.sz, bx: this.x, bz: this.z }, a.mud_trail);
+      if (a.second_pass && run.pass < 2) { run.pauseT = a.second_pass.pause_s ?? 0.6; run.heading = this.yaw; g.gp?.onSecondPass(this, a); this.atkT = Math.min(this.atkT, windEnd + tl.active - 0.01); return true; }
+      this.atkT = Math.max(this.atkT, windEnd + tl.active); // straight into the recovery skid
+      this.chargeRun = { ...run, finished: true };
+      return true;
+    }
+    this.atkT = Math.min(this.atkT, windEnd + tl.active - 0.01);
+    return true;
+  }
+
   // ---------------------------------------------------------------- attacks
   _startAttack(atk) {
     const g = this.game, ai = g.data.combat.enemy_ai;
     this.attack = atk; this._setState('attack'); this.atkT = 0; this.hitIdx = 0; this.chargeHit = false; this.selfMoved = 0;
+    this.chargeRun = null; this._endWave(); this.waveDone = false; if (this.v03) this.stats03.attacks += 1;
     this.tl = { ...attackTimeline(atk, { speedMult: this.speedMult, telegraphMult: this.telegraphMult }) };
     // Attacks from outside the camera frame: longer telegraph and always an audio cue (enemy_ai).
     const off = !this.onScreen;
@@ -369,7 +573,8 @@ export class Enemy {
     const d = kind === 'unparryable' ? this.decalU : this.decal;
     this._hideDecals();
     if (atk.shape === 'charge' || atk.shape === 'projectile') { d.lane.visible = true; d.lane.scale.set(this.radius * (atk.shape === 'projectile' ? 1.0 : 2), atk.range_m, 1); }
-    else { d.ring.visible = true; const r = atk.shape === 'aoe' || atk.shape === 'rear_arc' ? atk.range_m + (atk.shape === 'rear_arc' ? this.radius : 0) : atk.range_m + this.radius; d.ring.scale.setScalar(r); }
+    else { d.ring.visible = true; const r = atk.shape === 'ring_wave' ? atk.ring_wave.end_radius_m : atk.shape === 'aoe' || atk.shape === 'rear_arc' ? atk.range_m + (atk.shape === 'rear_arc' ? this.radius : 0) : atk.range_m + this.radius; d.ring.scale.setScalar(r); }
+    if (atk.ends_at_arena_edge) { const ar = g.gp?.arenaCircle ?? { cx: 0, cz: -136, r: 18 }; this.laneLen = Math.min(atk.range_m, Math.max(3, distanceToArenaEdge(this.x, this.z, Math.sin(this.yaw), Math.cos(this.yaw), ar.cx, ar.cz, ar.r, this.radius))); d.lane.scale.set(this.radius * 2, this.laneLen, 1); } else this.laneLen = atk.range_m;
     this.activeDecal = d;
   }
 
@@ -384,13 +589,20 @@ export class Enemy {
     const d = this.activeDecal;
     if (d) {
       const fx = Math.sin(this.yaw), fz = Math.cos(this.yaw);
-      if (d.lane.visible) { d.lane.position.set(this.x + fx * a.range_m / 2, 0.05, this.z + fz * a.range_m / 2); d.lane.rotation.z = -this.yaw; }
+      if (d.lane.visible && !(this.chargeRun && t >= windEnd)) { const L = this.laneLen ?? a.range_m; d.lane.position.set(this.x + fx * L / 2, 0.05, this.z + fz * L / 2); d.lane.rotation.z = -this.yaw; }
       if (d.ring.visible) d.ring.position.set(this.x, 0.05, this.z);
       d.mat.opacity = t < windEnd ? 0.2 + 0.4 * Math.min(1, t / Math.max(0.01, windEnd)) : 0.55;
     }
     const active = t >= windEnd && t < windEnd + tl.active;
     this.neckExposed = a.id === 'll_dui_co' && active;
-    if (a.shape === 'charge' && active) {
+    if (this.v03 && a.shape === 'ring_wave') this._updateWave(a, t, windEnd, tl);
+    else if (this.v03 && a.ends_at_arena_edge && t >= windEnd && !this.chargeRun?.finished) this._updateEdgeCharge(dt, a, t, windEnd, tl);
+    else if (a.shape === 'charge' && active) {
+      // 0.3 phase 2: a charge that meets a stake stops on it.
+      if (this.v03 && a.damage > 0 && this.game.gp?.stakes) {
+        const st = stakeOnPath(this.x, this.z, this.x + Math.sin(this.yaw) * 1.2, this.z + Math.cos(this.yaw) * 1.2, this.game.gp.stakes, this.radius * 0.6);
+        if (st) { this.chargeRun = { sx: this.x, sz: this.z }; this._stakeHit(st); return; }
+      }
       const spd = a.range_m / Math.max(0.05, tl.active);
       this._move(Math.sin(this.yaw), Math.cos(this.yaw), spd * dt);
       this.speed = spd;
@@ -409,6 +621,7 @@ export class Enemy {
       }
     }
     if (t >= windEnd + tl.active) { this._hideDecals(); this.neckExposed = false; }
+    if (t >= tl.total && this.v03) { g.tokens.release(this.uid); this._endWave(); this.chargeRun = null; this._endAttack03(a); return; }
     if (t >= tl.total) {
       this.cooldowns[a.id] = a.cooldown_s; this.attack = null;
       g.tokens.release(this.uid);
@@ -535,6 +748,8 @@ export class Enemy {
     c.state = this.state; c.stateT = this.stateT; c.speed = this.speed;
     if (this.attack && this.state === 'attack') { const a = this.atkCtx; a.id = this.attack.id; a.t = this.atkT; a.tl = this.tl; c.attack = a; } else c.attack = null;
     if (this.state === 'transition') c.state = this.stateT < 0.8 ? 'transition_run' : 'transition';
+    c.chargeRunning = !!(this.chargeRun && !this.chargeRun.finished && !(this.chargeRun.pauseT > 0) && this.state === 'attack');
+    c.chargeTurn = !!(this.chargeRun && this.chargeRun.pauseT > 0);
     this.mesh.update(dt, c);
     if (this.isBoss) this.mesh.setCracks(this.enc.khoen.cracks, this.enc.khoen.enabled);
     const kind = this.telegraphKind;

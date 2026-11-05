@@ -79,7 +79,17 @@ try {
   check('fx: camera shake follows the accessibility option', fx.shakeOn === false, JSON.stringify(fx.shakeOn));
   await D('setAcc', 'acc_camera_shake', true);
 
-  // ---- HUD 0.3 (src/ui/hud): health colour tiers at 100 / 50 / 10 %, drum face full state.
+  // Quality switch from the pause menu (strings in vi + en): run the rest at Low (see header).
+  await press('Escape');
+  await waitFor((x) => x.screen === 'pause', 3000);
+  await page.selectOption('select[data-set=gfx]', 'low');
+  await sleep(300);
+  fx = await D('fx');
+  check('fx: quality menu switches to Low (no shadows, no bloom, smaller pools)', fx.quality === 'low' && !fx.shadows && !fx.bloom && fx.limits[0] < 700, JSON.stringify(fx));
+  await page.click('[data-act=resume]');
+  await waitFor((x) => x.mode === 'playing', 3000);
+
+  // ---- HUD 0.3 (src/ui/hud, checked at Low quality like the other long sections): health colour tiers at 100 / 50 / 10 %, drum face full state.
   const setHud = (hp, drum) => page.evaluate(([hp, drum]) => { const p = window.__demo.game.player; p.hp = p.hpMax * hp; p.drum.points = drum; p.drum.sinceActivity = 0; }, [hp, drum]);
   const rgbOf = (c) => (c.match(/\d+/g) ?? []).map(Number);
   const hudAt = async (hp, drum, pred) => { await setHud(hp, drum); for (let k = 0; k < 40; k++) { await sleep(60); const h = await D('hud'); if (pred(h)) return h; } return D('hud'); };
@@ -101,15 +111,6 @@ try {
   hs = await hudAt(0.1, 399, (h) => !h.drumFull);
   check('hud: drum face leaves the full state below 4 notches; canvas redraws while the fluid moves', !hs.drumFull && hs.drumAttr === '0' && hs.draws > drawsFull, JSON.stringify(hs));
   await setHud(1, 0);
-  // Quality switch from the pause menu (strings in vi + en): run the rest at Low (see header).
-  await press('Escape');
-  await waitFor((x) => x.screen === 'pause', 3000);
-  await page.selectOption('select[data-set=gfx]', 'low');
-  await sleep(300);
-  fx = await D('fx');
-  check('fx: quality menu switches to Low (no shadows, no bloom, smaller pools)', fx.quality === 'low' && !fx.shadows && !fx.bloom && fx.limits[0] < 700, JSON.stringify(fx));
-  await page.click('[data-act=resume]');
-  await waitFor((x) => x.mode === 'playing', 3000);
 
   // ---- Demo 0.2 movement / animation / controls (keys from design/data/controls.json).
   const P = () => D('playerInfo');
@@ -129,11 +130,21 @@ try {
   await shot('03c_sprint.png');
   await page.keyboard.up('ShiftLeft'); await page.keyboard.up('KeyW');
   await waitFor(() => true, 10); await sleep(600);
-  // Directional dodge: hold A (camera-left) + Space; the roll goes left, not forward.
+  // Demo 0.3 controls (controls.json scheme_0_3): Space jumps, C dodges.
+  const G3 = () => D('gp03');
+  await D('teleport', 0, 14, Math.PI); await D('setCameraYaw', 0); await sleep(300);
+  await page.keyboard.down('Space');
+  let g3 = null, peak = 0;
+  for (let k = 0; k < 40; k++) { g3 = await G3(); peak = Math.max(peak, g3.player.y); if (peak > 0.3 && k > 2) break; await sleep(40); }
+  await page.keyboard.up('Space');
+  s = await waitFor((x) => x.player.state === 'free', 8000, 60);
+  g3 = await G3();
+  check('Space jumps: the player leaves the ground and lands again', peak > 0.3 && g3.stats.jumps >= 1 && g3.stats.landings >= 1 && g3.player.y === 0, `peak ${peak.toFixed(2)} m ${JSON.stringify({ j: g3.stats.jumps, l: g3.stats.landings, y: g3.player.y })}`);
+  // Directional dodge: hold A (camera-left) + C; the roll goes left, not forward.
   await D('teleport', 0, 14, 0); await D('setCameraYaw', 0); await sleep(300);
   pi = await P();
   const x0 = pi.x, z0 = pi.z;
-  await page.keyboard.down('KeyA'); await page.keyboard.press('Space');
+  await page.keyboard.down('KeyA'); await page.keyboard.press('KeyC');
   await waitFor((x) => x.player.state === 'dodge', 2000, 20);
   await page.keyboard.up('KeyA');
   await waitFor((x) => x.player.state === 'free', 4000, 50);
@@ -141,7 +152,7 @@ try {
   // Camera yaw 0 looks along -z: camera-left is -x.
   check('dodge follows the input direction (left roll)', pi.x < x0 - 1.5 && Math.abs(pi.z - z0) < 1.0 && pi.dodge?.kind === 'roll', `moved ${(pi.x - x0).toFixed(2)}, ${(pi.z - z0).toFixed(2)} ${JSON.stringify(pi.dodge)}`);
   await sleep(400);
-  await page.keyboard.press('Space'); // neutral = backstep
+  await page.keyboard.press('KeyC'); // neutral = backstep
   s = await waitFor((x) => x.player.state === 'dodge', 2000, 20);
   pi = await P();
   check('neutral dodge is a backstep', pi.dodge?.kind === 'backstep', JSON.stringify(pi.dodge));
@@ -191,7 +202,7 @@ try {
   await page.waitForSelector('[data-screen=remap]');
   await page.click('[data-screen=remap] [data-act=reset]'); await sleep(200);
   bnd = await D('bindings');
-  check('remap: reset to defaults', bnd.kbm.dodge[0] === 'Space' && bnd.kbm.parry[0] === 'KeyQ');
+  check('remap: reset to defaults (0.3: dodge C, jump Space)', bnd.kbm.dodge[0] === 'KeyC' && bnd.kbm.jump[0] === 'Space' && bnd.kbm.parry[0] === 'KeyQ');
   await page.click('[data-screen=remap] [data-act=back]');
   await page.click('[data-act=resume]');
   await waitFor((x) => x.mode === 'playing', 3000);
@@ -208,8 +219,14 @@ try {
   await page.evaluate(() => { window.__fakePad.buttons[1] = { pressed: false, value: 0 }; });
   const padGlyph = await page.evaluate(() => window.__demo.game.glyphText('interact'));
   const padDevice = (await P()).device;
-  check('gamepad: B (button 1) dodges; prompts show pad glyphs', !!s && padDevice === 'pad' && padGlyph === 'A', `device=${padDevice} interact glyph=${padGlyph}`);
+  check('gamepad: B (button 1) dodges; prompts show pad glyphs (0.3: interact on RB)', !!s && padDevice === 'pad' && padGlyph === 'RB', `device=${padDevice} interact glyph=${padGlyph}`);
   await waitFor((x) => x.player.state === 'free', 4000, 50);
+  await page.evaluate(() => { window.__fakePad.buttons[0] = { pressed: true, value: 1 }; });
+  let padPeak = 0;
+  for (let k = 0; k < 30 && padPeak < 0.2; k++) { padPeak = Math.max(padPeak, (await G3()).player.y); await sleep(40); }
+  await page.evaluate(() => { window.__fakePad.buttons[0] = { pressed: false, value: 0 }; });
+  check('gamepad: A (button 0) jumps', padPeak > 0.2, `peak ${padPeak.toFixed(2)}`);
+  await waitFor((x) => x.player.state === 'free', 6000, 50);
   // Left stick half tilt walks (analog), full tilt runs.
   await page.evaluate(() => { window.__fakePad.axes = [0, -0.45, 0, 0]; });
   await sleep(900);
@@ -294,6 +311,17 @@ try {
   check('boss telegraph shown (shape + color + sound cue)', !!s, s ? `${s.boss.attack} ${s.boss.tele}` : 'none');
   await shot('06_boss_telegraph.png');
   const bossUid = (await S()).boss.uid;
+  // Demo 0.3 boss: a chain (combos_0_3) and the Mud Wave (ring_wave) are played by the real attack code.
+  await waitFor((x) => x.boss.state !== 'attack' && !x.boss.staggered, 20000, 60);
+  await page.evaluate(() => window.__demo.game.gp.forceBoss('combo', 'cb_ba_nhip_nanh'));
+  g3 = await G3();
+  const comboSeen = g3.boss.combo === 'cb_ba_nhip_nanh';
+  for (let k = 0; k < 200 && (await G3()).boss.combo; k++) await sleep(100);
+  await waitFor((x) => x.boss.state !== 'attack', 20000, 60);
+  await page.evaluate(() => window.__demo.game.gp.forceBoss('attack', 'll_song_bun'));
+  let waveShot = false;
+  for (let k = 0; k < 300; k++) { g3 = await G3(); if (!waveShot && g3.boss.stats.waves >= 1) { await shot('06b_boss_mud_wave.png'); waveShot = true; } if (g3.boss.attack !== 'll_song_bun' && g3.boss.stats.waves >= 1) break; await sleep(100); }
+  check('boss 0.3 plays a chain and the Mud Wave', comboSeen && g3.boss.stats.combos.length >= 1 && g3.boss.stats.waves >= 1 && g3.boss03, JSON.stringify({ combo: comboSeen, stats: g3.boss.stats }));
   let sawTransition = false;
   for (let k = 1; k <= 3; k++) {
     await waitFor((x) => !x.boss.staggered && x.boss.state !== 'pried', 20000);
@@ -309,6 +337,8 @@ try {
     check(`boss posture break ${k} cracks khoen`, s.boss.cracks === k, `cracks=${s.boss.cracks} phase=${s.boss.phase}`);
     if (k === 2) { await sleep(400); await shot('07_boss_phase2.png'); }
   }
+  g3 = await G3();
+  check('boss phase 2: the water recedes and 3 old trap stakes emerge', (g3.stakes?.length ?? 0) === 3, JSON.stringify({ stakes: g3.stakes, pools: g3.pools }));
   check('boss phase 2 set piece "Húc cọc" played (stake rammed)', sawTransition, `transitionSeen=${(await D('enemyDetail', bossUid))?.transitionSeen}`);
   fx = await D('fx');
   check('fx: posture breaks trigger slow-mo hooks (game step only)', fx.slowMo >= 3, `slowMo calls=${fx.slowMo}`);
@@ -355,16 +385,49 @@ try {
   check('freed flag set, shed tusk received, no khoen item', !!s && s.inventory.mat_nanh_rung === 1 && !Object.keys(s.inventory).some((k) => /khoen/.test(k)), JSON.stringify(s?.inventory));
   check('house move learned + 2 craft points', !!s && s.skills.points >= 4, `points=${s?.skills.points}`);
 
-  // ---- Codex
-  await press('c');
-  s = await waitFor((x) => x.screen === 'codex', 3000);
-  check('codex opens', !!s);
-  const codexText = await page.textContent('[data-screen=codex]');
-  check('codex shows level-B notice + labels', codexText.includes('mức B') && codexText.includes('Sáng tạo của game'));
+  // ---- Demo 0.3 UI (ui/inventory, ui/map): minimap top-left, Pack (B) with equipment / skills / map / codex tabs.
+  const SHOTS03 = process.env.SHOTS03_DIR ?? join(SHOTS, '..', 'ui03-shots');
+  mkdirSync(SHOTS03, { recursive: true });
+  const shot03 = async (name) => { await page.screenshot({ path: join(SHOTS03, name) }); log('shot', join(SHOTS03, name)); };
+  const U = () => D('ui03');
+  await D('teleport', 15, -24); await sleep(600);
+  let u = await U();
+  check('minimap shown in the top-left corner (~180 px)', !u.minimapHidden && u.minimapRect.x < 40 && u.minimapRect.y < 40 && Math.abs(u.minimapRect.w - 180) < 4, JSON.stringify(u.minimapRect));
+  await shot03('smoke_minimap.png');
+  await D('teleport', 22, -27); await sleep(300); await press('e'); await sleep(400);
+  u = await U();
+  check('rattan chest opens and gives its gear (head wrap)', u.opened.includes('chest_dam_nong'), JSON.stringify(u.opened));
+  await press('b');
+  s = await waitFor((x) => x.screen === 'pack', 3000);
+  check('B opens the Pack (game paused)', !!s && s.mode === 'paused');
+  await page.click('[data-slot=head]'); await sleep(200);
+  if (await page.$('[data-unequip]')) { await page.click('[data-unequip]'); await sleep(200); }
+  const armor0 = (await U()).pack.stats.armor;
+  await page.click('[data-cand=ar_khan_gai]'); await sleep(300);
+  const armor1 = (await U()).pack.stats.armor;
+  check('equipping the head wrap raises armor (stats change)', armor1 === armor0 + 6, `${armor0} -> ${armor1}`);
+  await shot03('smoke_pack_equipment.png');
+  await D('addXp', 200);
+  await page.click('[data-tab=skills]'); await sleep(200);
+  await page.click('[data-art=sk_giao_quet_song]'); await sleep(200);
+  const lv0 = (await U()).skills.sk_giao_quet_song;
+  await page.click('[data-act=rankup]'); await sleep(200);
+  await page.click('[data-act=rankup]'); await sleep(200);
+  const lv1 = (await U()).skills.sk_giao_quet_song;
+  check('Weapon Art unlocked and ranked up with XP', lv1 === lv0 + 2, `${lv0} -> ${lv1}`);
+  await shot03('smoke_pack_skills.png');
+  await page.click('[data-tab=map]'); await sleep(600);
+  u = await U();
+  check('map shows fog (part explored) and landmarks', u.pack.map && u.pack.map.fogRatio > 0.02 && u.pack.map.fogRatio < 0.9 && u.pack.map.symbols.includes('lm_fire_ben_say') && u.pack.map.symbols.includes('chest_dam_nong'), JSON.stringify(u.pack.map));
+  await shot03('smoke_map.png');
+  await page.click('[data-tab=codex]'); await sleep(300);
+  const codexText = await page.textContent('[data-screen=pack]');
+  check('codex tab shows level-B notice + labels', codexText.includes('mức B') && codexText.includes('Sáng tạo của game'));
   await page.click('[data-cx=cx_khoen]');
   await shot('10_codex.png');
-  await press('c');
-  await waitFor((x) => x.screen === null && x.mode === 'playing', 3000);
+  await press('b');
+  s = await waitFor((x) => x.screen === null && x.mode === 'playing', 3000);
+  check('B closes the Pack', !!s);
 
   // ---- Language switch from the pause menu
   await press('Escape');

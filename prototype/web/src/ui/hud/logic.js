@@ -2,17 +2,53 @@
 // Health colour tiers, the trailing "damage chip", the Drum Burst gauge (fluid level + full state),
 // skill cooldowns and the minimal-HUD visibility rule.
 //
-// Thresholds come from the PO request for the Demo 0.3 HUD ("green; yellow at 50 %; red under 10 %").
-// They are UI presentation constants, not combat balance; move them to design data if they become
-// tunable.
+// Defaults below; hudTuningFrom(data) reads the data lock combat_tuning.hud_0_3 (DEMO_0_3_DESIGN §7):
+// thresholds, pulse rates, damage trail, out-of-combat fade, skill seconds, boss phase marker.
+// COLOURS stay the PO palette (bright green -> yellow <= 50 % -> red <= 10 %, D-024; the red is not
+// the telegraph red-bronze #C64E29). hud_0_3 currently lists muted hex values (#8FC79A / #D9A441 /
+// #E8C27A) that contradict the PO request: flagged to the designer, not read here.
 export const HUD_TUNING = Object.freeze({
   hpWarnRatio: 0.5,        // <= 50 %: yellow tier
-  hpCritRatio: 0.1,        // <= 10 %: red tier (pulse + heartbeat icon, not colour only)
-  chipDelayS: 0.45,        // damage chip waits, then drains
-  chipRatePerS: 0.7,       // drain speed (fraction of the bar per second)
-  minimalLingerS: 3.5,     // minimal HUD: stays this long after combat / a change
+  hpCritRatio: 0.1,        // <= 10 %: red tier (pulse + heartbeat icon + text, not colour only)
+  critPulseHz: 1.5,
+  readyPulseHz: 1.4,       // drum face when full
+  chipDelayS: 0.6,         // damage trail (hud_0_3.health_bar.damage_trail_s), then drains
+  chipRatePerS: 0.9,       // drain speed (fraction of the bar per second)
+  minimalLingerS: 4.0,     // minimal HUD fade after combat (hud_0_3.fade_out_of_combat_after_s)
   fluidStiffness: 7,       // drum fluid level easing (1/s)
+  skillSecondsBelowS: 5,   // skill cooldown shows seconds below this
+  skillReadyFlashS: 0.25,
+  bossPhaseMarker: 0.5,    // boss HP ratio of the phase marker (null = none)
+  theOnlyWhenActive: true, // hud_0_3.the_bar.show_only_when_not_full: hide Thế at rest
+  drumLabelKey: 'hud_drum', drumReadyKey: 'hud_drum_ready',
 });
+
+/** HUD tuning from design data (combat_tuning.hud_0_3), falling back to HUD_TUNING per field. */
+export function hudTuningFrom(data) {
+  const h = data?.combat?.hud_0_3;
+  if (!h) return HUD_TUNING;
+  const hb = h.health_bar ?? {}, ub = h.ultimate_bar ?? {}, sk = h.skills ?? {}, bb = h.boss_bar ?? {};
+  const pick = (v, d) => (typeof v === 'number' && Number.isFinite(v) ? v : d);
+  return Object.freeze({
+    ...HUD_TUNING,
+    hpWarnRatio: pick(hb.warn_at_most_ratio, HUD_TUNING.hpWarnRatio),
+    hpCritRatio: pick(hb.critical_at_most_ratio, HUD_TUNING.hpCritRatio),
+    critPulseHz: pick(hb.critical_pulse_hz, HUD_TUNING.critPulseHz),
+    chipDelayS: pick(hb.damage_trail_s, HUD_TUNING.chipDelayS),
+    readyPulseHz: pick(ub.ready_pulse_hz, HUD_TUNING.readyPulseHz),
+    minimalLingerS: pick(h.fade_out_of_combat_after_s, HUD_TUNING.minimalLingerS),
+    skillSecondsBelowS: pick(sk.show_seconds_below_s, HUD_TUNING.skillSecondsBelowS),
+    skillReadyFlashS: pick(sk.ready_flash_s, HUD_TUNING.skillReadyFlashS),
+    bossPhaseMarker: bb.phase_marker_at_hp_ratio ?? HUD_TUNING.bossPhaseMarker,
+    theOnlyWhenActive: h.the_bar?.show_only_when_not_full ?? HUD_TUNING.theOnlyWhenActive,
+    drumLabelKey: ub.label_key ?? HUD_TUNING.drumLabelKey, drumReadyKey: ub.ready_key ?? HUD_TUNING.drumReadyKey,
+  });
+}
+
+/** Skill cooldown text: whole seconds (rounded up) while 0 < left < below, else ''. */
+export function cooldownText(secondsLeft, below = HUD_TUNING.skillSecondsBelowS) {
+  return secondsLeft > 0 && secondsLeft < below ? String(Math.ceil(secondsLeft - 1e-6)) : '';
+}
 
 const EPS = 1e-9;
 export const clamp01 = (x) => (x > 1 ? 1 : x < 0 || !(x === x) ? 0 : x); // NaN -> 0

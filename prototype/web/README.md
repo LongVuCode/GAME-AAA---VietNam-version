@@ -59,6 +59,13 @@ Không có nút nhảy (`movement.jump_enabled = false`): chạy nhanh vào khú
 - **Nhóm giao tranh** theo `encounters_0_2` (cua đơn, cua đôi, Ụ Bùn + cua, bọ ngựa phục đôi, bọ ngựa + cua, Ụ Bùn ở lò).
 - **`tuning_changes_0_2`** (HP boss 1600, pha 2 tốc độ 0,95 / báo hiệu 1,15, Nhịp trống, hit-stop nhẹ 0,05) chỉ áp **trong prototype** qua lớp override (`logic/tuning.js`, `DATA_02`); JSON gốc giữ nguyên để không vỡ `ConfigTests.cpp`. Unit test kiểm cả hai.
 
+## Demo 0.3: Hành trang, bản đồ, minimap (`src/ui/inventory`, `src/ui/map`)
+
+- **Hành trang (B)** dừng game; thẻ Trang bị | Túi đồ | Kỹ năng | Bản đồ | Sổ tay | Codex (Q/E hoặc LB/RB; J/K/M mở thẳng thẻ; B/Esc đóng). Trang bị: 9 ô theo `items.gear_0_3.slots` (Vũ khí 2 mở ở đời Bương, Vật đeo 2 mở sau khi gọi tỉnh người bị mê), viền màu độ hiếm + khía góc, nhân vật 3D (rig người chơi, renderer WebGL thứ hai, kéo chuột để xoay, phóng gần khi chọn ô Đầu), bảng chỉ số, so sánh ▲ xanh ngọc / ▼ ngà gạch dưới, nâng cấp +1..+3 (trừ nguyên liệu theo `upgrades.costs`, chỉ ở gần lò đúc). Kỹ năng: Thế võ (bậc kim cương, hồi chiêu, mở/nâng bằng Kinh nghiệm, học lại ở bếp lửa) + cây Nghề nhà cũ. Sổ tay/Codex giữ nội dung cũ.
+- **Bản đồ (M)**: vẽ từ hình học `world.js` + `map.json` lên "vải gai", sương 4 m tan 14 m quanh người chơi (điểm nhìn 25–30 m), mốc + chú giải 17 biểu tượng, tối đa 8 dấu tự đặt, theo dõi mục tiêu, tiến độ vùng, đi nhanh giữa bếp lửa đã thấy (chặn khi giao chiến / ở bãi lầy). **Minimap** tròn góc trên-trái (xoay theo camera, tùy chọn hướng bắc), dùng chung sương.
+- **Điểm mới** trong `POINTS`: 5 điểm nhìn (tự phát hiện khi tới gần), 2 rương, 3 bí mật môi trường (Tương tác), phần thưởng theo `map.json`.
+- **API `game.progress`** (`logic/progression.js`, test `inventory.test.mjs`): `getStats(weaponId?)` → `{ hpMax, theMax, armor, damageReduction, stats{ guard_the_cost_mult, drum_gain_mult, the_regen_delay_mult, skill_cooldown_mult, weapon_damage_mult, ... }, effects[], sets[] }`, `getSkillLevel(id)`, `getSkillInfo(id)`, `addItem(id, n)`, `addXp(n)`, `awardXp(kind, ref)`, `onChange(fn)`. Giả định chưa có trong dữ liệu: giới hạn chồng (`STACK_LIMITS`), sức chứa đồ rời 24, nâng giáp chỉ nhân chỉ số `armor`.
+
 ## Có gì trong bản này
 
 - **Khu vực graybox** theo sơ đồ DEMO_0_1_DESIGN §2: Bến Sậy (bếp lửa, bà lái đò, đò), đầm nông (nước nông làm chậm), bãi lau (người bị mê trong sương ảo), lối tắt về bến, lò bỏ hoang (bí mật), bếp lửa trước boss, bãi lầy tròn r≈18 m có 3 vũng lầy; hub bến Lau đặt riêng (lò đúc, Thạp gốm trơn, trống gỗ, bãi sông). Không hồ lớn, không đền miếu.

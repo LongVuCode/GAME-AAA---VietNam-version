@@ -23,7 +23,8 @@ export function levelEntry(def, level) {
 
 /** Cooldown of a rank × gear skill_cooldown_mult (hud_0_3.skills: levels[].cooldown_s × skill_cooldown_mult). */
 export function effectiveCooldown(entry, stats = {}) {
-  const m = stats?.skill_cooldown_mult ?? stats?.skillCooldownMult ?? 1;
+  // progress.getStats() -> { stats: { skill_cooldown_mult } } (logic/progression.js); a flat object also works.
+  const m = stats?.stats?.skill_cooldown_mult ?? stats?.skill_cooldown_mult ?? 1;
   return (entry?.cooldown_s ?? 0) * (m > 0 ? m : 1);
 }
 

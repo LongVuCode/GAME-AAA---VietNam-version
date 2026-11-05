@@ -23,6 +23,8 @@ import { UI } from './ui.js';
 import { makeHumanoid, makeTusk } from './meshes.js';
 import { createFx, gameStep } from '../fx/index.js';
 import { GameFxHooks } from '../fx/hooks.js';
+import { Gameplay03 } from './gameplay03.js';
+import { createGameProgress, installUi03 } from '../ui/inventory/index.js'; // Demo 0.3 Pack / map / minimap
 
 const SETTINGS_KEY = 'ngb_demo01_settings_v1';
 const WEIGHT_RANK = { light: 0, medium: 1, heavy: 2, finisher: 3 };
@@ -123,14 +125,17 @@ export class Game {
     this.cam = { yaw: 0, pitch: 0.38, dist: this.data.combat.feel?.camera_distance_m ?? 6.5, fx: 0, fy: 1.6, fz: 0, init: false, punchX: 0, punchY: 0, punchZ: 0, pvx: 0, pvy: 0, pvz: 0, orbit: 0, lookBias: 0 };
     this.feedbackLog = [];
     this.ui = new UI(this.container, this);
+    this.progress = createGameProgress(this); // Demo 0.3 progression API (logic/progression.js)
     this.tokens = new AttackTokens(this.data.combat.enemy_ai);
     this.applySettings();
     this.newGameState();
     this.player = new Player(this);
     this.fxh = new GameFxHooks(this, this.fx);
+    this.gp = new Gameplay03(this); // Demo 0.3 gameplay: jump, Arts, riposte, Ghì nanh, cinematic burst, boss arena
     this.applySettings();
     this.spawnWorldEnemies();
     this.buildNpcs();
+    this.ui03 = installUi03(this); // Pack (B), map (M), minimap, exploration
     addEventListener('resize', () => this.resize()); this.resize();
     r.domElement.addEventListener('click', () => { if (this.mode === 'playing' && !this.ui.open) this.input.requestLock(); });
     document.addEventListener('pointerlockchange', () => {
@@ -161,6 +166,7 @@ export class Game {
     this.equipped = null; this.zone = 'z_ben_say';
     this.walk.gateOpen = false; if (this.props) this.props.gate.visible = true;
     this.mods = this.gen.skills.modifiers();
+    this.progress?.reset(); this.ui03?.reset();
   }
 
   get era() { return this.gen.era; }
@@ -234,6 +240,7 @@ export class Game {
   }
   openScreen(name) {
     if (this.mode !== 'playing') return;
+    if (['codex', 'journal', 'skills'].includes(name) && this.ui03) { this.ui03.openTab(name); return; } // tabs of the Pack (0.3)
     this.mode = 'paused'; this.input.exitLock();
     if (name === 'codex') this.ui.showCodex();
     if (name === 'journal') this.ui.showJournal();
@@ -281,6 +288,7 @@ export class Game {
     if (this.mode === 'playing') this.update(realDt, now / 1000, wallDt);
     else { this.handleMenuKeys(); this._menuAnim(wallDt); }
     this.ui.tick(wallDt);
+    this.ui03?.tick(wallDt);
     this.render(wallDt);
     this.input.endFrame();
   }
@@ -288,6 +296,7 @@ export class Game {
   handleMenuKeys() {
     const i = this.input;
     if (i.capture) return; // remap screen is waiting for a key
+    if (this.ui03?.menuKeys(i, Math.min(MAX_WALL_DT_S, (performance.now() - this.frameStart) / 1000))) return; // Pack handles its own keys
     if (this.ui.screenName) this.ui.menuNav(i); // pad / keyboard navigation (ui_* actions of controls.json)
     if (this.mode === 'paused' && (i.pressed('menu') || (i.pressed('codex') && this.ui.screenName === 'codex')
       || (i.pressed('journal') && this.ui.screenName === 'journal') || (i.pressed('skills') && this.ui.screenName === 'skills'))) this.resume();
@@ -302,6 +311,7 @@ export class Game {
     for (const t of due) t.fn();
     if (this.mode !== 'playing') return;
     if (i.pressed('menu')) { this.pause('settings'); return; }
+    if (this.ui03?.update(i, wallDt)) return; // B / M open the Pack; fog + lookouts
     if (i.pressed('codex')) { this.openScreen('codex'); return; }
     if (i.pressed('journal')) { this.openScreen('journal'); return; }
     if (i.pressed('skills')) { this.openScreen('skills'); return; }
@@ -321,6 +331,7 @@ export class Game {
     p.update(dt, this.gameNow, i);
     this.tokens.tick(dt);
     for (const e of this.allEnemies()) e.update(dt);
+    this.gp?.update(dt, wallDt, i);
     this._updateFinisher(wallDt);
     this.updateZone();
     if (!this.locked) this.updateInteractions(realDt, i); else this.ui.prompt(null);
@@ -346,6 +357,7 @@ export class Game {
     let orbit = 0;
     if (this.pry) { const beat = this.pry.judge.beat; want = (tun.pry.camera_distance_m ?? 4.5) - beat * (tun.pry.camera_push_per_beat_m ?? 0.25); orbit = beat * (tun.pry.camera_orbit_per_beat_deg ?? 12) * Math.PI / 180; }
     if (fin) { want = tun.finisher?.camera_distance_m ?? 4.8; orbit = (tun.finisher?.camera_orbit_deg ?? 30) * Math.PI / 180 * fin.side; }
+    if (this.gp && !fin && !this.pry) ({ want, orbit } = this.gp.cameraShot(want, orbit, dt)); // 0.3 scripted shots
     c.orbit += (orbit - c.orbit) * Math.min(1, dt * (fin ? 5 : 3));
     c.dist += (want - c.dist) * Math.min(1, dt * (fin ? 6 : 2.5));
     if (lt) {
@@ -567,6 +579,7 @@ export class Game {
 
   /** Set piece "Húc cọc" (enemies.json transition_set_piece_0_2) events from enemy.js. */
   onBossTransition(boss, ev) {
+    this.gp?.onBossTransition(boss, ev); // 0.3: water recedes, stakes emerge
     const st = this.props.trapStake, top = this.props.trapStakeTop;
     switch (ev) {
       case 'start': this.lockTarget = boss; this.sfx.telegraph('boar_roar', 'nodamage', 0); this.transitionSeen = (this.transitionSeen ?? 0) + 1; break;
@@ -609,6 +622,7 @@ export class Game {
       case Outcome.PERFECT_DODGE:
         p.drum.gain('perfect_dodge'); this.sfx.dodge(true); this.fxh.perfectDodge(); this.ui.toast(T('msg_perfect_dodge'), 1.5);
         p.postPerfectDodgeUntil = this.gameNow + this.mods.postPerfectDodgeWindowS;
+        this.gp?.onPerfectDodge(p);
         return;
       case Outcome.DODGED: return;
       case Outcome.PERFECT_PARRY: case Outcome.PARRIED: {
@@ -620,6 +634,7 @@ export class Game {
         enemy.mesh.hitReact?.(perfect ? 0.9 : 0.5, 0);
         this.ui.toast(T(perfect ? 'msg_perfect_parry' : 'msg_parry'), 1.5);
         if (perfect) p.perfectParryUntil = this.gameNow + g.perfect_parry_counter_window_s;
+        if (perfect) this.gp?.onPerfectParry(enemy, atk); // 0.3 Phản nhịp
         return;
       }
       default: {
@@ -649,6 +664,8 @@ export class Game {
     const key = e.def.defeat_behavior === 'dissipate' ? 'msg_enemy_dissipated' : 'msg_enemy_fled';
     this.ui.toast(this.i18n.t(key, { name: this.loc(e.def.name) }), 2.5);
     this.fxh.enemyDefeated(e);
+    this.ui03?.onEnemyDefeated(e); // XP + drops (0.3)
+    this.gp?.onEnemyDefeated(e);
     if (this.lockTarget === e) this.lockTarget = null;
     this.tokens.release(e.uid);
   }
@@ -696,6 +713,7 @@ export class Game {
   }
   resetBoss() {
     this.boss.reset(); this.walk.resetMud(); this.props.addedMud.visible = false;
+    this.gp?.resetArena();
     const st = this.props.trapStake, top = this.props.trapStakeTop;
     top.rotation.z = 0.25; top.position.set(st.position.x + 0.25, 1.75, st.position.z);
   }
@@ -774,7 +792,7 @@ export class Game {
       case 'thap': return true;
       case 'drum': return (coi && freed) || (!coi && this.practice?.done && !this.endReached);
       case 'ferry_to_marsh': return coi;
-      default: return false;
+      default: return this.ui03?.pointAvailable(pt) ?? false;
     }
   }
 
@@ -793,7 +811,7 @@ export class Game {
       case 'furnace': return k('prompt_craft');
       case 'thap': return k('prompt_open_thap');
       case 'drum': return k(coi ? 'prompt_handoff' : 'prompt_continue');
-      default: return '';
+      default: return this.ui03?.promptFor(pt) ?? '';
     }
   }
 
@@ -801,6 +819,7 @@ export class Game {
     const p = this.player;
     p.animOverride = null;
     if (this.finishing) { this.ui.prompt(null); return; }
+    if (this.gp?.interactions(dt, i)) return; // 0.3: Phản nhịp, Ghì nanh
     let best = null, bestD = Infinity;
     for (const pt of POINTS) {
       if (pt.kind === 'trace') continue;
@@ -870,7 +889,7 @@ export class Game {
         this.openScreen('craft'); break;
       case 'thap': this.openThap(); break;
       case 'drum': if (this.era === 'era_lac_long_quan') this.confirmHandoff(); else this.finishDemo(); break;
-      default: break;
+      default: this.ui03?.interact(pt); break;
     }
   }
 
@@ -890,6 +909,7 @@ export class Game {
     }
     if (nodeId === 'sn_kiln') this.props.hollow.visible = true;
     if (r.reward) {
+      this.ui03?.xp('secret_chain_end', this.secret.chain.id);
       for (const it of r.reward.items ?? []) this.give(it.item, it.count);
       this.props.hollow.visible = false;
       for (const cx of r.reward.codex_unlock_extra ?? []) {
@@ -906,6 +926,7 @@ export class Game {
     this.gen.flags.add(nc.on_success.sets_flag);
     const pts = skillPointsFor(this.data.lineage, nc.id) || nc.on_success.grants_skill_points;
     this.gen.skills.points += pts;
+    this.ui03?.xp('non_combat_success', nc.id);
     this.ui.toast(this.i18n.t('msg_villager_saved'), 4);
     this.ui.toast(this.i18n.t('msg_skill_points', { n: pts }), 4);
     this.sfx.pickup();
@@ -982,6 +1003,7 @@ export class Game {
     this.fx.slowMo(tun.pry.release_time_scale ?? 0.3, tun.pry.release_slowmo_s ?? 0.4);
     this.hitstop.trigger(hitStopFor(tun.hit_stop, 'pry_release'));
     this.shake('heavy'); this.fxh.bossFreed(boss);
+    if (!this.gp) this.ui03?.xp('enemy', boss.def.id);
     // The khoen falls apart; pieces are narrative only (no item, no counter: V9).
     boss.mesh.khoen.visible = false;
     this.ui.showHud(false);
@@ -1188,6 +1210,7 @@ export class Game {
       points: `${this.i18n.t('skills_points')}: ${this.gen.skills.points} [${this.glyphText('skills')}]`,
       healKey: this.glyphText('heal'), burstKey: this.glyphText('drum_burst'), sprinting: p.sprinting, device: this.input.device,
       weapon: p.weapon, slot: p.slot ?? 0, slots: this.gen.slots, // HUD 0.3: weapon medallion + slot keys
+      otherWeapon: this.gen.slots > 1 ? this.data.weapons.weapons.find((w) => w.id === this.gen.weapons[(p.slot ?? 0) === 0 ? 1 : 0]) ?? null : null,
       combat: this.allEnemies().some((e) => e.engaged && e.alive && Math.hypot(e.x - p.x, e.z - p.z) < 30), // minimal HUD
       zone: this.zoneName(), objective: this.objective(), fps: this.settings.showFps ? this.fps : null,
       boss: bossOn ? { name: this.loc(b.def.name), phase: this.loc(b.enc.phase.name), hp: b.enc.hpRatio, the: b.posture.ratio,
@@ -1235,6 +1258,8 @@ export class Game {
         the: p.the.ratio, dodge: p.dodge ? { kind: p.dodge.kind, local: p.dodge.local, dirX: p.dodge.dirX, dirZ: p.dodge.dirZ } : null, joints: p.jointAngles(), device: g.input.device,
         attack: p.cur ? { id: p.cur.move.id, kind: p.cur.kind, lunge: p.cur.lunge, t: p.cur.t } : null }; },
       feedbackLog: () => g.feedbackLog.slice(-10),
+      /** Demo 0.3 gameplay probe (jump height, Arts, boss chains / waves / stakes, Ghì nanh). */
+      gp03: () => g.gp.debug(),
       bindings: () => g.input.bindings.toJSON(),
       enemyDetail(uid) { const e = g.allEnemies().find((x) => x.uid === uid); return e ? { state: e.state, x: e.x, z: e.z, speed: e.speed, history: [...e.history], onScreen: e.onScreen, transitionSeen: g.transitionSeen ?? 0 } : null; },
       finisherCount: () => g.finisherCount ?? 0,
@@ -1252,6 +1277,12 @@ export class Game {
       give(id, n) { g.give(id, n); },
       gather() { for (const pt of POINTS.filter((x) => x.kind === 'gather')) if (!g.gathered.has(pt.id)) { g.gathered.add(pt.id); g.props.rattan[pt.id].visible = false; g.inv.add('mat_day_may', 1); } },
       points: () => POINTS.map((p) => ({ id: p.id, kind: p.kind, x: p.x, z: p.z })),
+      /** Demo 0.3 Pack / map / minimap read-out and helpers (ui/inventory, ui/map). */
+      ui03: () => g.ui03.debug(),
+      progress: () => g.progress.toJSON(),
+      openPack(tab) { g.ui03.openTab(tab); },
+      addXp(n) { return g.progress.addXp(n); },
+      grant(id, n = 1) { return g.ui03.grant(id, n); },
     };
   }
 }

@@ -2,7 +2,7 @@
 // Drum Burst gauge full state and transitions, cooldown readiness, minimal-HUD visibility.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { hpTier, hpColor, HP_COLORS, ChipBar, drumGauge, DrumFaceState, SkillCooldowns, HudVisibility, hudTextScale } from '../src/ui/hud/logic.js';
+import { hpTier, hpColor, HP_COLORS, ChipBar, drumGauge, DrumFaceState, SkillCooldowns, HudVisibility, hudTextScale, hudTuningFrom, cooldownText, HUD_TUNING } from '../src/ui/hud/logic.js';
 import { DrumMeter } from '../src/logic/drum.js';
 import { DATA } from '../src/data.js';
 
@@ -100,4 +100,26 @@ test('HUD text scale follows the subtitle size option', () => {
   assert.equal(hudTextScale('m'), 1);
   assert.ok(hudTextScale('xl') > hudTextScale('l') && hudTextScale('s') < 1);
   assert.equal(hudTextScale(undefined), 1);
+});
+
+test('HUD tuning reads combat_tuning.hud_0_3 (thresholds stay exact at 50 % / 10 %)', () => {
+  const T = hudTuningFrom(DATA);
+  const h = DATA.combat.hud_0_3;
+  assert.ok(h, 'hud_0_3 data lock present');
+  assert.equal(T.hpWarnRatio, h.health_bar.warn_at_most_ratio);
+  assert.equal(T.hpCritRatio, h.health_bar.critical_at_most_ratio);
+  assert.equal(T.chipDelayS, h.health_bar.damage_trail_s);
+  assert.equal(T.minimalLingerS, h.fade_out_of_combat_after_s);
+  assert.equal(hpTier(0.5, T), 'warn');
+  assert.equal(hpTier(0.1, T), 'crit');
+  assert.equal(hpTier(0.51, T), 'ok');
+  assert.ok(DATA.strings.ui[T.drumLabelKey] && DATA.strings.ui[T.drumReadyKey]);
+  assert.equal(hudTuningFrom({}), HUD_TUNING);
+});
+
+test('skill cooldown seconds only below the threshold', () => {
+  assert.equal(cooldownText(4.2, 5), '5');
+  assert.equal(cooldownText(0.3, 5), '1');
+  assert.equal(cooldownText(6, 5), '');
+  assert.equal(cooldownText(0, 5), '');
 });

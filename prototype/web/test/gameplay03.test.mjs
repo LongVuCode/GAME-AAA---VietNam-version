@@ -90,7 +90,7 @@ test('Weapon Arts: 2 per weapon, rank lookup with a safe default adapter, cooldo
   const def = skillsForWeapon(S, spear)[0];
   const none = progressAdapter(undefined);
   assert.equal(none.level(def.id), 1); assert.deepEqual(none.stats(), {}); assert.equal(none.addItem, null);
-  const prog = progressAdapter({ getSkillLevel: (id) => (id === def.id ? 3 : 0), getStats: () => ({ skill_cooldown_mult: 0.8 }) });
+  const prog = progressAdapter({ getSkillLevel: (id) => (id === def.id ? 3 : 0), getStats: () => ({ hpMax: 300, stats: { skill_cooldown_mult: 0.8 } }) });
   assert.equal(prog.level(def.id), 3); assert.equal(levelEntry(def, prog.level('x')), null, 'rank 0 = locked');
   close(effectiveCooldown(levelEntry(def, 3), prog.stats()), 9 * 0.8, 1e-9);
   assert.equal(effectiveCooldown(levelEntry(def, 1), none.stats()), 12);

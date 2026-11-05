@@ -110,11 +110,14 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 /* ---------- HUD 0.3 (src/ui/hud): glow bars, bronze drum face, weapon medallion.
    Palette from ART_DIRECTION 3.5 (charcoal #1D1B19, ivory #E7DEC7, terracotta #8A5A3B, dull bronze #9B7A4E)
    + PO request: bright glowing health (green / yellow <= 50 % / red <= 10 %), red-orange molten drum when full. */
-.hud3 { --hud-fs: 1; --ivory: #e7dec7; --bronze-d: #9b7a4e; --bronze-l: #e3c48a; --char: rgba(29, 27, 25, 0.78);
+.hud3 { --hud-fs: 1; --hud-scale: 1; --crit-period: 0.667s; --ready-period: 0.714s; --ready-flash: 0.25s; --ivory: #e7dec7; --bronze-d: #9b7a4e; --bronze-l: #e3c48a; --char: rgba(29, 27, 25, 0.78);
   position: absolute; inset: 0; pointer-events: none; font-size: calc(14px * var(--hud-fs)); color: var(--ivory);
   text-shadow: 0 1px 2px #000, 0 0 6px rgba(0,0,0,0.5); }
 .hud3 .kbd { border-color: rgba(227,196,138,0.7); color: #fff3d6; background: rgba(20,16,12,0.85); box-shadow: 0 0 6px rgba(227,196,138,0.35); text-shadow: none; font-weight: 700; }
 .hud3 .lbl { font-size: calc(11px * var(--hud-fs)); letter-spacing: 1.2px; text-transform: uppercase; color: var(--bronze-l); font-weight: 600; }
+/* cut-scenes / Drum Burst cinematic */
+.hud3 > * { transition: opacity 0.35s; }
+.hud3.cinematic > *, .hud3.cinematic::before, .hud3.cinematic::after { opacity: 0 !important; }
 /* soft charcoal backdrops: readable over bright fog without boxing the HUD in */
 .hud3::before, .hud3::after { content: ""; position: absolute; pointer-events: none; }
 .hud3::before { left: -120px; bottom: -120px; width: 700px; height: 340px; background: radial-gradient(ellipse at 30% 70%, rgba(20,17,14,0.55), rgba(20,17,14,0) 65%); }
@@ -134,7 +137,7 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-meta .fps { color: var(--ivory); font-size: 12px; }
 
 /* player cluster (bottom-left) */
-.h-player { position: absolute; left: 22px; bottom: 24px; display: flex; align-items: center; gap: 12px; transition: opacity 0.6s, transform 0.6s; }
+.h-player { scale: var(--hud-scale); transform-origin: 0 100%; position: absolute; left: 22px; bottom: 24px; display: flex; align-items: center; gap: 12px; transition: opacity 0.6s, transform 0.6s; }
 .h-player.faded, .h-drum.faded { opacity: 0; transform: translateY(8px); }
 .h-skills { display: grid; gap: 14px; margin-right: -2px; }
 .h-skill { position: relative; width: 40px; height: 40px; display: grid; place-items: center; }
@@ -149,7 +152,9 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-skill .si svg { width: 20px; height: 20px; }
 .h-skill .mono { font-weight: 800; font-size: 14px; }
 .h-skill .kbd { position: absolute; left: -8px; bottom: -6px; font-size: 10px; min-width: 1.5em; padding: 0 3px; }
-.h-skill.ready .dia { animation: skillReady 0.6s ease-out; }
+.h-skill.ready .dia { animation: skillReady calc(var(--ready-flash) * 2.4) ease-out; }
+.h-skill .sec { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; font-weight: 800; color: #fff; text-shadow: 0 0 4px #000, 0 0 2px #000; pointer-events: none; }
+.h-skill.locked .dia { opacity: 0.55; } .h-skill.locked .si { color: #a99c84; filter: none; }
 @keyframes skillReady { 0% { box-shadow: 0 0 22px 6px rgba(255,230,170,0.95); } 100% { box-shadow: 0 0 8px rgba(227,196,138,0.35); } }
 
 .h-weapon { position: relative; width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; flex: none;
@@ -159,6 +164,10 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-weapon .ico { width: 52px; height: 52px; filter: drop-shadow(0 0 4px rgba(255,214,140,0.55)); }
 .h-weapon .ico svg { width: 100%; height: 100%; }
 .h-weapon.swap .ico { animation: wswap 0.32s ease-out; }
+.h-weapon .other { position: absolute; left: -6px; bottom: -4px; width: 26px; height: 26px; border-radius: 50%; background: #15110d; box-shadow: 0 0 0 1.5px var(--bronze-d); opacity: 0.85; }
+.h-weapon .other:empty { display: none; }
+.h-weapon .other svg { width: 100%; height: 100%; padding: 3px; }
+.h-weapon .plus { position: absolute; right: -4px; top: -2px; font-size: 12px; color: #fff1cc; text-shadow: 0 0 6px rgba(255,210,120,0.95), 0 1px 2px #000; }
 @keyframes wswap { from { transform: rotate(-70deg) scale(0.6); opacity: 0.2; } to { transform: none; opacity: 1; } }
 .h-slotkeys { position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); display: flex; gap: 3px; }
 .h-slotkeys .kbd { font-size: 10px; min-width: 1.6em; padding: 0 3px; opacity: 0.6; box-shadow: none; }
@@ -169,7 +178,10 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-hprow .num { margin-left: auto; font-size: calc(12px * var(--hud-fs)); font-variant-numeric: tabular-nums; color: #f3ecda; }
 .h-hprow .beat { display: none; width: 26px; height: 13px; color: #ff5a4a; align-self: center; filter: drop-shadow(0 0 4px rgba(255,60,40,0.9)); }
 .h-hprow .beat svg { width: 100%; height: 100%; display: block; }
-.h-hprow[data-tier=crit] .beat { display: block; animation: beat 0.9s infinite; will-change: transform; }
+.h-hprow[data-tier=crit] .beat { display: block; animation: beat var(--crit-period) infinite; will-change: transform; }
+.h-hprow .low { display: none; font-size: calc(11px * var(--hud-fs)); font-weight: 700; color: #ffb3a8; letter-spacing: 0.5px; }
+.h-hprow[data-tier=crit] .low { display: inline; }
+.h-hprow[data-tier=crit] .lbl { display: none; }
 .h-hprow[data-tier=crit] .num { color: #ffb3a8; font-weight: 700; }
 @keyframes beat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.3); } 24% { transform: scale(1); } 36% { transform: scale(1.18); } }
 
@@ -189,12 +201,13 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-hpwrap { position: relative; }
 .h-hppulse { position: absolute; left: -3px; right: 2px; top: -3px; bottom: -3px; border-radius: 4px; opacity: 0; pointer-events: none; will-change: opacity;
   box-shadow: 0 0 12px 3px rgba(255,54,44,0.95), inset 0 0 6px rgba(255,120,100,0.6); }
-.h-hppulse.on { animation: hpCrit 0.9s ease-in-out infinite; }
+.h-hppulse.on { animation: hpCrit var(--crit-period) ease-in-out infinite; }
 @keyframes hpCrit { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
 .hud3.reduce-flash .h-hppulse { animation: none !important; opacity: 0.55; }
 .hud3.reduce-flash .h-hprow[data-tier=crit] .beat { animation: none; }
 
-.h-therow { display: flex; align-items: center; gap: 8px; }
+.h-therow { display: flex; align-items: center; gap: 8px; transition: opacity 0.5s; }
+.h-therow.rest { opacity: 0; }
 .h-theglow { width: 66%; filter: drop-shadow(0 0 4px rgba(255,190,80,0.7)); }
 .h-the { height: 6px; clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 50%, calc(100% - 4px) 100%, 0 100%); }
 .h-the .fill { background: linear-gradient(#fff0c0, #f2b544 50%, #a8661e); transition: transform 0.1s linear; }
@@ -209,15 +222,14 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-heal.none .ico { filter: grayscale(1); }
 
 /* Drum Burst face (bottom-right) */
-.h-drum { position: absolute; right: 28px; bottom: 30px; width: 112px; display: grid; justify-items: center; gap: 6px; transition: opacity 0.6s, transform 0.6s; }
+.h-drum { scale: var(--hud-scale); transform-origin: 100% 100%; position: absolute; right: 28px; bottom: 30px; width: 112px; height: 142px; display: grid; justify-items: center; align-content: start; transition: opacity 0.6s, transform 0.6s; }
 .h-drum canvas { position: relative; display: block; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.8); }
 /* halo behind the face (the canvas itself has no CSS filter: it repaints while the fluid moves) */
 .h-drum .halo { position: absolute; left: 50%; top: 56px; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; pointer-events: none; will-change: opacity, transform;
   background: radial-gradient(circle, rgba(80,240,200,0.4) 0 38%, rgba(80,240,200,0.12) 50%, rgba(80,240,200,0) 68%); }
-.h-drum[data-full="1"] .halo { background: radial-gradient(circle, rgba(255,150,50,0.95) 0 36%, rgba(255,100,30,0.45) 48%, rgba(255,90,20,0) 70%); animation: drumGlow 1.5s ease-in-out infinite; }
+.h-drum[data-full="1"] .halo { background: radial-gradient(circle, rgba(255,150,50,0.95) 0 36%, rgba(255,100,30,0.45) 48%, rgba(255,90,20,0) 70%); animation: drumGlow var(--ready-period) ease-in-out infinite; }
 .h-drum .rays, .h-drum .wave { position: absolute; left: 50%; top: 56px; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; pointer-events: none; opacity: 0; }
-.h-drum .rays { background: repeating-conic-gradient(from 0deg, rgba(255,150,50,0) 0deg 9deg, rgba(255,170,70,0.55) 12deg, rgba(255,150,50,0) 15deg 22.5deg);
-  -webkit-mask: radial-gradient(circle, transparent 0 26%, #000 30%, transparent 70%); mask: radial-gradient(circle, transparent 0 26%, #000 30%, transparent 70%); }
+.h-drum .rays { background: center / 100% 100% no-repeat; }
 .h-drum .rays { will-change: transform; }
 .h-drum[data-full="1"] .rays { opacity: 1; animation: spin 14s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -225,17 +237,17 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-drum.filled .wave { animation: shock 0.8s ease-out; border: 3px solid rgba(255,190,90,0.9); }
 .h-drum.spent .wave { animation: shock 0.6s ease-out; border: 3px solid rgba(255,240,200,0.9); }
 @keyframes shock { from { opacity: 1; transform: scale(0.5); } to { opacity: 0; transform: scale(1.25); } }
-.h-drumlbl { display: flex; align-items: center; gap: 6px; font-size: calc(12px * var(--hud-fs)); white-space: nowrap; color: #cfc4ab; }
+.h-drumlbl { position: absolute; top: 120px; right: 0; display: flex; align-items: center; gap: 6px; font-size: calc(12px * var(--hud-fs)); white-space: nowrap; color: #cfc4ab; }
 .h-drum[data-full="0"] .h-drumlbl .kbd { opacity: 0.55; box-shadow: none; }
 .h-drum[data-full="1"] .h-drumlbl { color: #ffe1b0; font-weight: 700; }
-.h-drum[data-full="1"] .h-drumlbl .kbd { border-color: #ffb060; color: #fff; box-shadow: 0 0 10px rgba(255,130,40,0.95); animation: keyPulse 1.5s ease-in-out infinite; will-change: transform; }
+.h-drum[data-full="1"] .h-drumlbl .kbd { border-color: #ffb060; color: #fff; box-shadow: 0 0 10px rgba(255,130,40,0.95); animation: keyPulse var(--ready-period) ease-in-out infinite; will-change: transform; }
 @keyframes keyPulse { 50% { transform: scale(1.12); } }
 .hud3.reduce-flash .h-drum[data-full="1"] .halo { animation: none; opacity: 0.9; }
 .hud3.reduce-flash .h-drum[data-full="1"] .h-drumlbl .kbd, .hud3.reduce-flash .h-drum .wave { animation: none; }
 .hud3.reduce-flash .h-drum[data-full="1"] .rays { animation-duration: 40s; opacity: 0.6; }
 
 /* boss bar (top-centre): name, glowing health, Thế, khoen notches as bronze rings */
-.h-boss { isolation: isolate; position: absolute; left: 50%; top: 18px; transform: translateX(-50%); width: min(600px, calc(100vw - 460px)); min-width: 300px; display: grid; gap: 3px; justify-items: center; }
+.h-boss { scale: var(--hud-scale); transform-origin: 50% 0; isolation: isolate; position: absolute; left: 50%; top: 18px; transform: translateX(-50%); width: min(600px, calc(100vw - 460px)); min-width: 300px; display: grid; gap: 3px; justify-items: center; }
 .h-boss.enter { animation: bossIn 0.7s ease-out; }
 @keyframes bossIn { from { opacity: 0; transform: translate(-50%, -14px); letter-spacing: 6px; } to { opacity: 1; transform: translateX(-50%); } }
 .h-bname { display: flex; align-items: center; gap: 10px; width: 100%; }
@@ -248,6 +260,7 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-bosshp { width: 100%; height: 13px; border-radius: 2px; filter: drop-shadow(0 0 6px rgba(230,50,40,0.75)); }
 .h-bosshp .fill { background: linear-gradient(#ffb0a0, #e8372b 45%, #7a1010); }
 .h-bosshp .chip { background: linear-gradient(#fffbe6, #ffe48a); }
+.h-bosshp .tick.phase { position: absolute; top: -1px; bottom: -1px; width: 2px; margin-left: -1px; background: #fff1cc; box-shadow: 0 0 4px #000; z-index: 2; }
 .h-bossrow { display: flex; align-items: center; gap: 10px; width: 100%; }
 .h-bossthe { flex: 1; height: 5px; filter: drop-shadow(0 0 4px rgba(255,190,80,0.7)); }
 .h-bossthe .fill { background: linear-gradient(#fff0c0, #f2b544 50%, #a8661e); }
@@ -258,7 +271,7 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 @keyframes crackIn { 0% { transform: scale(1.6) rotate(-20deg); filter: drop-shadow(0 0 10px rgba(255,220,150,1)); } 100% { transform: none; } }
 
 /* pickups (bottom-left, above the cluster) */
-.h-pickups { position: absolute; left: 22px; bottom: 140px; display: grid; gap: 6px; justify-items: start; }
+.h-pickups { position: absolute; left: 22px; bottom: calc(140px * var(--hud-scale)); display: grid; gap: 6px; justify-items: start; }
 .h-pick { display: flex; align-items: center; gap: 8px; padding: 5px 14px 5px 8px; font-size: calc(14px * var(--hud-fs));
   background: linear-gradient(90deg, rgba(29,27,25,0.85), rgba(29,27,25,0)); border-left: 2px solid var(--bronze-l); box-shadow: -4px 0 12px -4px rgba(227,196,138,0.8);
   animation: pickIn 0.3s ease-out; transition: opacity 0.5s, transform 0.5s; }

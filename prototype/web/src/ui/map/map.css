@@ -1,0 +1,32 @@
+/* ---------- Minimap (HUD top-left slot) and world map (Pack "Map" tab) — ui/map */
+#app .mm3 { position: absolute; inset: 0; pointer-events: none; transition: opacity 0.35s; }
+#app .mm3.off { opacity: 0; }
+#app .mm3 canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#app .mm3 .ring { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
+.mm3-n { position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800;
+  color: #1d1b19; background: #e3c48a; box-shadow: 0 0 0 1.5px #1d1b19, 0 0 6px rgba(227,196,138,0.6); font-family: Georgia, "Times New Roman", serif; }
+
+.mv { height: 100%; display: grid; grid-template-columns: 1fr minmax(260px, 24%); gap: 18px; }
+.mv-stage { position: relative; min-height: 0; border: 1px solid rgba(155,122,78,0.35); overflow: hidden; background: #16130f; }
+#app .mv-stage > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
+.mv-tip { position: absolute; left: 0; top: 0; pointer-events: none; padding: 4px 10px; font-size: 13px; color: #2b241c; background: rgba(236,224,196,0.95); border: 1px solid #9B7A4E; white-space: nowrap; font-family: Georgia, "Times New Roman", serif; font-style: italic; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.mv-legend { position: absolute; left: 14px; bottom: 14px; padding: 10px 12px 8px; background: rgba(22,19,16,0.86); border: 1px solid rgba(155,122,78,0.45); max-height: calc(100% - 28px); overflow: auto; }
+.mv-legend ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, auto); gap: 3px 14px; }
+.mv-legend li { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #e7dec7; white-space: nowrap; }
+.mv-zoom { position: absolute; right: 12px; top: 12px; display: flex; gap: 4px; }
+.mv-zoom button { min-width: 34px; padding: 4px 10px; background: rgba(22,19,16,0.86); }
+.mv-side { min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 4px; }
+.mv-sec { flex-shrink: 0; background: linear-gradient(180deg, rgba(36,31,26,0.92), rgba(22,19,16,0.92)); border: 1px solid rgba(155,122,78,0.35); padding: 10px 12px; }
+.mv-sec p { margin: 4px 0; font-size: 13.5px; }
+.mv-levels { display: flex; gap: 6px; flex-wrap: wrap; }
+.mv-levels button { flex: 1; font-size: 13px; padding: 6px 8px; }
+.mv-levels button.on, .mv-sec button.on { border-color: #c9a46a; color: #fff3d6; background: rgba(90,70,44,0.7); }
+.mv-obj { font-size: 14px; color: #fff3d6; }
+.mv-zones, .mv-travel { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.mv-zones li, .mv-travel li { display: flex; justify-content: space-between; gap: 8px; align-items: center; font-size: 13px; padding: 3px 0; border-bottom: 1px dotted rgba(155,122,78,0.22); }
+.mv-zones .done { color: #8FC79A; }
+.mv-travel button { padding: 3px 10px; font-size: 12px; }
+.mv-kinds { display: flex; gap: 6px; margin-bottom: 4px; }
+.mv-kinds button.mv-mk { padding: 4px; width: 34px; height: 34px; display: grid; place-items: center; }
+.mv-sec label { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; margin: 4px 0; }
+.mv-sec select { font: inherit; font-size: 13px; color: #e7dec7; background: #2a241d; border: 1px solid rgba(155,122,78,0.45); padding: 2px 6px; }

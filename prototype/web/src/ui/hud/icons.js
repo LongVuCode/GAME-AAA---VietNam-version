@@ -62,4 +62,5 @@ export const SKILL_ICONS = {
   spin: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 6 A10 10 0 1 1 6.5 13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M4 8 L6.5 13 L11.5 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>',
   guard: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 L26 8 C26 18 22 24 16 28 C10 24 6 18 6 8 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>',
   drum: '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>',
+  lock: '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="8" y="14" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 14 V10 a5 5 0 0 1 10 0 V14" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>',
 };

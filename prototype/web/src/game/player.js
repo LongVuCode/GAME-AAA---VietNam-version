@@ -78,7 +78,7 @@ export class Player {
     // Demo 0.3
     this.y = 0; this.jc.reset(); this.airV = { x: 0, z: 0 }; this.airLightUsed = false; this.airSprint = false; this.pendingPlunge = false;
     this.skill = null; this.skillCd.clear(); this.riposteRun = null; this.landLag = 0; this.plungeRec = 0;
-    this.keptChain = null; this.dodgeCancel = false; this.nextL4Until = -Infinity; this.sweepAgain = null;
+    this.keptChain = null; this.dodgeCancel = false; this.nextL4Until = -Infinity; this.sweepAgain = null; this._gsT = null;
   }
 
   get weaponId() { return this.game.gen.weapons[this.slot ?? 0] ?? this.game.gen.weapons[0]; }
@@ -205,9 +205,20 @@ export class Player {
     return o;
   }
 
+  /** Gear stats from game.progress.getStats() (cached 0.5 s); null without the progression module. */
+  _gearStats() {
+    const prog = this.game.gp?.progress; if (!prog?.present) return null;
+    if (!this._gsT || this.now - this._gsT > 0.5 || this.now < this._gsT) { this._gsT = this.now; this._gs = prog.stats(); this._applyGearMax(this._gs); }
+    return this._gs;
+  }
+  _applyGearMax(gs) {
+    if (gs?.hpMax > 0 && Math.abs(gs.hpMax - this.hpMax) > 1e-6) { const r = this.hp / this.hpMax; this.hpMax = gs.hpMax; this.hp = Math.min(this.hpMax, Math.max(this.alive ? 1 : 0, r * this.hpMax)); }
+    if (gs?.theMax > 0 && this.the.max !== gs.theMax && this.the.setMax) this.the.setMax(gs.theMax);
+  }
   _surfMult() {
     const surf = this.game.walk.speedMult(this.x, this.z), m = this.tun.movement;
-    let k = surf === 'mud' ? m.mud_speed_mult : surf === 'shallow' ? m.shallow_water_speed_mult : 1;
+    const resist = this._gearStats()?.stats?.mud_slow_resist ?? 0; // Quấn chân vải vỏ cây: chống lún
+    let k = surf === 'mud' ? 1 - (1 - m.mud_speed_mult) * (1 - resist) : surf === 'shallow' ? m.shallow_water_speed_mult : 1;
     if (this.slowT > 0) k *= this.slowMult ?? 1;
     const tr = this.game.gp?.trailAt(this.x, this.z); // Demo 0.3 mud trails of the crossing charges
     if (tr) k *= tr.mult;
@@ -493,6 +504,7 @@ export class Player {
     const b = this.weapon.drum_burst;
     this.state = 'burst'; this.stateT = 0; this.burstHits = 0; this.cur = null;
     this.game.onBurst(b);
+    this.game.gp?.onBurstStart(this); // 0.3 cinematic (drum_burst_cinematic_0_3)
   }
 
   _updateBurst(dt) {
@@ -504,8 +516,9 @@ export class Player {
       this._faceTargetForAttack(true);
       this._step(bm?.step_per_hit_m ?? 0.4);
       this.game.playerBurstHit(b, this.burstHits === b.hits);
+      this.game.gp?.onBurstBeat(this, this.burstHits, this.burstHits === b.hits);
     }
-    if (this.stateT >= b.duration_s) this.state = 'free';
+    if (this.stateT >= b.duration_s) { this.state = 'free'; this.game.gp?.onBurstEnd(); }
   }
 
   get superArmor() { return this.state === 'burst' && this.weapon.drum_burst.super_armor; }
@@ -524,6 +537,9 @@ export class Player {
   takeHit({ hp, the }, heavy, outcome, info = {}) {
     const g = this.game;
     if (this.invulnDebug) return;
+    // Demo 0.3 gear (game.progress.getStats): armour reduces health damage (armor / (armor + k)).
+    const gs = this._gearStats();
+    if (hp > 0 && gs?.damageReduction) hp *= 1 - Math.min(0.8, gs.damageReduction);
     if (hp > 0) {
       this.hp = Math.max(this.game.practiceMode ? 1 : 0, this.hp - hp);
       this.drum.hitTaken();
@@ -724,7 +740,7 @@ export class Player {
     const def = skillsForWeapon(S, this.weapon)[slot]; if (!def) return false;
     // Quét sóng rank 3: pressing again during the Art queues the reverse sweep.
     if (this.state === 'skill' && this.skill?.def === def) { if (this.skill.entry.effect?.second_sweep) this.skill.secondReq = true; return true; }
-    if (this.airborne || S.rules?.usable_in_air === true && false) return false; // rules.usable_in_air = false
+    if (this.airborne && S.rules?.usable_in_air !== true) return false; // rules.usable_in_air = false
     const okState = this.state === 'free' || this.state === 'guard' || (this.state === 'attack' && this.inRecovery);
     if (!okState) return false;
     const lvl = g.gp ? g.gp.progress.level(def.id) : 1, entry = levelEntry(def, lvl);

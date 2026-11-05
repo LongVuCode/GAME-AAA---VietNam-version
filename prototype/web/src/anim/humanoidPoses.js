@@ -145,6 +145,30 @@ const AXE_MOVES = {
     fol: { wpX: 0.22, wpY: -0.1, wpZ: 0.24, wpPitch: 0.2, wpYaw: 1.2, chestYaw: 0.65, spinePitch: 0.12 },
   },
 };
+// Demo 0.3 air moves (weapons[].air_moves_0_3). Legs are tucked by the animator's air layer.
+SPEAR_MOVES.sp_air_l = { // Đâm chúc: kéo cán về hông giữa không trung, chúc mũi đâm chéo xuống trước, thân xoay nửa vòng
+  ant: { wpZ: -0.22, wpX: -0.12, wpY: 0.08, wpPitch: -0.2, chestYaw: -0.45, spineYaw: -0.15, spinePitch: -0.08, headYaw: 0.3 },
+  hit: { wpZ: 0.3, wpX: 0.2, wpY: -0.2, wpPitch: 0.75, chestYaw: 0.45, spineYaw: 0.15, spinePitch: 0.35, headPitch: 0.3, headYaw: -0.3 },
+  fol: { wpZ: 0.12, wpX: 0.1, wpY: -0.12, wpPitch: 0.55, chestYaw: 0.6, spinePitch: 0.25, hipsYaw: 0.4 },
+};
+SPEAR_MOVES.sp_air_h = { // Cắm sào giáng: dựng giáo thẳng đứng trên đầu, rơi thẳng, cắm đuôi giáo như cắm sào, quỳ một gối
+  ant: { wpX: 0.04, wpY: 0.42, wpZ: 0.05, wpPitch: -1.55, wpYaw: 0.1, spinePitch: -0.25, chestPitch: -0.1, headPitch: -0.25 },
+  hit: { wpX: 0.06, wpY: -0.32, wpZ: 0.3, wpPitch: 1.5, wpYaw: 0.1, spinePitch: 0.45, chestPitch: 0.1, headPitch: 0.2 },
+  fol: { wpX: 0.06, wpY: -0.35, wpZ: 0.3, wpPitch: 1.55, spinePitch: 0.4, hipsY: -0.42, thighLP: 0.9, kneeL: 1.3, thighRP: 0.1, kneeR: 1.9, footR: -0.6 },
+};
+AXE_MOVES.ax_air_l = { // Bổ lượn: rìu qua vai, xoay hông giữa không, bổ ngang theo đà rơi
+  sweepDir: -1,
+  ant: { wpX: -0.2, wpY: 0.3, wpZ: -0.18, wpPitch: -1.2, wpYaw: -0.7, chestYaw: -0.7, spineYaw: -0.25, hipsYaw: -0.3, headYaw: 0.4 },
+  hit: { wpX: 0.26, wpY: -0.12, wpZ: 0.24, wpPitch: 0.4, wpYaw: 1.2, chestYaw: 0.7, spineYaw: 0.25, hipsYaw: 0.4, spinePitch: 0.2 },
+  fol: { wpX: 0.3, wpY: -0.2, wpZ: 0.1, wpPitch: 0.6, wpYaw: 1.5, chestYaw: 0.95, hipsYaw: 0.6, spinePitch: 0.2 },
+};
+AXE_MOVES.ax_air_h = { // Rìu giáng: hai tay giơ rìu quá đầu, thân cong như cánh cung, giáng thẳng, lưỡi cắm đất
+  sweepDir: -1,
+  ant: { ...AXE_MOVES.ax_h1.ant, spinePitch: -0.42, chestPitch: -0.16 },
+  hit: { ...AXE_MOVES.ax_l3.hit },
+  fol: { ...AXE_MOVES.ax_l3.fol, hipsY: -0.42, thighLP: 0.9, kneeL: 1.3, thighRP: 0.1, kneeR: 1.9, footR: -0.6 },
+};
+
 // Đòn nhà "Chống sào" (perfect parry, H) reuses the vaulting upswing shape with a bigger shove.
 SPEAR_MOVES.house = { ...SPEAR_MOVES.sp_b1, hit: { ...SPEAR_MOVES.sp_b1.hit, hipsZ: 0.15, spinePitch: -0.3 } };
 AXE_MOVES.house = AXE_MOVES.ax_b1;
@@ -216,6 +240,21 @@ export const BODY = {
   pivotAdd: makePose(null, { hipsY: -0.1, spinePitch: 0.2, kneeL: 0.4, kneeR: 0.4 }),
   stompAdd: makePose(null, { thighLP: 0.95, kneeL: 1.25, spinePitch: -0.05, hipsY: 0.02 }),
   swapStow: makePose(null, { wpX: 0.1, wpY: 0.25, wpZ: -0.32, wpPitch: -1.0, chestYaw: -0.3 }),
+  // Demo 0.3 jump: crouch to take off (knees, arms back), rise (knees tucked, weapon close), apex (body
+  // stretched), fall (legs reaching down); landing squash is additive (spring-scaled).
+  jumpCrouch: makePose(SPEAR_RUN, { hipsY: -0.24, spinePitch: 0.32, thighLP: 0.55, kneeL: 0.95, thighRP: 0.4, kneeR: 1.0, footL: -0.3, footR: -0.3, wpY: -0.18, wpZ: -0.1, wpPitch: 0.35 }),
+  airRise: makePose(SPEAR_RUN, { hipsY: 0.02, spinePitch: 0.12, thighLP: 1.0, kneeL: 1.55, thighRP: 0.55, kneeR: 1.2, footL: 0.3, footR: 0.3, wpX: -0.06, wpY: -0.05, wpZ: 0.02, wpPitch: 0.25 }),
+  airApex: makePose(SPEAR_RUN, { hipsY: 0.04, spinePitch: -0.06, chestPitch: -0.06, headPitch: -0.12, thighLP: 0.35, kneeL: 0.5, thighRP: -0.2, kneeR: 0.45, wpY: 0.02, wpPitch: 0.1 }),
+  airFall: makePose(SPEAR_RUN, { hipsY: 0.0, spinePitch: 0.1, thighLP: 0.3, kneeL: 0.2, thighRP: 0.05, kneeR: 0.25, footL: -0.35, footR: -0.35, wpY: -0.08, wpPitch: 0.3 }),
+  airTuckAdd: makePose(null, { thighLP: 0.7, kneeL: 1.1, thighRP: 0.45, kneeR: 1.0 }),
+  landAdd: makePose(null, { hipsY: -0.16, spinePitch: 0.3, kneeL: 0.65, kneeR: 0.65, thighLP: 0.35, thighRP: 0.3, headPitch: 0.1, wpY: -0.06 }),
+  // Sprint then dodge forward: a low slide on the side of the foot instead of a roll.
+  slide: makePose(SPEAR_SPRINT, { hipsY: -0.52, spinePitch: -0.2, chestPitch: -0.1, headPitch: 0.1, thighLP: 1.35, kneeL: 0.2, footL: 0.4, thighRP: 0.3, kneeR: 1.9, footR: -0.4,
+    hipsRoll: 0.18, wpX: -0.2, wpY: -0.25, wpZ: -0.05, wpPitch: 0.8, wpYaw: 0.5 }),
+  // Ghì nanh: the spear shaft braced like a punting pole, pressing the tusk down.
+  tuskLock: makePose(SPEAR, { spinePitch: 0.55, chestPitch: 0.12, hipsY: -0.2, kneeL: 0.6, kneeR: 0.7, thighLP: 0.55, thighRP: -0.5, chestYaw: 0.05, headYaw: 0.2, headPitch: 0.2,
+    wpX: -0.08, wpY: -0.12, wpZ: 0.3, wpPitch: 0.75, wpYaw: 0.15 }),
+  sweepLowAdd: makePose(null, { hipsY: -0.18, kneeL: 0.5, kneeR: 0.5, spinePitch: 0.15 }),
 };
 
 export { P };

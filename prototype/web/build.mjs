@@ -2,7 +2,7 @@
 // HTML file: dist/index.html. No runtime network access.
 import { build } from 'esbuild';
 import { execSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, statSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -25,7 +25,10 @@ const result = await build({
   logLevel: 'warning',
 });
 const js = result.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
-const css = readFileSync(join(here, 'src/style.css'), 'utf8');
+// src/style.css first, then every *.css under src/ui (module styles: ui/inventory, ui/map, ...), sorted.
+const cssUnder = (d) => readdirSync(d, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))
+  .flatMap((e) => (e.isDirectory() ? cssUnder(join(d, e.name)) : e.name.endsWith('.css') ? [join(d, e.name)] : []));
+const css = [join(here, 'src/style.css'), ...cssUnder(join(here, 'src/ui'))].map((f) => readFileSync(f, 'utf8')).join('\n');
 const html = `<!doctype html>
 <html lang="vi">
 <head>

@@ -133,7 +133,7 @@ export class MapView {
     const ft = ex.fastTravelTargets();
     const reasons = { engaged: 'map_travel_engaged', zone: 'map_travel_zone', level: 'map_travel_level', era: 'map_travel_era' };
     const travel = ft.length ? ft.map((f) => `<li><span>${esc(this.loc(f.landmark.name))}</span>${f.ok ? `<button data-travel="${f.landmark.id}" data-nav>${esc(t('map_fast_travel'))}</button>` : `<span class="dim">${esc(t(reasons[f.reason] ?? 'map_travel_engaged'))}</span>`}</li>`).join('') : `<li class="dim">${esc(t('map_travel_none'))}</li>`;
-    const kinds = this.wm.custom_markers.kinds.map((k) => `<button data-mk="${k}" data-nav class="mk ${k === this.markerKind ? 'on' : ''}" title="${esc(t(`map_marker_${k}`))}"></button>`).join('');
+    const kinds = this.wm.custom_markers.kinds.map((k) => `<button data-mk="${k}" data-nav class="mv-mk ${k === this.markerKind ? 'on' : ''}" title="${esc(t(`map_marker_${k}`))}"></button>`).join('');
     const rotOpt = this.g.settings.acc.acc_minimap_rotation ?? this.map.minimap.rotation_default;
     const zoomNow = this.g.ui03?.minimap?.zoomM ?? this.map.minimap.world_radius_m;
     this.side.innerHTML = `

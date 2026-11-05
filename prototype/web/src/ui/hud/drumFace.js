@@ -206,3 +206,21 @@ export class DrumFace {
     }
   }
 }
+
+/** Light rays behind a full drum face, rendered ONCE to a data URL (the element only rotates: a
+ *  plain bitmap layer is cheap to composite, unlike an animated CSS mask/conic gradient). */
+export function raysDataUrl(px = 200, rays = 16) {
+  const c = document.createElement('canvas'); c.width = c.height = px;
+  const x = c.getContext('2d'), r = px / 2;
+  const gr = x.createRadialGradient(r, r, r * 0.25, r, r, r);
+  gr.addColorStop(0, 'rgba(255,190,90,0)'); gr.addColorStop(0.32, 'rgba(255,170,70,0.75)'); gr.addColorStop(1, 'rgba(255,140,50,0)');
+  x.fillStyle = gr;
+  for (let i = 0; i < rays; i++) {
+    const a = (i / rays) * TAU, w = (i % 2 ? 0.05 : 0.09);
+    x.beginPath(); x.moveTo(r, r);
+    x.lineTo(r + Math.cos(a - w) * r, r + Math.sin(a - w) * r);
+    x.lineTo(r + Math.cos(a + w) * r, r + Math.sin(a + w) * r);
+    x.closePath(); x.fill();
+  }
+  return c.toDataURL('image/png');
+}

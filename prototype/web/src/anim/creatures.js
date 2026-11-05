@@ -279,7 +279,7 @@ export class BoarRig extends CreatureBase {
     const { f, s: fs } = this._springs(dt);
     const a = c.attack ? atkPhases(c.attack) : null;
     const id = c.attack?.id;
-    const gallop = c.speed > 5 || (a && a.inAct && (id === 'll_can_lay' || id === 'll_can_khuyu' || id === 'll_ui_bun')) || c.state === 'transition_run';
+    const gallop = c.speed > 5 || (a && a.inAct && (id === 'll_can_lay' || id === 'll_can_khuyu' || id === 'll_ui_bun')) || c.state === 'transition_run' || c.chargeRunning;
     const speed = gallop ? Math.max(c.speed, 9) : c.speed;
     this._gait(dt, speed, gallop ? 3.4 : 1.9);
     const moving = clamp01(speed / 1.5);
@@ -308,10 +308,34 @@ export class BoarRig extends CreatureBase {
           tailW = 1.2; break;
         }
         case 'll_dui_co': neckP = 0.95 * Ease.outCubic(a.w); bodyY -= 0.3 * a.w; neckY = a.inAct ? Math.sin(this.time * 4.5) * 0.35 : 0; bodyR = neckY * 0.12; break;
+        // ---- Demo 0.3 moves
+        case 'll_song_bun': {
+          // Front legs rise, mane bristles, slam: the mire ripples out as a ring.
+          rearUp = a.act > 0 ? 1 - Ease.inCubic(Math.min(1, a.act * 5)) : Ease.outCubic(a.w) * 0.9; if (a.rec > 0) rearUp = 0;
+          neckP = -0.35 * rearUp + (a.act > 0 && a.act < 0.3 ? 0.5 : 0); bodyY -= a.act > 0 && a.act < 0.4 ? 0.2 : 0; tailW = 1; break;
+        }
+        case 'll_can_xuyen': case 'll_can_hai_luot': case 'll_cao_mong_gia': {
+          if (!a.inAct && a.act === 0) { paw = a.w; neckP = 0.45 * a.w + (id === 'll_can_xuyen' ? 0.2 * a.w : 0); bodyY -= 0.15 * a.w; }
+          else if (id === 'll_cao_mong_gia') { neckP = 0.55 - 1.3 * Ease.outCubic(a.act) * (1 - a.rec); neckY = 0.3 * a.act * (1 - a.rec); bodyP = -0.15 * a.act * (1 - a.rec); }
+          else neckP = 0.55;
+          if (c.chargeTurn) { paw = 1; bodyR = 0.18 * Math.sin(this.time * 6); neckP = 0.5; } // skids at the edge, paws again
+          break;
+        }
+        case 'll_dam_cham': {
+          // Rears high, HOLDS trembling (the delayed beat), slams with a groan.
+          rearUp = a.act > 0 ? 1.25 * (1 - Ease.inCubic(Math.min(1, a.act * 3))) : 1.25 * Ease.outCubic(a.w); if (a.rec > 0) rearUp = 0;
+          if (a.hold) { trembleFront = 1; neckY = 0.08 * wobble(this.time, 5); }
+          neckP = -0.45 * rearUp; break;
+        }
         default: break;
       }
     }
     if (c.state === 'stagger' || c.state === 'pried') { frontKneel = 1; neckP = 0.6; }
+    // Demo 0.3: reeling from a stake (head shakes), open after a counter-beat, tusk pinned in the mud, hop back.
+    if (c.state === 'stake_stun') { frontKneel = 0.55; neckP = 0.7; neckY = Math.sin(this.time * 7) * 0.4; bodyR = neckY * 0.15; }
+    if (c.state === 'riposte_open') { frontKneel = 0.35; neckP = 0.8; bodyP = 0.12; }
+    if (c.state === 'tusk_lock') { frontKneel = 1; neckP = 1.15; bodyY = 1.05; neckY = 0.06 * wobble(this.time, 2); tailW = 0.1; }
+    if (c.state === 'combo_hop') { bodyY += 0.35 * Math.sin(Math.min(1, c.stateT / 0.45) * Math.PI); bodyP = -0.18; }
     if (c.state === 'pried') { bodyY = 0.75; }
     if (c.state === 'transition') {
       const t = c.stateT; // see enemies.json transition_set_piece_0_2 beats

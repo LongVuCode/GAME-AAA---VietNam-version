@@ -20,6 +20,7 @@ export class HumanoidAnimator {
     this.phase = 0; this.lastSin = 0; this.time = 0;
     this.hit = new Spring(7, 0.55); this.side = new Spring(6, 0.6);
     this.lever = new Spring(9, 0.7); this.stomp = new Spring(8, 0.8);
+    this.land = new Spring(9, 0.6); // Demo 0.3 landing squash
     this.ph = { phase: 'anticipation', u: 0 };
     this.onFootPlant = null; // (side: -1|1, speed) => void
     copyPose(this.pose, LIB.wp_giao_dong.stance); copyPose(this.from, this.pose);
@@ -30,6 +31,8 @@ export class HumanoidAnimator {
 
   /** Recoil: strength 0..1, side -1 (hit from the left) .. +1 (from the right). */
   hitReact(strength = 1, side = 0) { this.hit.kick(-50 * strength); this.side.kick(40 * side * strength); }
+  /** Landing squash (Demo 0.3 jump): strength ~ fall height. */
+  landKick(strength = 1) { this.land.kick(-9 * strength); }
   /** One pry beat landed (lever pushed down). */
   pryBeat() { this.lever.kick(-14); }
 
@@ -64,6 +67,15 @@ export class HumanoidAnimator {
       case 'vault': this._vault(cur, ctx.stateT, ctx.vaultS ?? 0.55); fade = 0.05; break;
       case 'swap': this._swap(cur, lib, ctx.stateT, ctx.swapS ?? 0.15); fade = 0.03; break;
       case 'finisher': this._finisher(cur, lib, ctx.finisher); fade = 0.05; break;
+      // Demo 0.3
+      case 'air': this._air(cur, lib, ctx.air); fade = ctx.air.phase === 'takeoff' ? 0.03 : 0.08; key = 'air'; break;
+      case 'air_attack': key = `atk:${ctx.attack.key}`; fade = 0.04; this._attack(cur, lib, ctx.attack); addPose(cur, cur, BODY.airTuckAdd, 0.8); break;
+      case 'plunge': key = `plg:${ctx.attack.key}`; fade = 0.04; this._plunge(cur, lib, ctx); break;
+      case 'plunge_land': key = 'plg_land'; fade = 0.02; this._plungeLand(cur, lib, ctx); break;
+      case 'land': fade = 0.03; lerpPose(cur, BODY.jumpCrouch, lib.stance, Ease.outQuad(clamp01(ctx.stateT / Math.max(0.05, ctx.landLag)))); break;
+      case 'skill': key = `skill:${ctx.skill.n ?? 0}`; fade = 0.05; this._skill(cur, lib, ctx.skill); break;
+      case 'riposte': key = `rip:${ctx.riposte?.key ?? 0}`; fade = 0.03; this._riposte(cur, lib, ctx); break;
+      case 'tusk_lock': copyPose(cur, BODY.tuskLock); cur[P.spinePitch] += 0.03 * Math.sin(this.time * 2.4); addPose(cur, cur, BODY.pryLeverAdd, (ctx.pryBeats ?? 0) * 0.8 - this.lever.update(dt) * 0.06); fade = 0.12; break;
       default: this._loco(cur, lib, ctx, dt); key = ctx.weaponId === 'pole' ? 'pole' : 'free';
     }
     this._clip(key, fade);
@@ -76,6 +88,8 @@ export class HumanoidAnimator {
     if (Math.abs(s) > 1e-4) addPose(this.pose, this.pose, BODY.hitSideAdd, s);
     if (ctx.skid > 0) addPose(this.pose, this.pose, BODY.skidAdd, ctx.skid);
     if (ctx.pivot) addPose(this.pose, this.pose, BODY.pivotAdd, 1);
+    const ld = this.land.update(dt);
+    if (Math.abs(ld) > 1e-4) addPose(this.pose, this.pose, BODY.landAdd, Math.min(1.6, -ld));
     return this.pose;
   }
 
@@ -165,6 +179,12 @@ export class HumanoidAnimator {
   // ---------------------------------------------------------------- dodge
   _dodge(out, lib, d) {
     const u = clamp01(d.t / Math.max(1e-3, d.moveT));
+    if (d.slide) {
+      // Sprint + forward dodge: low slide (enter fast, hold, rise in the recovery).
+      const k = d.t <= d.moveT ? Math.min(1, u * 4) * (u > 0.8 ? 1 - (u - 0.8) * 2.5 : 1) : 0;
+      lerpPose(out, lib.sprint ?? lib.stance, BODY.slide, Ease.outCubic(clamp01(k)));
+      return;
+    }
     if (d.kind === 'backstep') {
       lerpPose(out, lib.stance, BODY.backstep, Math.sin(Math.PI * Math.min(1, u * 1.15)));
       out[P.hipsY] += 0.07 * Math.sin(Math.PI * u); // small hop
@@ -235,6 +255,64 @@ export class HumanoidAnimator {
     copyPose(out, lib.stance);
     addPose(out, out, BODY.swapStow, Math.sin(Math.PI * u));
   }
+  // ---------------------------------------------------------------- Demo 0.3: jump, air moves, Arts, riposte
+  _air(out, lib, a) {
+    if (a.phase === 'takeoff') { lerpPose(out, lib.stance, BODY.jumpCrouch, Ease.outCubic(clamp01(a.t / 0.05))); return; }
+    // Rise (tucked) -> apex (stretched, brief) -> fall (legs reach for the ground) by vertical speed.
+    const vy = a.vy ?? 0;
+    if (vy > 2) lerpPose(out, BODY.airRise, BODY.airApex, clamp01(1 - (vy - 2) / 4.9));
+    else if (vy > -2) lerpPose(out, BODY.airApex, BODY.airFall, clamp01((2 - vy) / 4));
+    else copyPose(out, BODY.airFall);
+    if (lib !== LIB.wp_giao_dong) { out[P.wpX] = lib.run[P.wpX]; out[P.wpY] = lib.run[P.wpY]; out[P.wpZ] = lib.run[P.wpZ]; out[P.wpPitch] = lib.run[P.wpPitch]; out[P.wpYaw] = lib.run[P.wpYaw]; }
+  }
+  _plunge(out, lib, ctx) {
+    const k = this._keys(lib, ctx.attack.id), a = ctx.attack;
+    if (!ctx.air.falling) lerpPose(out, BODY.airApex, k.ant, Ease.outCubic(clamp01(a.t / Math.max(0.05, a.tl.startup))));
+    else { lerpPose(out, k.ant, k.hit, Ease.inCubic(clamp01((a.t - a.tl.startup) / 0.12))); addPose(out, out, BODY.airTuckAdd, 0.4); }
+  }
+  _plungeLand(out, lib, ctx) {
+    const k = this._keys(lib, (ctx.attack.id || '').replace(/_l$/, '_h'));
+    const u = clamp01(ctx.stateT / Math.max(0.1, ctx.plungeRec));
+    if (u < 0.55) lerpPose(out, k.hit, k.fol, Ease.outCubic(u / 0.55)); else lerpPose(out, k.fol, lib.stance, Ease.inOutQuad((u - 0.55) / 0.45));
+  }
+  _skill(out, lib, s) {
+    const k = s.run; if (!k) { copyPose(out, lib.stance); return; }
+    const tl = this._skTl ?? (this._skTl = { startup: 0, active: 0, recovery: 0 });
+    const t = s.t;
+    if (k.kind === 'vault') {
+      // Plant the butt, bend, spring up (pole-vault), drive the point down where you land.
+      const keys = this._keys(lib, 'sp_air_h');
+      if (t < k.airFrom) lerpPose(out, lib.stance, BODY.jumpCrouch, Ease.outCubic(t / k.airFrom));
+      else if (t < k.airTo) { const u = (t - k.airFrom) / (k.airTo - k.airFrom); lerpPose(out, BODY.airRise, keys.ant, Ease.inOutQuad(u)); if (u > 0.6) lerpPose(out, out, keys.hit, Ease.inCubic((u - 0.6) / 0.4)); }
+      else lerpPose(out, keys.fol, lib.stance, Ease.inOutQuad(clamp01((t - k.airTo) / (k.total - k.airTo))));
+      return;
+    }
+    if (k.kind === 'sweep') {
+      tl.startup = k.hitFrom; tl.active = k.hitTo - k.hitFrom; tl.recovery = Math.max(0.1, k.total - k.hitTo);
+      const id = lib === LIB.wp_riu_xeo ? 'ax_l4' : 'sp_l3';
+      this.sampleAttack(out, lib, id, t, tl);
+      addPose(out, out, BODY.sweepLowAdd, 1);
+      // Full turn of the body during the sweep (reverse on the second sweep).
+      const u = clamp01((t - k.hitFrom) / Math.max(0.05, k.hitTo - k.hitFrom));
+      out[P.hipsYaw] += (k.second ? -1 : 1) * TAU * Ease.inOutQuad(u) * (t < k.hitTo + 0.05 ? 1 : 0);
+      return;
+    }
+    if (k.kind === 'cleave') {
+      tl.startup = k.hitFrom; tl.active = k.hitTo - k.hitFrom; tl.recovery = k.total - k.hitTo;
+      this.sampleAttack(out, lib, lib === LIB.wp_riu_xeo ? 'ax_h1' : 'sp_h1', t, tl);
+      if (t < k.hitFrom) { const amp = 0.012 + 0.03 * (t / k.hitFrom); out[P.wpX] += amp * wobble(this.time, 1); out[P.chestYaw] += amp * wobble(this.time, 3); }
+      return;
+    }
+    tl.startup = k.hitFrom; tl.active = k.hitTo - k.hitFrom; tl.recovery = k.total - k.hitTo;
+    this.sampleAttack(out, lib, lib === LIB.wp_riu_xeo ? 'ax_b1' : 'sp_b1', t, tl);
+    if (t < k.dashEnd) { out[P.spinePitch] += 0.3; out[P.hipsY] -= 0.1; }
+  }
+  _riposte(out, lib, ctx) {
+    const r = ctx.riposte, dur = r?.dur ?? 0.8, tl = this._ripTl ?? (this._ripTl = { startup: 0, active: 0, recovery: 0 });
+    tl.startup = dur * 0.38; tl.active = dur * 0.1; tl.recovery = dur * 0.52;
+    this.sampleAttack(out, lib, lib === LIB.wp_riu_xeo ? 'ax_c1' : 'sp_h1', ctx.stateT, tl);
+  }
+
   _finisher(out, lib, f) {
     // Finisher on a broken normal enemy: big upswing that flips it (sp_b1 / ax_b1 shape, slower).
     const id = lib === LIB.wp_riu_xeo ? 'ax_l3' : 'sp_b1';

@@ -386,10 +386,6 @@
       "vi": "Khoen nứt",
       "en": "Khoen cracks"
     },
-    "hud_drum_burst": {
-      "vi": "Hồi trống",
-      "en": "Drum Burst"
-    },
     "set_hud_minimal": {
       "vi": "HUD tối giản (ẩn khi không giao chiến)",
       "en": "Minimal HUD (hide out of combat)"
@@ -1297,6 +1293,250 @@
     "hud_burst_ready_hint": {
       "vi": "Hồi trống sẵn sàng",
       "en": "Drum Burst ready"
+    },
+    "inv_hint_tabs": {
+      "vi": "Đổi thẻ",
+      "en": "Switch tab"
+    },
+    "inv_hint_select": {
+      "vi": "Chọn",
+      "en": "Select"
+    },
+    "inv_hint_close": {
+      "vi": "Đóng",
+      "en": "Close"
+    },
+    "inv_group_weapons": {
+      "vi": "Vũ khí",
+      "en": "Weapons"
+    },
+    "inv_group_armor": {
+      "vi": "Đồ mặc",
+      "en": "Garments"
+    },
+    "inv_group_trinkets": {
+      "vi": "Vật đeo · Bảo khí",
+      "en": "Trinkets · Heirloom"
+    },
+    "inv_unlock_weapon_2": {
+      "vi": "Mở ở đời Bương",
+      "en": "Opens in Bương's lifetime"
+    },
+    "inv_unlock_trinket_2": {
+      "vi": "Mở sau khi gọi tỉnh người bị mê",
+      "en": "Opens after you call the entranced villager back"
+    },
+    "inv_reason_materials": {
+      "vi": "Chưa đủ nguyên liệu",
+      "en": "Not enough materials"
+    },
+    "inv_reason_not_upgradeable": {
+      "vi": "Món này không nâng được",
+      "en": "This cannot be upgraded"
+    },
+    "inv_reason_not_owned": {
+      "vi": "Chưa có món này",
+      "en": "You do not have this"
+    },
+    "inv_reason_wrong_slot": {
+      "vi": "Món này không hợp ô này",
+      "en": "This does not fit this slot"
+    },
+    "inv_reason_wrong_kind": {
+      "vi": "Món này không hợp ô này",
+      "en": "This does not fit this slot"
+    },
+    "inv_reason_locked": {
+      "vi": "Ô này chưa mở",
+      "en": "This slot is locked"
+    },
+    "inv_reason_bag_full": {
+      "vi": "Túi đầy",
+      "en": "The pack is full"
+    },
+    "inv_reason_empty": {
+      "vi": "Ô đang trống",
+      "en": "The slot is empty"
+    },
+    "inv_reason_unknown_slot": {
+      "vi": "Ô không tồn tại",
+      "en": "No such slot"
+    },
+    "inv_reason_stack_full": {
+      "vi": "Túi đã đầy loại này, phần thừa để lại",
+      "en": "No room for more of this; the rest is left behind"
+    },
+    "inv_equipped": {
+      "vi": "Đang mang",
+      "en": "Worn"
+    },
+    "inv_fits_slot": {
+      "vi": "Món hợp ô {slot}",
+      "en": "Fits the {slot} slot"
+    },
+    "inv_no_candidates": {
+      "vi": "Chưa có món nào hợp ô này",
+      "en": "Nothing for this slot yet"
+    },
+    "inv_equip": {
+      "vi": "Mang",
+      "en": "Wear"
+    },
+    "inv_unequip": {
+      "vi": "Tháo ra",
+      "en": "Take off"
+    },
+    "inv_upgrade": {
+      "vi": "Nâng cấp",
+      "en": "Upgrade"
+    },
+    "inv_damage_reduction": {
+      "vi": "Giảm sát thương nhận",
+      "en": "Damage taken reduced"
+    },
+    "inv_compare_with": {
+      "vi": "So với: {name}",
+      "en": "Compared with: {name}"
+    },
+    "inv_bag_empty": {
+      "vi": "Túi trống",
+      "en": "The pack is empty"
+    },
+    "inv_bag_capacity": {
+      "vi": "Đồ mặc, vật đeo để rời: {n}/{max}",
+      "en": "Loose garments and trinkets: {n}/{max}"
+    },
+    "inv_count": {
+      "vi": "Đang có {n} (tối đa {max})",
+      "en": "Carrying {n} (max {max})"
+    },
+    "msg_gear_equipped": {
+      "vi": "Đã mang: {name}",
+      "en": "Now wearing: {name}"
+    },
+    "msg_got_gear": {
+      "vi": "Nhận đồ: {name}",
+      "en": "New gear: {name}"
+    },
+    "msg_lookout": {
+      "vi": "Điểm nhìn: {name}",
+      "en": "Lookout: {name}"
+    },
+    "prompt_inspect_secret": {
+      "vi": "Xem kỹ",
+      "en": "Look closer"
+    },
+    "skill_locked": {
+      "vi": "Chưa mở",
+      "en": "Locked"
+    },
+    "skill_rank_word": {
+      "vi": "Bậc",
+      "en": "Rank"
+    },
+    "skill_input": {
+      "vi": "Phím",
+      "en": "Input"
+    },
+    "skill_next_rank": {
+      "vi": "Bậc kế",
+      "en": "Next rank"
+    },
+    "skill_max": {
+      "vi": "Đã đạt bậc cao nhất",
+      "en": "Highest rank reached"
+    },
+    "skill_weapon_missing": {
+      "vi": "Cần vũ khí {name}",
+      "en": "Needs the {name}"
+    },
+    "skill_respec_where": {
+      "vi": "Chỉ học lại được khi ngồi bên bếp lửa",
+      "en": "You can only relearn by a resting fire"
+    },
+    "skill_respec_done": {
+      "vi": "Đã học lại, hoàn {n} kinh nghiệm",
+      "en": "Relearned; {n} XP returned"
+    },
+    "map_objective": {
+      "vi": "Mục tiêu",
+      "en": "Objective"
+    },
+    "map_no_objective": {
+      "vi": "Không có mục tiêu để theo",
+      "en": "Nothing to track"
+    },
+    "map_zones": {
+      "vi": "Các vùng",
+      "en": "Areas"
+    },
+    "map_fast_travel_title": {
+      "vi": "Bếp lửa đã thấy",
+      "en": "Resting fires found"
+    },
+    "map_travel_none": {
+      "vi": "Chưa thấy bếp lửa nào",
+      "en": "No resting fire found yet"
+    },
+    "map_travel_engaged": {
+      "vi": "Không đi được khi đang giao chiến",
+      "en": "Not while in a fight"
+    },
+    "map_travel_zone": {
+      "vi": "Không đi được từ bãi lầy",
+      "en": "Not from the mire"
+    },
+    "map_travel_level": {
+      "vi": "Đi đò để sang bến khác",
+      "en": "Take the ferry to reach the other landing"
+    },
+    "map_travel_era": {
+      "vi": "Không có ở đời này",
+      "en": "Not in this lifetime"
+    },
+    "map_markers": {
+      "vi": "Dấu tự đặt: {n}/{max}",
+      "en": "Custom markers: {n}/{max}"
+    },
+    "map_marker_hint": {
+      "vi": "Bấm lên vải để đặt dấu, bấm lại vào dấu để bỏ. Kéo để dời, lăn chuột để phóng to.",
+      "en": "Click the cloth to place a marker; click a marker to remove it. Drag to pan, scroll to zoom."
+    },
+    "map_marker_pin_cloth": {
+      "vi": "Cờ vải",
+      "en": "Cloth pin"
+    },
+    "map_marker_circle": {
+      "vi": "Vòng",
+      "en": "Ring"
+    },
+    "map_marker_cross": {
+      "vi": "Chữ thập",
+      "en": "Cross"
+    },
+    "map_marker_star_reed": {
+      "vi": "Bó lau",
+      "en": "Reed bundle"
+    },
+    "map_minimap": {
+      "vi": "Bản đồ nhỏ",
+      "en": "Minimap"
+    },
+    "map_minimap_rotation": {
+      "vi": "Xoay theo",
+      "en": "Rotates with"
+    },
+    "map_minimap_zoom": {
+      "vi": "Tầm nhìn",
+      "en": "Range"
+    },
+    "opt_val_camera_up": {
+      "vi": "Hướng camera",
+      "en": "Camera"
+    },
+    "opt_val_north_up": {
+      "vi": "Hướng bắc",
+      "en": "North"
     }
   },
   "dialogue": [
