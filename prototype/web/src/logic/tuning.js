@@ -2,6 +2,8 @@
 // changes proposed by FUN_PASS_0_2 §3.7 that are NOT applied in the JSON (the boss HP is pinned by
 // game/Source/ArpgCore/Tests/ConfigTests.cpp). The web prototype applies them on a deep copy at boot,
 // so design/data stays untouched and ArpgCore / its tests read the original values.
+// Demo 0.3: the same copy also gets controls.json scheme_0_3 merged (logic/controls.js applyScheme03).
+import { applyScheme03 } from './controls.js';
 
 /** Sets obj[path] where path is like "drum_rhythm.gain.light_hit" or "boss_lon_loi_dam.phases[1].speed_mult". */
 function setPath(root, path, value) {
@@ -32,5 +34,6 @@ export function applyTuningChanges(data) {
     const ok = root && setPath(root, c.path, c.to);
     (ok ? applied : skipped).push({ file: c.file, path: c.path, from: c.from, to: c.to });
   }
+  if (copy.controls?.scheme_0_3) copy.controls = applyScheme03(copy.controls);
   return { data: Object.freeze(copy), applied, skipped };
 }

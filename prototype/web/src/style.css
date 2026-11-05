@@ -169,7 +169,7 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-hprow .num { margin-left: auto; font-size: calc(12px * var(--hud-fs)); font-variant-numeric: tabular-nums; color: #f3ecda; }
 .h-hprow .beat { display: none; width: 26px; height: 13px; color: #ff5a4a; align-self: center; filter: drop-shadow(0 0 4px rgba(255,60,40,0.9)); }
 .h-hprow .beat svg { width: 100%; height: 100%; display: block; }
-.h-hprow[data-tier=crit] .beat { display: block; animation: beat 0.9s infinite; }
+.h-hprow[data-tier=crit] .beat { display: block; animation: beat 0.9s infinite; will-change: transform; }
 .h-hprow[data-tier=crit] .num { color: #ffb3a8; font-weight: 700; }
 @keyframes beat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.3); } 24% { transform: scale(1); } 36% { transform: scale(1.18); } }
 
@@ -185,9 +185,13 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 .h-hp .tick { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(0,0,0,0.65); box-shadow: 1px 0 0 rgba(255,255,255,0.25); z-index: 2; }
 .h-hp .tick.t50 { left: 50%; } .h-hp .tick.t10 { left: 10%; }
 .h-hpglow.healing .fill { box-shadow: inset 0 0 10px rgba(255,255,255,0.9); }
-.h-hpglow[data-tier=crit] { animation: hpCrit 0.9s ease-in-out infinite; }
-@keyframes hpCrit { 0%, 100% { filter: drop-shadow(0 0 4px rgba(255,54,44,0.8)); } 50% { filter: drop-shadow(0 0 12px rgba(255,54,44,1)) brightness(1.25); } }
-.hud3.reduce-flash .h-hpglow[data-tier=crit] { animation: none; filter: drop-shadow(0 0 8px rgba(255,54,44,0.95)); }
+/* low-health pulse: a separate glow layer animating opacity only (no filter animation: cheap to composite) */
+.h-hpwrap { position: relative; }
+.h-hppulse { position: absolute; left: -3px; right: 2px; top: -3px; bottom: -3px; border-radius: 4px; opacity: 0; pointer-events: none; will-change: opacity;
+  box-shadow: 0 0 12px 3px rgba(255,54,44,0.95), inset 0 0 6px rgba(255,120,100,0.6); }
+.h-hppulse.on { animation: hpCrit 0.9s ease-in-out infinite; }
+@keyframes hpCrit { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
+.hud3.reduce-flash .h-hppulse { animation: none !important; opacity: 0.55; }
 .hud3.reduce-flash .h-hprow[data-tier=crit] .beat { animation: none; }
 
 .h-therow { display: flex; align-items: center; gap: 8px; }
@@ -206,24 +210,27 @@ table.remap button.bind.wait { border-color: var(--focus); color: var(--focus); 
 
 /* Drum Burst face (bottom-right) */
 .h-drum { position: absolute; right: 28px; bottom: 30px; width: 112px; display: grid; justify-items: center; gap: 6px; transition: opacity 0.6s, transform 0.6s; }
-.h-drum canvas { position: relative; display: block; border-radius: 50%; filter: drop-shadow(0 0 6px rgba(80,240,200,0.35)) drop-shadow(0 2px 3px #000); }
+.h-drum canvas { position: relative; display: block; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.8); }
+/* halo behind the face (the canvas itself has no CSS filter: it repaints while the fluid moves) */
+.h-drum .halo { position: absolute; left: 50%; top: 56px; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; pointer-events: none; will-change: opacity, transform;
+  background: radial-gradient(circle, rgba(80,240,200,0.4) 0 38%, rgba(80,240,200,0.12) 50%, rgba(80,240,200,0) 68%); }
+.h-drum[data-full="1"] .halo { background: radial-gradient(circle, rgba(255,150,50,0.95) 0 36%, rgba(255,100,30,0.45) 48%, rgba(255,90,20,0) 70%); animation: drumGlow 1.5s ease-in-out infinite; }
 .h-drum .rays, .h-drum .wave { position: absolute; left: 50%; top: 56px; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; pointer-events: none; opacity: 0; }
 .h-drum .rays { background: repeating-conic-gradient(from 0deg, rgba(255,150,50,0) 0deg 9deg, rgba(255,170,70,0.55) 12deg, rgba(255,150,50,0) 15deg 22.5deg);
   -webkit-mask: radial-gradient(circle, transparent 0 26%, #000 30%, transparent 70%); mask: radial-gradient(circle, transparent 0 26%, #000 30%, transparent 70%); }
+.h-drum .rays { will-change: transform; }
 .h-drum[data-full="1"] .rays { opacity: 1; animation: spin 14s linear infinite; }
-.h-drum[data-full="1"] canvas { animation: drumGlow 1.5s ease-in-out infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes drumGlow { 0%, 100% { filter: drop-shadow(0 0 8px rgba(255,110,30,0.85)) drop-shadow(0 2px 3px #000); }
-  50% { filter: drop-shadow(0 0 22px rgba(255,120,30,1)) drop-shadow(0 0 6px rgba(255,220,120,0.9)); } }
+@keyframes drumGlow { 0%, 100% { opacity: 0.7; transform: scale(0.94); } 50% { opacity: 1; transform: scale(1.1); } }
 .h-drum.filled .wave { animation: shock 0.8s ease-out; border: 3px solid rgba(255,190,90,0.9); }
 .h-drum.spent .wave { animation: shock 0.6s ease-out; border: 3px solid rgba(255,240,200,0.9); }
 @keyframes shock { from { opacity: 1; transform: scale(0.5); } to { opacity: 0; transform: scale(1.25); } }
 .h-drumlbl { display: flex; align-items: center; gap: 6px; font-size: calc(12px * var(--hud-fs)); white-space: nowrap; color: #cfc4ab; }
 .h-drum[data-full="0"] .h-drumlbl .kbd { opacity: 0.55; box-shadow: none; }
 .h-drum[data-full="1"] .h-drumlbl { color: #ffe1b0; font-weight: 700; }
-.h-drum[data-full="1"] .h-drumlbl .kbd { border-color: #ffb060; color: #fff; box-shadow: 0 0 10px rgba(255,130,40,0.95); animation: keyPulse 1.5s ease-in-out infinite; }
+.h-drum[data-full="1"] .h-drumlbl .kbd { border-color: #ffb060; color: #fff; box-shadow: 0 0 10px rgba(255,130,40,0.95); animation: keyPulse 1.5s ease-in-out infinite; will-change: transform; }
 @keyframes keyPulse { 50% { transform: scale(1.12); } }
-.hud3.reduce-flash .h-drum[data-full="1"] canvas { animation: none; filter: drop-shadow(0 0 14px rgba(255,110,30,0.95)); }
+.hud3.reduce-flash .h-drum[data-full="1"] .halo { animation: none; opacity: 0.9; }
 .hud3.reduce-flash .h-drum[data-full="1"] .h-drumlbl .kbd, .hud3.reduce-flash .h-drum .wave { animation: none; }
 .hud3.reduce-flash .h-drum[data-full="1"] .rays { animation-duration: 40s; opacity: 0.6; }
 

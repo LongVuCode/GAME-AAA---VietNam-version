@@ -4,7 +4,7 @@
 // menus, the device in use (glyphs), a capture mode for the remap screen, and controller rumble.
 // Action ids are the controls.json ids (move_up..., attack_light, drum_burst, interact, ...); aliases
 // (guard, call_name, pry_beat) read their parent's state.
-import { Bindings, padStyleFromId } from '../logic/controls.js';
+import { Bindings, padStyleFromId, ModifierLatch } from '../logic/controls.js';
 
 const BINDINGS_KEY = 'ngb_demo02_bindings_v1';
 const PREVENT = new Set(['Tab', 'Space', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Backquote', 'CapsLock', 'Quote', 'Slash']);
@@ -24,6 +24,7 @@ export class Input {
     this.capture = null; // { device, cb }
     this.lockFlick = false; this._flick = 0;
     this.onAction = null;
+    this.modLatch = new ModifierLatch(); this.modOn = false; this.padHoldT = new Map(); // 0.3 pad combos / holds
     addEventListener('keydown', (e) => {
       if (this.capture) { this._captureKey(e); return; }
       const acts = this.bindings.actionsForKbm(e.code), ui = this.bindings.uiForKbm(e.code);
@@ -38,12 +39,16 @@ export class Input {
       this.keys.delete(e.code);
       for (const a of this.bindings.actionsForKbm(e.code)) this._refresh(a);
     });
-    const mouseCode = (b) => (b === 0 ? 'Mouse0' : b === 1 ? 'Mouse1' : b === 2 ? 'Mouse2' : null);
+    // Mouse3 / Mouse4 = side buttons (back / forward): kbm_mouse_side preset (scheme_0_3). The browser's
+    // Back navigation is blocked while the game canvas has the pointer (not verified on every browser).
+    const mouseCode = (b) => (b === 0 ? 'Mouse0' : b === 1 ? 'Mouse1' : b === 2 ? 'Mouse2' : b === 3 ? 'Mouse3' : b === 4 ? 'Mouse4' : null);
+    const blockSide = (e) => { if ((e.button === 3 || e.button === 4) && (e.target === canvas || this.locked)) e.preventDefault(); };
+    addEventListener('mouseup', blockSide, true); addEventListener('auxclick', blockSide, true);
     addEventListener('mousedown', (e) => {
       const code = mouseCode(e.button);
       if (this.capture) { if (this.capture.device === 'kbm' && code && e.target === this.capture.target) return; if (this.capture.device === 'kbm' && code) { e.preventDefault(); this._finishCapture(code); } return; }
-      if (e.target !== canvas) return; // clicks on menus are not gameplay input
-      if (e.button === 1) e.preventDefault();
+      if (e.target !== canvas && !(this.locked && (e.button === 3 || e.button === 4))) return; // clicks on menus are not gameplay input
+      if (e.button === 1 || e.button === 3 || e.button === 4) e.preventDefault();
       this.device = 'kbm';
       if (!code) return;
       this.keys.add(code);
@@ -126,18 +131,33 @@ export class Input {
     const now = performance.now();
     const cur = this._padNow ?? (this._padNow = new Set()); cur.clear();
     pad.buttons.forEach((b, i) => { if (b.pressed || b.value > 0.5) cur.add(i); });
+    // Weapon Art modifier (scheme_0_3: hold LT + light / heavy attack button; acc_skill_modifier_mode).
+    const b = this.bindings, combos = b.desc.padCombo, modIdx = Object.values(combos)[0]?.modifier;
+    if (modIdx != null && !this.capture) this.modOn = this.modLatch.update(this._lastPadDt ?? 0.016, s.acc_skill_modifier_mode ?? 'hold', cur.has(modIdx), cur.has(modIdx) && !this.padPrev.has(modIdx));
+    this._lastPadDt = Math.min(0.1, Math.max(0, (now - (this._lastPadPoll ?? now)) / 1000)); this._lastPadPoll = now;
     for (const i of cur) {
       if (this.padPrev.has(i)) continue;
       this.device = 'pad';
       if (this.capture) { if (this.capture.device === 'pad') this._finishCapture(i === 9 ? null : i); continue; }
       this.pads.add(i);
-      for (const a of this.bindings.actionsForPad(i)) this._press(a, now);
-      for (const a of this.bindings.uiForPad(i)) this.uiPressed.add(a);
+      for (const a of b.uiForPad(i)) this.uiPressed.add(a);
+      if (this.modOn && i !== modIdx) {
+        const combo = Object.keys(combos).find((a) => b.padComboFor(a)?.button === i);
+        if (combo) { this._press(combo, now); this.padComboHeld = combo; this.modLatch.used(); continue; } // the attack itself is suppressed
+      }
+      const holds = b.actionsForPad(i).flatMap((a) => b.padHoldOf(a).map((h) => ({ ...h, parent: a })));
+      if (holds.length) { this.padHoldT.set(i, { t0: now, holds, fired: false }); continue; } // tap vs hold decided later
+      for (const a of b.actionsForPad(i)) this._press(a, now);
+    }
+    for (const [i, h] of this.padHoldT) {
+      if (!h.fired && cur.has(i) && now - h.t0 >= h.holds[0].holdS * 1000) { h.fired = true; this.pressedSet.add(h.holds[0].action); this.pressTime[h.holds[0].action] = now; }
+      if (!cur.has(i)) { if (!h.fired) for (const x of h.holds) { this.pressedSet.add(x.parent); this.pressTime[x.parent] = now; } this.padHoldT.delete(i); }
     }
     for (const i of this.padPrev) {
       if (cur.has(i)) continue;
       this.pads.delete(i);
-      for (const a of this.bindings.actionsForPad(i)) this._refresh(a);
+      if (this.padComboHeld && b.padComboFor(this.padComboHeld)?.button === i) { if (this.down.delete(this.padComboHeld)) this.releasedSet.add(this.padComboHeld); this.padComboHeld = null; }
+      for (const a of b.actionsForPad(i)) this._refresh(a);
     }
     const prev = this.padPrev; this.padPrev = cur; this._padNow = prev;
     // Right stick flick switches the locked target (lock_on.switch_stick_threshold).

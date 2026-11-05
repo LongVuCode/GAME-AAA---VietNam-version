@@ -3,15 +3,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DATA } from '../src/data.js';
-import { Bindings, keyLabel, padLabel, padStyleFromId, ModeLatch, SprintControl, sprintModeFor, glyphDevice } from '../src/logic/controls.js';
+import { Bindings, keyLabel, padLabel, padStyleFromId, ModeLatch, SprintControl, sprintModeFor, glyphDevice, applyScheme03, ModifierLatch } from '../src/logic/controls.js';
+import { DATA_02 } from '../src/data.js';
 
 const C = DATA.controls;
 
-test('defaults follow controls.json (Shift sprint, Caps walk, Space dodge, Q parry, RMB heavy, F burst, E interact, R heal, 1/2 swap)', () => {
+test('defaults follow controls.json + scheme_0_3 (Shift sprint, Caps walk, C dodge, Space jump, Q parry, RMB heavy, F burst, E interact, R heal, 1/2 swap)', () => {
   const b = new Bindings(C);
   assert.deepEqual(b.kbmFor('sprint'), ['ShiftLeft']);
   assert.deepEqual(b.kbmFor('walk'), ['CapsLock']);
-  assert.deepEqual(b.kbmFor('dodge'), ['Space']);
+  assert.deepEqual(b.kbmFor('dodge'), ['KeyC']);
+  assert.deepEqual(b.kbmFor('jump'), ['Space']);
   assert.deepEqual(b.kbmFor('parry'), ['KeyQ']);
   assert.deepEqual(b.kbmFor('attack_light'), ['Mouse0']);
   assert.deepEqual(b.kbmFor('attack_heavy'), ['Mouse2']);
@@ -22,6 +24,7 @@ test('defaults follow controls.json (Shift sprint, Caps walk, Space dodge, Q par
   assert.deepEqual(b.kbmFor('lock_on'), ['Mouse1', 'Tab']);
   assert.deepEqual([b.kbmFor('move_up'), b.kbmFor('move_left'), b.kbmFor('move_down'), b.kbmFor('move_right')].flat(), ['KeyW', 'KeyA', 'KeyS', 'KeyD']);
   assert.deepEqual(b.padFor('dodge'), [1]); assert.deepEqual(b.padFor('sprint'), [10]); assert.deepEqual(b.padFor('heal'), [12]);
+  assert.deepEqual(b.padFor('jump'), [0]); assert.deepEqual(b.padFor('interact'), [5]);
   assert.equal(b.conflicts('kbm').length, 0); assert.equal(b.conflicts('pad').length, 0);
 });
 
@@ -40,7 +43,7 @@ test('remap: conflict swaps the two actions; reserved keys refused; reset restor
   const r = b.assign('kbm', 'dodge', 0, 'KeyQ'); // Q belonged to parry
   assert.ok(r.ok); assert.deepEqual(r.conflict, { action: 'parry', slot: 0 });
   assert.deepEqual(b.kbmFor('dodge'), ['KeyQ']);
-  assert.deepEqual(b.kbmFor('parry'), ['Space'], 'parry received the old dodge key');
+  assert.deepEqual(b.kbmFor('parry'), ['KeyC'], 'parry received the old dodge key');
   assert.deepEqual(b.actionsForKbm('KeyQ'), ['dodge']);
   assert.equal(b.conflicts('kbm').length, 0);
   assert.equal(b.assign('kbm', 'dodge', 0, 'Escape').ok, false);
@@ -49,7 +52,7 @@ test('remap: conflict swaps the two actions; reserved keys refused; reset restor
   assert.ok(p.ok); assert.equal(p.conflict.action, 'dodge'); assert.deepEqual(b.padFor('dodge'), [2]);
   assert.equal(b.assign('pad', 'move_up', 0, 3).ok, false, 'stick axes are fixed');
   b.reset();
-  assert.deepEqual(b.kbmFor('dodge'), ['Space']); assert.deepEqual(b.padFor('dodge'), [1]);
+  assert.deepEqual(b.kbmFor('dodge'), ['KeyC']); assert.deepEqual(b.padFor('dodge'), [1]);
 });
 
 test('second keyboard slot and moving a key between slots of one action', () => {
@@ -70,14 +73,18 @@ test('persistence: toJSON / load round-trip; garbage and conflicting saves fall 
   assert.equal(new Bindings(C).load({ v: 99 }), false);
   const bad = new Bindings(C);
   assert.equal(bad.load({ v: 1, kbm: { dodge: ['KeyQ', null], parry: ['KeyQ', null] } }), false);
-  assert.deepEqual(bad.kbmFor('dodge'), ['Space']);
+  assert.deepEqual(bad.kbmFor('dodge'), ['KeyC']);
+  const old02 = new Bindings(C);
+  assert.equal(old02.load({ v: 1, kbm: { dodge: ['Space', null] }, pad: {} }), false, 'a 0.2 save (Space = dodge) is dropped once');
+  assert.deepEqual(old02.kbmFor('jump'), ['Space']);
 });
 
-test('pad preset "shoulder" moves attacks to RB/RT, burst to LT, heal to X', () => {
+test('pad preset "shoulder" (0.3) moves attacks to RB/RT, burst to Y, interact to X; Weapon Arts follow the attack buttons', () => {
   const b = new Bindings(C);
   assert.ok(b.applyPadPreset('preset_shoulder'));
   assert.deepEqual(b.padFor('attack_light'), [5]); assert.deepEqual(b.padFor('attack_heavy'), [7]);
-  assert.deepEqual(b.padFor('drum_burst'), [6]); assert.deepEqual(b.padFor('heal'), [2]);
+  assert.deepEqual(b.padFor('drum_burst'), [3]); assert.deepEqual(b.padFor('interact'), [2]); assert.deepEqual(b.padFor('heal'), [12]);
+  assert.deepEqual(b.padComboFor('skill_1'), { modifier: 6, button: 5 }); assert.deepEqual(b.padComboFor('skill_2'), { modifier: 6, button: 7 });
   assert.equal(b.conflicts('pad').length, 0);
 });
 
@@ -116,4 +123,44 @@ test('sprint modes: hold, toggle (ends when the stick is released), auto after a
   assert.equal(sprintModeFor('device', 'kbm', C), 'hold');
   assert.equal(sprintModeFor('device', 'pad', C), 'toggle');
   assert.equal(sprintModeFor('auto', 'kbm', C), 'auto');
+});
+
+test('scheme_0_3 merge: jump on Space / A, dodge on C / B, interact on RB, Pack B, Map M, Arts 3/4 + LT, no conflicts', () => {
+  const m = applyScheme03(C);
+  assert.equal(applyScheme03(m), m, 'idempotent');
+  assert.ok(DATA_02.controls._scheme03, 'the prototype data runs on the merged scheme');
+  const b = new Bindings(C);
+  assert.deepEqual(b.kbmFor('inventory'), ['KeyB']); assert.deepEqual(b.kbmFor('map'), ['KeyM']);
+  assert.deepEqual(b.kbmFor('skill_1'), ['Digit3']); assert.deepEqual(b.kbmFor('skill_2'), ['Digit4']);
+  assert.deepEqual(b.kbmFor('codex'), [], 'Codex is a tab of the Pack; C belongs to Dodge');
+  assert.deepEqual(b.padFor('inventory'), [8]); assert.deepEqual(b.padFor('map'), [], 'map = hold View (shares_input_with_hold)');
+  assert.deepEqual(b.padHoldOf('inventory'), [{ action: 'map', holdS: 0.4 }]);
+  assert.deepEqual(b.padComboFor('skill_1'), { modifier: 6, button: 2 }, 'LT + X (follows attack_light)');
+  assert.deepEqual(b.padComboFor('skill_2'), { modifier: 6, button: 3 });
+  assert.deepEqual(b.conflicts('kbm'), []); assert.deepEqual(b.conflicts('pad'), []);
+  const unsafe = new Set(m.browser_unsafe_kbm);
+  for (const [a, l] of Object.entries(b.kbm)) for (const k of l) assert.ok(!k || !unsafe.has(k), `${a} on browser-unsafe ${k}`);
+  for (const id of ['acc_jump_full_height_on_tap', 'acc_slowmo', 'acc_burst_camera_simple', 'acc_skill_modifier_mode']) assert.ok(m.accessibility_options.some((o) => o.id === id), id);
+});
+
+test('kbm presets: Souls-Shift (dodge on Shift, sprint freed, sets sprint-on-dodge-hold), V, mouse side; still conflict-free', () => {
+  const b = new Bindings(C);
+  const p = b.applyKbmPreset('kbm_souls_shift');
+  assert.ok(p && p.set_options.acc_sprint_on_dodge_hold);
+  assert.deepEqual(b.kbmFor('dodge'), ['ShiftLeft']); assert.deepEqual(b.kbmFor('sprint'), []);
+  assert.deepEqual(b.conflicts('kbm'), []);
+  b.applyKbmPreset('kbm_v'); assert.deepEqual(b.kbmFor('dodge'), ['KeyV']); assert.deepEqual(b.kbmFor('sprint'), ['ShiftLeft']);
+  b.applyKbmPreset('kbm_mouse_side'); assert.deepEqual(b.kbmFor('dodge'), ['Mouse3', 'KeyC']); assert.deepEqual(b.conflicts('kbm'), []);
+  const saved = JSON.parse(JSON.stringify(b.toJSON())); const b2 = new Bindings(C);
+  assert.ok(b2.load(saved)); assert.equal(b2.kbmPreset, 'kbm_mouse_side'); assert.deepEqual(b2.kbmFor('dodge'), ['Mouse3', 'KeyC']);
+  assert.equal(keyLabel('Mouse3', 'en', applyScheme03(C).key_names), 'Mouse back button');
+  b.reset(); assert.deepEqual(b.kbmFor('dodge'), ['KeyC']);
+});
+
+test('Weapon Art modifier latch: hold, or a tap opens it for 2 s / until an Art is used', () => {
+  const l = new ModifierLatch();
+  assert.equal(l.update(0.016, 'hold', true, true), true); assert.equal(l.update(0.016, 'hold', false, false), false);
+  assert.equal(l.update(0.016, 'toggle', true, true), true); assert.equal(l.update(1.0, 'toggle', false, false), true);
+  assert.equal(l.update(1.1, 'toggle', false, false), false, 'closes after 2 s');
+  l.update(0.016, 'toggle', true, true); l.used(); assert.equal(l.update(0.016, 'toggle', false, false), false, 'closes when used');
 });

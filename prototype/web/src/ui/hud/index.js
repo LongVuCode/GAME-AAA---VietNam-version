@@ -50,13 +50,13 @@ export class Hud {
         <div class="h-weapon"><div class="ico"></div><div class="h-slotkeys"></div></div>
         <div class="h-bars">
           <div class="h-hprow"><span class="lbl" data-t="hud_health"></span><span class="beat">${HEARTBEAT_ICON}</span><span class="num"></span></div>
-          <div class="h-hpglow" data-tier="ok"><div class="h-bar h-hp"><i class="chip"></i><i class="fill"></i><i class="edge"></i><b class="tick t50"></b><b class="tick t10"></b></div></div>
+          <div class="h-hpwrap"><i class="h-hppulse"></i><div class="h-hpglow" data-tier="ok"><div class="h-bar h-hp"><i class="chip"></i><i class="fill"></i><i class="edge"></i><b class="tick t50"></b><b class="tick t10"></b></div></div></div>
           <div class="h-therow"><div class="h-theglow"><div class="h-bar h-the"><i class="fill"></i></div></div><span class="lbl" data-t="hud_the"></span></div>
           <div class="h-heal"><span class="ico">${HEAL_ICON}</span><span class="nm" data-t="hud_heal_charges"></span><b class="n"></b><span class="kbd"></span></div>
         </div>
       </div>
       <div class="h-drum" data-full="0">
-        <div class="rays"></div><div class="wave"></div>
+        <div class="halo"></div><div class="rays"></div><div class="wave"></div>
         <canvas></canvas>
         <div class="h-drumlbl"><span class="kbd"></span><span class="nm" data-t="hud_drum_burst"></span></div>
       </div>
@@ -71,7 +71,7 @@ export class Hud {
       boss: q('.h-boss'), bname: q('.h-bname b'), bphase: q('.h-bphase'), bhp: q('.h-bosshp .fill'), bchip: q('.h-bosshp .chip'),
       bthe: q('.h-bossthe .fill'), cracks: q('.h-cracks'), crackEls: [...el.querySelectorAll('.h-cracks .k')],
       player: q('.h-player'), skills: [...el.querySelectorAll('.h-skill')], weapon: q('.h-weapon'), wico: q('.h-weapon .ico'), slotkeys: q('.h-slotkeys'),
-      hp: q('.h-hpglow'), hpFill: q('.h-hp .fill'), hpEdge: q('.h-hp .edge'), hpChip: q('.h-hp .chip'), hpNum: q('.h-hprow .num'), hprow: q('.h-hprow'),
+      hp: q('.h-hpglow'), hpPulse: q('.h-hppulse'), hpFill: q('.h-hp .fill'), hpEdge: q('.h-hp .edge'), hpChip: q('.h-hp .chip'), hpNum: q('.h-hprow .num'), hprow: q('.h-hprow'),
       the: q('.h-theglow'), theFill: q('.h-the .fill'), heal: q('.h-heal'), healN: q('.h-heal .n'), healKey: q('.h-heal .kbd'),
       drum: q('.h-drum'), drumKey: q('.h-drumlbl .kbd'), canvas: q('.h-drum canvas'),
       fps: q('.h-meta .fps'), build: q('.h-meta .build'), pickups: q('.h-pickups'), pops: q('.h-pops'),
@@ -178,7 +178,7 @@ export class Hud {
     if (ratio < this.chip.value - 1e-6) this.vis.poke();
     this.chip.set(ratio); this.chip.tick(dt);
     const tier = hpTier(ratio);
-    this._set('tier', tier, (v) => { e.hp.dataset.tier = v; e.hprow.dataset.tier = v; });
+    this._set('tier', tier, (v) => { e.hp.dataset.tier = v; e.hprow.dataset.tier = v; e.hpPulse.classList.toggle('on', v === 'crit'); });
     this._set('hpc', ratio.toFixed(3), () => {
       const c = hpColor(ratio);
       e.hp.style.setProperty('--hc', rgb(c));

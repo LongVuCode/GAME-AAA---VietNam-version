@@ -14,9 +14,14 @@ import { HumanoidRig } from '../anim/rig.js';
 import { HumanoidAnimator } from '../anim/animator.js';
 import { LIB, GRIPS } from '../anim/humanoidPoses.js';
 import { makeAxe, makePole, makeSpear } from './meshes.js';
+import { JumpController, landingLag } from '../logic/jump.js';
+import { skillsForWeapon, levelEntry, effectiveCooldown, SkillCooldowns } from '../logic/skills.js';
 
 const DODGE_FROM = new Set(['free', 'guard', 'charge', 'parry', 'heal', 'swap']);
-const BUFFER_IN = new Set(['attack', 'dodge', 'parry', 'swap']);
+const BUFFER_IN = new Set(['attack', 'dodge', 'parry', 'swap', 'land', 'plunge_land', 'skill']);
+// Demo 0.3: airborne states (jump, light air attack, plunge). No dodge / guard / heal / Arts in the air.
+const AIR_STATES = new Set(['air', 'air_attack', 'plunge']);
+const CANCEL_SOURCES = new Set(['attack', 'skill', 'land', 'plunge_land', 'charge']);
 
 export class Player {
   constructor(game) {
@@ -30,11 +35,14 @@ export class Player {
     this.dodgeChain = new DodgeChain(tun.dodge);
     this.guardLatch = new ModeLatch(); this.heavyLatch = new ModeLatch(); this.walkLatch = new ModeLatch();
     this.sprintCtl = new SprintControl();
+    this.jc = new JumpController(tun.movement.jump); // Demo 0.3 jump (movement.jump)
+    this.skillCd = new SkillCooldowns();             // Demo 0.3 Weapon Arts (skills.json)
     this.anim = new HumanoidAnimator();
     this.animCtx = { state: 'free', stateT: 0, speed: 0, stride: 1, gait: 'idle', lean: 0, pitchLean: 0, localX: 0, localZ: 1, skid: 0, pivot: false,
       attack: { id: '', key: 0, t: 0, tl: null, level: 0, fromCharge: false }, charge: { id: '', t: 0, level: 0 },
       dodge: { n: 0, t: 0, moveT: 0.3, kind: 'roll', local: 'fwd' }, burst: { t: 0, every: 0.6, hits: 4 }, pryBeats: 0,
-      knock: { t: 0, downS: 0.5, upS: 0.8 }, weaponId: 'wp_giao_dong', finisher: { t: 0, dur: 0.9 }, vaultS: 0.55, swapS: 0.15 };
+      knock: { t: 0, downS: 0.5, upS: 0.8 }, weaponId: 'wp_giao_dong', finisher: { t: 0, dur: 0.9 }, vaultS: 0.55, swapS: 0.15,
+      air: { phase: 'ground', vy: 0, y: 0, t: 0 }, skill: { id: '', t: 0, run: null }, landLag: 0.1, y: 0 };
     this.anim.onFootPlant = (side, speed) => this.game.fxh?.playerFootPlant(this, side, speed);
     this.moveKey = 0;
     this.setCharacter('chr_coi');
@@ -67,6 +75,10 @@ export class Player {
     this.loco.reset(); this.sprintCtl.cancel(); this.guardLatch.cancel(); this.heavyLatch.cancel();
     this.alive = true; this.animOverride = null; this.moving = false;
     this.now = 0;
+    // Demo 0.3
+    this.y = 0; this.jc.reset(); this.airV = { x: 0, z: 0 }; this.airLightUsed = false; this.airSprint = false; this.pendingPlunge = false;
+    this.skill = null; this.skillCd.clear(); this.riposteRun = null; this.landLag = 0; this.plungeRec = 0;
+    this.keptChain = null; this.dodgeCancel = false; this.nextL4Until = -Infinity; this.sweepAgain = null;
   }
 
   get weaponId() { return this.game.gen.weapons[this.slot ?? 0] ?? this.game.gen.weapons[0]; }
@@ -76,7 +88,11 @@ export class Player {
   get sprinting() { return this.loco.sprinting; }
   get speed() { return this.loco.speed; }
   /** Extra invulnerability (knockdown get-up, finisher) on top of the dodge i-frames. */
-  get invulnerable() { return this.now < this.iframesUntil || (this.state === 'finisher' && this.tun.finisher?.player_invulnerable !== false); }
+  get invulnerable() {
+    return this.now < this.iframesUntil || (this.state === 'finisher' && this.tun.finisher?.player_invulnerable !== false)
+      || this.state === 'riposte' || this.state === 'tusk_lock' || (this.state === 'burst' && !!this.game.gp?.burstInvulnerable);
+  }
+  get airborne() { return this.y > 0.001 || AIR_STATES.has(this.state); }
 
   update(dt, now, input) {
     const g = this.game;
@@ -93,7 +109,7 @@ export class Player {
     this.slowT = Math.max(0, this.slowT - dt);
     this.stateT += dt;
     this._applyKnock(dt);
-    if (g.locked) { this.loco.speed = 0; this.sprintCtl.cancel(); this._sprintFx(); this._anim(dt); return; } // cutscene / pry / menus handle the player
+    if (g.locked) { this.loco.speed = 0; this.sprintCtl.cancel(); if (this.y > 0 && this.state !== 'skill') { this.jc.reset(); this.y = 0; } this._sprintFx(); this._anim(dt); return; } // cutscene / pry / menus handle the player
 
     // ---- walk / sprint requests
     const mv = this._camRelative(input);
@@ -101,6 +117,11 @@ export class Player {
     this.sprintCtl.update(dt, { mode: sprintModeFor(acc.acc_sprint_mode, input.device, g.data.controls), down: input.isDown('sprint'), pressed: input.pressed('sprint'),
       moveMag: mv.len, minRatio: this.tun.movement.sprint_requires_move_input_ratio, autoDelayS: acc.acc_sprint_auto_delay_s ?? 0.6,
       dodgeHeld: !!acc.acc_sprint_on_dodge_hold && input.isDown('dodge') && this.stateT > 0.3 && this.state === 'free' });
+
+    // ---- jump (movement.jump, DEMO_0_3 §2): buffered press, coyote time, no i-frames
+    if (input.pressed('jump') && this.tun.movement.jump_enabled !== false) this.jc.request(now);
+    this.jc.setGrounded(this.state !== 'vault', now);
+    if (this._jumpAllowed() && this.jc.tryStart(now, true, { fullOnTap: !!acc.acc_jump_full_height_on_tap })) this._startJump(now);
 
     // ---- defensive inputs (highest priority)
     if (input.pressed('dodge') && this._canDodge()) this._startDodge(mv);
@@ -126,6 +147,8 @@ export class Player {
       }
     }
     if (input.pressed('weapon_slot_1') || input.pressed('weapon_slot_2')) g.swapWeapon(input.pressed('weapon_slot_1') ? 0 : 1);
+    // ---- Weapon Arts (skills.json): 3 / 4, pad LT + attack
+    if (!g.noAttack && (input.pressed('skill_1') || input.pressed('skill_2'))) this.useSkill(input.pressed('skill_1') ? 0 : 1, now);
 
     // ---- state machines
     this.moving = false;
@@ -152,8 +175,16 @@ export class Player {
       case 'swap': this._updateSwap(dt, now); break;
       case 'vault': this._updateVault(dt); break;
       case 'finisher': this._brake(dt); break;
+      case 'air': case 'air_attack': case 'plunge': this._updateAir(dt, now, mv, input); break;
+      case 'land': this._brake(dt); if (this.stateT >= this.landLag) this.state = 'free'; break;
+      case 'plunge_land': this._brake(dt); if (this.stateT >= this.plungeRec) this.state = 'free'; break;
+      case 'skill': this._updateSkill(dt, now, mv); break;
+      case 'riposte': this._updateRiposte(dt); break;
+      case 'tusk_lock': this._brake(dt); break;
       default: break;
     }
+    // Knocked out of the air (hit, guard break): keep falling.
+    if (this.jc.airborne && !AIR_STATES.has(this.state)) { const r = this.jc.step(dt, { held: false }); this.y = this.jc.y; if (r.landed) this.y = 0; }
     if (this.state === 'guard' && !guardHeld) this.state = 'free';
     if (this.state === 'free' && guardHeld && this.defense.action === 'none') this.state = 'guard';
     if (this.state === 'free') this._tryBuffered(now, input);
@@ -178,13 +209,16 @@ export class Player {
     const surf = this.game.walk.speedMult(this.x, this.z), m = this.tun.movement;
     let k = surf === 'mud' ? m.mud_speed_mult : surf === 'shallow' ? m.shallow_water_speed_mult : 1;
     if (this.slowT > 0) k *= this.slowMult ?? 1;
+    const tr = this.game.gp?.trailAt(this.x, this.z); // Demo 0.3 mud trails of the crossing charges
+    if (tr) k *= tr.mult;
     return k;
   }
 
   _move(dt, mv, guard, speedCap = 1) {
     const g = this.game, target = g.lockTarget;
     const lockYaw = target ? Math.atan2(target.x - this.x, target.z - this.z) : null;
-    const r = this.loco.update(dt, this.yaw, { dirX: mv.dx, dirZ: mv.dz, mag: mv.len, walk: this.walkOn, sprint: this.sprintCtl.active && !guard && speedCap >= 1,
+    const trail = g.gp?.trailAt(this.x, this.z);
+    const r = this.loco.update(dt, this.yaw, { dirX: mv.dx, dirZ: mv.dz, mag: mv.len, walk: this.walkOn, sprint: this.sprintCtl.active && !guard && speedCap >= 1 && !trail?.blocksSprint,
       guard, lockYaw, surfMult: this._surfMult() * speedCap });
     this.yaw = r.yaw;
     if (r.dx || r.dz) {
@@ -235,6 +269,12 @@ export class Player {
   _canDodge() {
     if (!this.dodgeChain.canStart(this.now)) return false;
     if (DODGE_FROM.has(this.state)) return true;
+    // Demo 0.3 dodge cancel (dodge_cancel_0_3): landing lag, plunge recovery after 0.25 s, Arts after the hit.
+    const dc = this.tun.dodge_cancel_0_3 ?? {}, J = this.tun.movement.jump;
+    if (AIR_STATES.has(this.state)) return !!dc.from_air;
+    if (this.state === 'land') return dc.from_landing_lag !== false && J.landing?.lag_dodge_cancelable !== false;
+    if (this.state === 'plunge_land') return this.stateT >= (dc.from_plunge_recovery_after_s ?? J.air_attacks?.plunge_dodge_cancel_after_s ?? 0.25);
+    if (this.state === 'skill' && this.skill) return dc.from_skill_after_active !== false && this.skill.t >= this.skill.activeEnd;
     if (this.state === 'attack' && this.cur) {
       const intoRecovery = this.cur.t - (this.cur.tl.startup + this.cur.tl.active);
       return intoRecovery >= this.tun.dodge.cancel_attack_recovery_after_s;
@@ -243,6 +283,7 @@ export class Player {
   }
 
   _attackInput(type, now, mv) {
+    if (AIR_STATES.has(this.state)) { this._airAttack(type, now); return; }
     if (this.state === 'free' || this.state === 'guard') this._beginAttack(type, now, false, mv);
     else if (BUFFER_IN.has(this.state)) this.buffer.push(type, now);
   }
@@ -271,6 +312,11 @@ export class Player {
       sel = { move: w.moves.find((m) => m.id === w.swap_attack.base_move) ?? sel.move, kind: 'swap' };
     } else if (type === 'L' && sel.kind === 'chain' && sel.move.chain_index === 1 && w.sprint_attack && isSprintAttack(sprintS, am)) {
       sel = { move: w.moves.find((m) => m.id === w.sprint_attack.base_move) ?? sel.move, kind: 'sprint' };
+    }
+    // Cắm sào vọt rank 3: the first light after landing is Đâm xoáy (next_light_is_chain_index).
+    if (type === 'L' && sel.kind === 'chain' && now <= this.nextL4Until) {
+      const m4 = w.moves.find((m) => m.input === 'L' && m.chain_index === 4); if (m4) sel = { move: m4, kind: 'chain' };
+      this.nextL4Until = -Infinity;
     }
     this.perfectParryUntil = -Infinity; this.afterDodgeUntil = -Infinity; this.swapAttackUntil = -Infinity;
     // Attack toward the stick when nothing is targeted.
@@ -405,6 +451,10 @@ export class Player {
   // ---------------------------------------------------------------- dodge
   _startDodge(mv) {
     if (!this.defense.startDodge()) return;
+    const from = this.state;
+    this.dodgeCancel = CANCEL_SOURCES.has(from);
+    this.keptChain = from === 'attack' && this.cur && this.cur.move.input === 'L' ? { move: this.cur.move, index: this.chainIndex } : null;
+    if (from === 'skill') this._endSkill(this.now);
     if (this.state === 'charge') this.pending = null;
     const g = this.game;
     const plan = planDodge(this.tun.dodge, { dirX: mv.dx, dirZ: mv.dz, mag: mv.len, camYaw: g.cam.yaw, yaw: this.yaw,
@@ -418,6 +468,7 @@ export class Player {
     this.animCtx.dodge.n++;
     g.sfx.dodge(false);
     g.fxh?.dodgeStart(this, this.dodgeDir); // fx: dust/water burst
+    g.gp?.onPlayerDodge(this, this.dodge); // 0.3: dodge-spam tracking, slide fx
   }
 
   _updateDodge(dt, now) {
@@ -427,7 +478,12 @@ export class Player {
     if (step > 0) { const r = this.game.walk.move(this.x, this.z, dg.dirX * step, dg.dirZ * step, PROTO.playerRadiusM); this.x = r.x; this.z = r.z; }
     if (this.stateT >= d.duration_s) {
       this.state = 'free'; this.dodgeChain.end(now);
-      this.afterDodgeUntil = now + this.tun.input.combo_pause_threshold_s;
+      const kc = this.keptChain, keep = this.tun.dodge_cancel_0_3?.keeps_combo_chain_s;
+      if (kc && keep) {
+        // Dodge-cancelled a light chain: the chain survives keeps_combo_chain_s after the dodge.
+        this.lastMove = kc.move; this.chainIndex = kc.index; this.lastMoveEnd = now - Math.max(0, (kc.move.combo_window_s ?? keep) - keep);
+      } else this.afterDodgeUntil = now + this.tun.input.combo_pause_threshold_s;
+      this.keptChain = null;
     }
   }
 
@@ -479,7 +535,9 @@ export class Player {
     if (the > 0 && this.the.applyDamage(the)) {
       this.state = 'guardbreak'; this.stateT = 0; g.ui.toast(g.i18n.t('msg_guard_break'));
       this.anim.hitReact(0.8, side);
-    } else if (outcome === 'hit' && hp > 0 && !this.superArmor && !this.chargeArmor(info.attack ?? {})) {
+    } else if (outcome === 'hit' && hp > 0 && !this.superArmor && !this.chargeArmor(info.attack ?? {}) && !this._skillArmor(info.attack ?? {})) {
+      if (this.state === 'skill') this._endSkill(this.now);
+      if (this.state === 'riposte') this.riposteRun = null;
       this.cur = null; this.pending = null; this.chainIndex = 0;
       if (info.knockdown) {
         this.state = 'knockdown'; this.stateT = 0;
@@ -520,10 +578,273 @@ export class Player {
     for (const [id, m] of Object.entries(this.weaponMeshes)) m.visible = !on && id === this.weaponId;
   }
 
+  // ---------------------------------------------------------------- Demo 0.3: jump (movement.jump)
+  /** movement.jump.allowed_from: free / run / sprint / guard, attack recovery (after 0.1 s), dodge recovery, landing. */
+  _jumpAllowed() {
+    const J = this.tun.movement.jump;
+    if (this.tun.movement.jump_enabled === false || this.game.locked || this.jc.busy || this.y > 0.001) return false;
+    switch (this.state) {
+      case 'free': case 'guard': case 'land': return true;
+      case 'attack': return this.inRecovery && this.cur.t - (this.cur.tl.startup + this.cur.tl.active) >= (J.cancel_attack_recovery_after_s ?? 0.1);
+      case 'dodge': return J.cancel_dodge_recovery !== false && this.stateT >= this.tun.dodge.duration_s - this.tun.dodge.recovery_s;
+      default: return false;
+    }
+  }
+  _startJump(now) {
+    if (this.state === 'attack' && this.cur) { this.lastMove = this.cur.move; this.lastMoveEnd = now; this.cur = null; }
+    if (this.state === 'dodge') this.dodgeChain.end(now);
+    const l = this.loco, J = this.tun.movement.jump;
+    this.airSprint = l.sprinting || l.speed > this.tun.movement.run_speed_mps + 0.5;
+    // keeps_ground_speed: the run / sprint momentum carries into the air.
+    this.airV.x = J.keeps_ground_speed !== false ? l.vx : 0; this.airV.z = J.keeps_ground_speed !== false ? l.vz : 0;
+    this.state = 'air'; this.stateT = 0; this.airLightUsed = false; this.pendingPlunge = false; this.cur = null;
+    this.game.sfx.whoosh?.(0.7, 'light');
+  }
+  _updateAir(dt, now, mv, input) {
+    const g = this.game, J = this.tun.movement.jump, m = this.tun.movement;
+    const r = this.jc.step(dt, { held: input.isDown('jump') });
+    if (r.tookOff) g.gp?.onTakeoff(this);
+    this.y = this.jc.y;
+    if (this.state !== 'plunge') {
+      // Air control: 35 % of the ground acceleration toward the stick, momentum kept without input.
+      const top = (this.airSprint ? m.sprint_speed_mps : m.run_speed_mps) * Math.min(1, mv.len / 0.55);
+      if (mv.len > 0.05) {
+        const a = (m.accel_mps2 ?? 30) * (J.air_control_ratio ?? 0.35) * dt;
+        const ex = mv.dx * top - this.airV.x, ez = mv.dz * top - this.airV.z, el = Math.hypot(ex, ez);
+        if (el > 1e-6) { const k = Math.min(1, a / el); this.airV.x += ex * k; this.airV.z += ez * k; }
+        const lt = g.lockTarget;
+        this._turnTo(lt ? Math.atan2(lt.x - this.x, lt.z - this.z) : Math.atan2(mv.dx, mv.dz), (J.air_turn_rate_deg_s ?? 240) * DEG * dt);
+      }
+      const sp = Math.hypot(this.airV.x, this.airV.z), max = J.max_air_speed_mps ?? 7.2;
+      if (sp > max) { this.airV.x *= max / sp; this.airV.z *= max / sp; }
+      this._airMove(this.airV.x * dt, this.airV.z * dt);
+    }
+    const l = this.loco; l.vx = this.airV.x; l.vz = this.airV.z; l.speed = Math.hypot(l.vx, l.vz); l.sprinting = false;
+    if (this.pendingPlunge && this.y >= (J.air_attacks?.plunge_min_height_m ?? 0.6)) { this.pendingPlunge = false; this._airAttack('H', now); }
+    if (this.state === 'air_attack') this._updateAirAttack(dt, now);
+    else if (this.state === 'plunge' && this.cur) {
+      this.cur.t += dt;
+      if (!this.cur.falling && this.cur.t >= this.cur.tl.startup) { this.cur.falling = true; this.jc.startPlunge(); }
+      if (!this.cur.falling) this.jc.vy = 0; // hangs while raising the weapon overhead
+    }
+    if (r.landed) this._land(r.fallHeight, now);
+  }
+  /** Horizontal move in the air: a jump of >= 0.6 m clears the vault obstacles (log, ditch). */
+  _airMove(dx, dz) {
+    const w = this.game.walk, R = PROTO.playerRadiusM;
+    const m = w.move(this.x, this.z, dx, dz, R);
+    const blocked = Math.abs(m.x - this.x - dx) + Math.abs(m.z - this.z - dz) > 1e-4;
+    if (blocked && this.y >= 0.6 && w.nearVault?.(this.x, this.z, 1.2) && w.inside(this.x + dx, this.z + dz, 0)) { this.x += dx; this.z += dz; return; }
+    this.x = m.x; this.z = m.z;
+  }
+  /** After landing on a vault obstacle or outside the margin: step forward (then back) until free. */
+  _unstick() {
+    const w = this.game.walk, R = PROTO.playerRadiusM;
+    if (w.inside(this.x, this.z, R)) return;
+    for (const sgn of [1, -1]) for (let d = 0.2; d <= 3; d += 0.2) {
+      const x = this.x + Math.sin(this.yaw) * d * sgn, z = this.z + Math.cos(this.yaw) * d * sgn;
+      if (w.inside(x, z, R)) { this.x = x; this.z = z; return; }
+    }
+  }
+  _land(fallH, now) {
+    const g = this.game, J = this.tun.movement.jump;
+    this.y = 0;
+    const wasPlunge = this.state === 'plunge' && this.cur?.falling;
+    if (wasPlunge) {
+      const mv = this.cur.move;
+      g.gp?.plungeImpact(this, mv);
+      this.state = 'plunge_land'; this.stateT = 0; this.plungeRec = mv.recovery_s ?? J.air_attacks?.plunge_landing_recovery_s ?? 0.45;
+      this.airV.x = 0; this.airV.z = 0;
+    } else {
+      this.landLag = landingLag(fallH, J.landing);
+      this.state = this.landLag > 0 ? 'land' : 'free'; this.stateT = 0;
+    }
+    this.cur = null; this.airLightUsed = false; this.pendingPlunge = false;
+    this.loco.speed = wasPlunge ? 0 : Math.hypot(this.airV.x, this.airV.z); this.loco.vx = this.airV.x; this.loco.vz = this.airV.z;
+    this._unstick();
+    this.anim.landKick(Math.min(1.4, 0.45 + fallH * 0.5) * (wasPlunge ? 1.5 : 1));
+    g.gp?.onLand(this, fallH, wasPlunge);
+  }
+  /** Air moves (weapons[].air_moves_0_3): one light per jump (hangs 0.12 s), heavy = plunge from >= 0.6 m. */
+  _airAttack(type, now) {
+    const moves = this.weapon.air_moves_0_3, J = this.tun.movement.jump, aa = J.air_attacks ?? {};
+    if (!moves || this.game.noAttack) return;
+    if (type === 'L') {
+      if (this.airLightUsed || this.state !== 'air' || this.jc.phase !== 'air') return;
+      const m = moves.find((x) => x.input === 'air,L'); if (!m) return;
+      this.airLightUsed = true;
+      this.jc.hang(m.hang_s ?? aa.light_hang_s ?? 0.12, m.hang_gravity_scale ?? aa.light_hang_gravity_scale ?? 0.3);
+      this._startAirMove(m, 'chain');
+      this.state = 'air_attack'; this.stateT = 0;
+      return;
+    }
+    if (this.state === 'plunge') return;
+    const minH = aa.plunge_min_height_m ?? 0.6;
+    if (this.y < minH) {
+      // Pressed on the way up below 0.6 m: plunge as soon as the height is reached (if the jump gets there).
+      const apex = this.y + Math.max(0, this.jc.vy) ** 2 / (2 * this.jc.gravity);
+      if (this.jc.vy > 0 && apex >= minH) this.pendingPlunge = true;
+      return;
+    }
+    const m = moves.find((x) => x.input === 'air,H'); if (!m) return;
+    this._startAirMove(m, 'heavy'); this.cur.falling = false;
+    this.jc.vy = 0; this.airV.x *= 0.2; this.airV.z *= 0.2;
+    this.state = 'plunge'; this.stateT = 0;
+  }
+  _startAirMove(m, kind) {
+    const keys = (LIB[this.weaponId] ?? LIB.wp_giao_dong).moves;
+    const tl = { startup: m.startup_s, active: m.active_s, recovery: m.recovery_s, total: m.startup_s + m.active_s + m.recovery_s };
+    const hitbox = m.arc_deg >= 300 ? 'circle' : m.arc_deg > 40 ? 'arc' : 'line';
+    this.cur = { move: m, kind, air: true, t: 0, tl, level: 0, fromCharge: false, motion: { hitbox, theMult: 1, knockM: null, react: m.target_react ?? 'flinch', lungeM: 0 },
+      target: this._aimTarget(m.range_m ?? 2), hit: new Set(), key: ++this.moveKey, animId: m.id, sweepDir: keys[m.id]?.sweepDir ?? 1, hitAny: false, falling: false };
+    if (this.cur.target) this.yaw = Math.atan2(this.cur.target.x - this.x, this.cur.target.z - this.z);
+    if (this.game.fxh) this.game.fxh.swingStart(this, this.cur); else this.game.sfx.whoosh();
+  }
+  _updateAirAttack(dt, now) {
+    const c = this.cur; if (!c) { this.state = 'air'; return; }
+    const tl = c.tl, t0 = c.t; c.t += dt; const t = c.t;
+    if (t < tl.startup) this._reaim(dt);
+    const recStart = tl.startup + tl.active;
+    if (t > tl.startup && t0 < recStart + 1e-6) {
+      const u0 = Math.max(0, (t0 - tl.startup) / tl.active), u1 = Math.min(1, (t - tl.startup) / tl.active);
+      this.game.sweepStrike(c, u0, u1, false);
+    }
+    if (t >= tl.total) { this.cur = null; this.state = 'air'; }
+  }
+
+  // ---------------------------------------------------------------- Demo 0.3: Weapon Arts (skills.json)
+  /** Arts of the weapon in hand with their rank (progression) and cooldown state, for the HUD. */
+  skillSlots() {
+    const S = this.game.data.skills; if (!S) return [];
+    const prog = this.game.gp?.progress;
+    return skillsForWeapon(S, this.weapon).map((def) => ({ def, level: prog ? prog.level(def.id) : 1 }));
+  }
+  useSkill(slot, now) {
+    const g = this.game, S = g.data.skills; if (!S) return false;
+    const def = skillsForWeapon(S, this.weapon)[slot]; if (!def) return false;
+    // Quét sóng rank 3: pressing again during the Art queues the reverse sweep.
+    if (this.state === 'skill' && this.skill?.def === def) { if (this.skill.entry.effect?.second_sweep) this.skill.secondReq = true; return true; }
+    if (this.airborne || S.rules?.usable_in_air === true && false) return false; // rules.usable_in_air = false
+    const okState = this.state === 'free' || this.state === 'guard' || (this.state === 'attack' && this.inRecovery);
+    if (!okState) return false;
+    const lvl = g.gp ? g.gp.progress.level(def.id) : 1, entry = levelEntry(def, lvl);
+    if (!entry || !this.skillCd.ready(def.id)) {
+      if (now - (this._notReadyToast ?? -9) > 1) { g.ui.toast(g.i18n.t('skill_not_ready'), 1.2); this._notReadyToast = now; }
+      return false;
+    }
+    if (this.state === 'attack' && this.cur) { this.lastMove = this.cur.move; this.lastMoveEnd = now; this.cur = null; }
+    this.skill = this._skillPlan(def, entry, lvl);
+    this.state = 'skill'; this.stateT = 0; this.chainIndex = 0;
+    this.animCtx.skill.n = (this.animCtx.skill.n ?? 0) + 1;
+    g.gp?.onSkillStart(this, this.skill);
+    return true;
+  }
+  _skillPlan(def, entry, lvl) {
+    const b = def.base ?? {}, e = entry.effect ?? {}, id = def.id;
+    const k = { def, entry, lvl, id, t: 0, hit: new Set(), kind: 'sweep', hitFrom: 0.18, hitTo: 0.4, activeEnd: 0.4, total: 0.8, moved: 0, cutCd: 0, struck: false };
+    const face = (t) => { if (t) this.yaw = Math.atan2(t.x - this.x, t.z - this.z); };
+    if (/cam_sao/.test(id)) {
+      const reach = b.reach_m ?? 6, t = this._aimTarget(reach);
+      face(t);
+      const d = t ? Math.hypot(t.x - this.x, t.z - this.z) - t.radius - 0.9 : reach * 0.65;
+      Object.assign(k, { kind: 'vault', target: t, dist: Math.max(1.2, Math.min(reach, d)), airFrom: b.airborne_from_s ?? 0.15, airTo: b.airborne_until_s ?? 0.55, H: b.leap_height_m ?? 1.8 });
+      k.hitFrom = k.airTo; k.activeEnd = k.airTo + 0.08; k.total = k.airTo + 0.45;
+    } else if (/quet_song/.test(id)) {
+      Object.assign(k, { kind: 'sweep', radius: e.radius_m ?? 3, hitFrom: 0.18, hitTo: 0.42, activeEnd: 0.42, total: e.second_sweep ? 0.42 + (e.second_sweep_window_s ?? 0.5) : 0.8 });
+    } else if (/bo_don_cay/.test(id)) {
+      const t = this._aimTarget(b.range_m ?? 2.6); face(t);
+      const c = b.charge_s ?? 0.5;
+      Object.assign(k, { kind: 'cleave', target: t, chargeEnd: c, hitFrom: c, hitTo: c + 0.12, activeEnd: c + 0.12, total: c + 0.62, range: b.range_m ?? 2.6, arc: b.arc_deg ?? 60 });
+    } else if (/moc_thuyen/.test(id)) {
+      const reach = e.reach_m ?? 6, t = this._aimTarget(reach); face(t);
+      const d = t ? Math.max(0, Math.hypot(t.x - this.x, t.z - this.z) - t.radius - 0.7) : Math.min(reach, b.dash_m ?? 5) * 0.6;
+      Object.assign(k, { kind: 'hook', target: t, dist: Math.min(reach, d), dashEnd: 0.25, hitFrom: 0.25, hitTo: 0.36, activeEnd: 0.36, total: 0.75 });
+    }
+    return k;
+  }
+  _updateSkill(dt, now) {
+    const k = this.skill, g = this.game; if (!k) { this.state = 'free'; return; }
+    const t0 = k.t; k.t += dt; const t = k.t, e = k.entry.effect ?? {};
+    const smooth = (u) => { const v = Math.max(0, Math.min(1, u)); return v * v * (3 - 2 * v); };
+    const stepTo = (want) => { const d = want - k.moved; if (d > 0) this._step(d); k.moved = want; };
+    switch (k.kind) {
+      case 'vault': {
+        if (t < k.airFrom) this._brake(dt);
+        if (e.iframes && !k.iframed && t >= (e.iframe_start_s ?? 0.05)) { k.iframed = true; this.iframesUntil = Math.max(this.iframesUntil, now + (e.iframe_duration_s ?? 0.3)); }
+        if (t >= k.airFrom && !k.struck) {
+          const u = Math.min(1, (t - k.airFrom) / (k.airTo - k.airFrom));
+          stepTo(smooth(u) * k.dist);
+          this.y = 4 * k.H * u * (1 - u);
+          if (u >= 1) { k.struck = true; this.y = 0; g.gp?.skillStrike(this, k); }
+        }
+        break;
+      }
+      case 'sweep': {
+        this._brake(dt);
+        if (t >= k.hitFrom && t0 < k.hitTo) g.gp?.skillStrike(this, k, Math.min(1, (t - k.hitFrom) / (k.hitTo - k.hitFrom)));
+        if (k.secondReq && !k.second && t >= k.activeEnd - 0.1) {
+          k.second = true; k.hit.clear(); k.hitFrom = t; k.hitTo = t + 0.22; k.activeEnd = t + 0.22; k.total = t + 0.5; this.animCtx.skill.n += 1;
+          g.gp?.onSkillStart(this, k);
+        }
+        break;
+      }
+      case 'cleave': {
+        if (t < k.hitFrom) { this._brake(dt); this._reaim(dt); } else stepTo(0.6 * smooth((t - k.hitFrom) / 0.12));
+        if (t >= k.hitFrom && t0 < k.hitTo) g.gp?.skillStrike(this, k, Math.min(1, (t - k.hitFrom) / (k.hitTo - k.hitFrom)));
+        break;
+      }
+      case 'hook': {
+        if (t < k.dashEnd) stepTo(smooth(t / k.dashEnd) * k.dist); else this._brake(dt);
+        if (t >= k.hitFrom && !k.struck) { k.struck = true; g.gp?.skillStrike(this, k); }
+        break;
+      }
+      default: break;
+    }
+    if (t >= k.total) this._endSkill(now);
+  }
+  _endSkill(now) {
+    const k = this.skill; if (!k) return;
+    const prog = this.game.gp?.progress;
+    this.skillCd.start(k.id, effectiveCooldown(k.entry, prog ? prog.stats() : {}));
+    if (k.cutCd) this.skillCd.cut(k.id, k.cutCd);
+    if (k.kind === 'vault' && k.entry.effect?.next_light_is_chain_index) this.nextL4Until = now + 1.2;
+    this.skill = null; this.y = 0;
+    if (this.state === 'skill') this.state = 'free';
+    this.game.gp?.onSkillEnd(this, k);
+  }
+  /** Bổ đốn cây brace (armor_vs medium: parryable blows; heavy: anything guardable, never unblockables). */
+  _skillArmor(attack) {
+    const k = this.skill;
+    if (this.state !== 'skill' || !k || k.kind !== 'cleave' || k.t >= k.hitFrom) return false;
+    const a = k.entry.effect?.armor_vs;
+    return a === 'heavy' ? attack.guardable !== false : a === 'medium' ? !!attack.parryable : false;
+  }
+
+  // ---------------------------------------------------------------- Demo 0.3: Phản nhịp (riposte_0_3) / Ghì nanh
+  startRiposte(enemy) {
+    const rp = this.tun.riposte_0_3 ?? {};
+    if (this.state === 'skill') this._endSkill(this.now);
+    this.state = 'riposte'; this.stateT = 0; this.cur = null; this.pending = null;
+    this.riposteRun = { e: enemy, t: 0, hit: false, dur: rp.duration_s ?? 0.8, key: ++this.moveKey };
+    const dx = enemy.x - this.x, dz = enemy.z - this.z, d = Math.hypot(dx, dz) || 1, want = enemy.radius + 1.3;
+    if (d > want) this._stepToward(dx / d, dz / d, d - want);
+    this.yaw = Math.atan2(dx, dz);
+  }
+  _stepToward(nx, nz, dist) { const m = this.game.walk.move(this.x, this.z, nx * dist, nz * dist, PROTO.playerRadiusM); this.x = m.x; this.z = m.z; }
+  _updateRiposte(dt) {
+    const r = this.riposteRun; if (!r) { this.state = 'free'; return; }
+    r.t += dt; this._brake(dt);
+    if (!r.hit && r.t >= r.dur * 0.4) { r.hit = true; this.game.gp?.riposteHit(this, r.e); }
+    if (r.t >= r.dur) { this.riposteRun = null; this.state = 'free'; }
+  }
+
   // ---------------------------------------------------------------- animation
   _anim(dt) {
     const rig = this.rig, c = this.animCtx, l = this.loco;
-    rig.root.position.set(this.x, 0, this.z); rig.root.rotation.y = this.yaw;
+    rig.root.position.set(this.x, this.y, this.z); rig.root.rotation.y = this.yaw;
+    // The blob shadow stays on the ground and shrinks with height (jump readability).
+    const sh = this._blob ?? (this._blob = rig.root.children.find((o) => o.userData.blobShadow));
+    if (sh) { sh.position.y = 0.03 - this.y; sh.scale.setScalar(Math.max(0.45, 1 - this.y * 0.35)); }
     const poleOn = this.pole.visible;
     if (!poleOn) for (const id in this.weaponMeshes) this.weaponMeshes[id].visible = id === this.weaponId;
     const wid = poleOn ? 'pole' : this.weaponId;
@@ -546,6 +867,13 @@ export class Player {
     if (this.state === 'vault' && this.vault) c.vaultS = this.vault.dur;
     c.swapS = this.tun.weapon_swap?.swap_time_s ?? 0.15;
     c.pryBeats = this.pryBeats ?? 0;
+    // Demo 0.3
+    c.y = this.y; c.air.phase = this.jc.phase; c.air.vy = this.jc.vy; c.air.y = this.y; c.air.t = this.stateT;
+    c.air.falling = this.state === 'plunge' && !!this.cur?.falling;
+    c.landLag = this.landLag || 0.1; c.plungeRec = this.plungeRec || 0.45;
+    if (this.skill) { c.skill.id = this.skill.id; c.skill.t = this.skill.t; c.skill.run = this.skill; }
+    if (this.riposteRun) { c.riposte = this.riposteRun; }
+    if (this.state === 'dodge' && this.dodge) c.dodge.slide = this.dodge.kind === 'sprint_roll' && this.dodge.local === 'fwd';
     const pose = this.anim.update(dt, c);
     rig.apply(pose);
   }

@@ -25,6 +25,8 @@ export const AREAS = [
   { id: 'hub_bank', rect: { x0: HUB_X - 15, x1: HUB_X + 15, z0: 15, z1: 35 }, color: 0x8a8462 },
 ];
 
+/** Shallow water sheets inside the marsh [cx, cz, w, d] (visual hint of the speed multiplier; also drawn on the map). */
+export const SHALLOW_SHEETS = [[-14, -18, 14, 10], [10, -36, 16, 9], [18, -14, 8, 7]];
 export const MUD_POOLS_BASE = [{ cx: -7, cz: -131, r: 3.2 }, { cx: 8, cz: -140, r: 3.6 }, { cx: -2, cz: -147, r: 2.8 }];
 export const MUD_POOLS = MUD_POOLS_BASE; // kept for callers; the live list is Walkable.mudPools
 
@@ -106,6 +108,18 @@ export const POINTS = [
   { id: 'trace_1', kind: 'trace', trace: 0, x: 0, z: -103, r: 3 },
   { id: 'trace_2', kind: 'trace', trace: 1, x: -2.3, z: -117.5, r: 3.2 },
   { id: 'trace_3', kind: 'trace', trace: 2, x: 0.5, z: -113, r: 3 },
+  // Demo 0.3 (map.json new_in_0_3; same coordinates, checked by tools/design_validate.py and mapfog.test):
+  // lookouts are found by walking up to them, chests and environment secrets open with Interact.
+  { id: 'dp_cau_ben_say', kind: 'lookout', x: 0, z: 27, r: 3.5 },
+  { id: 'dp_cay_go_do', kind: 'lookout', x: -19, z: -38, r: 3.5 },
+  { id: 'dp_hang_coc', kind: 'lookout', x: -3, z: -60, r: 3.5 },
+  { id: 'dp_mieng_lo', kind: 'lookout', x: -36, z: -104, r: 3.5 },
+  { id: 'dp_cong_bai_lay', kind: 'lookout', x: 0, z: -119, r: 3.5 },
+  { id: 'chest_dam_nong', kind: 'chest', x: 22, z: -28, r: 2 },
+  { id: 'chest_bai_lau', kind: 'chest', x: -20, z: -88, r: 2 },
+  { id: 'es_to_chim', kind: 'env_secret', x: -27, z: -42, r: 2.2 },
+  { id: 'es_do_ca', kind: 'env_secret', x: 12, z: 21, r: 2.2 },
+  { id: 'es_go_kho', kind: 'env_secret', x: 20, z: -70, r: 2.4 },
   { id: 'furnace', kind: 'furnace', x: HUB_X - 8, z: -8, r: 2.6 },
   { id: 'thap', kind: 'thap', x: HUB_X + 6, z: -9, r: 2.2 },
   { id: 'drum', kind: 'drum', x: HUB_X, z: -11, r: 2.6 },
@@ -204,7 +218,7 @@ export function buildWorld() {
       scene.add(m); layers.ground.push(m);
       if (a.shallow) {
         // Shallow water sheets inside the marsh (visual hint of the speed multiplier).
-        for (const [x, z, w, d] of [[-14, -18, 14, 10], [10, -36, 16, 9], [18, -14, 8, 7]]) {
+        for (const [x, z, w, d] of SHALLOW_SHEETS) {
           const w2 = new THREE.Mesh(new THREE.PlaneGeometry(w, d), lam(0x4f6d6a, { transparent: true, opacity: 0.8 }));
           w2.rotation.x = -Math.PI / 2; w2.position.set(x, 0.03, z); scene.add(w2); layers.shallow.push(w2);
         }
@@ -329,6 +343,39 @@ export function buildWorld() {
     const g = new THREE.Group();
     for (let i = 0; i < 4; i++) { const c = addCyl(g, 0.04, 0.05, 1.4, 0x7b8f3a, Math.cos(i) * 0.25, 0.7, Math.sin(i) * 0.25, 5); c.rotation.z = 0.3 * (i - 1.5); }
     g.position.set(p.x, 0, p.z); scene.add(g); props.rattan[p.id] = g;
+  }
+  // Demo 0.3 points (map.json): lookout posts with a cloth strip, rattan chests, environment secrets.
+  props.points03 = {};
+  for (const p of POINTS) {
+    const g = new THREE.Group();
+    if (p.kind === 'lookout') {
+      addCyl(g, 0.07, 0.09, 2.6, 0x6b5636, 0, 1.3, 0, 6);
+      const strip = addBox(g, 0.05, 0.5, 0.36, 0x2e3d5b, 0, 2.3, 0.2); strip.rotation.x = 0.15;
+      addCyl(g, 0.45, 0.6, 0.25, 0x77705a, 0, 0.12, 0, 7);
+    } else if (p.kind === 'chest') {
+      addBox(g, 0.9, 0.5, 0.6, 0x8a6a3c, 0, 0.25, 0);
+      const lid = new THREE.Group(); lid.position.set(0, 0.5, -0.3); g.add(lid);
+      addBox(lid, 0.94, 0.12, 0.64, 0x9a7a48, 0, 0.06, 0.3);
+      for (const x of [-0.3, 0, 0.3]) addBox(g, 0.05, 0.52, 0.62, 0x6b5232, x, 0.26, 0);
+      g.userData.lid = lid;
+    } else if (p.kind === 'env_secret') {
+      if (p.id === 'es_to_chim') {
+        addCyl(g, 0.22, 0.32, 5.5, 0x5b4a36, 1.2, 2.75, -0.6, 8);
+        const crown = new THREE.Mesh(new THREE.SphereGeometry(1.8, 10, 8), lam(0x5d6b3e)); crown.position.set(1.2, 5.6, -0.6); g.add(crown);
+        const nest = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.09, 6, 12), lam(0x8a7448)); nest.rotation.x = Math.PI / 2; nest.position.y = 0.1; g.add(nest);
+        g.userData.nest = nest;
+      } else if (p.id === 'es_do_ca') {
+        const trap = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.3, 9, 1, true), lam(0xa08a58, { side: THREE.DoubleSide }));
+        trap.rotation.z = Math.PI / 2; trap.position.y = 0.3; g.add(trap);
+        const beads = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.035, 5, 10), lam(0x9a5a3a)); beads.position.set(-0.62, 0.32, 0); beads.rotation.y = Math.PI / 2; g.add(beads);
+        g.userData.beads = beads;
+      } else {
+        const mound = new THREE.Mesh(new THREE.SphereGeometry(1.6, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), lam(0x8b7a55)); mound.scale.y = 0.45; g.add(mound);
+        const reed = addCyl(g, 0.03, 0.03, 1.6, 0xc6ae78, 0, 1.4, 0, 5); reed.rotation.z = Math.PI;
+        g.userData.bundle = addBox(g, 0.4, 0.22, 0.3, 0x6b6a52, 0.5, 0.75, 0.3);
+      }
+    } else continue;
+    g.position.set(p.x, 0, p.z); scene.add(g); props.points03[p.id] = g;
   }
   // Illusory mist around the entranced villager.
   props.mist = new THREE.Mesh(new THREE.SphereGeometry(2.4, 18, 12), new THREE.MeshBasicMaterial({ color: 0xd8e4ec, transparent: true, opacity: 0.35, depthWrite: false }));

@@ -21,6 +21,33 @@ const SPLIT = {
 };
 const FIXED = new Set(['menu']); // gameplay actions shown but not remappable
 
+const clone0 = (o) => JSON.parse(JSON.stringify(o));
+/**
+ * Demo 0.3 control scheme (controls.json scheme_0_3, DEMO_0_3_DESIGN §1) merged onto the 0.2 actions:
+ * actions_replace swaps whole actions by id (dodge -> C, jump -> Space, interact pad -> RB...),
+ * actions_add appends new ones (inventory B, Weapon Arts 3/4 + LT modifier), pad_presets_replace,
+ * kbm_presets, key_names_add, accessibility_add. The JSON stays as authored; the prototype merges at
+ * boot (same pattern as tuning_changes_0_2). Returns a new object; idempotent.
+ */
+export function applyScheme03(controls) {
+  const s = controls?.scheme_0_3;
+  if (!s || controls._scheme03) return controls;
+  const c = clone0(controls);
+  const rep = new Map((s.actions_replace ?? []).map((a) => [a.id, a]));
+  c.actions = c.actions.map((a) => (rep.has(a.id) ? clone0(rep.get(a.id)) : a));
+  for (const a of s.actions_replace ?? []) if (!c.actions.some((x) => x.id === a.id)) c.actions.push(clone0(a));
+  const menuAt = c.actions.findIndex((a) => a.id === 'menu');
+  for (const a of s.actions_add ?? []) if (!c.actions.some((x) => x.id === a.id)) c.actions.splice(menuAt >= 0 ? menuAt : c.actions.length, 0, clone0(a));
+  const pp = new Map((s.pad_presets_replace ?? []).map((p) => [p.id, p]));
+  c.pad_presets = (c.pad_presets ?? []).map((p) => (pp.has(p.id) ? clone0(pp.get(p.id)) : p));
+  c.kbm_presets = clone0(s.kbm_presets ?? []);
+  c.key_names = { ...(c.key_names ?? {}), ...clone0(s.key_names_add ?? {}) };
+  for (const o of s.accessibility_add ?? []) if (!c.accessibility_options.some((x) => x.id === o.id)) c.accessibility_options.push(clone0(o));
+  c.browser_unsafe_kbm = clone0(s.browser_unsafe_kbm ?? []);
+  c._scheme03 = true;
+  return c;
+}
+
 /** Builds the static description of every action from controls.json. */
 export function describeControls(controls) {
   const byId = new Map(controls.actions.map((a) => [a.id, a]));
@@ -29,6 +56,8 @@ export function describeControls(controls) {
   const defaults = { kbm: {}, pad: {} };
   const ui = { kbm: {}, pad: {} };
   const info = {};         // id -> { source (controls action), name, part, padAxis }
+  const padCombo = {};     // id -> { modifier, follows, button } (0.3: Weapon Arts = hold LT + attack button)
+  const padHold = {};      // id -> { parent, holdS } (0.3: hold View 0.4 s = Map, tap = Pack)
   for (const a of controls.actions) {
     if (a.reserved) continue;
     if (a.shares_input_with) { aliases[a.id] = a.shares_input_with; continue; }
@@ -53,27 +82,58 @@ export function describeControls(controls) {
     defaults.kbm[a.id] = k;
     const p = a.pad.inputs.find((x) => !x.axis);
     defaults.pad[a.id] = p ? p.index : null;
+    if (a.pad.modifier) { padCombo[a.id] = { modifier: a.pad.modifier.index, follows: a.pad.follows ?? null, button: p ? p.index : null }; defaults.pad[a.id] = null; info[a.id].padCombo = true; }
+    if (a.shares_input_with_hold) { padHold[a.id] = { parent: a.shares_input_with_hold, holdS: a.hold_s ?? 0.4 }; defaults.pad[a.id] = null; info[a.id].padHold = true; }
     if (!FIXED.has(a.id)) rebindable.push(a.id);
   }
-  return { byId, aliases, rebindable, defaults, ui, info };
+  return { byId, aliases, rebindable, defaults, ui, info, padCombo, padHold };
 }
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
 export class Bindings {
   constructor(controls) {
-    this.controls = controls;
-    this.desc = describeControls(controls);
-    this.padPreset = (controls.pad_presets ?? []).find((p) => p.default)?.id ?? null;
+    this.controls = applyScheme03(controls);
+    this.desc = describeControls(this.controls);
+    this.padPreset = (this.controls.pad_presets ?? []).find((p) => p.default)?.id ?? null;
+    this.kbmPreset = (this.controls.kbm_presets ?? []).find((p) => p.default)?.id ?? null;
     this.reset();
   }
 
   reset() {
     this.kbm = clone(this.desc.defaults.kbm);
     this.pad = clone(this.desc.defaults.pad);
+    this.kbmPreset = (this.controls.kbm_presets ?? []).find((p) => p.default)?.id ?? null;
     this.applyPadPreset(this.padPreset, false);
     this._rebuild();
   }
+
+  /**
+   * controls.json scheme_0_3.kbm_presets[].overrides: { action: [codes] } replacing that action's
+   * keyboard slots on top of the defaults; a key taken from another action is removed there (presets are
+   * conflict-free in data). Returns the preset (its set_options are applied by the caller) or null.
+   */
+  applyKbmPreset(id, rebuild = true) {
+    const preset = (this.controls.kbm_presets ?? []).find((p) => p.id === id);
+    if (!preset) return null;
+    this.kbm = clone(this.desc.defaults.kbm);
+    for (const [action, inputs] of Object.entries(preset.overrides ?? {})) {
+      if (!(action in this.kbm)) continue;
+      for (const code of inputs) for (const [a, l] of Object.entries(this.kbm)) if (a !== action) { const j = l.indexOf(code); if (j >= 0) l[j] = null; }
+      this.kbm[action] = Array.from({ length: KBM_SLOTS }, (_, i) => inputs[i] ?? null);
+    }
+    this.kbmPreset = id;
+    if (rebuild) this._rebuild();
+    return preset;
+  }
+  /** Pad "modifier + button" combos (Weapon Arts): the button follows the action named in `follows`. */
+  padComboFor(action) {
+    const c = this.desc.padCombo[action]; if (!c) return null;
+    const btn = c.follows ? (this.pad[c.follows] ?? c.button) : c.button;
+    return { modifier: c.modifier, button: btn };
+  }
+  /** Actions reached by holding the pad button of `parent` (Map on a held View). */
+  padHoldOf(parent) { return Object.entries(this.desc.padHold).filter(([, h]) => h.parent === parent).map(([a, h]) => ({ action: a, holdS: h.holdS })); }
 
   /** controls.json pad_presets[].overrides: { action: [{ index }] } on top of the default pad map. */
   applyPadPreset(id, rebuild = true) {
@@ -124,6 +184,7 @@ export class Bindings {
         }
       }
       list[s] = input;
+      this.kbmPreset = null; // custom
       this._rebuild();
       return { ok: true, conflict, previous };
     }
@@ -184,11 +245,13 @@ export class Bindings {
   /** All game action ids that read from one stored binding (the parent itself + its aliases). */
   aliasesOf(action) { return Object.entries(this.desc.aliases).filter(([, p]) => p === action).map(([a]) => a); }
 
-  toJSON() { return { v: 1, kbm: clone(this.kbm), pad: clone(this.pad), padPreset: this.padPreset }; }
+  toJSON() { return { v: 1, kbm: clone(this.kbm), pad: clone(this.pad), padPreset: this.padPreset, kbmPreset: this.kbmPreset, scheme: '0.3' }; }
 
   /** Loads saved bindings; unknown actions / bad values are ignored, conflicts fall back to default. */
   load(obj) {
     if (!obj || obj.v !== 1) return false;
+    // Saves from the 0.2 scheme (Space = dodge) are dropped once: the 0.3 defaults move dodge to C.
+    if (this.controls._scheme03 && obj.scheme !== '0.3') { this.reset(); return false; }
     this.reset();
     if (obj.padPreset) this.applyPadPreset(obj.padPreset, false);
     for (const [a, l] of Object.entries(obj.kbm ?? {})) {
@@ -200,6 +263,7 @@ export class Bindings {
       this.pad[a] = Number.isInteger(v) && !RESERVED_PAD.has(v) ? v : null;
     }
     this.padPreset = obj.padPreset ?? null;
+    this.kbmPreset = obj.kbmPreset ?? null;
     if (this.conflicts('kbm').length || this.conflicts('pad').length) { this.reset(); return false; }
     this._rebuild();
     return true;
@@ -280,4 +344,17 @@ export function sprintModeFor(setting, device, controls) {
   if (setting && setting !== 'device') return setting;
   const o = controls.accessibility_options.find((x) => x.id === 'acc_sprint_mode');
   return device === 'pad' ? (o?.default_pad ?? 'toggle') : (o?.default_kbm ?? 'hold');
+}
+
+/**
+ * Weapon Art modifier on a pad (acc_skill_modifier_mode): 'hold' = active while LT is held; 'toggle' =
+ * a tap opens the Weapon Art mode for openS seconds (data note: 2 s) or until an Art is used.
+ */
+export class ModifierLatch {
+  constructor() { this.t = 0; }
+  update(dt, mode, down, pressed, openS = 2) {
+    if (mode === 'toggle') { if (pressed) this.t = this.t > 0 ? 0 : openS; else this.t = Math.max(0, this.t - dt); return this.t > 0; }
+    this.t = 0; return !!down;
+  }
+  used() { this.t = 0; }
 }

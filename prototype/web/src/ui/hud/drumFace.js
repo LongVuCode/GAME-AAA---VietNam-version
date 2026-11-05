@@ -198,11 +198,11 @@ export class DrumFace {
       c.beginPath(); c.arc(cx, cy, rA, a0, a1); c.stroke();
       const f = Math.max(0, Math.min(1, s.segs?.[k] ?? 0));
       if (f > 0) {
-        c.strokeStyle = col.arc; c.lineWidth = w * 0.72;
-        c.shadowColor = col.glow; c.shadowBlur = f >= 1 ? 7 : 3;
+        // glow = a wide translucent stroke under the bright one (no shadowBlur: cheap on software GL)
+        c.strokeStyle = col.glow; c.globalAlpha = f >= 1 ? 0.45 : 0.25; c.lineWidth = w * 1.5;
         c.beginPath(); c.arc(cx, cy, rA, a0, a0 + (a1 - a0) * f); c.stroke();
+        c.globalAlpha = 1; c.strokeStyle = col.arc; c.lineWidth = w * 0.72; c.stroke();
       }
     }
-    c.shadowBlur = 0;
   }
 }

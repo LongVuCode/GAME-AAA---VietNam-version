@@ -8,10 +8,12 @@ import secrets from '../../../design/data/secrets.json' with { type: 'json' };
 import codex from '../../../design/data/codex.json' with { type: 'json' };
 import strings from '../../../design/data/strings.json' with { type: 'json' };
 import controls from '../../../design/data/controls.json' with { type: 'json' };
+import skills from '../../../design/data/skills.json' with { type: 'json' };
+import map from '../../../design/data/map.json' with { type: 'json' };
 import { applyTuningChanges } from './logic/tuning.js';
 
 /** The design data exactly as in design/data (unit tests that mirror ArpgCore use this). */
-export const DATA = Object.freeze({ combat, weapons, enemies, items, lineage, secrets, codex, strings, controls });
+export const DATA = Object.freeze({ combat, weapons, enemies, items, lineage, secrets, codex, strings, controls, skills, map });
 
 /** What the Demo 0.2 prototype runs on: DATA + combat_tuning.tuning_changes_0_2 applied on a copy
  *  (prototype-only override; the JSON values stay as they are, see logic/tuning.js). */
