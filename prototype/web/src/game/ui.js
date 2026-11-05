@@ -1,6 +1,7 @@
 // ui.js - DOM HUD and screens. Every visible string comes from strings.json (ui/dialogue), codex.json
 // or another design data {vi, en} object via i18n.
 import { keyLabel, padLabel, glyphDevice, KBM_SLOTS } from '../logic/controls.js';
+import { createHud } from '../ui/hud/index.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const h = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
@@ -32,28 +33,9 @@ export class UI {
   loc(o) { return this.i18n.loc(o); }
 
   build() {
+    // Combat HUD 0.3 lives in src/ui/hud (createHud); this layer keeps markers, prompts, pry, toasts, subtitles.
     const hud = h(`<div id="hud" class="layer hidden">
-      <div class="tl"><div class="zone" id="zone"></div><div class="obj" id="obj"></div></div>
-      <div class="tr"><div id="fps" class="hidden"></div><div id="build" class="dim"></div></div>
-      <div id="bossbar" class="hidden">
-        <div class="name"><b id="bossname"></b><span id="bossphase" class="dim"></span></div>
-        <div class="bar hp boss"><i id="bosshp"></i></div>
-        <div class="barlabel"><span data-t="hud_the"></span></div>
-        <div class="bar the"><i id="bossthe"></i></div>
-        <div class="cracks" id="cracks"><span data-t="hud_khoen_cracks"></span><span class="crack"></span><span class="crack"></span><span class="crack"></span></div>
-      </div>
-      <div class="bl">
-        <div class="hudrow"><span id="weapon"></span><span class="dim" id="slot"></span></div>
-        <div class="barlabel"><span data-t="hud_health"></span><span id="hptext"></span></div>
-        <div class="bar hp"><i id="hp"></i></div>
-        <div class="barlabel"><span data-t="hud_the"></span></div>
-        <div class="bar the"><i id="the"></i></div>
-        <div class="barlabel"><span data-t="hud_drum"></span><span id="drumready"></span></div>
-        <div class="drum" id="drum"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
-        <div class="hudrow"><span><span data-t="hud_heal_charges"></span> × <b id="heals"></b> <span class="kbd" id="healkey"></span></span><span id="points" class="dim"></span></div>
-      </div>
       <div id="markers"></div>
-      <div id="popups"></div>
       <div id="prompt" class="hidden"></div>
       <div id="pry" class="hidden"></div>
       <div id="toasts"></div>
@@ -63,15 +45,11 @@ export class UI {
     this.root.appendChild(hud);
     this.fadeEl = h('<div id="fade" class="layer"></div>'); this.root.appendChild(this.fadeEl);
     this.hud = hud;
+    this.hudView = createHud(hud, this.g.data, { glyphText: (a) => this.glyphText(a) }, this.i18n);
+    this.hudView.setBuildId(this.g.buildId);
+    hud.insertBefore(this.hudView.el, hud.querySelector('#prompt'));
     const q = (id) => hud.querySelector(`#${id}`);
-    this.el = { zone: q('zone'), obj: q('obj'), fps: q('fps'), build: q('build'), boss: q('bossbar'), bossname: q('bossname'), bossphase: q('bossphase'),
-      bosshp: q('bosshp'), bossthe: q('bossthe'), cracks: q('cracks'), weapon: q('weapon'), slot: q('slot'), hp: q('hp'), hptext: q('hptext'), the: q('the'),
-      drum: q('drum'), drumready: q('drumready'), heals: q('heals'), points: q('points'), markers: q('markers'), prompt: q('prompt'), pry: q('pry'),
-      toasts: q('toasts'), center: q('center-msg'), subs: q('subs'), healkey: q('healkey'), popups: q('popups') };
-    // Thế number popups (fixed pool, reused).
-    this.popPool = Array.from({ length: 8 }, () => { const d = h('<div class="pop"></div>'); this.el.popups.appendChild(d); return { d, t: 0, x: 0, y: 0 }; });
-    this.popIdx = 0;
-    this.el.build.textContent = this.g.buildId;
+    this.el = { markers: q('markers'), prompt: q('prompt'), pry: q('pry'), toasts: q('toasts'), center: q('center-msg'), subs: q('subs') };
     this.markerPool = new Map();
     this.applyI18n();
   }
@@ -87,36 +65,16 @@ export class UI {
     document.documentElement.style.setProperty('--sub-size', sizes[s.acc.acc_subtitle_size] ?? '20px');
     document.documentElement.style.setProperty('--sub-bg', String(s.acc.acc_subtitle_bg));
     this.root.classList.toggle('reduce-flash', !!s.acc.acc_reduce_flash);
-    this.el.fps.classList.toggle('hidden', !s.showFps);
+    this.hudView.applySettings(s.acc);
   }
 
   showHud(on) { this.hud.classList.toggle('hidden', !on); }
 
-  // ------------------------------------------------------------- HUD
-  updateHud(s) {
-    const e = this.el;
-    e.hp.style.width = `${(100 * s.hp / s.hpMax).toFixed(1)}%`;
-    e.hptext.textContent = `${Math.ceil(s.hp)} / ${s.hpMax}`;
-    e.the.style.width = `${(100 * s.the).toFixed(1)}%`;
-    const segs = e.drum.children;
-    for (let i = 0; i < 4; i++) segs[i].firstChild.style.width = `${(100 * s.drum[i]).toFixed(0)}%`;
-    e.drum.classList.toggle('ready', s.drumReady);
-    e.drumready.textContent = s.drumReady ? `${this.t('hud_drum_ready')} [${s.burstKey}]` : '';
-    e.heals.textContent = s.heals; e.healkey.textContent = s.healKey;
-    e.weapon.textContent = s.weaponName; e.slot.textContent = s.slotText;
-    e.points.textContent = s.points;
-    e.zone.textContent = s.zone; e.obj.textContent = s.objective;
-    if (s.fps != null) e.fps.textContent = `FPS ${s.fps}`;
-    if (s.boss) {
-      e.boss.classList.remove('hidden');
-      e.bossname.textContent = s.boss.name; e.bossphase.textContent = s.boss.phase;
-      e.bosshp.style.width = `${(100 * s.boss.hp).toFixed(1)}%`;
-      e.bossthe.style.width = `${(100 * s.boss.the).toFixed(1)}%`;
-      e.cracks.classList.toggle('hidden', !s.boss.showCracks);
-      const cs = e.cracks.querySelectorAll('.crack');
-      cs.forEach((c, i) => c.classList.toggle('on', i < s.boss.cracks));
-    } else e.boss.classList.add('hidden');
-  }
+  // ------------------------------------------------------------- HUD (src/ui/hud)
+  /** s: HUD state (see Hud.update in src/ui/hud/index.js); dt: real seconds. */
+  updateHud(s, dt = 0) { this.hudView.update(s, dt); }
+  /** Item pickup notice with glow (bottom-left). */
+  pickup(text) { this.hudView.pickup(text); }
 
   /** list: [{ id, sx, sy, visible, tele, locked, hp, the, showBars }] */
   updateMarkers(list) {
@@ -168,27 +126,10 @@ export class UI {
   center(text, seconds = 2) { this.el.center.textContent = text ?? ''; this.centerT = seconds; }
   fade(on) { this.fadeEl.style.opacity = on ? '1' : '0'; }
 
-  /** Floating Thế damage number over an enemy (layer of the hit feedback). kind: '' | 'break' | 'neck'. */
-  popup(enemy, value, kind = '') {
-    if (!(value > 0) && !kind) return;
-    const p = this.popPool[this.popIdx++ % this.popPool.length];
-    p.t = 0.75; p.x = (enemy.screenX ?? innerWidth / 2) + (Math.random() - 0.5) * 30; p.y = (enemy.screenY ?? innerHeight / 2) + 20;
-    p.d.className = `pop on ${kind}`; p.d.textContent = kind === 'break' ? this.t('pop_the_break') : `+${value}`;
-    this.popsActive = true;
-  }
+  /** Floating Thế damage number + slash streak over an enemy (layer of the hit feedback). kind: '' | 'break' | 'neck'. */
+  popup(enemy, value, kind = '') { this.hudView.popup(enemy.screenX ?? innerWidth / 2, enemy.screenY ?? innerHeight / 2, value, kind); }
 
   tick(dt) {
-    if (this.popsActive) {
-      let any = false;
-      for (const p of this.popPool) {
-        if (p.t <= 0) continue;
-        p.t -= dt; any = true;
-        if (p.t <= 0) { p.d.className = 'pop'; continue; }
-        const u = 1 - p.t / 0.75;
-        p.d.style.transform = `translate(${p.x.toFixed(0)}px, ${(p.y - 40 * u).toFixed(0)}px)`; p.d.style.opacity = (1 - u * u).toFixed(2);
-      }
-      this.popsActive = any;
-    }
     if (this.subT > 0) { this.subT -= dt; if (this.subT <= 0) this.el.subs.innerHTML = ''; }
     if (this.centerT > 0) { this.centerT -= dt; if (this.centerT <= 0) this.el.center.textContent = ''; }
   }
@@ -459,6 +400,7 @@ export class UI {
       <label><span>${esc(this.t('set_aim_assist'))}</span><input type="checkbox" data-custom="aim_assist" ${c.aimAssist ? 'checked' : ''} ${s.difficulty === 'custom' ? '' : 'disabled'}></label>
       <h3>${esc(this.t('menu_accessibility'))}</h3>
       ${acc}
+      ${tun.accessibility.options.some((o) => o.id === 'acc_hud_minimal') ? '' : `<label><span>${esc(this.t('set_hud_minimal'))}</span><input type="checkbox" data-acc="acc_hud_minimal" ${s.acc.acc_hud_minimal ? 'checked' : ''}></label>`}
       <h3>${esc(this.t('menu_controls_settings'))}</h3>
       ${this.controlOptionsHtml()}
       <h3>${esc(this.t('menu_settings'))}</h3>

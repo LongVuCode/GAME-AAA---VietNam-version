@@ -327,7 +327,7 @@ export class Game {
     this.updatePractice();
     this.updateCamera(realDt, i);
     this.fxh.update(wallDt);
-    this.updateHud();
+    this.updateHud(wallDt);
   }
 
   // ------------------------------------------------------------------ camera
@@ -877,7 +877,7 @@ export class Game {
   give(itemId, n) {
     this.inv.add(itemId, n); this.sfx.pickup();
     const it = this.data.items.items.find((x) => x.id === itemId);
-    this.ui.toast(this.i18n.t('msg_got_item', { name: this.loc(it.name), n }), 3);
+    this.ui.pickup(this.i18n.t('msg_got_item', { name: this.loc(it.name), n }));
   }
 
   completeSecret(nodeId) {
@@ -1177,7 +1177,7 @@ export class Game {
     return T('obj_handoff');
   }
 
-  updateHud() {
+  updateHud(dt = 0) {
     const p = this.player, d = p.drum, seg = d.t.points_per_segment;
     const drum = [0, 1, 2, 3].map((k) => Math.max(0, Math.min(1, (d.points - k * seg) / seg)));
     const b = this.boss;
@@ -1187,10 +1187,12 @@ export class Game {
       weaponName: this.loc(p.weapon.name), slotText: this.gen.slots > 1 ? `[${this.glyphText('weapon_slot_1')}] [${this.glyphText('weapon_slot_2')}]` : '',
       points: `${this.i18n.t('skills_points')}: ${this.gen.skills.points} [${this.glyphText('skills')}]`,
       healKey: this.glyphText('heal'), burstKey: this.glyphText('drum_burst'), sprinting: p.sprinting, device: this.input.device,
+      weapon: p.weapon, slot: p.slot ?? 0, slots: this.gen.slots, // HUD 0.3: weapon medallion + slot keys
+      combat: this.allEnemies().some((e) => e.engaged && e.alive && Math.hypot(e.x - p.x, e.z - p.z) < 30), // minimal HUD
       zone: this.zoneName(), objective: this.objective(), fps: this.settings.showFps ? this.fps : null,
       boss: bossOn ? { name: this.loc(b.def.name), phase: this.loc(b.enc.phase.name), hp: b.enc.hpRatio, the: b.posture.ratio,
         cracks: b.enc.khoen.cracks, showCracks: b.enc.khoen.enabled } : null,
-    });
+    }, dt);
     if (this.playTime > 2) this.fpsAvg = Math.round(this.fps);
   }
 
@@ -1224,6 +1226,8 @@ export class Game {
       freezeEnemy(uid, on) { const e = g.enemies.find((x) => x.uid === uid); if (e) e.engaged = !on && e.engaged; if (e && on) { e.state = 'idle'; e.spawn = { x: e.x, z: e.z }; } },
       setDifficulty(id) { g.updateSettings({ difficulty: id }); },
       setAcc(k, v) { g.updateSettings({ acc: { [k]: v } }); },
+      /** HUD 0.3 read-out (tier/colour of the health bar, drum full state...). */
+      hud() { return g.ui.hudView.debugState(); },
       /** FX diagnostics (particle counts, quality, time scale...). */
       fx: () => g.fx.stats(),
       /** Movement / animation probe: speed, gait, sprint, facing, rig joint angles. */

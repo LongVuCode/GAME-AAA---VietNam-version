@@ -78,6 +78,29 @@ try {
   fx = await D('fx');
   check('fx: camera shake follows the accessibility option', fx.shakeOn === false, JSON.stringify(fx.shakeOn));
   await D('setAcc', 'acc_camera_shake', true);
+
+  // ---- HUD 0.3 (src/ui/hud): health colour tiers at 100 / 50 / 10 %, drum face full state.
+  const setHud = (hp, drum) => page.evaluate(([hp, drum]) => { const p = window.__demo.game.player; p.hp = p.hpMax * hp; p.drum.points = drum; p.drum.sinceActivity = 0; }, [hp, drum]);
+  const rgbOf = (c) => (c.match(/\d+/g) ?? []).map(Number);
+  const hudAt = async (hp, drum, pred) => { await setHud(hp, drum); for (let k = 0; k < 40; k++) { await sleep(60); const h = await D('hud'); if (pred(h)) return h; } return D('hud'); };
+  let hs = await hudAt(1, 0, (h) => h.hpTier === 'ok');
+  let [cr, cg, cb] = rgbOf(hs.hpColor);
+  check('hud: health 100 % is bright green', hs.hpTier === 'ok' && cg > 200 && cg > cr && cg > cb && hs.drumFull === false && hs.drumAttr === '0', JSON.stringify(hs));
+  await shot('03f_hud_full_hp.png');
+  hs = await hudAt(0.5, 250, (h) => h.hpTier === 'warn');
+  [cr, cg, cb] = rgbOf(hs.hpColor);
+  check('hud: health 50 % turns yellow', hs.hpTier === 'warn' && cr > 200 && cg > 180 && cb < 90, JSON.stringify(hs));
+  hs = await hudAt(0.1, 400, (h) => h.hpTier === 'crit' && h.drumFull);
+  [cr, cg, cb] = rgbOf(hs.hpColor);
+  const beatShown = await page.evaluate(() => getComputedStyle(document.querySelector('.h-hprow .beat')).display !== 'none');
+  check('hud: health 10 % turns red + heartbeat icon (not colour only)', hs.hpTier === 'crit' && cr > 200 && cg < 80 && beatShown, JSON.stringify({ ...hs, beatShown }));
+  const drawsFull = hs.draws;
+  check('hud: drum face full at 4 notches (red-orange state)', hs.drumFull && hs.drumAttr === '1', JSON.stringify(hs));
+  await sleep(500);
+  await shot('03g_hud_low_hp_drum_full.png');
+  hs = await hudAt(0.1, 399, (h) => !h.drumFull);
+  check('hud: drum face leaves the full state below 4 notches; canvas redraws while the fluid moves', !hs.drumFull && hs.drumAttr === '0' && hs.draws > drawsFull, JSON.stringify(hs));
+  await setHud(1, 0);
   // Quality switch from the pause menu (strings in vi + en): run the rest at Low (see header).
   await press('Escape');
   await waitFor((x) => x.screen === 'pause', 3000);
@@ -266,6 +289,7 @@ try {
   await press('Tab');
   s = await waitFor((x) => !!x.lock, 3000);
   check('lock-on (Tab) acquires the boss', s?.lock === s?.boss.uid, s?.lock);
+  check('hud: boss bar shown with the boss engaged', (await D('hud')).bossVisible, JSON.stringify(await D('hud')));
   s = await waitFor((x) => x.boss.tele === 'unparryable', 25000, 40) ?? await waitFor((x) => !!x.boss.tele, 10000, 40);
   check('boss telegraph shown (shape + color + sound cue)', !!s, s ? `${s.boss.attack} ${s.boss.tele}` : 'none');
   await shot('06_boss_telegraph.png');
@@ -398,6 +422,16 @@ try {
   for (const e of (await S()).practice) await D('hitEnemy', e.uid, 9999, 0);
   s = await waitFor((x) => x.practiceState?.done, 8000);
   check('practice goal: swap weapon once + crabs driven off', !!s);
+  // Minimal HUD option: the player cluster hides out of combat and comes back at low health.
+  await D('setAcc', 'acc_hud_minimal', true);
+  let hm = null;
+  for (let k = 0; k < 80 && (hm = await D('hud')).playerVisible; k++) await sleep(100);
+  const hiddenOk = !hm.playerVisible;
+  await page.evaluate(() => { const p = window.__demo.game.player; p.hp = p.hpMax * 0.4; });
+  for (let k = 0; k < 20 && !(hm = await D('hud')).playerVisible; k++) await sleep(60);
+  check('hud: minimal HUD hides out of combat, shows again at low health', hiddenOk && hm.playerVisible, JSON.stringify(hm));
+  await D('setAcc', 'acc_hud_minimal', false);
+  await page.evaluate(() => { const p = window.__demo.game.player; p.hp = p.hpMax; });
   await shot('16_buong_practice.png');
   const hudBuong = await page.evaluate(() => document.getElementById('hud').innerText);
   if (forbidden.test(hudBuong)) leak.push('hud');
