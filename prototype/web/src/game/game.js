@@ -1003,7 +1003,7 @@ export class Game {
     this.fx.slowMo(tun.pry.release_time_scale ?? 0.3, tun.pry.release_slowmo_s ?? 0.4);
     this.hitstop.trigger(hitStopFor(tun.hit_stop, 'pry_release'));
     this.shake('heavy'); this.fxh.bossFreed(boss);
-    if (!this.gp) this.ui03?.xp('enemy', boss.def.id);
+    if (!this.gp) this.ui03?.xp('enemy', boss.def.id); else this.gp.onBossFreed(boss); // XP once (gp owns the award when present)
     // The khoen falls apart; pieces are narrative only (no item, no counter: V9).
     boss.mesh.khoen.visible = false;
     this.ui.showHud(false);

@@ -12,7 +12,7 @@
 //   - cinematic camera on the phase change, landing camera dip
 // No display text is written here: every string goes through strings.json (i18n.t).
 import * as THREE from 'three';
-import { progressAdapter, skillsForWeapon, levelEntry, rollDrops, xpForEnemy } from '../logic/skills.js';
+import { progressAdapter, skillsForWeapon, levelEntry, rollDrops } from '../logic/skills.js';
 import { MudTrails, makeTuskLockJudge, canTuskLock } from '../logic/boss03.js';
 import { hitStopFor } from '../logic/hitstop.js';
 import { INPUT_GRACE_S } from '../logic/shackle.js';
@@ -457,12 +457,14 @@ export class Gameplay03 {
   }
 
   // ------------------------------------------------------------------ drops (enemies[].drops) + XP
+  /** XP + drops for a normal enemy driven off: exactly once per enemy and per defeat (ui03 skips when gp exists). */
   onEnemyDefeated(e) {
     if (e.isBoss || e.practice) return;
+    if (e._rewarded) return; e._rewarded = true; // cleared by Enemy.reset (respawn = a new defeat)
     const g = this.g;
-    const xp = xpForEnemy(g.data.skills, e.def.id);
     const prog = this.progress;
-    if (xp && prog.addXp) { prog.addXp(xp, `enemy:${e.def.id}`); g.ui.toast(g.i18n.t('msg_xp', { n: xp }), 2); }
+    const xp = prog.awardEnemy(g.data.skills, e.def.id); // the XP notice comes from progress.onChange (ui03)
+    this.stats.xpAwarded = (this.stats.xpAwarded ?? 0) + xp;
     for (const d of rollDrops(e.def.drops, g.rng)) {
       // Dropped where the creature ran off / sank: village goods or tin, never a body part (SB-05).
       const mesh = new THREE.Group();
@@ -474,6 +476,13 @@ export class Gameplay03 {
       this.stats.dropsSpawned += 1;
     }
   }
+  /** Boss freed by the pry: skills.xp_sources boss_freed, once per fight. */
+  onBossFreed(boss) {
+    if (boss._rewarded) return 0; boss._rewarded = true;
+    const g = this.g, xp = this.progress.awardEnemy(g.data.skills, boss.def.id);
+    this.stats.xpAwarded = (this.stats.xpAwarded ?? 0) + xp;
+    return xp;
+  }
   _updateDrops() {
     const g = this.g, p = g.player;
     for (let i = this.drops.length - 1; i >= 0; i--) {
@@ -482,7 +491,8 @@ export class Gameplay03 {
       if (Math.hypot(p.x - d.x, p.z - d.z) > 1.4 || g.locked) continue;
       g.scene.remove(d.mesh); this.drops.splice(i, 1); this.stats.dropsPicked += 1;
       const prog = this.progress;
-      if (prog.addItem) { prog.addItem(d.item, d.count); const it = g.data.items.items.find((x) => x.id === d.item); g.sfx.pickup(); if (it) g.ui.pickup(g.i18n.t('msg_got_item', { name: g.loc(it.name), n: d.count })); }
+      if (g.ui03?.grant) g.ui03.grant(d.item, d.count); // stack limits + pickup notice (ui/inventory)
+      else if (prog.addItem) { prog.addItem(d.item, d.count); const it = g.data.items.items.find((x) => x.id === d.item); g.sfx.pickup(); if (it) g.ui.pickup(g.i18n.t('msg_got_item', { name: g.loc(it.name), n: d.count })); }
       else if (g.data.items.items.some((x) => x.id === d.item)) g.give(d.item, d.count);
     }
   }

@@ -55,7 +55,7 @@ export class Enemy {
     // Demo 0.3 boss state
     this.idleT = 0; this.combo = null; this.comboCd = {}; this.chargeRun = null; this.wave = null; this.stakeStunT = 0;
     this.openT = 0; this.tuskLockUsed = 0; this.lureCd = 0; this.punish = null; this.burstPaused = false; this.exposedUntil = -Infinity; this.exposedMult = 1;
-    this.stats03 = { attacks: 0, combos: [], waves: 0, stakeHits: 0, punishes: [] };
+    this.stats03 = { attacks: 0, combos: [], waves: 0, stakeHits: 0, punishes: [] }; this._rewarded = false;
     if (this.isBoss) {
       this.enc = new BossEncounter(d, tun, { khoenEnabled: this.game.opts.khoenEnabled });
       this.posture = this.enc.posture;

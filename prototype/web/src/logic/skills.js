@@ -32,12 +32,18 @@ export function effectiveCooldown(entry, stats = {}) {
 export function progressAdapter(progress) {
   const p = progress ?? null;
   const fn = (name) => (p && typeof p[name] === 'function' ? p[name].bind(p) : null);
-  const getLevel = fn('getSkillLevel'), getStats = fn('getStats'), addItem = fn('addItem'), addXp = fn('addXp');
+  const getLevel = fn('getSkillLevel'), getStats = fn('getStats'), addItem = fn('addItem'), addXp = fn('addXp'), awardXp = fn('awardXp');
   return {
     present: !!p,
     level(id) { if (!getLevel) return 1; const v = getLevel(id); return Number.isFinite(v) ? v : 1; },
     stats() { if (!getStats) return {}; try { return getStats() ?? {}; } catch { return {}; } },
-    addItem, addXp,
+    addItem, addXp, awardXp,
+    /** XP for an enemy (skills.xp_sources): progress.awardXp when available, else addXp(xp). Returns XP granted. */
+    awardEnemy(skillsData, enemyId) {
+      if (awardXp) return awardXp('enemy', enemyId) ?? 0;
+      const xp = xpForEnemy(skillsData, enemyId); if (xp && addXp) { addXp(xp, `enemy:${enemyId}`); return xp; }
+      return 0;
+    },
   };
 }
 
