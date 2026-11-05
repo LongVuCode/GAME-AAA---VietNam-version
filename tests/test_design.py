@@ -226,6 +226,120 @@ class RealData(unittest.TestCase):
         b["combat_tuning"]["dodge"]["iframe_duration_s"] = -0.1
         self.assertTrue(any("time must be a number" in e for e in self.errors(b)))
 
+    # ---- Demo 0.3 (DEMO_0_3_DESIGN)
+
+    def boss(self, b):
+        return next(e for e in b["enemies"]["enemies"] if e["id"] == "boss_lon_loi_dam")
+
+    def test_0_3_scheme_binds_jump_dodge_inventory_map(self):
+        acts, problems = dv.merged_controls(self.bundle["controls"])
+        self.assertEqual(problems, [])
+        by = {a["id"]: a for a in acts}
+        self.assertEqual(by["jump"]["kbm"]["inputs"], ["Space"])
+        self.assertNotIn("Space", by["dodge"]["kbm"]["inputs"])
+        self.assertEqual(by["inventory"]["kbm"]["inputs"], ["KeyB"])
+        self.assertEqual(by["map"]["kbm"]["inputs"], ["KeyM"])
+        self.assertEqual(dv.binding_conflicts(acts), [])
+
+    def test_0_3_scheme_conflict_is_error(self):
+        b = self.fresh()
+        dodge = next(a for a in b["controls"]["scheme_0_3"]["actions_replace"] if a["id"] == "dodge")
+        dodge["kbm"]["inputs"] = ["Space"]  # collides with jump
+        self.assertTrue(any("bound to both" in e for e in self.errors(b)))
+
+    def test_0_3_browser_unsafe_key_is_error(self):
+        b = self.fresh()
+        dodge = next(a for a in b["controls"]["scheme_0_3"]["actions_replace"] if a["id"] == "dodge")
+        dodge["kbm"]["inputs"] = ["ControlLeft"]
+        self.assertTrue(any("browser-unsafe" in e for e in self.errors(b)))
+
+    def test_0_3_pad_preset_conflict_is_error(self):
+        b = self.fresh()
+        pr = b["controls"]["scheme_0_3"]["pad_presets_replace"][0]
+        del pr["overrides"]["interact"]  # RB now both light attack and interact
+        self.assertTrue(any("pad_presets" in e and "bound to both" in e for e in self.errors(b)))
+
+    def test_0_3_rarity_color_near_red_bronze_is_error(self):
+        b = self.fresh()
+        b["items"]["rarities"][3]["color_hex"] = "#C8552E"
+        self.assertTrue(any("red-bronze" in e for e in self.errors(b)))
+
+    def test_0_3_gear_unknown_stat_and_set_piece(self):
+        b = self.fresh()
+        b["items"]["gear_0_3"]["pieces"][0]["stats"]["luck"] = 3
+        b["items"]["gear_0_3"]["sets"][0]["pieces"].append("ar_khong_co")
+        errs = self.errors(b)
+        self.assertTrue(any("unknown stat 'luck'" in e for e in errs))
+        self.assertTrue(any("unknown piece 'ar_khong_co'" in e for e in errs))
+
+    def test_0_3_normal_enemy_drop_chance_range(self):
+        b = self.fresh()
+        b["enemies"]["enemies"][0]["drops"][0]["chance"] = 1.5
+        self.assertTrue(any("drop chance" in e for e in self.errors(b)))
+
+    def test_0_3_boss_second_delayed_attack_in_phase_is_error(self):
+        b = self.fresh()
+        self.boss(b)["phases"][0]["moveset_add_0_3"].append("ll_dam_cham")
+        self.assertTrue(any("delayed attacks in the 0.3 moveset" in e for e in self.errors(b)))
+
+    def test_0_3_combo_windup_fairness_floor(self):
+        b = self.fresh()
+        cb = next(c for c in self.boss(b)["combos_0_3"] if c["id"] == "cb_hat_lui_can")
+        cb["steps"][1]["windup_mult"] = 0.5  # unparryable charge with 0.6 s telegraph
+        self.assertTrue(any("fairness floor" in e for e in self.errors(b)))
+
+    def test_0_3_feint_must_sound_different(self):
+        b = self.fresh()
+        atk = {a["id"]: a for a in self.boss(b)["attacks"]}
+        atk["ll_cao_mong_gia"]["telegraph"]["audio"] = atk["ll_can_lay"]["telegraph"]["audio"]
+        self.assertTrue(any("must sound different" in e for e in self.errors(b)))
+
+    def test_0_3_combo_outside_phase_moveset_is_error(self):
+        b = self.fresh()
+        self.boss(b)["phases"][1]["combos_add_0_3"].append("cb_hat_lui_can")  # Càn lầy is phase 1 only
+        self.assertTrue(any("outside this phase's moveset" in e for e in self.errors(b)))
+
+    def test_0_3_boss_difficulty_covers_all_presets(self):
+        b = self.fresh()
+        del self.boss(b)["difficulty_0_3"]["diff_thac_du"]
+        self.assertTrue(any("difficulty_0_3" in e for e in self.errors(b)))
+
+    def test_0_3_skill_levels_and_slots(self):
+        b = self.fresh()
+        b["skills"]["skills"][0]["levels"].pop()
+        b["skills"]["skills"][1]["slot"] = 1
+        errs = self.errors(b)
+        self.assertTrue(any("levels must be 1..3" in e for e in errs))
+        self.assertTrue(any("one skill per slot" in e for e in errs))
+
+    def test_0_3_axe_skill_text_obeys_hung6_rule(self):
+        b = self.fresh()
+        sk = next(s for s in b["skills"]["skills"] if s["id"] == "sk_riu_moc_thuyen")
+        sk["description"]["vi"] += " Còn mảnh đồng."
+        self.assertTrue(any("era_hung_vuong_6" in e for e in self.errors(b)))
+
+    def test_0_3_map_landmark_must_match_world_js(self):
+        b = self.fresh()
+        lm = next(l for l in b["map"]["landmarks"] if l["id"] == "lm_fire_cong_lau")
+        lm["x"] += 3
+        self.assertTrue(any("differs from world.js" in e for e in self.errors(b)))
+
+    def test_0_3_map_point_outside_zone_is_error(self):
+        b = self.fresh()
+        b["map"]["chests"][0]["x"] = 100
+        self.assertTrue(any("outside zone" in e for e in self.errors(b)))
+
+    def test_0_3_boss_stake_outside_arena_is_error(self):
+        b = self.fresh()
+        self.boss(b)["phases"][1]["phase2_0_3"]["arena_change_0_3"]["stakes_emerge"][0]["x"] = 40
+        self.assertTrue(any("outside the arena" in e for e in self.errors(b)))
+
+    def test_0_3_world_points_parse(self):
+        pts = dv.parse_world_points()
+        self.assertIsNotNone(pts)
+        self.assertEqual(pts["fire_cong_lau"], (2.0, -106.0))
+        self.assertEqual(pts["furnace"], (292.0, -8.0))
+
     def test_invalid_json_file_is_reported(self):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d)

@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "_note": "Demo 0.3 (DEMO_0_3_DESIGN §3.5, §6). Thế võ: kỹ năng chủ động theo vũ khí, có hồi chiêu và 3 bậc, nâng bằng Kinh nghiệm. Học NGUYÊN LÝ kỹ năng vũ khí có hồi chiêu nâng bằng XP (God of War), tên và nội dung là [SÁNG TẠO] của dự án. Cây Nghề nhà (lineage.skill_tree, Điểm nghề) giữ nguyên. Lớp game đọc; ArpgCore chưa đọc file này. Mọi con số là giả định, chờ playtest.",
+  "rules": {
+    "slots_per_weapon": 2,
+    "max_level": 3,
+    "inputs": ["skill_1", "skill_2"],
+    "cooldown_starts": "on_skill_end",
+    "cooldowns_per_weapon": true,
+    "weapon_swap_keeps_cooldowns": true,
+    "drum_gain_on_hit_mult": 0.5,
+    "dodge_cancel_after": "active_end",
+    "usable_in_air": false,
+    "respec": {"where": "rest_fire", "refund_ratio": 1.0},
+    "currency": "cur_kinh_nghiem"
+  },
+  "currencies": [
+    {
+      "id": "cur_kinh_nghiem",
+      "name": {"vi": "Kinh nghiệm", "en": "Experience"},
+      "description": {"vi": "Điều học được sau mỗi trận và mỗi chuyến tìm đường. Dùng để mở và nâng bậc Thế võ.", "en": "What each fight and each found path teaches you. Spent to unlock and rank up Weapon Arts."},
+      "label": "SÁNG TẠO",
+      "inheritable": true
+    }
+  ],
+  "xp_sources": [
+    {"id": "xp_cua", "kind": "enemy_driven_off", "enemy": "en_cua_cang_bun", "xp": 15},
+    {"id": "xp_bo_ngua", "kind": "enemy_driven_off", "enemy": "en_bo_ngua_lau", "xp": 20},
+    {"id": "xp_u_bun", "kind": "enemy_dissipated", "enemy": "en_u_bun", "xp": 40},
+    {"id": "xp_boss", "kind": "boss_freed", "enemy": "boss_lon_loi_dam", "xp": 200},
+    {"id": "xp_discovery", "kind": "discovery_point", "xp": 15},
+    {"id": "xp_env_secret", "kind": "environment_secret", "xp": 25},
+    {"id": "xp_secret_chain", "kind": "secret_chain_end", "chain": "sec_lo_bo_hoang", "xp": 60},
+    {"id": "xp_villager", "kind": "non_combat_success", "ref": "nc_nguoi_bi_me", "xp": 50}
+  ],
+  "xp_budget_estimate": {
+    "_note": "Ước tính theo encounters_0_2 (5 cua, 3 bọ ngựa, 2 Ụ Bùn), 5 điểm khám phá, 3 bí mật môi trường, 1 chuỗi bí mật, 1 người bị mê. Quái không hồi sinh trong ước tính này.",
+    "before_boss": 475,
+    "after_boss": 675,
+    "spend_to_rank2_both_spear_arts": 300,
+    "spend_rank3_one_art": 220
+  },
+  "skills": [
+    {
+      "id": "sk_giao_cam_sao_vot",
+      "weapon": "wp_giao_dong",
+      "slot": 1,
+      "input": "skill_1",
+      "name": {"vi": "Cắm sào vọt", "en": "Pole Vault Strike"},
+      "description": {"vi": "Cắm đuôi giáo xuống bùn như chống sào đẩy đò, vọt người lên rồi chúc mũi giáo đâm xuống chỗ đáp.", "en": "Plant the spear butt in the mud as if poling off a ferry, spring up, then drive the point down where you land."},
+      "label": "SÁNG TẠO",
+      "unlock": {"kind": "start"},
+      "motion": {"anticipation": "cắm đuôi cán, gập gối, cán cong", "active": "bật lên 1,8 m, lao tới tối đa 6 m, chúc mũi đâm", "follow_through": "đáp quỳ, rút giáo, bùn bắn"},
+      "base": {"leap_height_m": 1.8, "reach_m": 6.0, "auto_target": "locked_or_soft", "hit_weight": "heavy", "airborne_from_s": 0.15, "airborne_until_s": 0.55},
+      "levels": [
+        {"level": 1, "cost_xp": 0, "cooldown_s": 12.0, "effect": {"damage": 32, "the_damage": 30, "shockwave_radius_m": 0.0, "iframes": false},
+         "effect_text": {"vi": "Vọt tới 6 m, đâm xuống: 32 sát thương, 30 Thế. Đang trên không thì vòng sóng mặt đất không chạm.", "en": "Leap up to 6 m and strike down: 32 damage, 30 Stance. While airborne, ground waves cannot touch you."}},
+        {"level": 2, "cost_xp": 120, "cooldown_s": 11.0, "effect": {"damage": 34, "the_damage": 40, "shockwave_radius_m": 2.0, "iframes": false},
+         "effect_text": {"vi": "Chỗ đáp nổ sóng bùn 2 m; 40 Thế.", "en": "The landing bursts a 2 m mud wave; 40 Stance."}},
+        {"level": 3, "cost_xp": 220, "cooldown_s": 9.0, "effect": {"damage": 36, "the_damage": 45, "shockwave_radius_m": 2.5, "iframes": true, "iframe_start_s": 0.05, "iframe_duration_s": 0.3, "next_light_is_chain_index": 4},
+         "effect_text": {"vi": "Lúc bật lên có né (0,3 s); đòn nhẹ ngay sau khi đáp là Đâm xoáy.", "en": "The take-off has dodge frames (0.3 s); the first light attack after landing is Twisting Thrust."}}
+      ]
+    },
+    {
+      "id": "sk_giao_quet_song",
+      "weapon": "wp_giao_dong",
+      "slot": 2,
+      "input": "skill_2",
+      "name": {"vi": "Quét sóng", "en": "Wave Sweep"},
+      "description": {"vi": "Quét đuôi cán một vòng sát mặt nước, hất bùn nước thành vòng, đẩy lùi mọi thứ quanh mình.", "en": "Sweep the spear butt in a full circle along the waterline, flinging a ring of mud and water that drives back everything around you."},
+      "label": "SÁNG TẠO",
+      "unlock": {"kind": "xp", "cost_xp": 60},
+      "motion": {"anticipation": "hạ thấp người, cán giáo ngang hông", "active": "xoay một vòng, đuôi cán quét sát đất", "follow_through": "dừng thế thủ, nước rơi lộp độp"},
+      "base": {"shape": "circle", "hit_weight": "medium", "interrupts_normal_windup": true},
+      "levels": [
+        {"level": 1, "cost_xp": 0, "cooldown_s": 14.0, "effect": {"radius_m": 3.0, "damage": 14, "the_damage": 20, "push_m": 1.5, "stun_normal_s": 0.0, "second_sweep": false},
+         "effect_text": {"vi": "Vòng 3 m: 14 sát thương, 20 Thế, đẩy lùi 1,5 m, ngắt đòn đang vung của quái thường.", "en": "3 m ring: 14 damage, 20 Stance, 1.5 m push, interrupts normal foes' wind-ups."}},
+        {"level": 2, "cost_xp": 120, "cooldown_s": 12.0, "effect": {"radius_m": 3.6, "damage": 16, "the_damage": 24, "push_m": 2.2, "stun_normal_s": 0.6, "second_sweep": false},
+         "effect_text": {"vi": "Vòng 3,6 m; quái thường khựng 0,6 s.", "en": "3.6 m ring; normal foes reel for 0.6 s."}},
+        {"level": 3, "cost_xp": 220, "cooldown_s": 11.0, "effect": {"radius_m": 3.6, "damage": 16, "the_damage": 24, "push_m": 2.2, "stun_normal_s": 0.6, "second_sweep": true, "second_sweep_window_s": 0.5, "second_sweep_the_damage": 25},
+         "effect_text": {"vi": "Bấm lại trong 0,5 s: quét ngược thêm một vòng (25 Thế).", "en": "Press again within 0.5 s for a reverse sweep (25 Stance)."}}
+      ]
+    },
+    {
+      "id": "sk_riu_bo_don_cay",
+      "weapon": "wp_riu_xeo",
+      "slot": 1,
+      "input": "skill_1",
+      "era": "era_hung_vuong_6",
+      "name": {"vi": "Bổ đốn cây", "en": "Felling Cleave"},
+      "description": {"vi": "Gồng nửa nhịp như người đốn gỗ lấy thế, rồi bổ một nhát dồn cả thân.", "en": "Brace for half a beat like a woodcutter setting his stance, then cleave with the whole body."},
+      "label": "SÁNG TẠO",
+      "unlock": {"kind": "start"},
+      "motion": {"anticipation": "rìu sau gáy, chân trụ lùi, gồng 0,5 s", "active": "bước dài, bổ chéo xuống", "follow_through": "lưỡi cắm đất, rút bằng xoay hông"},
+      "base": {"charge_s": 0.5, "hit_weight": "heavy", "range_m": 2.6, "arc_deg": 60},
+      "levels": [
+        {"level": 1, "cost_xp": 0, "cooldown_s": 16.0, "effect": {"damage": 70, "the_damage": 80, "armor_vs": "medium", "on_the_break_drum_refund": 0, "on_the_break_cooldown_cut_s": 0.0},
+         "effect_text": {"vi": "70 sát thương, 80 Thế. Khi gồng không bị đòn nhẹ và vừa làm khựng.", "en": "70 damage, 80 Stance. Light and medium hits do not interrupt the brace."}},
+        {"level": 2, "cost_xp": 120, "cooldown_s": 15.0, "effect": {"damage": 75, "the_damage": 95, "armor_vs": "heavy", "on_the_break_drum_refund": 0, "on_the_break_cooldown_cut_s": 0.0},
+         "effect_text": {"vi": "95 Thế; chịu được cả đòn nặng khi gồng (trừ đòn không Đỡ được).", "en": "95 Stance; the brace also withstands heavy hits (except unblockable attacks)."}},
+        {"level": 3, "cost_xp": 220, "cooldown_s": 14.0, "effect": {"damage": 80, "the_damage": 100, "armor_vs": "heavy", "on_the_break_drum_refund": 50, "on_the_break_cooldown_cut_s": 5.0},
+         "effect_text": {"vi": "Nếu nhát này phá Thế: nhận 50 Nhịp, hồi chiêu giảm 5 giây.", "en": "If this blow breaks Stance: gain 50 Rhythm and cut 5 seconds off the cooldown."}}
+      ]
+    },
+    {
+      "id": "sk_riu_moc_thuyen",
+      "weapon": "wp_riu_xeo",
+      "slot": 2,
+      "input": "skill_2",
+      "era": "era_hung_vuong_6",
+      "name": {"vi": "Móc thuyền", "en": "Boat Hook"},
+      "description": {"vi": "Lướt tới, móc lưỡi rìu như móc mạn thuyền kéo vào bến, xoay đối thủ ra sau lưng mình.", "en": "Dash in and catch with the blade like hooking a boat to the landing, swinging the foe around behind you."},
+      "label": "SÁNG TẠO",
+      "unlock": {"kind": "xp", "cost_xp": 60},
+      "motion": {"anticipation": "xoay mũi lưỡi vào trong, rướn người", "active": "lướt 5 m, móc, xoay nửa vòng", "follow_through": "đẩy đối thủ đi, lùi một bước"},
+      "base": {"dash_m": 5.0, "vs_large": "pull_self_to_flank", "hit_weight": "medium"},
+      "levels": [
+        {"level": 1, "cost_xp": 0, "cooldown_s": 10.0, "effect": {"reach_m": 6.0, "damage": 12, "the_damage": 15, "targets": 1, "exposed_side_the_mult": 1.3, "exposed_s": 1.0},
+         "effect_text": {"vi": "Lướt tới 6 m; quái thường bị xoay lộ hông (×1,3 Thế trong 1 s). Với kẻ lớn, tự kéo mình ra sườn nó.", "en": "Dash up to 6 m; normal foes are spun to expose their flank (x1.3 Stance for 1 s). Against large foes, you pull yourself to their flank."}},
+        {"level": 2, "cost_xp": 120, "cooldown_s": 9.0, "effect": {"reach_m": 6.0, "damage": 14, "the_damage": 18, "targets": 1, "exposed_side_the_mult": 1.5, "exposed_s": 1.0},
+         "effect_text": {"vi": "Lộ hông ×1,5 Thế.", "en": "Exposed flank x1.5 Stance."}},
+        {"level": 3, "cost_xp": 220, "cooldown_s": 8.0, "effect": {"reach_m": 8.0, "damage": 14, "the_damage": 18, "targets": 2, "exposed_side_the_mult": 1.5, "exposed_s": 1.2},
+         "effect_text": {"vi": "Tầm 8 m, móc được 2 đối thủ.", "en": "8 m reach, hooks up to 2 foes."}}
+      ]
+    }
+  ]
+}

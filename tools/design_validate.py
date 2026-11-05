@@ -24,7 +24,9 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "design" / "data"
 RESEARCH_DIR = ROOT / "research" / "data"
 
-FILES = ("combat_tuning", "weapons", "enemies", "items", "lineage", "secrets", "codex", "strings")
+FILES = ("combat_tuning", "weapons", "enemies", "items", "lineage", "secrets", "codex", "strings",
+         "controls", "skills", "map")
+WORLD_JS = ROOT / "prototype" / "web" / "src" / "game" / "world.js"
 
 ALL_LABELS = {"SỬ LIỆU", "SỬ LIỆU-TRANH LUẬN", "HUYỀN THOẠI", "CỔ TÍCH", "SÁNG TẠO", "CHƯA XÁC MINH"}
 # CHƯA XÁC MINH can never reach the game (CLAUDE.md §3).
@@ -421,6 +423,11 @@ def validate(b: dict, research: dict) -> Report:
     all_entries += items.get("items", []) + items.get("recipes", []) + items.get("stations", []) + codex.get("entries", [])
     all_entries += lineage.get("characters", []) + lineage.get("tools", []) + lineage.get("house_moves", []) + lineage.get("eras", [])
     all_entries += st.get("nodes", []) + st.get("branches", []) + strings.get("dialogue", [])
+    gear = items.get("gear_0_3", {})
+    all_entries += gear.get("pieces", []) + gear.get("sets", []) + b["skills"].get("skills", [])
+    all_entries += b["skills"].get("currencies", [])
+    for key in ("landmarks", "discovery_points", "chests", "environment_secrets"):
+        all_entries += b["map"].get(key, [])
     counts: dict[str, int] = {}
     for e in all_entries:
         counts[e.get("id")] = counts.get(e.get("id"), 0) + 1
@@ -696,7 +703,428 @@ def validate(b: dict, research: dict) -> Report:
     heal = tuning.get("healing", {}).get("item_id")
     if heal and heal not in item_map:
         rep.err(f"combat_tuning.healing: item {heal!r} unknown")
+
+    # ---- Demo 0.3 (DEMO_0_3_DESIGN): gear, skills, map, controls scheme, boss redesign
+    check_demo_0_3(b, rep)
     return rep
+
+
+# ---------------------------------------------------------------- Demo 0.3
+
+def hex_hue(h: str) -> float | None:
+    m = re.fullmatch(r"#([0-9a-fA-F]{6})", h or "")
+    if not m:
+        return None
+    r, g, bl = (int(m.group(1)[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    mx, mn = max(r, g, bl), min(r, g, bl)
+    if mx == mn:
+        return -1.0  # grey: no hue
+    d = mx - mn
+    if mx == r:
+        hue = ((g - bl) / d) % 6
+    elif mx == g:
+        hue = (bl - r) / d + 2
+    else:
+        hue = (r - g) / d + 4
+    return hue * 60
+
+
+def hue_distance(a: float, b: float) -> float:
+    if a < 0 or b < 0:
+        return 360.0
+    d = abs(a - b) % 360
+    return min(d, 360 - d)
+
+
+def in_shape(x: float, z: float, shape: dict) -> bool:
+    if "rect" in shape:
+        r = shape["rect"]
+        return r["x0"] <= x <= r["x1"] and r["z0"] <= z <= r["z1"]
+    if "circle" in shape:
+        c = shape["circle"]
+        return (x - c["cx"]) ** 2 + (z - c["cz"]) ** 2 <= c["r"] ** 2
+    return False
+
+
+def parse_world_points(path: Path = WORLD_JS) -> dict[str, tuple[float, float]] | None:
+    """Reads POINTS ids and (x, z) from the prototype graybox layout (world.js)."""
+    try:
+        src = path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    hub = re.search(r"export const HUB_X\s*=\s*(-?[\d.]+)", src)
+    hub_x = float(hub.group(1)) if hub else 0.0
+    body = re.search(r"export const POINTS\s*=\s*\[(.*?)\n\];", src, re.S)
+    if not body:
+        return None
+
+    def num(expr: str) -> float:
+        expr = expr.strip()
+        m = re.fullmatch(r"HUB_X(?:\s*([+-])\s*([\d.]+))?", expr)
+        if m:
+            return hub_x + (float(m.group(2)) * (1 if m.group(1) == "+" else -1) if m.group(1) else 0.0)
+        return float(expr)
+
+    out = {}
+    for m in re.finditer(r"\{\s*id:\s*'([^']+)'[^}]*?\bx:\s*([^,]+),\s*z:\s*([^,}]+)", body.group(1)):
+        out[m.group(1)] = (num(m.group(2)), num(m.group(3)))
+    return out
+
+
+def merged_controls(controls: dict) -> tuple[list[dict], list[str]]:
+    """Applies controls.scheme_0_3 (actions_replace / actions_add) to a copy of actions[]."""
+    problems: list[str] = []
+    sc = controls.get("scheme_0_3") or {}
+    acts = [dict(a) for a in controls.get("actions", [])]
+    idx = {a["id"]: i for i, a in enumerate(acts)}
+    for a in sc.get("actions_replace", []):
+        if a.get("id") not in idx:
+            problems.append(f"scheme_0_3.actions_replace: unknown action {a.get('id')!r}")
+        else:
+            acts[idx[a["id"]]] = dict(a)
+    for a in sc.get("actions_add", []):
+        if a.get("id") in idx:
+            problems.append(f"scheme_0_3.actions_add: action {a.get('id')!r} already exists (use actions_replace)")
+        else:
+            idx[a["id"]] = len(acts)
+            acts.append(dict(a))
+    return acts, problems
+
+
+def binding_conflicts(acts: list[dict], kbm_over: dict | None = None, pad_over: dict | None = None) -> list[str]:
+    """Duplicate gameplay inputs among actions that are not aliases (shares_input_with), not chords
+    (pad.modifier) and not an explicit press/hold pair (shares_input_with_hold)."""
+    out: list[str] = []
+    kbm: dict[str, str] = {}
+    pad: dict[int, str] = {}
+    by_id = {a["id"]: a for a in acts}
+    for a in acts:
+        if a.get("context") != "gameplay" or a.get("reserved") or a.get("shares_input_with"):
+            continue
+        keys = (kbm_over or {}).get(a["id"], a.get("kbm", {}).get("inputs", []))
+        for k in keys:
+            if k in kbm:
+                out.append(f"kbm {k} bound to both {kbm[k]} and {a['id']}")
+            kbm[k] = a["id"]
+        p = a.get("pad", {})
+        if p.get("modifier"):
+            continue
+        buttons = [x["index"] for x in (pad_over or {}).get(a["id"], p.get("inputs", [])) if not x.get("axis")]
+        for btn in buttons:
+            other = pad.get(btn)
+            pair = other and (a.get("shares_input_with_hold") == other
+                              or by_id.get(other, {}).get("shares_input_with_hold") == a["id"])
+            if other and not pair:
+                out.append(f"pad button {btn} bound to both {other} and {a['id']}")
+            pad[btn] = a["id"]
+    return out
+
+
+def check_controls_0_3(b: dict, rep: Report) -> None:
+    controls = b["controls"]
+    sc = controls.get("scheme_0_3")
+    if not sc:
+        return
+    acts, problems = merged_controls(controls)
+    for p in problems:
+        rep.err(f"controls.{p}")
+    unsafe = set(sc.get("browser_unsafe_kbm", []))
+    for a in acts:
+        if a.get("context") == "gameplay":
+            bad = unsafe & set(a.get("kbm", {}).get("inputs", []))
+            if bad:
+                rep.err(f"controls.scheme_0_3: {a['id']} uses browser-unsafe keys {sorted(bad)} (Ctrl+W closes the tab, Alt opens menus)")
+    for c in binding_conflicts(acts):
+        rep.err(f"controls.scheme_0_3: {c}")
+    ids_ = {a["id"] for a in acts}
+    for pr in sc.get("kbm_presets", []):
+        unknown = set(pr.get("overrides", {})) - ids_
+        if unknown:
+            rep.err(f"controls.scheme_0_3.kbm_presets.{pr.get('id')}: unknown actions {sorted(unknown)}")
+        for a, keys in pr.get("overrides", {}).items():
+            if unsafe & set(keys):
+                rep.err(f"controls.scheme_0_3.kbm_presets.{pr.get('id')}: {a} uses browser-unsafe keys")
+        for c in binding_conflicts(acts, kbm_over=pr.get("overrides", {})):
+            rep.err(f"controls.scheme_0_3.kbm_presets.{pr.get('id')}: {c}")
+    for pr in sc.get("pad_presets_replace", []):
+        for c in binding_conflicts(acts, pad_over=pr.get("overrides", {})):
+            rep.err(f"controls.scheme_0_3.pad_presets.{pr.get('id')}: {c}")
+    acc = {o.get("id") for o in controls.get("accessibility_options", [])}
+    acc |= {o.get("id") for o in sc.get("accessibility_add", [])}
+    acc |= {o.get("id") for o in b["combat_tuning"].get("accessibility", {}).get("options", [])}
+    ui = b["strings"].get("ui", {})
+    for a in acts:
+        if a.get("accessibility_option") and a["accessibility_option"] not in acc:
+            rep.err(f"controls.scheme_0_3: {a['id']} accessibility_option {a['accessibility_option']!r} unknown")
+        if a.get("opens_tab") and a["opens_tab"] not in ui:
+            rep.err(f"controls.scheme_0_3: {a['id']} opens_tab {a['opens_tab']!r} not in strings.ui")
+    for need in ("jump", "dodge", "inventory", "map"):
+        a = next((x for x in acts if x["id"] == need), None)
+        if not a or a.get("reserved") or not a.get("kbm", {}).get("inputs"):
+            rep.err(f"controls.scheme_0_3: action {need!r} must be bound (PO 0.2 feedback)")
+
+
+def check_demo_0_3(b: dict, rep: Report) -> None:
+    tuning, items, enemies, weapons = b["combat_tuning"], b["items"], b["enemies"], b["weapons"]
+    skills, mp, strings = b["skills"], b["map"], b["strings"]
+    item_map = {i["id"]: i for i in items.get("items", [])}
+    enemy_map = {e["id"]: e for e in enemies.get("enemies", [])}
+    weapon_map = {w["id"]: w for w in weapons.get("weapons", [])}
+    ui = strings.get("ui", {})
+
+    # ---- rarity colours: never the red-bronze reserved for unparryable telegraphs (ART_DIRECTION P4)
+    rr = items.get("rarity_rules_0_3", {})
+    reserved = [hex_hue(h) for h in rr.get("reserved_hex", [])]
+    min_d = rr.get("min_hue_distance_deg", 20)
+    for r in items.get("rarities", []):
+        if "color_hex" not in r:
+            continue
+        hue = hex_hue(r["color_hex"])
+        if hue is None:
+            rep.err(f"items.rarities.{r['id']}: color_hex {r['color_hex']!r} is not #RRGGBB")
+            continue
+        if r["color_hex"].upper() in {h.upper() for h in rr.get("reserved_hex", [])} or any(
+                hue_distance(hue, x) < min_d for x in reserved if x is not None):
+            rep.err(f"items.rarities.{r['id']}: color {r['color_hex']} too close to reserved red-bronze")
+
+    # ---- gear
+    gear = items.get("gear_0_3", {})
+    slots = {s["id"]: s for s in gear.get("slots", [])}
+    stat_ids = {s["id"] for s in gear.get("stat_defs", [])}
+    rarities = {r["id"]: r for r in items.get("rarities", [])}
+    pieces = {p["id"]: p for p in gear.get("pieces", [])}
+    require_label(gear.get("pieces", []), "items.gear_0_3.pieces", rep)
+    require_label(gear.get("sets", []), "items.gear_0_3.sets", rep)
+    costs = (gear.get("upgrades") or {}).get("costs", {})
+    max_plus = (gear.get("upgrades") or {}).get("max_plus", 0)
+    for cat, lv in costs.items():
+        if sorted(c.get("to_plus") for c in lv) != list(range(1, max_plus + 1)):
+            rep.err(f"items.gear_0_3.upgrades.{cat}: needs to_plus 1..{max_plus}")
+        for c in lv:
+            for x in c.get("inputs", []):
+                if x.get("item") not in item_map:
+                    rep.err(f"items.gear_0_3.upgrades.{cat}: unknown item {x.get('item')!r}")
+    for pid, p in pieces.items():
+        kind = p.get("kind")
+        accepts = {s["accepts"] for s in slots.values()}
+        if kind not in accepts:
+            rep.err(f"items.gear_0_3.{pid}: kind {kind!r} fits no slot")
+        if kind == "armor" and slots.get(p.get("slot"), {}).get("accepts") != "armor":
+            rep.err(f"items.gear_0_3.{pid}: armor slot {p.get('slot')!r} unknown")
+        r = rarities.get(p.get("rarity"))
+        if r is None or r.get("allowed_in_demo") is False:
+            rep.err(f"items.gear_0_3.{pid}: rarity {p.get('rarity')!r} unknown or not allowed in demo")
+        for s in p.get("stats", {}):
+            if s not in stat_ids:
+                rep.err(f"items.gear_0_3.{pid}: unknown stat {s!r}")
+        if "era" not in p:
+            rep.err(f"items.gear_0_3.{pid}: missing era")
+        if p.get("upgrade_category") not in costs:
+            rep.err(f"items.gear_0_3.{pid}: upgrade_category {p.get('upgrade_category')!r} has no costs")
+        if "khoen" in pid or (p.get("source") or {}).get("kind") in ("khoen", "beast_part"):
+            rep.err(f"items.gear_0_3.{pid}: no gear from khoen or beast parts (V9, SB-05)")
+    for st in gear.get("sets", []):
+        for pid in st.get("pieces", []):
+            if pid not in pieces:
+                rep.err(f"items.gear_0_3.sets.{st.get('id')}: unknown piece {pid!r}")
+            elif pieces[pid].get("set") != st.get("id"):
+                rep.err(f"items.gear_0_3.sets.{st.get('id')}: piece {pid} does not point back to the set")
+        for bo in st.get("bonuses", []):
+            if not 1 <= bo.get("count", 0) <= len(st.get("pieces", [])):
+                rep.err(f"items.gear_0_3.sets.{st.get('id')}: bonus count {bo.get('count')} out of range")
+
+    # ---- enemies: drops of normal enemies; boss 0.3 additions
+    max_delayed = tuning.get("enemy_ai", {}).get("max_delayed_attacks_per_moveset", 1)
+    br = tuning.get("boss_rules_0_3", {})
+    presets = {p["id"] for p in tuning.get("difficulty", {}).get("presets", [])}
+    for e in enemy_map.values():
+        eid = e["id"]
+        for d in e.get("drops", []):
+            ch = d.get("chance", 1.0)
+            if not isinstance(ch, (int, float)) or not 0 < ch <= 1:
+                rep.err(f"enemies.{eid}: drop chance {ch!r} must be in (0, 1]")
+            if e.get("rank") == "boss" and ch != 1.0:
+                rep.err(f"enemies.{eid}: boss drops must be guaranteed (ArpgCore)")
+        attacks = {a["id"]: a for a in e.get("attacks", [])}
+        combos = {c["id"]: c for c in e.get("combos_0_3", [])}
+        require_label(e.get("combos_0_3", []), f"enemies.{eid}.combos_0_3", rep)
+        for cid, c in combos.items():
+            steps = c.get("steps", [])
+            if not 2 <= len(steps) <= br.get("max_combo_steps", 4):
+                rep.err(f"enemies.{eid}.{cid}: combo needs 2..{br.get('max_combo_steps', 4)} steps")
+            for i, s in enumerate(steps):
+                for ref in (s.get("attack"), s.get("branch_if_player_behind")):
+                    if ref is not None and ref not in attacks:
+                        rep.err(f"enemies.{eid}.{cid}: step {i} unknown attack {ref!r}")
+                a = attacks.get(s.get("attack"))
+                if a and i > 0:
+                    w = a.get("windup_s", 0) * s.get("windup_mult", 1.0)
+                    floor = br.get("min_windup_s_parryable_in_combo", 0.3) if a.get("parryable") else br.get("min_windup_s_unparryable_in_combo", 0.9)
+                    if w + 1e-9 < floor:
+                        rep.err(f"enemies.{eid}.{cid}: step {i} windup {w:.2f}s below fairness floor {floor}s")
+        for ph in e.get("phases", []):
+            pid = ph.get("id")
+            removes = set((ph.get("phase2_0_3") or {}).get("removes_from_moveset_0_3", []))
+            for ref in list(ph.get("moveset_add_0_2", [])) + list(ph.get("moveset_add_0_3", [])) + list(removes):
+                if ref not in attacks:
+                    rep.err(f"enemies.{eid}.{pid}: moveset addition references unknown attack {ref!r}")
+            eff = (set(ph.get("moveset", [])) | set(ph.get("moveset_add_0_2", [])) | set(ph.get("moveset_add_0_3", []))) - removes
+            for cid in ph.get("combos_add_0_3", []):
+                if cid not in combos:
+                    rep.err(f"enemies.{eid}.{pid}: unknown combo {cid!r}")
+                    continue
+                for s in combos[cid].get("steps", []):
+                    if s.get("attack") not in eff:
+                        rep.err(f"enemies.{eid}.{pid}: combo {cid} uses {s.get('attack')!r} outside this phase's moveset")
+            if ph.get("moveset_add_0_3") or ph.get("combos_add_0_3"):
+                delayed = {m for m in eff if attacks.get(m, {}).get("delayed")}
+                if len(delayed) > max_delayed:
+                    rep.err(f"enemies.{eid}.{pid}: {len(delayed)} delayed attacks in the 0.3 moveset (max {max_delayed}, N7)")
+                feints = [m for m in eff if attacks.get(m, {}).get("feint")]
+                if len(feints) > br.get("max_feints_per_phase", 1):
+                    rep.err(f"enemies.{eid}.{pid}: {len(feints)} feints (max {br.get('max_feints_per_phase', 1)})")
+                for m in feints:
+                    tgt = attacks.get(attacks[m].get("feint_of"))
+                    if tgt is None:
+                        rep.err(f"enemies.{eid}.{m}: feint_of unknown")
+                    elif br.get("feint_requires_distinct_audio", True) and \
+                            (attacks[m].get("telegraph") or {}).get("audio") == (tgt.get("telegraph") or {}).get("audio"):
+                        rep.err(f"enemies.{eid}.{m}: feint must sound different from {tgt['id']} (fairness)")
+            p2 = ph.get("phase2_0_3")
+            if p2:
+                arena = next((z for z in mp.get("zones", []) if z.get("id") in e.get("zones", [])), None)
+                for st in (p2.get("arena_change_0_3") or {}).get("stakes_emerge", []):
+                    if arena and not any(in_shape(st["x"], st["z"], s) for s in arena.get("shapes", [])):
+                        rep.err(f"enemies.{eid}: stake {st.get('id')} outside the arena")
+        beh = e.get("behavior_0_3") or {}
+        all_eff = set()
+        for ph in e.get("phases", []):
+            all_eff |= set(ph.get("moveset", [])) | set(ph.get("moveset_add_0_3", []))
+        for key in ("punish_heal", "punish_dodge_spam", "anti_kite"):
+            resp = (beh.get(key) or {}).get("response")
+            if resp and resp not in all_eff:
+                rep.err(f"enemies.{eid}.behavior_0_3.{key}: response {resp!r} not in any phase moveset")
+        diff = e.get("difficulty_0_3")
+        if diff:
+            got = {k for k in diff if not k.startswith("_")}
+            if got != presets:
+                rep.err(f"enemies.{eid}.difficulty_0_3: must cover exactly the presets {sorted(presets)}")
+
+    # ---- skills
+    require_label(skills.get("skills", []), "skills.skills", rep)
+    require_label(skills.get("currencies", []), "skills.currencies", rep)
+    rules = skills.get("rules", {})
+    max_level = rules.get("max_level", 3)
+    by_weapon: dict[str, list[dict]] = {}
+    for s in skills.get("skills", []):
+        sid = s.get("id")
+        if s.get("weapon") not in weapon_map:
+            rep.err(f"skills.{sid}: unknown weapon {s.get('weapon')!r}")
+        by_weapon.setdefault(s.get("weapon"), []).append(s)
+        if s.get("input") != f"skill_{s.get('slot')}" or s.get("input") not in rules.get("inputs", []):
+            rep.err(f"skills.{sid}: input {s.get('input')!r} must be skill_<slot>")
+        lv = s.get("levels", [])
+        if [x.get("level") for x in lv] != list(range(1, max_level + 1)):
+            rep.err(f"skills.{sid}: levels must be 1..{max_level}")
+        if lv and lv[0].get("cost_xp") != 0:
+            rep.err(f"skills.{sid}: level 1 costs nothing (unlock carries the cost)")
+        for x in lv:
+            if not isinstance(x.get("cooldown_s"), (int, float)) or x["cooldown_s"] <= 0:
+                rep.err(f"skills.{sid}: level {x.get('level')} needs cooldown_s > 0")
+        if s.get("unlock", {}).get("kind") not in ("start", "xp"):
+            rep.err(f"skills.{sid}: unlock.kind must be start or xp")
+    for wid, lst in by_weapon.items():
+        if sorted(x.get("slot") for x in lst) != list(range(1, rules.get("slots_per_weapon", 2) + 1)):
+            rep.err(f"skills: weapon {wid} needs exactly one skill per slot")
+        ref = weapon_map.get(wid, {}).get("skills_0_3")
+        if ref is not None and sorted(ref) != sorted(x["id"] for x in lst):
+            rep.err(f"weapons.{wid}.skills_0_3 does not match skills.json")
+    chains = {c.get("id") for c in b["secrets"].get("chains", [])}
+    ncs = {n.get("id") for n in enemies.get("non_combat_encounters", [])}
+    for x in skills.get("xp_sources", []):
+        if x.get("enemy") and x["enemy"] not in enemy_map:
+            rep.err(f"skills.xp_sources.{x.get('id')}: unknown enemy {x['enemy']!r}")
+        if x.get("chain") and x["chain"] not in chains:
+            rep.err(f"skills.xp_sources.{x.get('id')}: unknown chain {x['chain']!r}")
+        if x.get("ref") and x["ref"] not in ncs:
+            rep.err(f"skills.xp_sources.{x.get('id')}: unknown ref {x['ref']!r}")
+    xp_ids = {x.get("id") for x in skills.get("xp_sources", [])}
+    if rules.get("currency") not in {c.get("id") for c in skills.get("currencies", [])}:
+        rep.err("skills.rules.currency unknown")
+
+    # ---- map
+    for key in ("levels", "zones", "landmarks", "discovery_points", "chests", "environment_secrets"):
+        require_label(mp.get(key, []), f"map.{key}", rep)
+    icons = {i["id"] for i in mp.get("icons", [])}
+    levels = {lv["id"]: lv for lv in mp.get("levels", [])}
+    zones = {z["id"]: z for z in mp.get("zones", [])}
+    locs = {l["id"]: l for l in b["secrets"].get("locations", [])}
+    for z in zones.values():
+        if z.get("level") not in levels:
+            rep.err(f"map.zones.{z['id']}: unknown level")
+        if z["id"] in locs and locs[z["id"]].get("name") != z.get("name"):
+            rep.err(f"map.zones.{z['id']}: name differs from secrets.locations")
+    world = parse_world_points()
+    if world is None:
+        rep.warn("map: prototype world.js not found; landmark coordinates not cross-checked")
+
+    def inside_level(o: dict, where: str) -> None:
+        lv = levels.get(o.get("level")) if o.get("level") else None
+        cands = [lv] if lv else list(levels.values())
+        if not any(c["bounds"]["x0"] <= o["x"] <= c["bounds"]["x1"] and c["bounds"]["z0"] <= o["z"] <= c["bounds"]["z1"] for c in cands):
+            rep.err(f"{where}: ({o['x']}, {o['z']}) outside every level bound")
+
+    for l in mp.get("landmarks", []):
+        where = f"map.landmarks.{l.get('id')}"
+        if l.get("icon") not in icons:
+            rep.err(f"{where}: unknown icon {l.get('icon')!r}")
+        inside_level(l, where)
+        if l.get("fast_travel") and l.get("kind") != "rest":
+            rep.err(f"{where}: fast travel only at resting fires")
+        wp = l.get("world_point")
+        if wp and world is not None:
+            if wp not in world:
+                rep.err(f"{where}: world_point {wp!r} not in world.js POINTS")
+            elif abs(world[wp][0] - l["x"]) > 0.01 or abs(world[wp][1] - l["z"]) > 0.01:
+                rep.err(f"{where}: ({l['x']}, {l['z']}) differs from world.js {wp} {world[wp]}")
+    gear_ids = set(pieces)
+    for key in ("discovery_points", "chests", "environment_secrets"):
+        for o in mp.get(key, []):
+            where = f"map.{key}.{o.get('id')}"
+            z = zones.get(o.get("zone"))
+            if z is None:
+                rep.err(f"{where}: unknown zone {o.get('zone')!r}")
+            elif not any(in_shape(o["x"], o["z"], s) for s in z.get("shapes", [])):
+                rep.err(f"{where}: ({o['x']}, {o['z']}) is outside zone {z['id']}")
+            if o.get("xp_ref") and o["xp_ref"] not in xp_ids:
+                rep.err(f"{where}: xp_ref {o['xp_ref']!r} unknown")
+            rewards = list(o.get("contents", [])) + [{"item": x["item"]} for x in (o.get("reward") or {}).get("items", [])]
+            rewards += [{"gear": g} for g in (o.get("reward") or {}).get("gear", [])]
+            for r in rewards:
+                if "gear" in r and r["gear"] not in gear_ids:
+                    rep.err(f"{where}: unknown gear {r['gear']!r}")
+                if "item" in r and r["item"] not in item_map:
+                    rep.err(f"{where}: unknown item {r['item']!r}")
+    map_refs = {o.get("id") for k in ("chests", "environment_secrets") for o in mp.get(k, [])}
+    for p in pieces.values():
+        ref = (p.get("source") or {}).get("map_ref")
+        if ref and ref not in map_refs:
+            rep.err(f"items.gear_0_3.{p['id']}: source map_ref {ref!r} not in map.json")
+    mm = mp.get("minimap", {})
+    for i in mm.get("shows", []):
+        if i not in icons:
+            rep.err(f"map.minimap.shows: unknown icon {i!r}")
+    if mm and mm.get("rotation_default") not in mm.get("rotation_options", []):
+        rep.err("map.minimap: rotation_default not among rotation_options")
+    wm = mp.get("world_map", {})
+    for k in (wm.get("quest_tracking") or {}).get("objective_string_keys", []):
+        if k not in ui:
+            rep.err(f"map.world_map: objective key {k!r} not in strings.ui")
+    fk = (wm.get("zone_completion") or {}).get("format_key")
+    if fk and fk not in ui:
+        rep.err(f"map.world_map: format_key {fk!r} not in strings.ui")
+
+    check_controls_0_3(b, rep)
 
 
 def main(argv: list[str] | None = None) -> int:

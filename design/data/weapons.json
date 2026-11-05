@@ -328,7 +328,104 @@
         "active": "Bốn mũi đâm trên bốn nhịp, mỗi mũi một bước tới, mũi cuối dồn cả thân",
         "follow_through": "Đứng thẳng, giáo dựng, nhịp trống tắt"
       },
-      "trail_default": true
+      "trail_default": true,
+      "air_moves_0_3": [
+        {
+          "id": "sp_air_l",
+          "input": "air,L",
+          "label": "SÁNG TẠO",
+          "name": {
+            "vi": "Đâm chúc",
+            "en": "Diving Thrust"
+          },
+          "damage": 18,
+          "the_damage": 9,
+          "startup_s": 0.12,
+          "active_s": 0.08,
+          "recovery_s": 0.25,
+          "hit_weight": "light",
+          "range_m": 2.4,
+          "arc_deg": 40,
+          "hang_s": 0.12,
+          "hang_gravity_scale": 0.3,
+          "max_per_jump": 1,
+          "motion": {
+            "anticipation": "kéo cán về hông giữa không trung",
+            "active": "chúc mũi giáo đâm chéo xuống trước",
+            "follow_through": "thân xoay nửa vòng, rơi tiếp"
+          }
+        },
+        {
+          "id": "sp_air_h",
+          "input": "air,H",
+          "label": "SÁNG TẠO",
+          "name": {
+            "vi": "Cắm sào giáng",
+            "en": "Pole-Plant Plunge"
+          },
+          "damage": 30,
+          "the_damage": 28,
+          "startup_s": 0.15,
+          "active_s": 0.1,
+          "recovery_s": 0.45,
+          "hit_weight": "heavy",
+          "range_m": 1.6,
+          "arc_deg": 360,
+          "plunge": true,
+          "shockwave_radius_m": 2.5,
+          "shockwave_damage": 10,
+          "shockwave_the_damage": 25,
+          "target_react": "push_up",
+          "motion": {
+            "anticipation": "dựng giáo thẳng đứng trên đầu, khựng 0,15 s",
+            "active": "rơi thẳng, cắm đuôi giáo xuống bùn như cắm sào",
+            "follow_through": "bùn bắn vòng, quỳ một gối rồi rút giáo"
+          }
+        }
+      ],
+      "drum_burst_0_3": {
+        "label": "SÁNG TẠO",
+        "beat_interval_s": 0.6,
+        "_note": "Tuyệt kỹ điện ảnh (DEMO_0_3 §6). beat_interval = duration_s / hits (2,4 / 4). Mỗi nhịp một sóng xung kích; nhịp cuối là trống cái.",
+        "shockwave_per_hit": {
+          "start_radius_m": 1.0,
+          "end_radius_m": 4.0,
+          "expand_s": 0.3
+        },
+        "final_hit": {
+          "radius_m": 6.0,
+          "knockback_normal_m": 2.0
+        },
+        "camera_script": [
+          {
+            "at_s": 0.0,
+            "shot": "low_front_orbit",
+            "orbit_deg": 40,
+            "distance_m": 3.2,
+            "fov_deg": 48
+          },
+          {
+            "at_s": 0.6,
+            "shot": "push_per_beat",
+            "push_m": 0.3
+          },
+          {
+            "at_s": 1.8,
+            "shot": "pull_back_high",
+            "distance_m": 8.0,
+            "fov_deg": 62
+          },
+          {
+            "at_s": 2.4,
+            "shot": "return",
+            "return_s": 0.4
+          }
+        ]
+      },
+      "skills_0_3": [
+        "sk_giao_cam_sao_vot",
+        "sk_giao_quet_song"
+      ]
     },
     {
       "id": "wp_riu_xeo",
@@ -658,7 +755,104 @@
         "active": "Ba nhát bổ trên ba nhịp, nhát cuối dồn cả thân",
         "follow_through": "Rìu cắm đất, nhịp trống tắt"
       },
-      "trail_default": true
+      "trail_default": true,
+      "air_moves_0_3": [
+        {
+          "id": "ax_air_l",
+          "input": "air,L",
+          "label": "SÁNG TẠO",
+          "name": {
+            "vi": "Bổ lượn",
+            "en": "Gliding Cleave"
+          },
+          "damage": 26,
+          "the_damage": 13,
+          "startup_s": 0.16,
+          "active_s": 0.1,
+          "recovery_s": 0.3,
+          "hit_weight": "medium",
+          "range_m": 2.2,
+          "arc_deg": 120,
+          "hang_s": 0.12,
+          "hang_gravity_scale": 0.3,
+          "max_per_jump": 1,
+          "motion": {
+            "anticipation": "rìu qua vai, xoay hông giữa không",
+            "active": "bổ ngang theo đà rơi",
+            "follow_through": "lưỡi rìu kéo thân xoay theo"
+          }
+        },
+        {
+          "id": "ax_air_h",
+          "input": "air,H",
+          "label": "SÁNG TẠO",
+          "name": {
+            "vi": "Rìu giáng",
+            "en": "Falling Axe"
+          },
+          "damage": 44,
+          "the_damage": 40,
+          "startup_s": 0.18,
+          "active_s": 0.1,
+          "recovery_s": 0.55,
+          "hit_weight": "heavy",
+          "range_m": 1.8,
+          "arc_deg": 360,
+          "plunge": true,
+          "shockwave_radius_m": 3.0,
+          "shockwave_damage": 14,
+          "shockwave_the_damage": 32,
+          "target_react": "push_up",
+          "motion": {
+            "anticipation": "hai tay giơ rìu quá đầu, thân cong như cánh cung",
+            "active": "giáng thẳng xuống, lưỡi cắm đất",
+            "follow_through": "đất nứt hình vòng, rìu kẹt 0,2 s rồi giật ra"
+          }
+        }
+      ],
+      "drum_burst_0_3": {
+        "label": "SÁNG TẠO",
+        "beat_interval_s": 0.867,
+        "_note": "2,6 / 3 nhịp: chậm, nặng hơn giáo.",
+        "shockwave_per_hit": {
+          "start_radius_m": 1.2,
+          "end_radius_m": 4.5,
+          "expand_s": 0.35
+        },
+        "final_hit": {
+          "radius_m": 7.0,
+          "knockback_normal_m": 2.5
+        },
+        "camera_script": [
+          {
+            "at_s": 0.0,
+            "shot": "low_side_orbit",
+            "orbit_deg": 50,
+            "distance_m": 3.4,
+            "fov_deg": 46
+          },
+          {
+            "at_s": 0.867,
+            "shot": "push_per_beat",
+            "push_m": 0.35
+          },
+          {
+            "at_s": 1.9,
+            "shot": "top_down_ring",
+            "distance_m": 9.0,
+            "fov_deg": 60
+          },
+          {
+            "at_s": 2.6,
+            "shot": "return",
+            "return_s": 0.4
+          }
+        ]
+      },
+      "skills_0_3": [
+        "sk_riu_bo_don_cay",
+        "sk_riu_moc_thuyen"
+      ]
     }
   ]
 }

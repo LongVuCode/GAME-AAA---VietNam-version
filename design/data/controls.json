@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "_note": "ĐỀ XUẤT sơ đồ phím Demo 0.1 (UX/Controls Researcher, 2026-11-04), chờ Product Owner duyệt và playtest. Lý do, so sánh và nguồn: design/CONTROLS_STUDY.md. Chưa nằm trong FILES của tools/design_validate.py; prototype chưa đọc file này (input.js vẫn dùng KEYMAP cũ).",
+  "_note": "ĐỀ XUẤT sơ đồ phím Demo 0.1 (UX/Controls Researcher, 2026-11-04), chờ Product Owner duyệt và playtest. Lý do, so sánh và nguồn: design/CONTROLS_STUDY.md. Từ 0.3 nằm trong FILES của tools/design_validate.py (kiểm scheme_0_3). Sơ đồ 0.3 đề xuất: scheme_0_3 (DEMO_0_3_DESIGN §1).",
   "_schema": {
     "actions[]": "id, name{vi,en}, context (gameplay|ui|debug), kbm{inputs[], type}, pad{inputs[], type}, shares_input_with?, hold_s?, accessibility_option?, reserved?, note{vi,en}",
     "type": "press = bấm một lần; hold = giữ (thả là dừng); toggle_option = mặc định giữ, có tùy chọn trợ năng đổi sang bật/tắt; axis = trục analog/chuột (không phải nút)",
@@ -301,5 +301,166 @@
     {"id": "acc_glyph_style", "name": {"vi": "Biểu tượng nút", "en": "Button prompts"}, "type": "enum", "values": ["auto", "xbox", "playstation", "keyboard"], "default": "auto", "note": {"vi": "Tự động theo thiết bị dùng gần nhất.", "en": "Auto follows the most recently used device."}},
     {"id": "acc_vibration", "name": {"vi": "Cường độ rung tay cầm", "en": "Controller vibration"}, "type": "range", "min": 0.0, "max": 1.0, "step": 0.1, "default": 1.0, "note": {"vi": "0 là tắt.", "en": "0 turns it off."}},
     {"id": "acc_remap", "uses_existing": "combat_tuning.accessibility", "name": {"vi": "Đổi phím", "en": "Remap controls"}, "type": "action", "note": {"vi": "Mọi hành động, cả bàn phím/chuột lẫn tay cầm; 2 phím mỗi hành động trên bàn phím; báo trùng phím; nút khôi phục mặc định.", "en": "Every action, keyboard/mouse and pad; 2 keys per action on keyboard; conflict warning; reset to defaults."}}
-  ]
+  ],
+  "scheme_0_3": {
+    "_note": "ĐỀ XUẤT sơ đồ phím Demo 0.3 (game-designer, 2026-11-05; DEMO_0_3_DESIGN §1). CHƯA áp dụng vào actions[] vì prototype 0.2 và test của nó ghim phím cũ (pinned_by). Agent code áp cùng lúc với mã 0.3: actions_replace thay nguyên object cùng id, actions_add thêm mới, pad_presets_replace thay preset cùng id, accessibility_add thêm tùy chọn. Validator kiểm sơ đồ đã gộp: không trùng phím, không Ctrl/Alt/Meta.",
+    "pinned_by": ["prototype/web/test/controls.test.mjs (Space dodge, conflicts)", "prototype/web/test/smoke.mjs (Space dodge, remap reset)"],
+    "actions_replace": [
+      {
+        "id": "dodge", "context": "gameplay",
+        "name": {"vi": "Né", "en": "Dodge"},
+        "kbm": {"inputs": ["KeyC"], "type": "press"},
+        "pad": {"inputs": [{"index": 1, "id": "face_right"}], "type": "press"},
+        "note": {"vi": "Mặc định C (ngón cái với tới từ phím cách, không đụng tổ hợp trình duyệt). Kích hoạt lúc NHẤN để giữ cửa sổ né hoàn hảo 0,10 s. Preset khác: Shift kiểu Souls, chuột cạnh, V.", "en": "Default C (the thumb reaches it from Space; no browser shortcut). Fires on PRESS to keep the 0.10 s perfect-dodge window. Other presets: Souls-style Shift, mouse side button, V."}
+      },
+      {
+        "id": "jump", "context": "gameplay",
+        "name": {"vi": "Nhảy", "en": "Jump"},
+        "kbm": {"inputs": ["Space"], "type": "press"},
+        "pad": {"inputs": [{"index": 0, "id": "face_bottom"}], "type": "press"},
+        "accessibility_option": "acc_jump_full_height_on_tap",
+        "note": {"vi": "Giữ lâu nhảy cao hơn (thả sớm thì thấp). Có đệm nhấn 0,12 s và 0,1 s nhảy muộn sau mép.", "en": "Hold for a higher jump (release early for a lower one). 0.12 s input buffer and 0.1 s late-jump grace past ledges."}
+      },
+      {
+        "id": "interact", "context": "gameplay",
+        "name": {"vi": "Tương tác / Đòn kết / Cạy / Phản nhịp", "en": "Interact / Finisher / Pry / Counter-beat"},
+        "kbm": {"inputs": ["KeyE"], "type": "press"},
+        "pad": {"inputs": [{"index": 5, "id": "bumper_right"}], "type": "press"},
+        "note": {"vi": "Tay cầm chuyển từ A/✕ (nay là Nhảy) sang RB/R1: bấm theo nhịp khi cạy vẫn thoải mái, ngón cái giữ cần camera. Ưu tiên: Phản nhịp > Đòn kết > Cạy > Ghì nanh > Tương tác > Gọi tên.", "en": "Pad moves from A/✕ (now Jump) to RB/R1: timed pry presses stay comfortable and the thumb keeps the camera stick. Priority: Counter-beat > Finisher > Pry > Pin the Tusk > Interact > Call by name."}
+      },
+      {
+        "id": "pry_beat", "context": "gameplay", "shares_input_with": "interact",
+        "name": {"vi": "Cạy (bấm theo nhịp trống)", "en": "Pry (press on the drum beat)"},
+        "kbm": {"inputs": ["KeyE"], "type": "press"},
+        "pad": {"inputs": [{"index": 5, "id": "bumper_right"}], "type": "press"},
+        "accessibility_option": "acc_hold_instead_of_tap",
+        "note": {"vi": "Theo nút Tương tác.", "en": "Follows the Interact button."}
+      },
+      {
+        "id": "call_name", "context": "gameplay", "shares_input_with": "interact",
+        "name": {"vi": "Gọi tên (giữ)", "en": "Call by name (hold)"},
+        "kbm": {"inputs": ["KeyE"], "type": "toggle_option"},
+        "pad": {"inputs": [{"index": 5, "id": "bumper_right"}], "type": "toggle_option"},
+        "hold_s": 2.0,
+        "accessibility_option": "acc_call_name_mode",
+        "note": {"vi": "Theo nút Tương tác.", "en": "Follows the Interact button."}
+      },
+      {
+        "id": "codex", "context": "gameplay",
+        "name": {"vi": "Codex", "en": "Codex"},
+        "kbm": {"inputs": [], "type": "press"},
+        "pad": {"inputs": [], "type": "press"},
+        "opens_tab": "tab_codex",
+        "note": {"vi": "Thành thẻ Codex trong Hành trang (B). C nhường cho Né.", "en": "Now the Codex tab of the Pack (B). C goes to Dodge."}
+      },
+      {
+        "id": "journal", "context": "gameplay",
+        "name": {"vi": "Sổ tay", "en": "Journal"},
+        "kbm": {"inputs": ["KeyJ"], "type": "press"},
+        "pad": {"inputs": [], "type": "press"},
+        "opens_tab": "tab_journal",
+        "note": {"vi": "Phím tắt mở thẳng thẻ Sổ tay của Hành trang.", "en": "Shortcut straight to the Journal tab of the Pack."}
+      },
+      {
+        "id": "skills", "context": "gameplay",
+        "name": {"vi": "Kỹ năng", "en": "Skills"},
+        "kbm": {"inputs": ["KeyK"], "type": "press"},
+        "pad": {"inputs": [], "type": "press"},
+        "opens_tab": "tab_skills",
+        "note": {"vi": "Phím tắt mở thẳng thẻ Kỹ năng (Thế võ và Nghề nhà).", "en": "Shortcut straight to the Skills tab (Weapon Arts and Family Crafts)."}
+      },
+      {
+        "id": "map", "context": "gameplay",
+        "name": {"vi": "Bản đồ", "en": "Map"},
+        "kbm": {"inputs": ["KeyM"], "type": "press"},
+        "pad": {"inputs": [{"index": 8, "id": "center_left"}], "type": "hold"},
+        "hold_s": 0.4,
+        "shares_input_with_hold": "inventory",
+        "opens_tab": "tab_map",
+        "note": {"vi": "Tay cầm: giữ View/Create 0,4 s mở thẳng Bản đồ; bấm nhanh là Hành trang.", "en": "Pad: hold View/Create 0.4 s to open the Map directly; a quick press opens the Pack."}
+      }
+    ],
+    "actions_add": [
+      {
+        "id": "inventory", "context": "gameplay",
+        "name": {"vi": "Hành trang", "en": "Pack"},
+        "kbm": {"inputs": ["KeyB"], "type": "press"},
+        "pad": {"inputs": [{"index": 8, "id": "center_left"}], "type": "press"},
+        "opens_tab": "tab_equipment",
+        "pauses_game": true,
+        "note": {"vi": "Mở Hành trang ở thẻ Trang bị (thẻ: Trang bị, Túi đồ, Kỹ năng, Bản đồ, Sổ tay, Codex). Đổi thẻ bằng Q/E hoặc LB/RB. Bấm lại B để đóng.", "en": "Opens the Pack on the Equipment tab (tabs: Equipment, Items, Skills, Map, Journal, Codex). Switch tabs with Q/E or LB/RB. Press B again to close."}
+      },
+      {
+        "id": "skill_1", "context": "gameplay",
+        "name": {"vi": "Thế võ 1", "en": "Weapon Art 1"},
+        "kbm": {"inputs": ["Digit3"], "type": "press"},
+        "pad": {"inputs": [{"index": 2, "id": "face_left"}], "type": "press", "modifier": {"index": 6, "id": "trigger_left"}, "follows": "attack_light"},
+        "accessibility_option": "acc_skill_modifier_mode",
+        "note": {"vi": "Bàn phím: 3 (hàng số = đồ mang theo: 1–2 vũ khí, 3–4 Thế võ). Tay cầm: giữ LT/L2 rồi bấm nút đòn nhẹ. Có tùy chọn bấm LT một lần.", "en": "Keyboard: 3 (number row = loadout: 1–2 weapons, 3–4 Weapon Arts). Pad: hold LT/L2 and press the light-attack button. A tap-LT option exists."}
+      },
+      {
+        "id": "skill_2", "context": "gameplay",
+        "name": {"vi": "Thế võ 2", "en": "Weapon Art 2"},
+        "kbm": {"inputs": ["Digit4"], "type": "press"},
+        "pad": {"inputs": [{"index": 3, "id": "face_top"}], "type": "press", "modifier": {"index": 6, "id": "trigger_left"}, "follows": "attack_heavy"},
+        "accessibility_option": "acc_skill_modifier_mode",
+        "note": {"vi": "Bàn phím: 4. Tay cầm: giữ LT/L2 rồi bấm nút đòn nặng.", "en": "Keyboard: 4. Pad: hold LT/L2 and press the heavy-attack button."}
+      }
+    ],
+    "pad_presets_replace": [
+      {
+        "id": "preset_shoulder",
+        "name": {"vi": "Đòn trên vai (kiểu Souls)", "en": "Shoulder attacks (Souls-style)"},
+        "overrides": {
+          "attack_light": [{"index": 5, "id": "bumper_right"}],
+          "attack_heavy": [{"index": 7, "id": "trigger_right"}],
+          "drum_burst": [{"index": 3, "id": "face_top"}],
+          "interact": [{"index": 2, "id": "face_left"}],
+          "heal": [{"index": 12, "id": "dpad_up"}]
+        },
+        "note": {"vi": "Đòn trên RB/RT. Hồi trống sang Y/△, Tương tác sang X/□. Thế võ theo nút đòn: LT+RB, LT+RT.", "en": "Attacks on RB/RT. Drum Burst moves to Y/△, Interact to X/□. Weapon Arts follow the attack buttons: LT+RB, LT+RT."}
+      }
+    ],
+    "kbm_presets": [
+      {
+        "id": "kbm_default", "default": true,
+        "name": {"vi": "Mặc định: né C", "en": "Default: dodge on C"},
+        "overrides": {},
+        "note": {"vi": "Space nhảy, C né, Shift chạy nhanh.", "en": "Space jumps, C dodges, Shift sprints."}
+      },
+      {
+        "id": "kbm_souls_shift",
+        "name": {"vi": "Kiểu Souls: Shift né, giữ để chạy", "en": "Souls-style: Shift dodges, hold to sprint"},
+        "overrides": {"dodge": ["ShiftLeft"], "sprint": []},
+        "set_options": {"acc_sprint_on_dodge_hold": true},
+        "note": {"vi": "Né vẫn kích hoạt lúc nhấn; giữ Shift tiếp sau cú né thì chạy nhanh. Giá: mỗi lần bắt đầu chạy nhanh đều có một bước né.", "en": "Dodge still fires on press; keep holding Shift after the dodge to sprint. Cost: every sprint starts with a dodge step."}
+      },
+      {
+        "id": "kbm_mouse_side",
+        "name": {"vi": "Né bằng nút chuột cạnh", "en": "Dodge on mouse side button"},
+        "overrides": {"dodge": ["Mouse3", "KeyC"]},
+        "requires": "prevent_default_mouse_back_forward",
+        "note": {"vi": "Nút cạnh sau (Back). Bản web phải chặn điều hướng Quay lại của trình duyệt; chưa kiểm trên mọi trình duyệt nên không làm mặc định.", "en": "Rear side button (Back). The web build must block the browser's Back navigation; not checked on every browser, so not the default."}
+      },
+      {
+        "id": "kbm_v",
+        "name": {"vi": "Né V", "en": "Dodge on V"},
+        "overrides": {"dodge": ["KeyV"]},
+        "note": {"vi": "Cho tay to hoặc bàn phím có phím cách ngắn.", "en": "For large hands or keyboards with a short space bar."}
+      }
+    ],
+    "key_names_add": {
+      "Mouse3": {"vi": "Chuột cạnh sau", "en": "Mouse back button"},
+      "Mouse4": {"vi": "Chuột cạnh trước", "en": "Mouse forward button"}
+    },
+    "browser_unsafe_kbm": ["ControlLeft", "ControlRight", "AltLeft", "AltRight", "MetaLeft", "MetaRight", "F5", "F11", "F12"],
+    "accessibility_add": [
+      {"id": "acc_jump_full_height_on_tap", "name": {"vi": "Bấm nhảy luôn nhảy cao nhất", "en": "Jump tap always gives full height"}, "type": "bool", "default": false, "note": {"vi": "Bỏ việc giữ nút để nhảy cao.", "en": "Removes the need to hold for a full jump."}},
+      {"id": "acc_skill_modifier_mode", "name": {"vi": "LT cho Thế võ: giữ hoặc bấm một lần", "en": "LT for Weapon Arts: hold or tap"}, "type": "enum", "values": ["hold", "toggle"], "default": "hold", "note": {"vi": "Bấm một lần: chế độ Thế võ mở 2 giây hoặc tới khi dùng một Thế võ.", "en": "Tap: Weapon Art mode stays open for 2 seconds or until an Art is used."}},
+      {"id": "acc_minimap_rotation", "name": {"vi": "Minimap xoay theo", "en": "Minimap rotates with"}, "type": "enum", "values": ["camera_up", "north_up"], "default": "camera_up", "note": {"vi": "Theo camera: phía trên minimap là hướng camera nhìn. Hướng bắc: giống bản đồ lớn.", "en": "Camera: the top of the minimap is where the camera looks. North: same as the full map."}},
+      {"id": "acc_slowmo", "name": {"vi": "Hiệu ứng chậm thời gian", "en": "Slow-motion effects"}, "type": "bool", "default": true, "note": {"vi": "Tắt: không chậm thời gian khi Đỡ nhịp hoàn hảo, Hồi trống, Phản nhịp (đề xuất từ FUN_PASS_0_2).", "en": "Off: no slow motion on perfect parry, Drum Burst or Counter-beat (proposed in FUN_PASS_0_2)."}},
+      {"id": "acc_burst_camera_simple", "name": {"vi": "Camera Hồi trống đơn giản", "en": "Simple Drum Burst camera"}, "type": "bool", "default": false, "note": {"vi": "Giữ camera sau lưng, không xoay quanh.", "en": "Keeps the camera behind you, no orbit."}},
+      {"id": "acc_hud_scale", "name": {"vi": "Cỡ HUD và minimap", "en": "HUD and minimap size"}, "type": "range", "min": 0.75, "max": 1.5, "step": 0.05, "default": 1.0, "note": {"vi": "Áp cho thanh máu, Nhịp trống, minimap.", "en": "Applies to health, Drum Rhythm and the minimap."}}
+    ]
+  }
 }

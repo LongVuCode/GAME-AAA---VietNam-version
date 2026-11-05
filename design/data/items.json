@@ -8,7 +8,10 @@
         "vi": "Thường",
         "en": "Common"
       },
-      "order": 1
+      "order": 1,
+      "color_hex": "#B8B2A3",
+      "color_token": "rarity_common",
+      "corner_notches": 0
     },
     {
       "id": "fine",
@@ -16,7 +19,10 @@
         "vi": "Tốt",
         "en": "Fine"
       },
-      "order": 2
+      "order": 2,
+      "color_hex": "#7FA35B",
+      "color_token": "rarity_fine",
+      "corner_notches": 1
     },
     {
       "id": "precious",
@@ -24,7 +30,10 @@
         "vi": "Quý",
         "en": "Precious"
       },
-      "order": 3
+      "order": 3,
+      "color_hex": "#5C86C4",
+      "color_token": "rarity_precious",
+      "corner_notches": 2
     },
     {
       "id": "rare",
@@ -32,7 +41,10 @@
         "vi": "Hiếm",
         "en": "Rare"
       },
-      "order": 4
+      "order": 4,
+      "color_hex": "#9A6FC0",
+      "color_token": "rarity_rare",
+      "corner_notches": 3
     },
     {
       "id": "legendary",
@@ -40,7 +52,10 @@
         "vi": "Huyền thoại",
         "en": "Legendary"
       },
-      "order": 5
+      "order": 5,
+      "color_hex": "#E0B44C",
+      "color_token": "rarity_legendary",
+      "corner_notches": 4
     },
     {
       "id": "divine",
@@ -49,7 +64,10 @@
         "en": "Divine"
       },
       "order": 6,
-      "allowed_in_demo": false
+      "allowed_in_demo": false,
+      "color_hex": "#DCE8E2",
+      "color_token": "rarity_divine",
+      "corner_notches": 5
     }
   ],
   "items": [
@@ -194,6 +212,130 @@
           "recipe": "rcp_nanh_dam_up"
         }
       ]
+    },
+    {
+      "id": "mat_thiec_song",
+      "category": "material",
+      "name": {
+        "vi": "Thiếc sông",
+        "en": "River Tin"
+      },
+      "description": {
+        "vi": "Cục thiếc xám lẫn trong bùn đầm. Thợ đúc làng pha vào đồng để lưỡi cứng hơn.",
+        "en": "A grey lump of tin from the marsh mud. The village caster alloys it into bronze for a harder edge."
+      },
+      "label": "SÁNG TẠO",
+      "rarity": "fine",
+      "source": {
+        "kind": "gather",
+        "zones": [
+          "z_dam_nong",
+          "z_lo_bo_hoang"
+        ],
+        "nodes": 3,
+        "also_dropped_by": [
+          "en_cua_cang_bun",
+          "en_u_bun"
+        ]
+      },
+      "use_0_3": "weapon_and_bronze_gear_upgrade"
+    },
+    {
+      "id": "mat_soi_gai",
+      "category": "material",
+      "name": {
+        "vi": "Sợi gai",
+        "en": "Ramie Fibre"
+      },
+      "description": {
+        "vi": "Bó sợi gai người làng phơi bên bãi lau, gió cuốn đi lẫn vào bụi. Dùng dệt vá đồ mặc.",
+        "en": "A bundle of ramie fibre villagers left drying by the reed beds, blown into the thickets. Used to weave and patch clothing."
+      },
+      "label": "SÁNG TẠO",
+      "rarity": "common",
+      "source": {
+        "kind": "gather",
+        "zones": [
+          "z_bai_lau"
+        ],
+        "nodes": 4,
+        "also_dropped_by": [
+          "en_bo_ngua_lau"
+        ]
+      },
+      "use_0_3": "cloth_gear_upgrade"
+    },
+    {
+      "id": "it_cu_sung",
+      "category": "consumable",
+      "name": {
+        "vi": "Củ súng luộc",
+        "en": "Boiled Water-lily Root"
+      },
+      "description": {
+        "vi": "Củ súng đào ở mép đầm, luộc chín. Ăn vào thấy vững người hơn một lúc.",
+        "en": "Water-lily root dug from the marsh edge and boiled. Eating it steadies you for a while."
+      },
+      "label": "SÁNG TẠO",
+      "rarity": "common",
+      "max_stack": 5,
+      "source": {
+        "kind": "gather",
+        "zones": [
+          "z_ben_say",
+          "z_dam_nong"
+        ],
+        "nodes": 3,
+        "also_dropped_by": [
+          "en_cua_cang_bun"
+        ]
+      },
+      "effect": {
+        "type": "the_regen_mult",
+        "value": 1.6,
+        "duration_s": 60.0
+      },
+      "effect_text": {
+        "vi": "Thế hồi nhanh hơn 60% trong 60 giây.",
+        "en": "Stance recovers 60% faster for 60 seconds."
+      },
+      "use_time_s": 0.8
+    },
+    {
+      "id": "it_la_ngai",
+      "category": "consumable",
+      "name": {
+        "vi": "Lá ngải giã",
+        "en": "Crushed Mugwort"
+      },
+      "description": {
+        "vi": "Nắm lá ngải giã nhỏ, xoa vào chân cho đỡ mỏi khi lội bùn.",
+        "en": "A handful of crushed mugwort rubbed on the legs to ease wading through mud."
+      },
+      "label": "SÁNG TẠO",
+      "rarity": "common",
+      "max_stack": 5,
+      "source": {
+        "kind": "gather",
+        "zones": [
+          "z_bai_lau",
+          "z_lo_bo_hoang"
+        ],
+        "nodes": 2,
+        "also_dropped_by": [
+          "en_u_bun"
+        ]
+      },
+      "effect": {
+        "type": "ignore_mud_slow",
+        "value": 1.0,
+        "duration_s": 30.0
+      },
+      "effect_text": {
+        "vi": "Không bị bùn và vệt bùn làm chậm trong 30 giây.",
+        "en": "Mud and mud trails do not slow you for 30 seconds."
+      },
+      "use_time_s": 0.8
     }
   ],
   "recipes": [
@@ -260,5 +402,568 @@
       "npc": "npc_tho_duc_lang",
       "era_note": "Lò ở hub; chế tác Nanh Đầm diễn ra trong đời Cói, trước bàn giao."
     }
-  ]
+  ],
+  "rarity_rules_0_3": {
+    "_note": "DEMO_0_3 §3.4. Màu viền ô theo độ hiếm, không trùng đỏ đồng #C64E29 (độc quyền báo hiệu đòn không Đỡ được, ART_DIRECTION P4). Validator kiểm khoảng cách sắc độ. Kèm khía góc ô (corner_notches) để không chỉ dựa vào màu.",
+    "reserved_hex": [
+      "#C64E29"
+    ],
+    "min_hue_distance_deg": 20,
+    "background_hex": "#1D1B19"
+  },
+  "gear_0_3": {
+    "_note": "DEMO_0_3 §3. Trang bị mặc/đeo cho màn Hành trang. Khối riêng vì ArpgCore chỉ hiểu category consumable/material/bao_khi; lớp game đọc khối này. Không đồ nào từ khoen hay phần cơ thể thú. Mọi con số là giả định, chờ playtest.",
+    "slots": [
+      {
+        "id": "weapon_1",
+        "name": {
+          "vi": "Vũ khí 1",
+          "en": "Weapon 1"
+        },
+        "accepts": "weapon",
+        "unlock": "start"
+      },
+      {
+        "id": "weapon_2",
+        "name": {
+          "vi": "Vũ khí 2",
+          "en": "Weapon 2"
+        },
+        "accepts": "weapon",
+        "unlock": "character_weapon_slots_2"
+      },
+      {
+        "id": "head",
+        "name": {
+          "vi": "Đầu",
+          "en": "Head"
+        },
+        "accepts": "armor",
+        "unlock": "start"
+      },
+      {
+        "id": "body",
+        "name": {
+          "vi": "Thân",
+          "en": "Body"
+        },
+        "accepts": "armor",
+        "unlock": "start"
+      },
+      {
+        "id": "hands",
+        "name": {
+          "vi": "Tay",
+          "en": "Hands"
+        },
+        "accepts": "armor",
+        "unlock": "start"
+      },
+      {
+        "id": "legs",
+        "name": {
+          "vi": "Chân",
+          "en": "Legs"
+        },
+        "accepts": "armor",
+        "unlock": "start"
+      },
+      {
+        "id": "trinket_1",
+        "name": {
+          "vi": "Vật đeo 1",
+          "en": "Trinket 1"
+        },
+        "accepts": "trinket",
+        "unlock": "start"
+      },
+      {
+        "id": "trinket_2",
+        "name": {
+          "vi": "Vật đeo 2",
+          "en": "Trinket 2"
+        },
+        "accepts": "trinket",
+        "unlock": "flag_villager_saved"
+      },
+      {
+        "id": "bao_khi",
+        "name": {
+          "vi": "Bảo khí",
+          "en": "Heirloom"
+        },
+        "accepts": "bao_khi",
+        "unlock": "start"
+      }
+    ],
+    "stat_defs": [
+      {
+        "id": "armor",
+        "name": {
+          "vi": "Giáp",
+          "en": "Armor"
+        },
+        "format": "int",
+        "higher_is_better": true
+      },
+      {
+        "id": "hp_max_add",
+        "name": {
+          "vi": "Sức tối đa",
+          "en": "Max Health"
+        },
+        "format": "int",
+        "higher_is_better": true
+      },
+      {
+        "id": "the_max_add",
+        "name": {
+          "vi": "Thế tối đa",
+          "en": "Max Stance"
+        },
+        "format": "int",
+        "higher_is_better": true
+      },
+      {
+        "id": "guard_the_cost_mult",
+        "name": {
+          "vi": "Hao Thế khi đỡ",
+          "en": "Guard Stance cost"
+        },
+        "format": "percent_delta",
+        "higher_is_better": false
+      },
+      {
+        "id": "mud_slow_resist",
+        "name": {
+          "vi": "Chống lún bùn",
+          "en": "Mud resistance"
+        },
+        "format": "percent",
+        "higher_is_better": true
+      },
+      {
+        "id": "drum_gain_mult",
+        "name": {
+          "vi": "Nhịp nhận thêm",
+          "en": "Rhythm gain"
+        },
+        "format": "percent_delta",
+        "higher_is_better": true
+      },
+      {
+        "id": "the_regen_delay_mult",
+        "name": {
+          "vi": "Chờ hồi Thế",
+          "en": "Stance recovery delay"
+        },
+        "format": "percent_delta",
+        "higher_is_better": false
+      },
+      {
+        "id": "skill_cooldown_mult",
+        "name": {
+          "vi": "Hồi Thế võ",
+          "en": "Weapon Art cooldown"
+        },
+        "format": "percent_delta",
+        "higher_is_better": false
+      },
+      {
+        "id": "weapon_damage_mult",
+        "name": {
+          "vi": "Sát thương",
+          "en": "Damage"
+        },
+        "format": "percent_delta",
+        "higher_is_better": true
+      },
+      {
+        "id": "weapon_the_damage_mult",
+        "name": {
+          "vi": "Sát thương Thế",
+          "en": "Stance damage"
+        },
+        "format": "percent_delta",
+        "higher_is_better": true
+      }
+    ],
+    "armor_formula": {
+      "kind": "ratio",
+      "k": 150,
+      "_note": "giảm sát thương nhận = armor / (armor + k); 36 giáp (đủ bộ +0) ≈ 19%. Nhân sau hệ số độ khó."
+    },
+    "pieces": [
+      {
+        "id": "ar_khan_gai",
+        "kind": "armor",
+        "slot": "head",
+        "set": "set_do_ben_lau",
+        "name": {
+          "vi": "Khăn gai chít đầu",
+          "en": "Ramie Head Wrap"
+        },
+        "description": {
+          "vi": "Khăn vải gai quấn chặt, giữ tóc khỏi mắt khi chống sào giữa gió.",
+          "en": "A tightly wound ramie wrap that keeps hair out of the eyes when poling against the wind."
+        },
+        "label": "SÁNG TẠO",
+        "rarity": "fine",
+        "era": "era_legendary_hong_bang",
+        "basis": {
+          "label": "SÁNG TẠO",
+          "note": "Vải gai, vỏ cây, nhuộm chàm theo đề xuất ART_DIRECTION §2 (chưa có nguồn hiện vật dẫn ID). historian-verifier duyệt trước khi nâng nhãn."
+        },
+        "upgrade_category": "cloth",
+        "stats": {
+          "armor": 6,
+          "the_max_add": 5
+        },
+        "source": {
+          "kind": "chest",
+          "map_ref": "chest_dam_nong"
+        }
+      },
+      {
+        "id": "ar_ao_gai_cham",
+        "kind": "armor",
+        "slot": "body",
+        "set": "set_do_ben_lau",
+        "name": {
+          "vi": "Áo gai nhuộm chàm",
+          "en": "Indigo Ramie Tunic"
+        },
+        "description": {
+          "vi": "Áo cộc vải gai nhuộm chàm của người lái đò, vai vá hai lớp chỗ tì sào.",
+          "en": "The ferrywoman's short indigo ramie tunic, double-patched at the shoulder where the pole rests."
+        },
+        "label": "SÁNG TẠO",
+        "rarity": "common",
+        "era": "era_legendary_hong_bang",
+        "basis": {
+          "label": "SÁNG TẠO",
+          "note": "Vải gai, vỏ cây, nhuộm chàm theo đề xuất ART_DIRECTION §2 (chưa có nguồn hiện vật dẫn ID). historian-verifier duyệt trước khi nâng nhãn."
+        },
+        "upgrade_category": "cloth",
+        "stats": {
+          "armor": 14,
+          "hp_max_add": 20
+        },
+        "source": {
+          "kind": "starting"
+        }
+      },
+      {
+        "id": "ar_vong_tay_ong",
+        "kind": "armor",
+        "slot": "hands",
+        "set": "set_do_ben_lau",
+        "name": {
+          "vi": "Vòng tay ống đồng",
+          "en": "Bronze Tube Bracers"
+        },
+        "description": {
+          "vi": "Hai ống đồng mỏng ôm cẳng tay, đỡ cán giáo trượt qua mà không rát da.",
+          "en": "Two thin bronze tubes around the forearms that let a spear shaft slide past without scraping the skin."
+        },
+        "label": "SÁNG TẠO",
+        "rarity": "fine",
+        "era": "era_legendary_hong_bang",
+        "basis": {
+          "label": "SÁNG TẠO",
+          "note": "Dáng gợi từ đồ trang sức đồng Đông Sơn theo hiểu biết chung; chưa tra hiện vật cụ thể (nguồn ứng viên: ARC_DS). Thời truyền thuyết không đồng nhất với một văn hóa khảo cổ (SB-08). Không hoa văn trên khoen; hoa văn hình học chỉ trên đồ của người (ART_DIRECTION P1).",
+          "candidate_sources": [
+            "ARC_DS"
+          ]
+        },
+        "upgrade_category": "bronze",
+        "stats": {
+          "armor": 8,
+          "guard_the_cost_mult": 0.9
+        },
+        "source": {
+          "kind": "environment_secret",
+          "map_ref": "es_go_kho"
+        }
+      },
+      {
+        "id": "ar_quan_chan_vo_cay",
+        "kind": "armor",
+        "slot": "legs",
+        "set": "set_do_ben_lau",
+        "name": {
+          "vi": "Quấn chân vải vỏ cây",
+          "en": "Bark-cloth Leg Wraps"
+        },
+        "description": {
+          "vi": "Vải đập từ vỏ cây quấn từ mắt cá lên gối, bùn bám không thấm.",
+          "en": "Beaten bark cloth wound from ankle to knee; mud clings but does not soak through."
+        },
+        "label": "SÁNG TẠO",
+        "rarity": "common",
+        "era": "era_legendary_hong_bang",
+        "basis": {
+          "label": "SÁNG TẠO",
+          "note": "Vải gai, vỏ cây, nhuộm chàm theo đề xuất ART_DIRECTION §2 (chưa có nguồn hiện vật dẫn ID). historian-verifier duyệt trước khi nâng nhãn."
+        },
+        "upgrade_category": "cloth",
+        "stats": {
+          "armor": 8,
+          "mud_slow_resist": 0.3
+        },
+        "source": {
+          "kind": "starting"
+        }
+      },
+      {
+        "id": "tr_chuong_dong_nho",
+        "kind": "trinket",
+        "slot": "trinket",
+        "name": {
+          "vi": "Chuông đồng nhỏ",
+          "en": "Small Bronze Bell"
+        },
+        "description": {
+          "vi": "Quả chuông nhỏ buộc ở thắt lưng. Tiếng leng keng theo bước chân giúp giữ nhịp.",
+          "en": "A small bell tied at the waist. Its jingle with every step helps keep the rhythm."
+        },
+        "label": "SÁNG TẠO",
+        "rarity": "precious",
+        "era": "era_legendary_hong_bang",
+        "basis": {
+          "label": "SÁNG TẠO",
+          "note": "Gợi từ chuông đồng văn hóa Đông Sơn. Trích đoạn tìm kiếm (lsvn.vn, 2026) nói một bộ chuông đồng Đông Sơn được công nhận Bảo vật quốc gia đợt 14: chưa đối chiếu bản gốc quyết định công nhận.",
+          "candidate_sources": [
+            "ARC_DS"
+          ]
+        },
+        "upgrade_category": "bronze",
+        "stats": {
+          "drum_gain_mult": 1.1
+        },
+        "source": {
+          "kind": "chest",
+          "map_ref": "chest_bai_lau"
+        }
+      },
+      {
+        "id": "tr_chuoi_hat_dat",
+        "kind": "trinket",
+        "slot": "trinket",
+        "name": {
+          "vi": "Chuỗi hạt đất nung",
+          "en": "Fired-clay Bead String"
+        },
+        "description": {
+          "vi": "Chuỗi hạt đất nung ai đó buộc vào cái đó cá bỏ quên. Lần hạt thấy thở đều hơn.",
+          "en": "A string of fired-clay beads someone tied to a forgotten fish trap. Telling the beads evens the breath."
+        },
+        "label": "SÁNG TẠO",
+        "rarity": "fine",
+        "era": "era_legendary_hong_bang",
+        "basis": {
+          "label": "SÁNG TẠO",
+          "note": "Vải gai, vỏ cây, nhuộm chàm theo đề xuất ART_DIRECTION §2 (chưa có nguồn hiện vật dẫn ID). historian-verifier duyệt trước khi nâng nhãn."
+        },
+        "upgrade_category": "bronze",
+        "stats": {
+          "the_regen_delay_mult": 0.8
+        },
+        "source": {
+          "kind": "environment_secret",
+          "map_ref": "es_do_ca"
+        }
+      }
+    ],
+    "sets": [
+      {
+        "id": "set_do_ben_lau",
+        "name": {
+          "vi": "Đồ đò bến Lau",
+          "en": "Lau Ferry Garb"
+        },
+        "label": "SÁNG TẠO",
+        "pieces": [
+          "ar_khan_gai",
+          "ar_ao_gai_cham",
+          "ar_vong_tay_ong",
+          "ar_quan_chan_vo_cay"
+        ],
+        "bonuses": [
+          {
+            "count": 2,
+            "effect": {
+              "type": "stat_add",
+              "stat": "the_max_add",
+              "value": 10
+            },
+            "effect_text": {
+              "vi": "+10 Thế tối đa.",
+              "en": "+10 Max Stance."
+            }
+          },
+          {
+            "count": 4,
+            "name": {
+              "vi": "Nhịp chèo",
+              "en": "Oar Rhythm"
+            },
+            "effect": {
+              "type": "skill_cooldown_refund_on",
+              "triggers": [
+                "perfect_parry",
+                "perfect_dodge"
+              ],
+              "value_s": 1.5
+            },
+            "effect_text": {
+              "vi": "Đỡ nhịp hoàn hảo hoặc né hoàn hảo rút ngắn 1,5 giây hồi của cả hai Thế võ.",
+              "en": "A perfect parry or perfect dodge cuts 1.5 seconds off both Weapon Art cooldowns."
+            }
+          }
+        ]
+      }
+    ],
+    "upgrades": {
+      "_note": "Nâng +N ở Lò đúc làng (st_lo_lang). Mỗi bậc nhân chỉ số gốc. Vũ khí dùng thiếc; đồ vải dùng sợi gai; đồ đồng dùng thiếc + mây.",
+      "station": "st_lo_lang",
+      "max_plus": 3,
+      "armor_stat_mult_per_plus": 0.15,
+      "trinket_effect_mult_per_plus": 0.25,
+      "weapon_damage_mult_per_plus": 0.08,
+      "weapon_the_damage_mult_per_plus": 0.06,
+      "costs": {
+        "weapon": [
+          {
+            "to_plus": 1,
+            "inputs": [
+              {
+                "item": "mat_thiec_song",
+                "count": 2
+              },
+              {
+                "item": "mat_day_may",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "to_plus": 2,
+            "inputs": [
+              {
+                "item": "mat_thiec_song",
+                "count": 4
+              },
+              {
+                "item": "mat_day_may",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "to_plus": 3,
+            "inputs": [
+              {
+                "item": "mat_thiec_song",
+                "count": 6
+              },
+              {
+                "item": "mat_day_may",
+                "count": 2
+              }
+            ]
+          }
+        ],
+        "cloth": [
+          {
+            "to_plus": 1,
+            "inputs": [
+              {
+                "item": "mat_soi_gai",
+                "count": 2
+              }
+            ]
+          },
+          {
+            "to_plus": 2,
+            "inputs": [
+              {
+                "item": "mat_soi_gai",
+                "count": 3
+              },
+              {
+                "item": "mat_day_may",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "to_plus": 3,
+            "inputs": [
+              {
+                "item": "mat_soi_gai",
+                "count": 5
+              },
+              {
+                "item": "mat_day_may",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "bronze": [
+          {
+            "to_plus": 1,
+            "inputs": [
+              {
+                "item": "mat_thiec_song",
+                "count": 1
+              },
+              {
+                "item": "mat_day_may",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "to_plus": 2,
+            "inputs": [
+              {
+                "item": "mat_thiec_song",
+                "count": 2
+              },
+              {
+                "item": "mat_day_may",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "to_plus": 3,
+            "inputs": [
+              {
+                "item": "mat_thiec_song",
+                "count": 3
+              },
+              {
+                "item": "mat_day_may",
+                "count": 2
+              }
+            ]
+          }
+        ]
+      },
+      "craft_time_s": 2.0
+    },
+    "compare_ui": {
+      "show_on": "hover_or_focus",
+      "delta_better_token": "cmp_better",
+      "delta_worse_token": "cmp_worse",
+      "arrows": true,
+      "color_better_hex": "#8FC79A",
+      "color_worse_hex": "#B8B2A3",
+      "worse_uses_shape_not_red": true,
+      "_note": "Tăng: mũi tên lên + xanh ngọc; giảm: mũi tên xuống + ngà xám gạch dưới (không dùng đỏ đồng)."
+    }
+  }
 }

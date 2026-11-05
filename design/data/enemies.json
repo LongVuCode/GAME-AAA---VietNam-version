@@ -111,7 +111,18 @@
           "player_knockdown": true
         }
       ],
-      "drops": [],
+      "drops": [
+        {
+          "item": "mat_thiec_song",
+          "count": 1,
+          "chance": 0.35
+        },
+        {
+          "item": "it_cu_sung",
+          "count": 1,
+          "chance": 0.15
+        }
+      ],
       "behavior": {
         "_note": "FUN_PASS_0_2 §3.4. Thay PROTO.enemyMoveSpeedMps/enemyRadiusM/aggroRadiusM của prototype. Giả định.",
         "move_speed_mps": 2.4,
@@ -178,7 +189,8 @@
           "label": "SÁNG TẠO",
           "_purpose": "Chống đứng lì sau lưng: đánh hông vẫn đúng nhưng không được đứng yên một chỗ"
         }
-      ]
+      ],
+      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1)."
     },
     {
       "id": "en_bo_ngua_lau",
@@ -288,7 +300,13 @@
           "player_knockback_m": 0.3
         }
       ],
-      "drops": [],
+      "drops": [
+        {
+          "item": "mat_soi_gai",
+          "count": 1,
+          "chance": 0.4
+        }
+      ],
       "behavior": {
         "_note": "FUN_PASS_0_2 §3.4. Đánh rồi rút; đi vòng ra cạnh; phục từ lau có âm báo.",
         "move_speed_mps": 3.6,
@@ -355,7 +373,8 @@
           "label": "SÁNG TẠO",
           "_purpose": "Phạt đuổi theo mù quáng; né tới trước để bám sát"
         }
-      ]
+      ],
+      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1)."
     },
     {
       "id": "en_u_bun",
@@ -444,7 +463,18 @@
           "player_knockback_m": 0.0
         }
       ],
-      "drops": [],
+      "drops": [
+        {
+          "item": "mat_thiec_song",
+          "count": 2,
+          "chance": 1.0
+        },
+        {
+          "item": "it_la_ngai",
+          "count": 1,
+          "chance": 0.5
+        }
+      ],
       "body_rules": {
         "face": false,
         "human_torso": false,
@@ -517,7 +547,8 @@
           "label": "SÁNG TẠO",
           "_purpose": "Không cho đứng xa chờ; ép người chơi lại gần để phá Thế"
         }
-      ]
+      ],
+      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1)."
     },
     {
       "id": "boss_lon_loi_dam",
@@ -828,6 +859,179 @@
           "exposed_side_arc_deg": 90,
           "since": "0.2",
           "_purpose": "Pha 2 kể chuyện: nó không nhắm vào Cói mà cố tự gỡ cái đang hành nó; đòn vào cổ từ bên hông được x1,5 Thế, tức người chơi nhắm vào cái trói chứ không vào con thú"
+        },
+        {
+          "id": "ll_song_bun",
+          "name": {
+            "vi": "Sóng bùn",
+            "en": "Mud Wave"
+          },
+          "damage": 22,
+          "player_the_damage": 30,
+          "windup_s": 0.9,
+          "active_s": 0.9,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 9.0,
+          "cooldown_s": 9.0,
+          "dodge_hint": "jump_or_dodge_through",
+          "telegraph": {
+            "visual": "dựng hai chân trước, bờm dựng, bùn quanh chân rung thành vòng",
+            "audio": "hít sâu rồi tiếng dậm đục",
+            "color_cue": "red_bronze"
+          },
+          "shape": "ring_wave",
+          "ring_wave": {
+            "start_radius_m": 1.5,
+            "end_radius_m": 9.0,
+            "thickness_m": 0.9,
+            "ground_only": true
+          },
+          "player_knockback_m": 1.0,
+          "since": "0.3",
+          "_purpose": "Đòn diện rộng dạy NHẢY: nhảy qua vòng sóng (mặt đất) hoặc né xuyên bằng i-frame đúng lúc mép sóng tới; né sớm/spam né thì vòng 0,9 s vẫn trúng"
+        },
+        {
+          "id": "ll_can_xuyen",
+          "name": {
+            "vi": "Càn xuyên bãi",
+            "en": "Mire-Crossing Charge"
+          },
+          "damage": 40,
+          "player_the_damage": 45,
+          "windup_s": 1.1,
+          "active_s": 1.6,
+          "recovery_s": 1.4,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 34.0,
+          "cooldown_s": 12.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "lùi sát mép bãi, cào móng ba lần, hạ đầu thấp sát bùn",
+            "audio": "rống trầm kéo dài (càn thật luôn có tiếng rống)",
+            "color_cue": "red_bronze"
+          },
+          "shape": "charge",
+          "player_knockback_m": 3.0,
+          "player_knockdown": true,
+          "ends_at_arena_edge": true,
+          "mud_trail": {
+            "width_m": 1.6,
+            "duration_s": 8.0,
+            "player_speed_mult": 0.6,
+            "blocks_sprint": true,
+            "blocks_jump": false,
+            "max_active": 3
+          },
+          "stake_collision_stun_s": 2.2,
+          "since": "0.3",
+          "_purpose": "Lao xuyên đấu trường, để lại vệt bùn làm chậm: trận đổi địa hình theo thời gian; pha 2 dụ càn vào cọc"
+        },
+        {
+          "id": "ll_can_hai_luot",
+          "name": {
+            "vi": "Càn hai lượt",
+            "en": "Double Charge"
+          },
+          "damage": 38,
+          "player_the_damage": 40,
+          "hits": 2,
+          "windup_s": 1.2,
+          "active_s": 2.6,
+          "recovery_s": 1.6,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 34.0,
+          "cooldown_s": 16.0,
+          "dodge_hint": "side_twice",
+          "telegraph": {
+            "visual": "cào móng, càn; tới mép bãi trượt chân quay lại, cào móng lần nữa",
+            "audio": "hai tiếng rống trầm, lượt hai cách 0,6 s",
+            "color_cue": "red_bronze"
+          },
+          "shape": "charge",
+          "second_pass": {
+            "pause_s": 0.6,
+            "reaim_max_deg": 35,
+            "requires_roar": true
+          },
+          "player_knockback_m": 3.0,
+          "player_knockdown": true,
+          "ends_at_arena_edge": true,
+          "mud_trail": {
+            "width_m": 1.6,
+            "duration_s": 8.0,
+            "player_speed_mult": 0.6,
+            "blocks_sprint": true,
+            "blocks_jump": false,
+            "max_active": 3
+          },
+          "stake_collision_stun_s": 2.2,
+          "since": "0.3",
+          "_purpose": "Pha 2: đau quá hóa cuồng; lượt hai nhắm lại tối đa 35 độ nên né đúng hướng vẫn thoát; cọc chặn được cả hai lượt"
+        },
+        {
+          "id": "ll_cao_mong_gia",
+          "name": {
+            "vi": "Cào móng giả",
+            "en": "Feint Scrape"
+          },
+          "damage": 26,
+          "player_the_damage": 22,
+          "windup_s": 0.9,
+          "active_s": 0.15,
+          "recovery_s": 0.9,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 4.5,
+          "cooldown_s": 10.0,
+          "dodge_hint": "listen_for_roar",
+          "feint": true,
+          "feint_of": "ll_can_lay",
+          "telegraph": {
+            "visual": "cào móng hai lần như sắp càn, rồi bật tới hất nanh",
+            "audio": "chỉ khịt mũi ngắn, KHÔNG có tiếng rống",
+            "color_cue": "none"
+          },
+          "shape": "melee",
+          "self_move_m": 2.5,
+          "player_knockback_m": 1.2,
+          "since": "0.3",
+          "_purpose": "Đòn giả công bằng: dáng giống Càn lầy nhưng tai phân biệt được (càn thật luôn rống). Người né sớm theo phản xạ bị hất trúng; người nghe thì Đỡ nhịp được"
+        },
+        {
+          "id": "ll_dam_cham",
+          "name": {
+            "vi": "Dậm chậm",
+            "en": "Held Stomp"
+          },
+          "damage": 30,
+          "player_the_damage": 35,
+          "windup_s": 0.8,
+          "hold_s": 0.6,
+          "active_s": 0.5,
+          "recovery_s": 1.3,
+          "parryable": true,
+          "guardable": true,
+          "delayed": true,
+          "range_m": 5.0,
+          "cooldown_s": 8.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "chồm cao, khựng trên không, lưỡi bẫy ở cổ rung",
+            "audio": "thở hắt, im lặng, rồi tiếng rên khi đập xuống",
+            "color_cue": "none"
+          },
+          "shape": "aoe",
+          "player_knockback_m": 1.5,
+          "since": "0.3",
+          "_purpose": "Đòn trễ nhịp duy nhất của pha 2 (N7): người bấm sớm bị trúng; Đỡ nhịp hoàn hảo mở Phản nhịp"
         }
       ],
       "phases": [
@@ -856,6 +1060,15 @@
           "the_max": 320,
           "moveset_add_0_2": [
             "ll_quay_hong"
+          ],
+          "moveset_add_0_3": [
+            "ll_song_bun",
+            "ll_can_xuyen",
+            "ll_cao_mong_gia"
+          ],
+          "combos_add_0_3": [
+            "cb_ba_nhip_nanh",
+            "cb_hat_lui_can"
           ]
         },
         {
@@ -911,6 +1124,102 @@
             ],
             "arena_change": "mud_pool_added_at_stake",
             "_purpose": "Pha 2 kể chuyện bằng hành động (N6): kẻ thù thật là cái bẫy, không phải Cói"
+          },
+          "moveset_add_0_3": [
+            "ll_song_bun",
+            "ll_can_hai_luot",
+            "ll_dam_cham",
+            "ll_quat_doi"
+          ],
+          "combos_add_0_3": [
+            "cb_giay_don",
+            "cb_song_bun_doi"
+          ],
+          "phase2_0_3": {
+            "label": "SÁNG TẠO",
+            "narrative_0_3": {
+              "vi": "Cọc gãy, lưỡi bẫy cắm sâu hơn; con thú đau quá hóa cuồng: giãy thành chuỗi, càn hai lượt. Nó vẫn không nhắm vào Cói, nó nhắm vào mọi thứ giống cái bẫy.",
+              "en": "The stake breaks and the trap blade bites deeper; the pain drives the beast wild: it thrashes in flurries and charges twice. It still is not after Cói; it goes for anything that looks like a trap."
+            },
+            "speed_mult_0_3": 1.0,
+            "telegraph_time_mult_0_3": 1.1,
+            "removes_from_moveset_0_3": [
+              "ll_can_khuyu"
+            ],
+            "rong_dau_cooldown_s_0_3": 20.0,
+            "_note": "Thay cho speed_mult 0,85 / telegraph 1,25 của 0.1 (ArpgCore vẫn đọc trường cũ; lớp game 0.3 đọc khối này). Pha 2 không còn chậm hơn pha 1, chỉ báo hiệu dài hơn 10%. Càn khuỵu được thay bằng Càn hai lượt.",
+            "arena_change_0_3": {
+              "water_recedes": {
+                "mud_pool_radius_mult": 0.6,
+                "over_s": 6.0,
+                "dry_ground_speed_mult": 1.0
+              },
+              "stakes_emerge": [
+                {
+                  "id": "stake_p2_a",
+                  "x": -11.0,
+                  "z": -126.0
+                },
+                {
+                  "id": "stake_p2_b",
+                  "x": 10.0,
+                  "z": -131.0
+                },
+                {
+                  "id": "stake_p2_c",
+                  "x": 3.0,
+                  "z": -149.0
+                }
+              ],
+              "stake_rules": {
+                "radius_m": 0.35,
+                "breaks_after_hits": 1,
+                "boss_charge_stops_at_stake": true,
+                "boss_stun_s": 2.2,
+                "boss_the_damage": 60,
+                "player_attacks_damage_stake": false,
+                "story": "nước rút làm lộ cọc bẫy cũ người ta cắm; con thú húc gãy từng cái (vật lý, không phép)"
+              },
+              "_purpose": "Môi trường đổi ở pha 2: vũng lầy co lại, lộ 3 cọc. Người chơi đứng trước cọc để dụ càn: con thú va cọc, khựng 2,2 s. Tối đa 3 lần mỗi trận"
+            },
+            "tusk_lock_0_3": {
+              "id": "tl_ghi_nanh",
+              "name": {
+                "vi": "Ghì nanh",
+                "en": "Pin the Tusk"
+              },
+              "label": "SÁNG TẠO",
+              "description": {
+                "vi": "Khi con thú khựng vì va cọc, Cói chống cán giáo như chống sào, ghì nanh nó xuống bùn, nói khẽ cho nó yên.",
+                "en": "When the beast reels from hitting a stake, Cói braces her spear shaft like a punting pole, pins its tusk to the mud and speaks softly to calm it."
+              },
+              "max_per_fight": 1,
+              "trigger": {
+                "boss_state": "stake_stun",
+                "player_within_m": 3.0
+              },
+              "prompt_input": "interact",
+              "beats": 2,
+              "rhythm_ref": "combat_tuning.pry",
+              "on_success": {
+                "forces_the_break": true,
+                "counts_as_crack": true,
+                "drum_gain": 50
+              },
+              "on_fail": {
+                "player_knockback_m": 2.5,
+                "player_damage": 10
+              },
+              "player_invulnerable": true,
+              "camera": "low_side_two_shot",
+              "accessibility": {
+                "auto_success_in": [
+                  "diff_nghe_chuyen"
+                ],
+                "hold_option": true
+              },
+              "_purpose": "Khoảnh khắc đặc biệt duy nhất của trận (không lạm dụng QTE): 2 nhịp trống, cùng luật nhịp với cạy; thưởng một lần vỡ Thế. Không gây đau: ghì, không đâm"
+            }
           }
         }
       ],
@@ -985,6 +1294,234 @@
           "additive_flinch_only": true
         },
         "flee_style": "walk_into_reeds"
+      },
+      "combos_0_3": [
+        {
+          "id": "cb_ba_nhip_nanh",
+          "name": {
+            "vi": "Ba nhịp nanh",
+            "en": "Three-Beat Tusks"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll_hat_nanh",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_quat_doi",
+              "windup_mult": 0.6,
+              "gap_s": 0.15
+            },
+            {
+              "attack": "ll_hat_nanh",
+              "windup_mult": 0.7,
+              "gap_s": 0.2,
+              "riposte_on_perfect_parry": true,
+              "branch_if_player_behind": "ll_quay_hong"
+            }
+          ],
+          "final_recovery_mult": 1.0,
+          "range_m": 2.8,
+          "weight": 1.5,
+          "_purpose": "Chuỗi 3 đòn Đỡ nhịp được: đọc nhịp chứ không đọc từng đòn; nhịp 3 là cơ hội Phản nhịp; đứng sau lưng thì nhịp 3 thành Quay hông"
+        },
+        {
+          "id": "cb_hat_lui_can",
+          "name": {
+            "vi": "Hất, lùi, càn",
+            "en": "Toss, Back Off, Charge"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll_hat_nanh",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_can_lay",
+              "windup_mult": 0.85,
+              "gap_s": 0.5,
+              "self_move_before_m": -4.0
+            }
+          ],
+          "final_recovery_mult": 1.0,
+          "range_m": 2.8,
+          "weight": 1.0,
+          "_purpose": "Trộn Đỡ nhịp với đòn không đỡ được: sau cú hất, con thú nhảy lùi rồi càn; báo hiệu càn vẫn ≥ 0,9 s"
+        },
+        {
+          "id": "cb_giay_don",
+          "name": {
+            "vi": "Giãy dồn",
+            "en": "Thrashing Flurry"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll_hat_nanh",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_quat_doi",
+              "windup_mult": 0.6,
+              "gap_s": 0.1
+            },
+            {
+              "attack": "ll_giay_dau",
+              "windup_mult": 0.6,
+              "gap_s": 0.15
+            },
+            {
+              "attack": "ll_dam_cham",
+              "windup_mult": 1.0,
+              "gap_s": 0.25,
+              "riposte_on_perfect_parry": true
+            }
+          ],
+          "final_recovery_mult": 1.2,
+          "range_m": 2.8,
+          "weight": 1.5,
+          "_purpose": "Pha 2, chuỗi 4 đòn kết bằng đòn trễ nhịp: đau mà giãy, không ác. Kết chuỗi có cửa phạt dài (hồi ×1,2)"
+        },
+        {
+          "id": "cb_song_bun_doi",
+          "name": {
+            "vi": "Sóng bùn đôi",
+            "en": "Twin Mud Waves"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll_song_bun",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_song_bun",
+              "windup_mult": 1.0,
+              "gap_s": 0.3
+            }
+          ],
+          "final_recovery_mult": 1.0,
+          "range_m": 9.0,
+          "weight": 0.8,
+          "_purpose": "Hai vòng sóng theo nhịp (báo hiệu đủ 0,9 s mỗi vòng): nhảy, tiếp đất, nhảy. Thử thách nhảy rõ nhất của trận"
+        }
+      ],
+      "behavior_0_3": {
+        "_note": "DEMO_0_3 §5. Lớp game đọc; ArpgCore không đọc. Mọi trừng phạt đều dùng đòn có báo hiệu đầy đủ, không bao giờ hủy hồi máu đang dở.",
+        "token_exempt": true,
+        "post_attack_idle_s": {
+          "min": 0.4,
+          "max": 1.0
+        },
+        "retreat_after_attack_chance": 0.15,
+        "combo_chance": {
+          "near_m": 3.0,
+          "near": 0.55,
+          "far": 0.1
+        },
+        "min_windup_s_parryable_in_combo": 0.3,
+        "min_windup_s_unparryable": 0.9,
+        "punish_heal": {
+          "enabled": true,
+          "within_m": 12.0,
+          "response": "ll_can_lay",
+          "fallback": "close_distance",
+          "close_speed_mult": 1.3,
+          "windup_mult": 0.85,
+          "_purpose": "Ăn cơm giữa trận mà đứng gần thì bị càn (báo hiệu ≥ 0,9 s): phải tạo khoảng cách hoặc chờ con thú khựng"
+        },
+        "punish_dodge_spam": {
+          "enabled": true,
+          "dodges_at_least": 3,
+          "window_s": 3.0,
+          "response": "ll_song_bun",
+          "_purpose": "Lăn liên tục thì gặp Sóng bùn (vòng 0,9 s): né đúng lúc hoặc nhảy, không né bừa"
+        },
+        "anti_kite": {
+          "player_farther_than_m": 10.0,
+          "for_s": 3.0,
+          "response": "ll_can_xuyen"
+        },
+        "rear_punish_0_3": {
+          "player_in_rear_s": 1.2
+        },
+        "edge_awareness": {
+          "prefers_charge_from_edge": true,
+          "edge_band_m": 4.0
+        }
+      },
+      "difficulty_0_3": {
+        "_note": "Độ khó theo mức (combat_tuning.difficulty.presets[].id). Báo hiệu không bao giờ ngắn đi ở mức nào (giữ luật 0.1).",
+        "diff_nghe_chuyen": {
+          "max_combo_steps": {
+            "ph1": 2,
+            "ph2": 2
+          },
+          "feints": false,
+          "punish_heal": false,
+          "punish_dodge_spam": false,
+          "post_attack_idle_s": {
+            "min": 0.9,
+            "max": 1.5
+          },
+          "double_charge_in_ph1": false
+        },
+        "diff_cheo_do": {
+          "max_combo_steps": {
+            "ph1": 3,
+            "ph2": 4
+          },
+          "feints": true,
+          "punish_heal": true,
+          "punish_dodge_spam": false,
+          "post_attack_idle_s": {
+            "min": 0.4,
+            "max": 1.0
+          },
+          "double_charge_in_ph1": false
+        },
+        "diff_nguoc_nuoc": {
+          "max_combo_steps": {
+            "ph1": 3,
+            "ph2": 4
+          },
+          "feints": true,
+          "punish_heal": true,
+          "punish_dodge_spam": true,
+          "post_attack_idle_s": {
+            "min": 0.3,
+            "max": 0.8
+          },
+          "double_charge_in_ph1": false
+        },
+        "diff_thac_du": {
+          "max_combo_steps": {
+            "ph1": 3,
+            "ph2": 4
+          },
+          "feints": true,
+          "punish_heal": true,
+          "punish_dodge_spam": true,
+          "post_attack_idle_s": {
+            "min": 0.2,
+            "max": 0.6
+          },
+          "double_charge_in_ph1": true
+        }
+      },
+      "targets_0_3": {
+        "first_win_fight_length_s": {
+          "min": 240,
+          "max": 420
+        },
+        "first_attempt_win_rate_cheo_do": {
+          "min": 0.2,
+          "max": 0.4
+        },
+        "attempts_to_win_cheo_do_median": 3,
+        "_note": "Đích đo khi playtest (log), không phải luật chạy. Giả định."
       }
     }
   ],

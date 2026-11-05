@@ -1,0 +1,1039 @@
+{
+  "schema_version": 1,
+  "_note": "Demo 0.3 (DEMO_0_3_DESIGN §4). Bản đồ thế giới và minimap. Tọa độ (x, z) là mét của prototype/web/src/game/world.js (-z là bắc); world_point trỏ tới id trong POINTS của world.js và validator so tọa độ. Điểm new_in_0_3 chưa có trong world.js (agent code thêm vào POINTS cùng tọa độ). Tên địa danh là [SÁNG TẠO], tên tạm, cần naming_review. Không bản đồ hiện đại (Story Bible v1.2 §2). Giả định, chờ playtest.",
+  "levels": [
+    {
+      "id": "lvl_dam_lau",
+      "name": {
+        "vi": "Đầm lau Bến Sậy",
+        "en": "Sậy Landing marshes"
+      },
+      "label": "SÁNG TẠO",
+      "bounds": {
+        "x0": -45,
+        "x1": 45,
+        "z0": -160,
+        "z1": 36
+      },
+      "north": "-z"
+    },
+    {
+      "id": "lvl_hub_ben_lau",
+      "name": {
+        "vi": "Bến Lau",
+        "en": "Lau Landing"
+      },
+      "label": "SÁNG TẠO",
+      "bounds": {
+        "x0": 280,
+        "x1": 320,
+        "z0": -20,
+        "z1": 40
+      },
+      "north": "-z"
+    }
+  ],
+  "icons": [
+    {
+      "id": "ic_rest",
+      "name": {
+        "vi": "Bếp lửa nghỉ",
+        "en": "Resting fire"
+      },
+      "shape": "flame",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_ferry",
+      "name": {
+        "vi": "Bến đò",
+        "en": "Ferry"
+      },
+      "shape": "boat",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_npc",
+      "name": {
+        "vi": "Người làng",
+        "en": "Villager"
+      },
+      "shape": "head",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_quest",
+      "name": {
+        "vi": "Mục tiêu đang theo",
+        "en": "Tracked objective"
+      },
+      "shape": "diamond_ring",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_boss",
+      "name": {
+        "vi": "Con thú lớn",
+        "en": "Great beast"
+      },
+      "shape": "tusk",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_enemy",
+      "name": {
+        "vi": "Thú dữ",
+        "en": "Hostile creature"
+      },
+      "shape": "dot",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_elite",
+      "name": {
+        "vi": "Thú dữ mạnh",
+        "en": "Strong creature"
+      },
+      "shape": "diamond",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_secret",
+      "name": {
+        "vi": "Dấu vết lạ",
+        "en": "Odd trace"
+      },
+      "shape": "spiral",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_env_secret",
+      "name": {
+        "vi": "Chỗ khuất",
+        "en": "Hidden spot"
+      },
+      "shape": "eye",
+      "on_minimap": false
+    },
+    {
+      "id": "ic_chest",
+      "name": {
+        "vi": "Rương",
+        "en": "Chest"
+      },
+      "shape": "box",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_discovery",
+      "name": {
+        "vi": "Điểm nhìn",
+        "en": "Lookout"
+      },
+      "shape": "triangle",
+      "on_minimap": false
+    },
+    {
+      "id": "ic_gather",
+      "name": {
+        "vi": "Chỗ hái",
+        "en": "Gathering spot"
+      },
+      "shape": "leaf",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_shortcut",
+      "name": {
+        "vi": "Lối tắt",
+        "en": "Shortcut"
+      },
+      "shape": "gate",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_craft",
+      "name": {
+        "vi": "Lò đúc",
+        "en": "Furnace"
+      },
+      "shape": "anvil_round",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_thap",
+      "name": {
+        "vi": "Thạp nhà",
+        "en": "Family jar"
+      },
+      "shape": "jar",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_drum",
+      "name": {
+        "vi": "Trống làng",
+        "en": "Village drum"
+      },
+      "shape": "drum",
+      "on_minimap": true
+    },
+    {
+      "id": "ic_marker",
+      "name": {
+        "vi": "Dấu tự đặt",
+        "en": "Custom marker"
+      },
+      "shape": "pin_cloth",
+      "on_minimap": true
+    }
+  ],
+  "zones": [
+    {
+      "id": "z_ben_say",
+      "level": "lvl_dam_lau",
+      "name": {
+        "vi": "Bến Sậy",
+        "en": "Sậy Landing"
+      },
+      "label": "SÁNG TẠO",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -15,
+            "x1": 15,
+            "z0": 0,
+            "z1": 25
+          }
+        },
+        {
+          "rect": {
+            "x0": -2,
+            "x1": 2,
+            "z0": 24,
+            "z1": 33
+          }
+        }
+      ],
+      "map_label_at": {
+        "x": 0,
+        "z": 14
+      }
+    },
+    {
+      "id": "z_dam_nong",
+      "level": "lvl_dam_lau",
+      "name": {
+        "vi": "Đầm nông",
+        "en": "Shallow Marsh"
+      },
+      "label": "SÁNG TẠO",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -30,
+            "x1": 30,
+            "z0": -46,
+            "z1": -6
+          }
+        }
+      ],
+      "map_label_at": {
+        "x": 0,
+        "z": -26
+      }
+    },
+    {
+      "id": "z_bai_lau",
+      "level": "lvl_dam_lau",
+      "name": {
+        "vi": "Bãi lau",
+        "en": "Reed Beds"
+      },
+      "label": "SÁNG TẠO",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -25,
+            "x1": 25,
+            "z0": -102,
+            "z1": -52
+          }
+        }
+      ],
+      "map_label_at": {
+        "x": 0,
+        "z": -80
+      }
+    },
+    {
+      "id": "z_lo_bo_hoang",
+      "level": "lvl_dam_lau",
+      "name": {
+        "vi": "Lò bỏ hoang",
+        "en": "Abandoned Kiln"
+      },
+      "label": "SÁNG TẠO",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -41,
+            "x1": -20,
+            "z0": -121,
+            "z1": -101
+          }
+        }
+      ],
+      "map_label_at": {
+        "x": -31,
+        "z": -117
+      }
+    },
+    {
+      "id": "z_dau_truong",
+      "level": "lvl_dam_lau",
+      "name": {
+        "vi": "Bãi lầy lò cũ",
+        "en": "Old Kiln Mire"
+      },
+      "label": "SÁNG TẠO",
+      "shapes": [
+        {
+          "circle": {
+            "cx": 0,
+            "cz": -136,
+            "r": 18
+          }
+        }
+      ],
+      "map_label_at": {
+        "x": 0,
+        "z": -152
+      }
+    },
+    {
+      "id": "z_hub_ben_lau",
+      "level": "lvl_hub_ben_lau",
+      "name": {
+        "vi": "Bến Lau",
+        "en": "Lau Landing"
+      },
+      "label": "SÁNG TẠO",
+      "shapes": [
+        {
+          "rect": {
+            "x0": 285,
+            "x1": 315,
+            "z0": -15,
+            "z1": 15
+          }
+        },
+        {
+          "rect": {
+            "x0": 285,
+            "x1": 315,
+            "z0": 15,
+            "z1": 35
+          }
+        }
+      ],
+      "map_label_at": {
+        "x": 300,
+        "z": 0
+      }
+    }
+  ],
+  "paths": [
+    {
+      "id": "c01",
+      "rect": {
+        "x0": -3,
+        "x1": 3,
+        "z0": -7,
+        "z1": 1
+      }
+    },
+    {
+      "id": "c12",
+      "rect": {
+        "x0": -3,
+        "x1": 3,
+        "z0": -53,
+        "z1": -45
+      }
+    },
+    {
+      "id": "c24",
+      "rect": {
+        "x0": -3,
+        "x1": 3,
+        "z0": -120,
+        "z1": -101
+      }
+    },
+    {
+      "id": "c3",
+      "rect": {
+        "x0": -21,
+        "x1": -2,
+        "z0": -114,
+        "z1": -108
+      }
+    },
+    {
+      "id": "shortcut_a",
+      "rect": {
+        "x0": 24,
+        "x1": 37,
+        "z0": -60,
+        "z1": -54
+      },
+      "hidden_until": "flag_shortcut_open"
+    },
+    {
+      "id": "shortcut_b",
+      "rect": {
+        "x0": 31,
+        "x1": 37,
+        "z0": -54,
+        "z1": 10
+      },
+      "hidden_until": "flag_shortcut_open"
+    },
+    {
+      "id": "shortcut_c",
+      "rect": {
+        "x0": 14,
+        "x1": 37,
+        "z0": 4,
+        "z1": 10
+      },
+      "hidden_until": "flag_shortcut_open"
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "lm_fire_ben_say",
+      "kind": "rest",
+      "icon": "ic_rest",
+      "x": 6,
+      "z": 9,
+      "name": {
+        "vi": "Bếp lửa Bến Sậy",
+        "en": "Sậy Landing fire"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "always",
+      "world_point": "fire_ben_say",
+      "fast_travel": true
+    },
+    {
+      "id": "lm_fire_cong_lau",
+      "kind": "rest",
+      "icon": "ic_rest",
+      "x": 2,
+      "z": -106,
+      "name": {
+        "vi": "Bếp lửa Cổng Lau",
+        "en": "Reed Gate fire"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "fire_cong_lau",
+      "fast_travel": true
+    },
+    {
+      "id": "lm_ba_lai_do",
+      "kind": "npc",
+      "icon": "ic_npc",
+      "x": -4,
+      "z": 22,
+      "name": {
+        "vi": "Bà lái đò",
+        "en": "The old ferrywoman"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "always",
+      "world_point": "npc_ba_lai_do"
+    },
+    {
+      "id": "lm_ferry_ben_say",
+      "kind": "ferry",
+      "icon": "ic_ferry",
+      "x": 0,
+      "z": 31.5,
+      "name": {
+        "vi": "Đò về Bến Lau",
+        "en": "Ferry to Lau Landing"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "always",
+      "world_point": "ferry_ben_say"
+    },
+    {
+      "id": "lm_trap_a",
+      "kind": "secret",
+      "icon": "ic_secret",
+      "x": -18,
+      "z": -30,
+      "name": {
+        "vi": "Cọc bẫy gãy",
+        "en": "Broken trap stake"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "trap_a"
+    },
+    {
+      "id": "lm_stake_3",
+      "kind": "secret",
+      "icon": "ic_secret",
+      "x": 6,
+      "z": -76,
+      "name": {
+        "vi": "Hàng cọc lau",
+        "en": "Reed-bed stakes"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "stake_3"
+    },
+    {
+      "id": "lm_trap_b",
+      "kind": "secret",
+      "icon": "ic_secret",
+      "x": -2.3,
+      "z": -117.5,
+      "name": {
+        "vi": "Cọc bẫy bên lò",
+        "en": "Trap stake by the kiln"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "trap_b"
+    },
+    {
+      "id": "lm_kiln",
+      "kind": "place",
+      "icon": "ic_secret",
+      "x": -31,
+      "z": -112.6,
+      "name": {
+        "vi": "Hốc lò",
+        "en": "Kiln hollow"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "kiln_hollow"
+    },
+    {
+      "id": "lm_villager",
+      "kind": "quest",
+      "icon": "ic_quest",
+      "x": 10,
+      "z": -81,
+      "name": {
+        "vi": "Người đi cắt lau",
+        "en": "The reed-cutter"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_quest",
+      "world_point": "villager"
+    },
+    {
+      "id": "lm_gate_lever",
+      "kind": "shortcut",
+      "icon": "ic_shortcut",
+      "x": 34,
+      "z": -56,
+      "name": {
+        "vi": "Cổng mây",
+        "en": "Rattan gate"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "gate_lever"
+    },
+    {
+      "id": "lm_boss_arena",
+      "kind": "boss",
+      "icon": "ic_boss",
+      "x": 0,
+      "z": -136,
+      "name": {
+        "vi": "Bãi lầy lò cũ",
+        "en": "Old Kiln Mire"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_quest"
+    },
+    {
+      "id": "lm_furnace",
+      "kind": "craft",
+      "icon": "ic_craft",
+      "x": 292,
+      "z": -8,
+      "name": {
+        "vi": "Lò đúc làng",
+        "en": "Village furnace"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "always",
+      "world_point": "furnace"
+    },
+    {
+      "id": "lm_thap",
+      "kind": "thap",
+      "icon": "ic_thap",
+      "x": 306,
+      "z": -9,
+      "name": {
+        "vi": "Thạp nhà",
+        "en": "Family jar"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "always",
+      "world_point": "thap"
+    },
+    {
+      "id": "lm_drum",
+      "kind": "drum",
+      "icon": "ic_drum",
+      "x": 300,
+      "z": -11,
+      "name": {
+        "vi": "Trống làng",
+        "en": "Village drum"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "always",
+      "world_point": "drum"
+    },
+    {
+      "id": "lm_ferry_hub",
+      "kind": "ferry",
+      "icon": "ic_ferry",
+      "x": 287,
+      "z": 0,
+      "name": {
+        "vi": "Đò ra đầm",
+        "en": "Ferry to the marsh"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "always",
+      "world_point": "ferry_hub"
+    },
+    {
+      "id": "lm_rattan_1",
+      "kind": "gather",
+      "icon": "ic_gather",
+      "x": 12,
+      "z": -20,
+      "name": {
+        "vi": "Bụi mây",
+        "en": "Rattan thicket"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "rattan_1"
+    },
+    {
+      "id": "lm_rattan_2",
+      "kind": "gather",
+      "icon": "ic_gather",
+      "x": -22,
+      "z": -12,
+      "name": {
+        "vi": "Bụi mây",
+        "en": "Rattan thicket"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "rattan_2"
+    },
+    {
+      "id": "lm_rattan_3",
+      "kind": "gather",
+      "icon": "ic_gather",
+      "x": 21,
+      "z": -40,
+      "name": {
+        "vi": "Bụi mây",
+        "en": "Rattan thicket"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "rattan_3"
+    },
+    {
+      "id": "lm_rattan_4",
+      "kind": "gather",
+      "icon": "ic_gather",
+      "x": -15,
+      "z": -64,
+      "name": {
+        "vi": "Bụi mây",
+        "en": "Rattan thicket"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "rattan_4"
+    },
+    {
+      "id": "lm_rattan_5",
+      "kind": "gather",
+      "icon": "ic_gather",
+      "x": 18,
+      "z": -92,
+      "name": {
+        "vi": "Bụi mây",
+        "en": "Rattan thicket"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "rattan_5"
+    },
+    {
+      "id": "lm_rattan_6",
+      "kind": "gather",
+      "icon": "ic_gather",
+      "x": -11,
+      "z": -96,
+      "name": {
+        "vi": "Bụi mây",
+        "en": "Rattan thicket"
+      },
+      "label": "SÁNG TẠO",
+      "reveal": "on_discover",
+      "world_point": "rattan_6"
+    }
+  ],
+  "discovery_points": [
+    {
+      "id": "dp_cau_ben_say",
+      "x": 0,
+      "z": 27,
+      "zone": "z_ben_say",
+      "name": {
+        "vi": "Đầu cầu bến",
+        "en": "Landing jetty"
+      },
+      "label": "SÁNG TẠO",
+      "reveal_radius_m": 30,
+      "xp_ref": "xp_discovery",
+      "new_in_0_3": true
+    },
+    {
+      "id": "dp_cay_go_do",
+      "x": -19,
+      "z": -38,
+      "zone": "z_dam_nong",
+      "name": {
+        "vi": "Cây gáo đổ",
+        "en": "Fallen gáo tree"
+      },
+      "label": "SÁNG TẠO",
+      "reveal_radius_m": 30,
+      "xp_ref": "xp_discovery",
+      "new_in_0_3": true
+    },
+    {
+      "id": "dp_hang_coc",
+      "x": -3,
+      "z": -60,
+      "zone": "z_bai_lau",
+      "name": {
+        "vi": "Hàng cọc cũ",
+        "en": "Old stake row"
+      },
+      "label": "SÁNG TẠO",
+      "reveal_radius_m": 30,
+      "xp_ref": "xp_discovery",
+      "new_in_0_3": true
+    },
+    {
+      "id": "dp_mieng_lo",
+      "x": -36,
+      "z": -104,
+      "zone": "z_lo_bo_hoang",
+      "name": {
+        "vi": "Miệng lò",
+        "en": "Kiln mouth"
+      },
+      "label": "SÁNG TẠO",
+      "reveal_radius_m": 25,
+      "xp_ref": "xp_discovery",
+      "new_in_0_3": true
+    },
+    {
+      "id": "dp_cong_bai_lay",
+      "x": 0,
+      "z": -119,
+      "zone": "z_dau_truong",
+      "name": {
+        "vi": "Cổng bãi lầy",
+        "en": "Mire gate"
+      },
+      "label": "SÁNG TẠO",
+      "reveal_radius_m": 30,
+      "xp_ref": "xp_discovery",
+      "new_in_0_3": true
+    }
+  ],
+  "chests": [
+    {
+      "id": "chest_dam_nong",
+      "x": 22,
+      "z": -28,
+      "zone": "z_dam_nong",
+      "name": {
+        "vi": "Rương mây dưới gốc sung",
+        "en": "Rattan chest under the fig"
+      },
+      "label": "SÁNG TẠO",
+      "contents": [
+        {
+          "gear": "ar_khan_gai"
+        },
+        {
+          "item": "mat_thiec_song",
+          "count": 2
+        }
+      ],
+      "new_in_0_3": true
+    },
+    {
+      "id": "chest_bai_lau",
+      "x": -20,
+      "z": -88,
+      "zone": "z_bai_lau",
+      "name": {
+        "vi": "Giỏ bỏ quên trong lau",
+        "en": "Basket forgotten in the reeds"
+      },
+      "label": "SÁNG TẠO",
+      "contents": [
+        {
+          "gear": "tr_chuong_dong_nho"
+        },
+        {
+          "item": "mat_soi_gai",
+          "count": 2
+        }
+      ],
+      "new_in_0_3": true
+    }
+  ],
+  "environment_secrets": [
+    {
+      "id": "es_to_chim",
+      "x": -27,
+      "z": -42,
+      "zone": "z_dam_nong",
+      "name": {
+        "vi": "Tổ chim rơi",
+        "en": "Fallen nest"
+      },
+      "label": "SÁNG TẠO",
+      "description": {
+        "vi": "Một tổ chim rơi dưới gốc cây. Đặt lại lên chạc cây thì chim mẹ quay về; dưới gốc có mấy củ súng ai bỏ lại.",
+        "en": "A nest has fallen under a tree. Put it back in the fork and the mother bird returns; under the roots someone left a few water-lily roots."
+      },
+      "visible_cue": "chim mẹ kêu, chao quanh gốc cây cao nhất đầm",
+      "interaction": "interact",
+      "detour_s": 20,
+      "xp_ref": "xp_env_secret",
+      "reward": {
+        "items": [
+          {
+            "item": "it_cu_sung",
+            "count": 2
+          }
+        ]
+      },
+      "new_in_0_3": true
+    },
+    {
+      "id": "es_do_ca",
+      "x": 12,
+      "z": 21,
+      "zone": "z_ben_say",
+      "name": {
+        "vi": "Đó cá bị bỏ",
+        "en": "Abandoned fish trap"
+      },
+      "label": "SÁNG TẠO",
+      "description": {
+        "vi": "Cái đó cá mắc cạn, cá còn quẫy. Thả cá về nước; trên miệng đó có chuỗi hạt ai buộc.",
+        "en": "A beached fish trap, the fish still flapping. Let them back into the water; a bead string is tied to the trap's mouth."
+      },
+      "visible_cue": "nước bắn tóe ở mép bến, tiếng cá quẫy",
+      "interaction": "interact",
+      "detour_s": 15,
+      "xp_ref": "xp_env_secret",
+      "reward": {
+        "gear": [
+          "tr_chuoi_hat_dat"
+        ]
+      },
+      "new_in_0_3": true
+    },
+    {
+      "id": "es_go_kho",
+      "x": 20,
+      "z": -70,
+      "zone": "z_bai_lau",
+      "name": {
+        "vi": "Gò khô",
+        "en": "Dry hummock"
+      },
+      "label": "SÁNG TẠO",
+      "description": {
+        "vi": "Gò đất khô giữa lau, có bọc vải người đi cắt lau giấu cho khỏi ướt. Trong bọc là đôi vòng tay đồng.",
+        "en": "A dry hummock among the reeds where the reed-cutter hid a cloth bundle to keep it dry. Inside are a pair of bronze bracers."
+      },
+      "visible_cue": "một cây lau cắm ngược làm dấu trên đỉnh gò",
+      "interaction": "interact",
+      "detour_s": 25,
+      "xp_ref": "xp_env_secret",
+      "reward": {
+        "gear": [
+          "ar_vong_tay_ong"
+        ]
+      },
+      "new_in_0_3": true
+    }
+  ],
+  "fog": {
+    "cell_m": 4.0,
+    "reveal_radius_m": 14.0,
+    "discovery_point_reveals_radius": true,
+    "zone_name_banner_on_first_enter": true,
+    "persist_scope": "lineage",
+    "unexplored_style": "blank_cloth_with_faint_reed_hatching"
+  },
+  "fast_travel": {
+    "kind": "rest_fire_to_rest_fire",
+    "requires_discovered": true,
+    "blocked_while_engaged": true,
+    "blocked_in": [
+      "z_dau_truong"
+    ],
+    "fade_s": 0.6,
+    "ferry_between_levels": true
+  },
+  "world_map": {
+    "style": "hand_drawn_on_ramie_cloth",
+    "_style_note": "Vải gai vẽ than và nhựa cây, chữ viết tay hiện đại cho dễ đọc (chữ chỉ là UI, không phải đồ vật thời đó). Không vẽ trên giấy: giấy có lẽ chưa có ở thời này (hiểu biết chung, chưa xác minh). Viền hoa văn hình học Đông Sơn (vòng tròn tiếp tuyến, chữ S, răng cưa, ART_DIRECTION P1); không mặt trời trung tâm, không chim Lạc.",
+    "open_input": "map",
+    "zoom_m_per_screen": {
+      "min": 40,
+      "max": 220,
+      "default": 120
+    },
+    "pan_with": [
+      "move",
+      "mouse_drag"
+    ],
+    "legend": true,
+    "legend_toggle_input": "ui_tab_next",
+    "custom_markers": {
+      "max": 8,
+      "kinds": [
+        "pin_cloth",
+        "circle",
+        "cross",
+        "star_reed"
+      ],
+      "show_on_minimap": true,
+      "show_in_world_as_pillar": false
+    },
+    "quest_tracking": {
+      "max_tracked": 1,
+      "objective_string_keys": [
+        "obj_find_villager",
+        "obj_boss",
+        "obj_return",
+        "obj_craft",
+        "obj_handoff"
+      ],
+      "draw_route": false,
+      "highlight_zone": true
+    },
+    "zone_completion": {
+      "enabled": true,
+      "counts": [
+        "chests",
+        "environment_secrets",
+        "discovery_points",
+        "secret_nodes"
+      ],
+      "format_key": "map_zone_progress"
+    },
+    "player_icon": "arrow_with_view_cone"
+  },
+  "minimap": {
+    "position": "top_left",
+    "screen_radius_px_at_1080p": 104,
+    "world_radius_m": 28.0,
+    "zoom_steps_m": [
+      20.0,
+      28.0,
+      40.0
+    ],
+    "rotation_default": "camera_up",
+    "rotation_options": [
+      "camera_up",
+      "north_up"
+    ],
+    "accessibility_option": "acc_minimap_rotation",
+    "north_indicator": true,
+    "objective_clamp_to_edge": true,
+    "enemy_dots": {
+      "show_when": "engaged_or_within_m",
+      "within_m": 20.0,
+      "elite_icon": "ic_elite",
+      "boss_icon": "ic_boss",
+      "offscreen_attacker_edge_pip": true
+    },
+    "shows": [
+      "ic_rest",
+      "ic_ferry",
+      "ic_npc",
+      "ic_quest",
+      "ic_boss",
+      "ic_enemy",
+      "ic_elite",
+      "ic_secret",
+      "ic_chest",
+      "ic_gather",
+      "ic_shortcut",
+      "ic_craft",
+      "ic_thap",
+      "ic_drum",
+      "ic_marker"
+    ],
+    "fog_applies": true,
+    "border": {
+      "style": "dong_son_tangent_circles",
+      "rings": 2,
+      "cardinal_notches": 4,
+      "color_hex": "#9B7A4E",
+      "forbidden_motifs": [
+        "sun_star_center",
+        "lac_bird"
+      ]
+    },
+    "background": {
+      "color_hex": "#1D1B19",
+      "alpha": 0.72
+    },
+    "hide_during": [
+      "cinematic",
+      "pry",
+      "tusk_lock",
+      "drum_burst"
+    ],
+    "scale_option": "acc_hud_scale"
+  }
+}

@@ -386,6 +386,14 @@
       "vi": "Khoen nứt",
       "en": "Khoen cracks"
     },
+    "hud_drum_burst": {
+      "vi": "Hồi trống",
+      "en": "Drum Burst"
+    },
+    "set_hud_minimal": {
+      "vi": "HUD tối giản (ẩn khi không giao chiến)",
+      "en": "Minimal HUD (hide out of combat)"
+    },
     "zone_bai_song": {
       "vi": "Bãi sông",
       "en": "River bank"
@@ -1005,6 +1013,290 @@
     "opt_val_size_xlarge": {
       "vi": "Rất lớn",
       "en": "Extra large"
+    },
+    "ctl_jump": {
+      "vi": "Nhảy",
+      "en": "Jump"
+    },
+    "ctl_inventory": {
+      "vi": "Hành trang",
+      "en": "Pack"
+    },
+    "ctl_map": {
+      "vi": "Bản đồ",
+      "en": "Map"
+    },
+    "ctl_skill_1": {
+      "vi": "Thế võ 1",
+      "en": "Weapon Art 1"
+    },
+    "ctl_skill_2": {
+      "vi": "Thế võ 2",
+      "en": "Weapon Art 2"
+    },
+    "inv_title": {
+      "vi": "Hành trang",
+      "en": "Pack"
+    },
+    "tab_equipment": {
+      "vi": "Trang bị",
+      "en": "Equipment"
+    },
+    "tab_items": {
+      "vi": "Túi đồ",
+      "en": "Items"
+    },
+    "tab_skills": {
+      "vi": "Kỹ năng",
+      "en": "Skills"
+    },
+    "tab_map": {
+      "vi": "Bản đồ",
+      "en": "Map"
+    },
+    "tab_journal": {
+      "vi": "Sổ tay",
+      "en": "Journal"
+    },
+    "tab_codex": {
+      "vi": "Codex",
+      "en": "Codex"
+    },
+    "inv_slot_locked": {
+      "vi": "Chưa mở",
+      "en": "Locked"
+    },
+    "inv_empty_slot": {
+      "vi": "Trống",
+      "en": "Empty"
+    },
+    "inv_filter_all": {
+      "vi": "Tất cả",
+      "en": "All"
+    },
+    "inv_filter_consumable": {
+      "vi": "Đồ dùng",
+      "en": "Consumables"
+    },
+    "inv_filter_material": {
+      "vi": "Vật liệu",
+      "en": "Materials"
+    },
+    "inv_filter_bao_khi": {
+      "vi": "Bảo khí",
+      "en": "Heirlooms"
+    },
+    "inv_rotate_character": {
+      "vi": "Xoay nhân vật",
+      "en": "Rotate character"
+    },
+    "inv_rarity": {
+      "vi": "Độ hiếm: {name}",
+      "en": "Rarity: {name}"
+    },
+    "inv_stats": {
+      "vi": "Chỉ số",
+      "en": "Stats"
+    },
+    "inv_set_progress": {
+      "vi": "Bộ {name} ({n}/{max})",
+      "en": "{name} set ({n}/{max})"
+    },
+    "inv_set_bonus_active": {
+      "vi": "Đã kích hoạt",
+      "en": "Active"
+    },
+    "inv_set_bonus_inactive": {
+      "vi": "Chưa đủ món",
+      "en": "Not enough pieces"
+    },
+    "inv_upgrade_level": {
+      "vi": "+{n}",
+      "en": "+{n}"
+    },
+    "inv_upgrade_max": {
+      "vi": "Đã nâng tối đa",
+      "en": "Fully upgraded"
+    },
+    "inv_upgrade_where": {
+      "vi": "Nâng cấp ở lò đúc làng",
+      "en": "Upgrade at the village furnace"
+    },
+    "inv_upgrade_cost": {
+      "vi": "Cần: {list}",
+      "en": "Needs: {list}"
+    },
+    "btn_equip": {
+      "vi": "Trang bị",
+      "en": "Equip"
+    },
+    "btn_unequip": {
+      "vi": "Tháo ra",
+      "en": "Unequip"
+    },
+    "btn_upgrade": {
+      "vi": "Nâng cấp",
+      "en": "Upgrade"
+    },
+    "btn_use": {
+      "vi": "Dùng",
+      "en": "Use"
+    },
+    "btn_inspect": {
+      "vi": "Xem kỹ",
+      "en": "Inspect"
+    },
+    "cmp_better": {
+      "vi": "Tốt hơn",
+      "en": "Better"
+    },
+    "cmp_worse": {
+      "vi": "Kém hơn",
+      "en": "Worse"
+    },
+    "cmp_same": {
+      "vi": "Như cũ",
+      "en": "Same"
+    },
+    "skill_arts_title": {
+      "vi": "Thế võ",
+      "en": "Weapon Arts"
+    },
+    "skill_rank": {
+      "vi": "Bậc {n}/{max}",
+      "en": "Rank {n}/{max}"
+    },
+    "skill_cooldown": {
+      "vi": "Hồi chiêu {s} giây",
+      "en": "Cooldown {s} s"
+    },
+    "skill_unlock": {
+      "vi": "Mở Thế võ",
+      "en": "Unlock Art"
+    },
+    "skill_rank_up": {
+      "vi": "Lên bậc",
+      "en": "Rank up"
+    },
+    "skill_cost_xp": {
+      "vi": "{n} kinh nghiệm",
+      "en": "{n} XP"
+    },
+    "skill_not_enough_xp": {
+      "vi": "Chưa đủ kinh nghiệm",
+      "en": "Not enough XP"
+    },
+    "skill_respec": {
+      "vi": "Học lại (ở bếp lửa)",
+      "en": "Relearn (at a resting fire)"
+    },
+    "skill_not_ready": {
+      "vi": "Thế võ chưa hồi",
+      "en": "Weapon Art not ready"
+    },
+    "msg_xp": {
+      "vi": "+{n} kinh nghiệm",
+      "en": "+{n} XP"
+    },
+    "msg_skill_unlocked": {
+      "vi": "Đã mở Thế võ: {name}",
+      "en": "Weapon Art unlocked: {name}"
+    },
+    "msg_skill_ranked": {
+      "vi": "{name} lên bậc {n}",
+      "en": "{name} reached rank {n}"
+    },
+    "msg_set_bonus": {
+      "vi": "Bộ đồ có hiệu lực: {name}",
+      "en": "Set bonus active: {name}"
+    },
+    "msg_discovered": {
+      "vi": "Đã tìm thấy: {name}",
+      "en": "Discovered: {name}"
+    },
+    "msg_fast_travel_blocked": {
+      "vi": "Không thể đi khi đang giao chiến",
+      "en": "Cannot travel during a fight"
+    },
+    "prompt_open_chest": {
+      "vi": "Mở",
+      "en": "Open"
+    },
+    "prompt_counter_beat": {
+      "vi": "Phản nhịp",
+      "en": "Counter-beat"
+    },
+    "prompt_pin_tusk": {
+      "vi": "Ghì nanh",
+      "en": "Pin the tusk"
+    },
+    "prompt_restore_nest": {
+      "vi": "Đặt lại tổ",
+      "en": "Put the nest back"
+    },
+    "prompt_free_fish": {
+      "vi": "Thả cá",
+      "en": "Free the fish"
+    },
+    "prompt_search": {
+      "vi": "Lục tìm",
+      "en": "Search"
+    },
+    "map_title": {
+      "vi": "Bản đồ",
+      "en": "Map"
+    },
+    "map_legend": {
+      "vi": "Chú giải",
+      "en": "Legend"
+    },
+    "map_place_marker": {
+      "vi": "Đặt dấu",
+      "en": "Place marker"
+    },
+    "map_remove_marker": {
+      "vi": "Bỏ dấu",
+      "en": "Remove marker"
+    },
+    "map_marker_limit": {
+      "vi": "Đã đặt đủ {n} dấu",
+      "en": "All {n} markers placed"
+    },
+    "map_track": {
+      "vi": "Theo dõi",
+      "en": "Track"
+    },
+    "map_untrack": {
+      "vi": "Thôi theo dõi",
+      "en": "Stop tracking"
+    },
+    "map_fast_travel": {
+      "vi": "Đi tới bếp lửa này",
+      "en": "Travel to this fire"
+    },
+    "map_unexplored": {
+      "vi": "Chưa đi tới",
+      "en": "Unexplored"
+    },
+    "map_zone_progress": {
+      "vi": "Đã tìm {done}/{total}",
+      "en": "Found {done}/{total}"
+    },
+    "map_center_player": {
+      "vi": "Về chỗ mình",
+      "en": "Center on me"
+    },
+    "minimap_north": {
+      "vi": "B",
+      "en": "N"
+    },
+    "hud_low_health": {
+      "vi": "Sức sắp cạn",
+      "en": "Health low"
+    },
+    "hud_burst_ready_hint": {
+      "vi": "Hồi trống sẵn sàng",
+      "en": "Drum Burst ready"
     }
   },
   "dialogue": [
