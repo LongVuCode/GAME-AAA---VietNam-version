@@ -52,7 +52,7 @@ try {
   // Feedback screen (no network): build id visible for copying.
   await page.click('[data-act=feedback]');
   const fb = await page.inputValue('textarea.copy');
-  check('feedback shows build id + browser info', fb.includes('build: demo0.2-web') && fb.includes('ua: '));
+  check('feedback shows build id + browser info', fb.includes('build: demo0.3-web') && fb.includes('ua: '));
   await shot('02_feedback.png');
   await page.click('[data-act=back]');
 

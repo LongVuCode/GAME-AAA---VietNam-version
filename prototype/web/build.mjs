@@ -11,7 +11,7 @@ const git = (cmd) => { try { return execSync(cmd, { cwd: here, stdio: ['ignore',
 const hash = git('git rev-parse --short HEAD') || 'nogit';
 const dirty = git('git status --porcelain -- .') || git('git status --porcelain -- ../../design/data') ? '-dirty' : '';
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
-const buildId = `demo0.2-web-${hash}${dirty}-${stamp}`;
+const buildId = `demo0.3-web-${hash}${dirty}-${stamp}`;
 
 const result = await build({
   entryPoints: [join(here, 'src/main.js')],
