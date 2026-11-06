@@ -34,7 +34,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Người Giữ Bến Demo 0.2</title>
+<title>Người Giữ Bến Demo 0.3</title>
 <meta name="description" content="Graybox gameplay prototype (three.js). Not final art. Build ${buildId}">
 <style>${css}</style>
 </head>
