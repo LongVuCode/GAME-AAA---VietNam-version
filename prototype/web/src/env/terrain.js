@@ -14,13 +14,28 @@ const CHUNK = 32;
 
 export function buildPatchGrid(field, patch) {
   const nx = patch.x1 - patch.x0 + 1, nz = patch.z1 - patch.z0 + 1;
-  const h = new Float32Array(nx * nz), surf = new Float32Array(nx * nz * 6), tmp = new Float32Array(6);
+  const h = new Float32Array(nx * nz), surf = new Float32Array(nx * nz * 6), dist = new Float32Array(nx * nz), reg = new Array(nx * nz), tmp = new Float32Array(6);
   for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
     const x = patch.x0 + i, z = patch.z0 + j, k = j * nx + i;
-    const y = field.height(x, z); h[k] = y;
-    field.surface(x, z, y, tmp); surf.set(tmp, k * 6);
+    const r = field.sample(x, z, tmp);
+    h[k] = r.h; dist[k] = r.d; reg[k] = r.reg; surf.set(tmp, k * 6);
   }
-  return { patch, nx, nz, h, surf };
+  return { patch, nx, nz, h, surf, dist, reg, ...gridLookups(patch, nx, nz, h, dist, reg) };
+}
+
+/** Fast lookups on a patch grid (bilinear height, nearest distance/region); null outside the patch. */
+export function gridLookups(patch, nx, nz, h, dist, reg) {
+  const inside = (x, z) => x >= patch.x0 && x <= patch.x1 && z >= patch.z0 && z <= patch.z1;
+  return {
+    contains: inside,
+    heightAt(x, z) {
+      const fx = Math.min(nx - 1.001, Math.max(0, x - patch.x0)), fz = Math.min(nz - 1.001, Math.max(0, z - patch.z0));
+      const i = Math.floor(fx), j = Math.floor(fz), u = fx - i, v = fz - j, k = j * nx + i;
+      return (h[k] * (1 - u) + h[k + 1] * u) * (1 - v) + (h[k + nx] * (1 - u) + h[k + nx + 1] * u) * v;
+    },
+    distAt(x, z) { const k = Math.round(Math.min(nz - 1, Math.max(0, z - patch.z0))) * nx + Math.round(Math.min(nx - 1, Math.max(0, x - patch.x0))); return dist[k]; },
+    regAt(x, z) { const k = Math.round(Math.min(nz - 1, Math.max(0, z - patch.z0))) * nx + Math.round(Math.min(nx - 1, Math.max(0, x - patch.x0))); return reg[k]; },
+  };
 }
 
 function chunkGeometry(G, ci, cj, step) {

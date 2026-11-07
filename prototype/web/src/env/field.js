@@ -67,8 +67,8 @@ export function createField(L) {
   }
 
   /** Terrain height (m). */
-  function height(x, z) {
-    const { d, reg } = nearest(x, z);
+  function height(x, z, nn = nearest(x, z)) {
+    const { d, reg } = nn;
     let h;
     if (d <= 0 && !inDock(x, z)) {
       h = reg.legacy ? -0.035 * fbm(x * 0.35, z * 0.35, seed + 3) - (reg.surface === 'shallow' ? 0.02 : 0) : regionSurfaceHeight(reg, x, z);
@@ -110,8 +110,8 @@ export function createField(L) {
   }
 
   /** Layer weights [wet_mud, grass, path, dry_mud, bank] (sum 1) and wetness 0..1 at (x, z, h). */
-  function surface(x, z, h = height(x, z), out = new Float32Array(6)) {
-    const { d, reg } = nearest(x, z);
+  function surface(x, z, h = height(x, z), out = new Float32Array(6), nn = nearest(x, z)) {
+    const { d, reg } = nn;
     const n = fbm(x * 0.09, z * 0.09, seed + 31), n2 = vnoise(x * 0.31, z * 0.31, seed + 37);
     let w;
     if (d <= 0 && !inDock(x, z)) {
@@ -152,7 +152,14 @@ export function createField(L) {
   /** Signed distance to walkable ground (negative inside), docks excluded. */
   function walkDist(x, z) { return nearest(x, z).d; }
   function regionAt(x, z) { const n = nearest(x, z); return n.d <= 0 ? n.reg : null; }
-  return { height, surface, walkDist, regionAt, inDock, waterY: W, layout: L };
+  /** One query for the terrain grid: height, surface weights, signed walk distance, region. */
+  function sample(x, z, out) {
+    const nn = nearest(x, z);
+    const h = height(x, z, nn);
+    surface(x, z, h, out, nn);
+    return { h, d: nn.d, reg: nn.d <= 0 ? nn.reg : null };
+  }
+  return { height, surface, sample, nearest, walkDist, regionAt, inDock, waterY: W, layout: L };
 }
 
 function sdRect(x, z, r) {
