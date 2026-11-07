@@ -202,7 +202,10 @@ export function buildWorld() {
   const sun = new THREE.DirectionalLight(0xfff1d6, 1.6);
   sun.position.set(-30, 60, 20); scene.add(sun);
   // Surfaces the FX/atmosphere layer restyles (src/fx/atmosphere.js): water, shallow sheets, ground, mud.
-  const layers = { water: null, shallow: [], ground: [], mud: [], reeds: null };
+  const layers = { water: null, shallow: [], ground: [], mud: [], reeds: null, gray: {} };
+  // Graybox primitives the environment layer (src/env) replaces with Blender/CC0 models once loaded
+  // (hidden, not removed: without assets, e.g. opened from file://, the graybox stays as it was).
+  const gray = (key, ...meshes) => { (layers.gray[key] ??= []).push(...meshes); return meshes[0]; };
 
   // Murky water / marsh beyond the walkable areas.
   const water = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), lam(0x3c5552));
@@ -265,31 +268,30 @@ export function buildWorld() {
 
   const props = {};
   // Bến Sậy: dock posts, ferry boat, hut.
-  for (const z of [26, 29, 32]) { addCyl(scene, 0.12, 0.12, 1.4, 0x4c3a28, -2.2, 0.5, z); addCyl(scene, 0.12, 0.12, 1.4, 0x4c3a28, 2.2, 0.5, z); }
+  for (const z of [26, 29, 32]) gray('dockPosts', addCyl(scene, 0.12, 0.12, 1.4, 0x4c3a28, -2.2, 0.5, z), addCyl(scene, 0.12, 0.12, 1.4, 0x4c3a28, 2.2, 0.5, z));
   props.ferry = new THREE.Group();
   addBox(props.ferry, 1.6, 0.4, 6, 0x5b4632, 0, 0.1, 0);
   addBox(props.ferry, 1.2, 0.5, 1.2, 0x8a7a55, 0, 0.5, 0.6);
   props.ferry.position.set(3.4, 0, 33); scene.add(props.ferry);
-  addBox(scene, 4, 2.4, 3.4, 0x8d7a58, -10, 1.2, 4); // hut
-  addBox(scene, 4.6, 0.3, 4, 0x6d5b3c, -10, 2.55, 4);
+  gray('hutBen', addBox(scene, 4, 2.4, 3.4, 0x8d7a58, -10, 1.2, 4), addBox(scene, 4.6, 0.3, 4, 0x6d5b3c, -10, 2.55, 4)); // hut
   // Fires.
   props.fires = {};
   for (const p of POINTS.filter((x) => x.kind === 'rest')) {
     const g = new THREE.Group();
-    addCyl(g, 0.8, 0.9, 0.25, 0x5a5048, 0, 0.12, 0);
+    gray('fireBase', addCyl(g, 0.8, 0.9, 0.25, 0x5a5048, 0, 0.12, 0));
     const flame = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.0, 8), new THREE.MeshBasicMaterial({ color: 0xffa040 }));
     flame.position.y = 0.7; g.add(flame);
     g.position.set(p.x, 0, p.z); scene.add(g); props.fires[p.id] = flame;
   }
   // Fallen gáo tree near trap A, stakes, blade, villager marker etc.
   const lv = VAULTS[0], llen = Math.hypot(lv.bx - lv.ax, lv.bz - lv.az);
-  const log = addCyl(scene, 0.42, 0.5, llen, 0x5b4a36, (lv.ax + lv.bx) / 2, 0.45, (lv.az + lv.bz) / 2); log.rotation.z = Math.PI / 2; log.rotation.y = -Math.atan2(lv.bz - lv.az, lv.bx - lv.ax);
+  const log = addCyl(scene, 0.42, 0.5, llen, 0x5b4a36, (lv.ax + lv.bx) / 2, 0.45, (lv.az + lv.bz) / 2); log.rotation.z = Math.PI / 2; log.rotation.y = -Math.atan2(lv.bz - lv.az, lv.bx - lv.ax); gray('vaultLog', log);
   // Ditch ("rạch nước") at Bến Sậy: a narrow water channel to vault over.
   const dv = VAULTS[1];
   const ditch = new THREE.Mesh(new THREE.PlaneGeometry(Math.hypot(dv.bx - dv.ax, dv.bz - dv.az), dv.hw * 2), lam(0x2f4846));
   ditch.rotation.x = -Math.PI / 2; ditch.position.set((dv.ax + dv.bx) / 2, 0.035, (dv.az + dv.bz) / 2); scene.add(ditch); layers.shallow.push(ditch);
-  for (const s2 of [-1, 1]) addBox(scene, Math.hypot(dv.bx - dv.ax, dv.bz - dv.az), 0.12, 0.12, 0x4c3e2c, (dv.ax + dv.bx) / 2, 0.06, dv.az + s2 * dv.hw);
-  const stake = (x, z, broken) => { const s = addCyl(scene, 0.09, 0.11, broken ? 0.7 : 1.3, 0x7a6748, x, broken ? 0.35 : 0.65, z, 6); s.rotation.z = broken ? 0.4 : 0; return s; };
+  for (const s2 of [-1, 1]) gray('ditchRails', addBox(scene, Math.hypot(dv.bx - dv.ax, dv.bz - dv.az), 0.12, 0.12, 0x4c3e2c, (dv.ax + dv.bx) / 2, 0.06, dv.az + s2 * dv.hw));
+  const stake = (x, z, broken) => { const s = addCyl(scene, 0.09, 0.11, broken ? 0.7 : 1.3, 0x7a6748, x, broken ? 0.35 : 0.65, z, 6); s.rotation.z = broken ? 0.4 : 0; s.userData.envStake = broken ? 'broken' : 'sharp'; gray('stakes', s); return s; };
   stake(-18, -30, true); stake(-2.3, -117.5, true);
   stake(-6, -60, false); stake(0, -68, false); stake(6, -76, false);
   props.blade = addBox(scene, 0.5, 0.06, 0.18, 0x7d6a4a, 6, 1.05, -75.85, 0.5);
@@ -298,11 +300,11 @@ export function buildWorld() {
   addBox(scene, 2.4, 0.06, 5, 0x9a8f58, 0.5, 0.03, -114, 0.2);
   // Shortcut gate (rattan barrier) and lever.
   props.gate = addBox(scene, GATE.x1 - GATE.x0, 1.8, GATE.z1 - GATE.z0, 0x6a5a3a, (GATE.x0 + GATE.x1) / 2, 0.9, (GATE.z0 + GATE.z1) / 2);
-  addCyl(scene, 0.1, 0.1, 1.2, 0x7a6748, 34, 0.6, -56);
+  gray('lever', addCyl(scene, 0.1, 0.1, 1.2, 0x7a6748, 34, 0.6, -56));
   // Kiln (Z3): rough earthen dome, ash pile, 4 lip pieces, hollow cover.
-  addCyl(scene, 2.2, 3, 2.6, 0x8a6a50, -31, 1.3, -111, 14);
+  gray('kiln', addCyl(scene, 2.2, 3, 2.6, 0x8a6a50, -31, 1.3, -111, 14));
   const ash = new THREE.Mesh(new THREE.SphereGeometry(1.1, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), lam(0x9a948c));
-  ash.position.set(-31, 0, -115.6); scene.add(ash);
+  ash.position.set(-31, 0, -115.6); scene.add(ash); gray('ash', ash);
   props.kilnPieces = POINTS.filter((p) => p.kind === 'kiln_piece').map((p, i) => {
     const m = addBox(scene, 0.8, 0.18, 0.5, 0x9a7458, p.x, 0.12, p.z, i * 0.7);
     return m;
@@ -314,14 +316,14 @@ export function buildWorld() {
   props.trapStakeTop = addCyl(scene, 0.11, 0.13, 0.7, 0x7a6748, -6, 1.75, -121.5, 6); props.trapStakeTop.rotation.z = 0.25;
   props.addedMud = new THREE.Mesh(new THREE.CircleGeometry(1, 28), lam(0x3b2e22)); props.addedMud.rotation.x = -Math.PI / 2; props.addedMud.visible = false; scene.add(props.addedMud); layers.mud.push(props.addedMud);
   // Mire gate posts.
-  addCyl(scene, 0.15, 0.15, 2.2, 0x5a4a36, -3.4, 1.1, -119); addCyl(scene, 0.15, 0.15, 2.2, 0x5a4a36, 3.4, 1.1, -119);
+  gray('mireGate', addCyl(scene, 0.15, 0.15, 2.2, 0x5a4a36, -3.4, 1.1, -119), addCyl(scene, 0.15, 0.15, 2.2, 0x5a4a36, 3.4, 1.1, -119));
 
   // Hub: Lau Landing (fictional), furnace, plain wide-mouth jar, skin-headed wooden drum, river bank.
-  addBox(scene, 6, 3, 5, 0x9a8564, HUB_X + 8, 1.5, 6); addBox(scene, 6.8, 0.4, 5.8, 0x6d5b3c, HUB_X + 8, 3.2, 6);
+  gray('hubHouse', addBox(scene, 6, 3, 5, 0x9a8564, HUB_X + 8, 1.5, 6), addBox(scene, 6.8, 0.4, 5.8, 0x6d5b3c, HUB_X + 8, 3.2, 6));
   props.hubHouse2 = addBox(scene, 5, 2.6, 4, 0x9a8564, HUB_X - 9, 1.3, 8); props.hubHouse2.visible = false;
-  addCyl(scene, 1.4, 1.8, 2.4, 0x7a5a42, HUB_X - 8, 1.2, -8, 12); // furnace
+  gray('furnace', addCyl(scene, 1.4, 1.8, 2.4, 0x7a5a42, HUB_X - 8, 1.2, -8, 12)); // furnace
   const jar = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.55, 1.1, 16, 1, true), lam(0x9b7b5d, { side: THREE.DoubleSide }));
-  jar.position.set(HUB_X + 6, 0.55, -9); scene.add(jar);
+  jar.position.set(HUB_X + 6, 0.55, -9); scene.add(jar); gray('jar', jar);
   props.drum = new THREE.Group();
   addCyl(props.drum, 0.9, 0.9, 1.2, 0x6b4a2e, 0, 0.9, 0, 16);
   addCyl(props.drum, 0.92, 0.92, 0.04, 0xd8c8a0, 0, 1.52, 0, 16);

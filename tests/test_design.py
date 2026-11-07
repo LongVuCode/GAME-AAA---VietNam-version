@@ -467,6 +467,59 @@ class StoryIntegration04(unittest.TestCase):
         b["cinematics"]["cinematics"][0]["skippable"] = False
         self.assertTrue(any("skippable" in e for e in self.errors(b)))
 
+    # ---- review fixes (REVIEW_STORY_INTEGRATION_0_4)
+
+    def creature(self, b, cid):
+        return next(c for c in b["creatures_0_4"]["creatures"] if c["id"] == cid)
+
+    def test_si03_crab_replaced_but_legacy_id_kept(self):
+        c = self.creature(self.bundle, "cvd_de_cong_da")
+        self.assertEqual(c["enemy_ref"], "en_cua_cang_bun")
+        self.assertTrue(c["legacy_id"])
+        self.assertNotIn("cua", c["name"]["vi"].lower())
+        self.assertEqual(c["anatomy"]["forelimbs"]["count"], 2)
+        self.assertEqual(c["anatomy"]["limbs_total"], 10)
+
+    def test_si03_crab_name_or_spit_attack_is_error(self):
+        b = self.fresh()
+        self.creature(b, "cvd_de_cong_da")["name"]["vi"] = "Cua Đá"
+        self.creature(b, "cvd_de_cong_da")["attack_display"]["cua_kep"]["vi"] = "Phun bùn"
+        errs = self.errors(b)
+        self.assertTrue(any("uses ['cua']" in e for e in errs))
+        self.assertTrue(any("spitting" in e for e in errs))
+
+    def test_si03_hub_practice_has_no_marsh_spirit(self):
+        step = next(s for s in self.bundle["lineage"]["handoff"]["steps"] if s["id"] == "ho_07_trial")
+        variants = {x.get("variant") for x in step["enemies"]}
+        for v in variants:
+            self.assertNotEqual(self.creature(self.bundle, v)["lore_kind"], "yeu_dam")
+        b = self.fresh()
+        self.creature(b, "cvd_de_cong_da_non")["lore_kind"] = "yeu_dam"
+        self.assertTrue(any("SB11-13" in e for e in self.errors(b)))
+
+    def test_creature_rig_must_match_enemies(self):
+        b = self.fresh()
+        self.creature(b, "cvd_u_bun")["rig"] = "quadruped_shared"
+        self.assertTrue(any("differs from enemies skeleton_family" in e for e in self.errors(b)))
+
+    def test_si10_trap_blade_words_blocked_in_hung_6(self):
+        b = self.fresh()
+        cv = self.conv(b, "cv_handoff_buong")
+        cv["lines"][5]["text"] = {"vi": "Lưỡi bẫy đồng cũ mắc ở cổ nó.", "en": "It had something in its neck."}
+        self.assertTrue(any("lưỡi bẫy" in e for e in self.errors(b)))
+
+    def test_si01_strip_not_tied_on_wrist(self):
+        shots = [s for c in self.bundle["cinematics"]["cinematics"] for s in c["shots"]]
+        self.assertFalse(any("buộc vào cổ tay" in s.get("direction", "") for s in shots))
+        calls = [o["text"]["vi"] for bk in self.bundle["dialogue"]["barks"] for o in bk["lines"]]
+        self.assertFalse(any("về ăn cơm" in t for t in calls))
+
+    def test_si05_marsh_spirit_codex_does_not_cite_lncq(self):
+        e = next(x for x in self.bundle["codex"]["entries"] if x["id"] == "cx_yeu_dam")
+        self.assertEqual(e["research_refs"], [])
+        self.assertNotIn("Lĩnh Nam", e["text"]["vi"])
+        self.assertNotIn("phe", e["text"]["vi"])
+
 
 
 class Combat04(unittest.TestCase):
