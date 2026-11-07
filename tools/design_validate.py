@@ -78,6 +78,7 @@ def load_bundle(data_dir: Path = DATA_DIR) -> tuple[dict[str, Any], Report]:
             rep.err(f"{name}.json: file missing")
         except json.JSONDecodeError as e:
             rep.err(f"{name}.json: invalid JSON ({e})")
+    load_optional_0_4(data_dir, bundle, rep)
     return bundle, rep
 
 
@@ -708,6 +709,8 @@ def validate(b: dict, research: dict) -> Report:
     check_demo_0_3(b, rep)
     # ---- Demo 0.4 story integration (research/narrative/STORY_INTEGRATION_0_4.md)
     check_story_0_4(b, rep)
+    # ---- Demo 0.4 combat moves, enemy/boss move sets, world_0_4 (design/COMBAT_0_4.md)
+    check_demo_0_4(b, rep)
     return rep
 
 
@@ -1378,6 +1381,533 @@ def check_story_0_4(b: dict, rep: Report) -> None:
     for k, v in seen.items():
         if v > 1:
             rep.err(f"story 0.4: duplicate id {k!r} ({v}x)")
+
+
+# ---------------------------------------------------------------- Demo 0.4 combat + world (design/COMBAT_0_4.md)
+
+OPTIONAL_FILES = ("world_0_4",)
+SHAPES_0_4 = {"melee", "charge", "aoe", "rear_arc", "projectile", "ring_wave", "cone", "grab", "burrow_emerge", "aoe_target",
+              "front_wave", "self", "rolling_projectile", "furrow_charge", "spin", "arena_flood"}
+MOVE_END_TOKENS = {"L", "H", "hold_H"}
+WORLD_CELL_M = 2.0
+_WORLD_CACHE: dict[str, dict] = {}
+
+
+def load_optional_0_4(data_dir: Path, bundle: dict, rep: Report) -> None:
+    """world_0_4.json is optional for the bundle (older data dirs in tests have no world file)."""
+    for name in OPTIONAL_FILES:
+        path = data_dir / f"{name}.json"
+        if not path.exists():
+            continue
+        try:
+            with open(path, encoding="utf-8") as f:
+                bundle[name] = json.load(f)
+        except json.JSONDecodeError as e:
+            rep.err(f"{name}.json: invalid JSON ({e})")
+
+
+def point_in_polygon(x: float, z: float, pts: list) -> bool:
+    inside = False
+    j = len(pts) - 1
+    for i in range(len(pts)):
+        xi, zi = pts[i]
+        xj, zj = pts[j]
+        if (zi > z) != (zj > z) and x < (xj - xi) * (z - zi) / ((zj - zi) or 1e-12) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+
+def in_shape_0_4(x: float, z: float, shape: dict) -> bool:
+    if "polygon" in shape:
+        return point_in_polygon(x, z, shape["polygon"])
+    return in_shape(x, z, shape)
+
+
+def seg_distance(px: float, pz: float, a: list, b: list) -> tuple[float, float]:
+    dx, dz = b[0] - a[0], b[1] - a[1]
+    l2 = dx * dx + dz * dz or 1e-9
+    t = max(0.0, min(1.0, ((px - a[0]) * dx + (pz - a[1]) * dz) / l2))
+    return ((px - a[0] - dx * t) ** 2 + (pz - a[1] - dz * t) ** 2) ** 0.5, t
+
+
+def polyline_distance(px: float, pz: float, pts: list) -> tuple[float, float]:
+    """(distance, arc-length position of the closest point) to a polyline."""
+    best, pos, acc = 1e18, 0.0, 0.0
+    for a, b in zip(pts, pts[1:]):
+        seg = ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
+        d, t = seg_distance(px, pz, a, b)
+        if d < best:
+            best, pos = d, acc + t * seg
+        acc += seg
+    return best, pos
+
+
+def polyline_length(pts: list) -> float:
+    return sum(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5 for a, b in zip(pts, pts[1:]))
+
+
+def world_metrics_0_4(world: dict) -> dict:
+    """Rasterises world_0_4 regions (2 m cells): area, legacy area, blocked cells, reachable set. Cached by content."""
+    key = json.dumps(world, sort_keys=True, ensure_ascii=False)
+    if key in _WORLD_CACHE:
+        return _WORLD_CACHE[key]
+    b = world.get("bounds", {})
+    x0, x1, z0, z1 = b.get("x0", 0), b.get("x1", 0), b.get("z0", 0), b.get("z1", 0)
+    c = WORLD_CELL_M
+    nx, nz = max(0, int((x1 - x0) / c)), max(0, int((z1 - z0) / c))
+    regions = world.get("regions", [])
+    shapes = [s for r in regions for s in r.get("shapes", [])]
+    legacy = [s for r in regions if r.get("legacy") for s in r.get("shapes", [])]
+    blockers = [(bl.get("points", []), bl.get("half_width_m", 1.0)) for bl in world.get("blockers", [])]
+    blockers += [(w.get("points", []), w.get("width_m", 1.0) / 2) for w in world.get("water", []) if w.get("walkable") is False]
+    walk, leg_n, area_n = set(), 0, 0
+    for i in range(nx):
+        x = x0 + (i + 0.5) * c
+        for j in range(nz):
+            z = z0 + (j + 0.5) * c
+            if any(in_shape_0_4(x, z, s) for s in legacy):
+                leg_n += 1
+            if not any(in_shape_0_4(x, z, s) for s in shapes):
+                continue
+            area_n += 1
+            if any(len(p) >= 2 and polyline_distance(x, z, p)[0] <= hw for p, hw in blockers):
+                continue
+            walk.add((i, j))
+    start = (world.get("spawn") or {}).get("player_start", {})
+    seen: set = set()
+    if start:
+        s0 = (int((start.get("x", 0) - x0) / c), int((start.get("z", 0) - z0) / c))
+        if s0 in walk:
+            stack = [s0]
+            seen.add(s0)
+            while stack:
+                i, j = stack.pop()
+                for n in ((i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)):
+                    if n in walk and n not in seen:
+                        seen.add(n)
+                        stack.append(n)
+    out = {"area_m2": area_n * c * c, "legacy_area_m2": leg_n * c * c, "reachable": seen, "walk": walk,
+           "origin": (x0, z0), "cell": c}
+    _WORLD_CACHE[key] = out
+    return out
+
+
+def _cell_reachable(m: dict, x: float, z: float) -> bool:
+    c, (x0, z0) = m["cell"], m["origin"]
+    i, j = int((x - x0) / c), int((z - z0) / c)
+    return any((i + di, j + dj) in m["reachable"] for di in (-1, 0, 1) for dj in (-1, 0, 1))
+
+
+def check_world_0_4(b: dict, rep: Report, enemy_ids: set) -> dict[str, dict]:
+    w = b["world_0_4"]
+    check_display(w, "world_0_4", rep)
+    check_labels_anywhere(w, "world_0_4", rep)
+    check_times(w, "world_0_4", rep)
+    regions = {r.get("id"): r for r in w.get("regions", []) + w.get("hub_regions", [])}
+    if len(regions) != len(w.get("regions", [])) + len(w.get("hub_regions", [])):
+        rep.err("world_0_4.regions: duplicate region id")
+    for rid, r in regions.items():
+        for s in r.get("shapes", []):
+            if not ({"rect", "circle", "polygon"} & set(s)):
+                rep.err(f"world_0_4.regions.{rid}: shape needs rect, circle or polygon")
+            if "polygon" in s and len(s["polygon"]) < 3:
+                rep.err(f"world_0_4.regions.{rid}: polygon needs >= 3 points")
+        if r.get("kind") == "zone" and not r.get("legacy") and not is_loc(r.get("name")):
+            rep.err(f"world_0_4.regions.{rid}: new zone needs a name {{vi, en}}")
+    pts = {}
+    for p in w.get("points", []):
+        if p.get("id") in pts:
+            rep.err(f"world_0_4.points: duplicate id {p.get('id')!r}")
+        pts[p.get("id")] = p
+
+    def inside(rid: str, x: float, z: float) -> bool:
+        r = regions.get(rid)
+        return bool(r) and any(in_shape_0_4(x, z, s) for s in r.get("shapes", []))
+
+    for pid, p in pts.items():
+        if p.get("region") not in regions:
+            rep.err(f"world_0_4.points.{pid}: unknown region {p.get('region')!r}")
+        elif not inside(p["region"], p["x"], p["z"]):
+            rep.err(f"world_0_4.points.{pid}: ({p['x']}, {p['z']}) is outside region {p['region']}")
+    # Legacy compatibility: every POINTS id of world.js exists with the same coordinates (legacy_map).
+    legacy = parse_world_points()
+    if legacy is not None:
+        for lid, (lx, lz) in legacy.items():
+            p = pts.get(lid)
+            if p is None:
+                rep.err(f"world_0_4: legacy point {lid!r} from world.js is missing (legacy_map: same_id_same_xz)")
+            elif abs(p["x"] - lx) > 0.01 or abs(p["z"] - lz) > 0.01:
+                rep.err(f"world_0_4.points.{lid}: moved from world.js ({lx}, {lz}) without a legacy_map entry")
+    groups = {g.get("id") for g in b["enemies"].get("encounters_0_2", {}).get("groups", [])}
+    for s in w.get("spawns", []):
+        sid = s.get("id")
+        if s.get("legacy"):
+            if sid not in groups:
+                rep.err(f"world_0_4.spawns.{sid}: legacy spawn not in enemies.encounters_0_2")
+        elif not s.get("members"):
+            rep.err(f"world_0_4.spawns.{sid}: needs members")
+        for mbr in s.get("members", []):
+            if mbr.get("enemy") not in enemy_ids:
+                rep.err(f"world_0_4.spawns.{sid}: unknown enemy {mbr.get('enemy')!r}")
+        if s.get("region") not in regions:
+            rep.err(f"world_0_4.spawns.{sid}: unknown region {s.get('region')!r}")
+        elif not inside(s["region"], s["x"], s["z"]):
+            rep.err(f"world_0_4.spawns.{sid}: ({s['x']}, {s['z']}) is outside region {s['region']}")
+    prog = w.get("progression", {})
+    gates = prog.get("boss_gates", {})
+    for g in gates.get("gates", []):
+        if pts.get(g, {}).get("kind") != "boss_gate":
+            rep.err(f"world_0_4.progression: gate {g!r} is not a boss_gate point")
+    tracks = gates.get("tracks", [])
+    for t in tracks:
+        if pts.get(t, {}).get("kind") != "track":
+            rep.err(f"world_0_4.progression: track {t!r} is not a track point")
+    if gates and not 1 <= gates.get("tracks_found_at_least", 0) <= len(tracks):
+        rep.err("world_0_4.progression: tracks_found_at_least must be within 1..len(tracks) (no softlock)")
+    for f in prog.get("fast_travel_rests", []):
+        if pts.get(f, {}).get("kind") != "rest":
+            rep.err(f"world_0_4.progression: fast travel {f!r} is not a rest point")
+    for t in w.get("points", []):
+        if t.get("requires_traversal") and pts.get(t["requires_traversal"], {}).get("kind") != "traversal":
+            rep.err(f"world_0_4.points.{t['id']}: requires_traversal {t['requires_traversal']!r} unknown")
+    for f in (w.get("heightmap") or {}).get("features", []):
+        h = f.get("height_m", 0)
+        if not -3 <= h <= 15 or ("radius_m" in f and f["radius_m"] <= 0):
+            rep.err(f"world_0_4.heightmap.{f.get('id')}: height must be -3..15 m and radius > 0")
+    for v in w.get("landmarks_visual", []):
+        for z in v.get("visible_from", []):
+            if z not in regions:
+                rep.err(f"world_0_4.landmarks_visual.{v.get('id')}: unknown region {z!r}")
+
+    # Geometry: area ratio, reachability, paths inside, pacing.
+    m = world_metrics_0_4(w)
+    tg = w.get("targets", {})
+    if m["legacy_area_m2"] <= 0:
+        rep.err("world_0_4: no legacy regions (cannot measure growth)")
+    else:
+        ratio = m["area_m2"] / m["legacy_area_m2"]
+        if not tg.get("area_ratio_min", 3.0) <= ratio <= tg.get("area_ratio_max", 5.0):
+            rep.err(f"world_0_4: walkable area {m['area_m2']:.0f} m2 is {ratio:.2f}x legacy, outside "
+                    f"{tg.get('area_ratio_min', 3.0)}..{tg.get('area_ratio_max', 5.0)}")
+    for pid, p in pts.items():
+        if p.get("region") in regions and regions[p["region"]].get("kind") != "hub" and not _cell_reachable(m, p["x"], p["z"]):
+            rep.err(f"world_0_4.points.{pid}: not reachable from player_start")
+    pace = w.get("pacing", {})
+    interest = [(p["x"], p["z"]) for p in pts.values() if p.get("kind") in set(pace.get("interest_kinds", []))]
+    interest += [(s["x"], s["z"]) for s in w.get("spawns", [])]
+    max_gap = pace.get("max_gap_s", 90) * pace.get("reference_speed_mps", 5.0)
+    near = pace.get("near_path_m", 14)
+    for path in w.get("paths", []):
+        pl = path.get("points", [])
+        if len(pl) < 2:
+            rep.err(f"world_0_4.paths.{path.get('id')}: needs >= 2 points")
+            continue
+        length = polyline_length(pl)
+        for a, bb in zip(pl, pl[1:]):
+            seg = ((bb[0] - a[0]) ** 2 + (bb[1] - a[1]) ** 2) ** 0.5
+            steps = max(1, int(seg / WORLD_CELL_M))
+            for k in range(steps + 1):
+                x, z = a[0] + (bb[0] - a[0]) * k / steps, a[1] + (bb[1] - a[1]) * k / steps
+                if not any(in_shape_0_4(x, z, s) for r in regions.values() for s in r.get("shapes", [])):
+                    rep.err(f"world_0_4.paths.{path.get('id')}: leaves walkable ground near ({x:.0f}, {z:.0f})")
+                    break
+            else:
+                continue
+            break
+        if path.get("kind") not in ("main", "side"):
+            continue
+        marks = sorted(pos for d, pos in (polyline_distance(x, z, pl) for x, z in interest) if d <= near)
+        marks = [0.0] + marks + [length]
+        gap = max(bb - a for a, bb in zip(marks, marks[1:]))
+        if gap > max_gap:
+            rep.err(f"world_0_4.paths.{path.get('id')}: {gap:.0f} m without a point of interest (max {max_gap:.0f} m)")
+    return pts
+
+
+def check_demo_0_4(b: dict, rep: Report) -> None:
+    tuning, weapons, enemies, skills, mp = b["combat_tuning"], b["weapons"], b["enemies"], b["skills"], b["map"]
+    items = {i["id"] for i in b["items"].get("items", [])}
+    inp = tuning.get("input_0_4", {})
+    tokens = set(inp.get("tokens", []))
+    pips = (tuning.get("momentum_0_4") or {}).get("pips", 0)
+    br = tuning.get("boss_rules_0_3", {})
+    br4 = tuning.get("boss_rules_0_4", {})
+    max_delayed = tuning.get("enemy_ai", {}).get("max_delayed_attacks_per_moveset", 1)
+    presets = {p["id"] for p in tuning.get("difficulty", {}).get("presets", [])}
+    unlock_nodes = {n.get("id"): n for n in skills.get("move_unlocks_0_4", [])}
+    require_label(skills.get("move_unlocks_0_4", []), "skills.move_unlocks_0_4", rep)
+    require_label(skills.get("skills_0_4", []), "skills.skills_0_4", rep)
+
+    # ---- weapons: moves_0_4, chains_0_4
+    move_seen: dict[str, int] = {}
+    for w in weapons.get("weapons", []):
+        for m in w.get("moves", []) + w.get("moves_0_4", []) + w.get("air_moves_0_3", []):
+            move_seen[m.get("id")] = move_seen.get(m.get("id"), 0) + 1
+    for k, v in move_seen.items():
+        if v > 1:
+            rep.err(f"weapons: duplicate move id {k!r} ({v}x)")
+    for w in weapons.get("weapons", []):
+        wid = w.get("id")
+        m04 = w.get("moves_0_4", [])
+        if not m04:
+            continue
+        require_label(m04, f"weapons.{wid}.moves_0_4", rep)
+        require_label(w.get("chains_0_4", []), f"weapons.{wid}.chains_0_4", rep)
+        known = {m["id"] for m in w.get("moves", []) + m04}
+        for m in m04:
+            mid = f"weapons.{wid}.{m.get('id')}"
+            if m.get("hit_weight") not in HIT_WEIGHTS:
+                rep.err(f"{mid}: invalid hit_weight {m.get('hit_weight')!r}")
+            for k in ("damage", "the_damage", "startup_s", "active_s", "recovery_s", "range_m"):
+                if k not in m:
+                    rep.err(f"{mid}: missing {k}")
+            toks = [t.strip() for t in str(m.get("input", "")).split(",")]
+            bad = [t for t in toks if t not in tokens]
+            if bad:
+                rep.err(f"{mid}: input tokens {bad} not in combat_tuning.input_0_4.tokens")
+            elif toks[-1] not in MOVE_END_TOKENS:
+                rep.err(f"{mid}: input must end with L, H or hold_H")
+            mo = m.get("motion") or {}
+            for k in ("anticipation", "active", "follow_through"):
+                if not isinstance(mo.get(k), str) or not mo[k].strip():
+                    rep.err(f"{mid}: motion.{k} must describe the animation phase")
+            u = m.get("unlock", "start")
+            if u != "start":
+                node = unlock_nodes.get(u)
+                if node is None:
+                    rep.err(f"{mid}: unlock {u!r} not in skills.move_unlocks_0_4")
+                elif node.get("weapon") != wid or m.get("id") not in node.get("moves", []):
+                    rep.err(f"{mid}: unlock node {u} does not list this move for {wid}")
+            dc = m.get("da_cost")
+            if dc is not None and dc != "all" and not (isinstance(dc, int) and 0 < dc <= pips):
+                rep.err(f"{mid}: da_cost must be 'all' or 1..{pips}")
+        chains = w.get("chains_0_4", [])
+        for ch in chains:
+            for key in ("steps", "alt_steps"):
+                for s in ch.get(key, []):
+                    if s != "pause" and s not in known:
+                        rep.err(f"weapons.{wid}.{ch.get('id')}: step {s!r} unknown")
+        playable = [c for c in chains if c.get("kind") in ("light", "light_pause", "heavy", "mixed")]
+        if len(playable) < 3 or not any(c.get("kind") == "heavy" for c in chains):
+            rep.err(f"weapons.{wid}.chains_0_4: needs >= 3 light/heavy chains including one heavy chain")
+        cond = [m for m in m04 if str(m.get("input", "")).split(",")[0] in ("perfect_dodge", "perfect_parry", "dodge")]
+        if len(cond) < 2:
+            rep.err(f"weapons.{wid}.moves_0_4: needs >= 2 conditional moves (after dodge/parry)")
+        sk = {s.get("id"): s for s in skills.get("skills_0_4", [])}
+        for ref in w.get("skills_0_4", []):
+            if sk.get(ref, {}).get("weapon") != wid:
+                rep.err(f"weapons.{wid}.skills_0_4: {ref!r} not a skills_0_4 entry of this weapon")
+
+    # ---- skills 0.4
+    weapon_moves = {w["id"]: {m["id"] for m in w.get("moves_0_4", [])} for w in weapons.get("weapons", [])}
+    max_level = skills.get("rules", {}).get("max_level", 3)
+    for s in skills.get("skills_0_4", []):
+        sid = s.get("id")
+        if s.get("weapon") not in weapon_moves:
+            rep.err(f"skills.skills_0_4.{sid}: unknown weapon")
+        lv = s.get("levels", [])
+        if [x.get("level") for x in lv] != list(range(1, max_level + 1)) or (lv and lv[0].get("cost_xp") != 0):
+            rep.err(f"skills.skills_0_4.{sid}: levels must be 1..{max_level}, level 1 free")
+        if any(not isinstance(x.get("cooldown_s"), (int, float)) or x["cooldown_s"] <= 0 for x in lv):
+            rep.err(f"skills.skills_0_4.{sid}: cooldown_s must be > 0")
+        un = s.get("unlock", {})
+        if un.get("kind") != "xp" or not un.get("cost_xp", 0) > 0:
+            rep.err(f"skills.skills_0_4.{sid}: new Weapon Art must unlock with xp > 0")
+    for nid, n in unlock_nodes.items():
+        for mvid in n.get("moves", []):
+            if mvid not in weapon_moves.get(n.get("weapon"), set()):
+                rep.err(f"skills.move_unlocks_0_4.{nid}: move {mvid!r} not in {n.get('weapon')} moves_0_4")
+        for p in n.get("prereqs", []):
+            if p not in unlock_nodes:
+                rep.err(f"skills.move_unlocks_0_4.{nid}: unknown prereq {p!r}")
+    state: dict[str, int] = {}
+
+    def acyclic(nid: str) -> bool:
+        state[nid] = 1
+        for p in unlock_nodes.get(nid, {}).get("prereqs", []):
+            if p in unlock_nodes and (state.get(p) == 1 or (state.get(p) is None and not acyclic(p))):
+                return False
+        state[nid] = 2
+        return True
+    for nid in unlock_nodes:
+        if state.get(nid) is None and not acyclic(nid):
+            rep.err(f"skills.move_unlocks_0_4: prereq cycle involving {nid}")
+            break
+
+    # ---- enemies 0.4
+    old = {e["id"]: e for e in enemies.get("enemies", [])}
+    new = enemies.get("enemies_0_4", [])
+    require_label(new, "enemies.enemies_0_4", rep)
+    for e in new:
+        eid = e.get("id")
+        if eid in old:
+            rep.err(f"enemies.enemies_0_4.{eid}: id already used in enemies[]")
+        if e.get("type") not in ALLOWED_ENEMY_TYPES:
+            rep.err(f"enemies.{eid}: type {e.get('type')!r} not allowed (no human enemies, D-017/D-018)")
+        forbidden = FORBIDDEN_SPECIES_ALL | FORBIDDEN_SPECIES_BY_CHAPTER.get(e.get("chapter"), set())
+        if e.get("species_family") in forbidden:
+            rep.err(f"enemies.{eid}: species {e.get('species_family')!r} forbidden in {e.get('chapter')}")
+        if e.get("rank") == "boss" or "khoen" in e:
+            rep.err(f"enemies.{eid}: enemies_0_4 holds common foes only (no boss, no khoen)")
+        for k in ("hp", "the_max", "attacks", "behavior", "defeat_behavior"):
+            if k not in e:
+                rep.err(f"enemies.{eid}: missing {k}")
+        for d in e.get("drops", []):
+            if d.get("item") not in items or not 0 < d.get("chance", 1.0) <= 1:
+                rep.err(f"enemies.{eid}: drop {d.get('item')!r} unknown or chance outside (0, 1]")
+    all_enemies = list(old.values()) + new
+    enemy_ids = {e.get("id") for e in all_enemies}
+    for e in all_enemies:
+        eid = e.get("id")
+        pool = {a["id"]: a for a in e.get("attacks", []) + e.get("attacks_0_2", []) + e.get("attacks_0_4", [])}
+        new_atk = e.get("attacks_0_4", []) + (e.get("attacks", []) if e in new else [])
+        for a in new_atk:
+            aid = f"enemies.{eid}.{a.get('id')}"
+            if not isinstance(a.get("parryable"), bool):
+                rep.err(f"{aid}: parryable must be a boolean")
+            tel = a.get("telegraph") or {}
+            if not tel.get("visual") or not tel.get("audio"):
+                rep.err(f"{aid}: telegraph needs both visual and audio cues")
+            if a.get("parryable") is False and a.get("damage", 0) > 0 and tel.get("color_cue") in (None, "none"):
+                rep.err(f"{aid}: unparryable damaging attack needs a color_cue (plus audio)")
+            if a.get("shape") not in SHAPES_0_4:
+                rep.err(f"{aid}: shape {a.get('shape')!r} not in {sorted(SHAPES_0_4)}")
+            if "punish_window_s" not in a:
+                rep.err(f"{aid}: needs punish_window_s (the opening after it)")
+            pw = a.get("pass_windup_s")
+            if pw is not None and pw + 1e-9 < br.get("min_windup_s_unparryable_in_combo", 0.9):
+                rep.err(f"{aid}: pass_windup_s {pw} below fairness floor")
+        ms = e.get("moveset_0_4")
+        if ms is not None and e.get("rank") != "boss":
+            for ref in ms:
+                if ref not in pool:
+                    rep.err(f"enemies.{eid}.moveset_0_4: unknown attack {ref!r}")
+            if len(set(ms)) < 3:
+                rep.err(f"enemies.{eid}.moveset_0_4: needs >= 3 attacks")
+            if sum(1 for r in ms if pool.get(r, {}).get("delayed")) > max_delayed:
+                rep.err(f"enemies.{eid}.moveset_0_4: more than {max_delayed} delayed attack(s)")
+            if not e.get("weak_points_0_4"):
+                rep.err(f"enemies.{eid}: needs weak_points_0_4")
+            if not (e.get("concept_0_4") or {}).get("trick"):
+                rep.err(f"enemies.{eid}: needs concept_0_4.trick (its own gimmick)")
+        if e.get("rank") == "boss" and e.get("phases_0_4"):
+            combos = {c["id"]: c for c in e.get("combos_0_3", []) + e.get("combos_0_4", [])}
+            require_label(e.get("combos_0_4", []), f"enemies.{eid}.combos_0_4", rep)
+            phases = e["phases_0_4"]
+            if len(phases) < 2:
+                rep.err(f"enemies.{eid}.phases_0_4: needs >= 2 phases")
+            if len(e.get("attacks_0_4", [])) < br4.get("min_new_moves_total", 10):
+                rep.err(f"enemies.{eid}: needs >= {br4.get('min_new_moves_total', 10)} new attacks in attacks_0_4")
+            sets = {s.get("id") for s in e.get("set_pieces_0_4", [])}
+            for s in e.get("set_pieces_0_4", []):
+                if s.get("ends_with_attack") and s["ends_with_attack"] not in pool:
+                    rep.err(f"enemies.{eid}.{s.get('id')}: ends_with_attack unknown")
+            for a in e.get("attacks_0_4", []):
+                if a.get("parryable") is False and a.get("damage", 0) > 0 and \
+                        a.get("punish_window_s", 0) + 1e-9 < br4.get("min_punish_window_s_unparryable", 0.8):
+                    rep.err(f"enemies.{eid}.{a.get('id')}: unparryable attack needs punish_window_s >= "
+                            f"{br4.get('min_punish_window_s_unparryable', 0.8)}")
+            for ph in phases:
+                pid = f"enemies.{eid}.{ph.get('id')}"
+                mset = ph.get("moveset", [])
+                for ref in mset:
+                    if ref not in pool:
+                        rep.err(f"{pid}: moveset references unknown attack {ref!r}")
+                if len(set(mset)) < br4.get("min_moves_per_phase", 8):
+                    rep.err(f"{pid}: needs >= {br4.get('min_moves_per_phase', 8)} moves")
+                if sum(1 for r in mset if pool.get(r, {}).get("delayed")) > br4.get("max_delayed_per_phase", 1):
+                    rep.err(f"{pid}: too many delayed attacks (N7)")
+                if sum(1 for r in mset if pool.get(r, {}).get("feint")) > br4.get("max_feints_per_phase", 1):
+                    rep.err(f"{pid}: too many feints")
+                unp = sum(1 for r in mset if pool.get(r, {}).get("parryable") is False)
+                if mset and unp / len(mset) > br4.get("max_unparryable_ratio_per_phase", 0.6) + 1e-9:
+                    rep.err(f"{pid}: {unp}/{len(mset)} unparryable moves (max ratio {br4.get('max_unparryable_ratio_per_phase', 0.6)})")
+                if ph.get("set_piece") and ph["set_piece"] not in sets:
+                    rep.err(f"{pid}: set_piece {ph['set_piece']!r} unknown")
+                for cid in ph.get("combos", []):
+                    c = combos.get(cid)
+                    if c is None:
+                        rep.err(f"{pid}: unknown combo {cid!r}")
+                        continue
+                    steps = c.get("steps", [])
+                    if not 2 <= len(steps) <= br.get("max_combo_steps", 4):
+                        rep.err(f"{pid}: combo {cid} needs 2..{br.get('max_combo_steps', 4)} steps")
+                    for i, s in enumerate(steps):
+                        for ref in (s.get("attack"), s.get("branch_if_player_behind")):
+                            if ref is not None and ref not in mset:
+                                rep.err(f"{pid}: combo {cid} step {i} uses {ref!r} outside this phase")
+                        a = pool.get(s.get("attack"))
+                        if a and i > 0:
+                            wu = a.get("windup_s", 0) * s.get("windup_mult", 1.0)
+                            floor = br.get("min_windup_s_parryable_in_combo", 0.3) if a.get("parryable") else \
+                                br.get("min_windup_s_unparryable_in_combo", 0.9)
+                            if wu + 1e-9 < floor:
+                                rep.err(f"{pid}: combo {cid} step {i} windup {wu:.2f}s below fairness floor {floor}s")
+            d4 = e.get("difficulty_0_4")
+            if d4 is not None and {k for k in d4 if not k.startswith("_")} != presets:
+                rep.err(f"enemies.{eid}.difficulty_0_4: must cover exactly the presets {sorted(presets)}")
+            resp = ((e.get("behavior_0_4") or {}).get("punish_turtle") or {}).get("response")
+            if resp and not any(resp in ph.get("moveset", []) for ph in phases):
+                rep.err(f"enemies.{eid}.behavior_0_4.punish_turtle: response {resp!r} in no phase")
+            arena = next((z for z in mp.get("zones", []) if z.get("id") in e.get("zones", [])), None)
+            for hk in (e.get("arena_0_4") or {}).get("hummocks", []):
+                if arena and not any(in_shape(hk["x"], hk["z"], s) for s in arena.get("shapes", [])):
+                    rep.err(f"enemies.{eid}.arena_0_4: hummock {hk.get('id')} outside the arena")
+    xp_ids = {x.get("id") for x in skills.get("xp_sources", []) + skills.get("xp_sources_0_4", [])}
+    for x in skills.get("xp_sources_0_4", []):
+        if x.get("enemy") and x["enemy"] not in enemy_ids:
+            rep.err(f"skills.xp_sources_0_4.{x.get('id')}: unknown enemy {x['enemy']!r}")
+
+    # ---- world + map 0.4
+    if "world_0_4" not in b:
+        return
+    pts = check_world_0_4(b, rep, enemy_ids)
+    regions = {r.get("id") for r in b["world_0_4"].get("regions", [])}
+    for e in new:
+        for z in e.get("zones", []):
+            if z not in regions:
+                rep.err(f"enemies.{e.get('id')}: zone {z!r} not a world_0_4 region")
+    for s in skills.get("skills_0_4", []):
+        rp = (s.get("unlock") or {}).get("requires_point")
+        if rp and rp not in pts:
+            rep.err(f"skills.skills_0_4.{s.get('id')}: requires_point {rp!r} not in world_0_4")
+    m4 = mp.get("map_0_4")
+    if not m4:
+        return
+    icons = {i["id"] for i in mp.get("icons", []) + m4.get("icons_add", [])}
+    zones = {z["id"] for z in mp.get("zones", []) + m4.get("zones", [])}
+    for z in m4.get("zones", []):
+        if z.get("region_ref") not in regions:
+            rep.err(f"map.map_0_4.zones.{z.get('id')}: region_ref unknown")
+    for key in ("landmarks", "discovery_points", "chests", "environment_secrets", "zones"):
+        require_label(m4.get(key, []), f"map.map_0_4.{key}", rep)
+    old_ids = {o.get("id") for k in ("landmarks", "discovery_points", "chests", "environment_secrets") for o in mp.get(k, [])}
+    seen: set = set()
+    for key in ("landmarks", "discovery_points", "chests", "environment_secrets"):
+        for o in m4.get(key, []):
+            where = f"map.map_0_4.{key}.{o.get('id')}"
+            if o.get("id") in seen or o.get("id") in old_ids:
+                rep.err(f"{where}: duplicate id")
+            seen.add(o.get("id"))
+            p = pts.get(o.get("world_point"))
+            if p is None:
+                rep.err(f"{where}: world_point {o.get('world_point')!r} not in world_0_4.points")
+            elif abs(p["x"] - o["x"]) > 0.01 or abs(p["z"] - o["z"]) > 0.01:
+                rep.err(f"{where}: ({o['x']}, {o['z']}) differs from world_0_4 {p['id']} ({p['x']}, {p['z']})")
+            elif "zone" in o and o["zone"] != p.get("region"):
+                rep.err(f"{where}: zone {o['zone']!r} differs from world_0_4 region {p.get('region')!r}")
+            if "zone" in o and o["zone"] not in zones and o["zone"] not in regions:
+                rep.err(f"{where}: unknown zone {o['zone']!r}")
+            if "icon" in o and o["icon"] not in icons:
+                rep.err(f"{where}: unknown icon {o['icon']!r}")
+            if o.get("fast_travel") and o.get("kind") != "rest":
+                rep.err(f"{where}: fast travel only at resting fires")
+            if o.get("xp_ref") and o["xp_ref"] not in xp_ids:
+                rep.err(f"{where}: xp_ref {o['xp_ref']!r} unknown")
+            for r in list(o.get("contents", [])) + list((o.get("reward") or {}).get("items", [])):
+                if "item" in r and r["item"] not in items:
+                    rep.err(f"{where}: unknown item {r['item']!r}")
 
 
 def main(argv: list[str] | None = None) -> int:

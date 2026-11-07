@@ -468,5 +468,134 @@ class StoryIntegration04(unittest.TestCase):
         self.assertTrue(any("skippable" in e for e in self.errors(b)))
 
 
+
+class Combat04(unittest.TestCase):
+    """Demo 0.4 combat moves, enemy/boss move sets and world_0_4 (design/COMBAT_0_4.md)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.bundle, load_rep = dv.load_bundle()
+        assert not load_rep.errors, load_rep.errors
+        cls.research = dv.load_research()
+
+    def fresh(self):
+        return copy.deepcopy(self.bundle)
+
+    def errors(self, bundle):
+        return dv.validate(bundle, self.research).errors
+
+    def weapon(self, b, wid):
+        return next(w for w in b["weapons"]["weapons"] if w["id"] == wid)
+
+    def enemy(self, b, eid):
+        return next(e for e in b["enemies"]["enemies"] + b["enemies"]["enemies_0_4"] if e["id"] == eid)
+
+    def test_world_present_and_grows_3_to_5x(self):
+        self.assertIn("world_0_4", self.bundle)
+        m = dv.world_metrics_0_4(self.bundle["world_0_4"])
+        self.assertTrue(3.0 <= m["area_m2"] / m["legacy_area_m2"] <= 5.0)
+        self.assertEqual(len(m["reachable"]), len(m["walk"]))  # one connected walkable world
+
+    def test_each_weapon_has_three_chains_conditionals_and_new_art(self):
+        for wid in ("wp_giao_dong", "wp_riu_xeo"):
+            w = self.weapon(self.bundle, wid)
+            kinds = [c["kind"] for c in w["chains_0_4"]]
+            self.assertGreaterEqual(sum(k in ("light", "light_pause", "heavy", "mixed") for k in kinds), 3)
+            self.assertTrue(any(m["input"].startswith("perfect_dodge") for m in w["moves_0_4"]))
+            self.assertEqual(len(w["skills_0_4"]), 1)
+
+    def test_bad_input_token_and_chain_step(self):
+        b = self.fresh()
+        w = self.weapon(b, "wp_giao_dong")
+        w["moves_0_4"][0]["input"] = "L,X"
+        w["chains_0_4"][0]["steps"].append("sp_nope")
+        errs = self.errors(b)
+        self.assertTrue(any("input tokens" in e for e in errs))
+        self.assertTrue(any("sp_nope" in e for e in errs))
+
+    def test_move_unlock_must_list_move(self):
+        b = self.fresh()
+        self.weapon(b, "wp_riu_xeo")["moves_0_4"][0]["unlock"] = "mu_ax_quai"
+        self.assertTrue(any("does not list this move" in e for e in self.errors(b)))
+
+    def test_new_enemy_species_and_type_rules(self):
+        b = self.fresh()
+        b["enemies"]["enemies_0_4"][0]["species_family"] = "snake"
+        b["enemies"]["enemies_0_4"][1]["type"] = "human"
+        errs = self.errors(b)
+        self.assertTrue(any("species 'snake' forbidden" in e for e in errs))
+        self.assertTrue(any("type 'human' not allowed" in e for e in errs))
+
+    def test_unparryable_new_attack_needs_color_cue(self):
+        b = self.fresh()
+        a = next(x for x in self.enemy(b, "en_cua_cang_bun")["attacks_0_4"] if x["id"] == "cua4_kim_giu")
+        a["telegraph"]["color_cue"] = "none"
+        self.assertTrue(any("cua4_kim_giu: unparryable damaging attack needs a color_cue" in e for e in self.errors(b)))
+
+    def test_normal_enemy_moveset_rules(self):
+        b = self.fresh()
+        bn = self.enemy(b, "en_bo_ngua_lau")
+        next(x for x in bn["attacks_0_4"] if x["id"] == "bn4_luot_canh")["delayed"] = True
+        self.enemy(b, "en_u_bun")["weak_points_0_4"] = []
+        errs = self.errors(b)
+        self.assertTrue(any("en_bo_ngua_lau.moveset_0_4: more than" in e for e in errs))
+        self.assertTrue(any("en_u_bun: needs weak_points_0_4" in e for e in errs))
+
+    def test_boss_phase_rules(self):
+        b = self.fresh()
+        boss = self.enemy(b, "boss_lon_loi_dam")
+        ph1 = boss["phases_0_4"][0]
+        ph1["moveset"] = [m for m in ph1["moveset"] if m not in ("ll_hat_nanh", "ll_quat_doi", "ll_dam_lay", "ll_quay_hong", "ll_cao_mong_gia")]
+        errs = self.errors(b)
+        self.assertTrue(any("unparryable moves" in e for e in errs))
+        self.assertTrue(any("needs >= 8 moves" in e for e in errs))
+        self.assertTrue(any("outside this phase" in e for e in errs))
+
+    def test_boss_combo_floor_and_punish_window(self):
+        b = self.fresh()
+        boss = self.enemy(b, "boss_lon_loi_dam")
+        next(c for c in boss["combos_0_4"] if c["id"] == "cb4_hat_ui")["steps"][2]["windup_mult"] = 0.5
+        next(a for a in boss["attacks_0_4"] if a["id"] == "ll4_cay_nanh")["punish_window_s"] = 0.2
+        errs = self.errors(b)
+        self.assertTrue(any("cb4_hat_ui step 2 windup" in e for e in errs))
+        self.assertTrue(any("ll4_cay_nanh: unparryable attack needs punish_window_s" in e for e in errs))
+
+    def test_world_point_outside_region_and_legacy_moved(self):
+        b = self.fresh()
+        pts = {p["id"]: p for p in b["world_0_4"]["points"]}
+        pts["chest_go_sim"]["x"] = -100
+        pts["fire_ben_say"]["x"] = 7
+        errs = self.errors(b)
+        self.assertTrue(any("chest_go_sim: (-100" in e and "outside region" in e for e in errs))
+        self.assertTrue(any("fire_ben_say: moved from world.js" in e for e in errs))
+
+    def test_unreachable_point_is_error(self):
+        b = self.fresh()
+        b["world_0_4"]["blockers"].append({"id": "rw_test", "kind": "reed_wall", "half_width_m": 1.5,
+                                           "points": [[-104, -120], [-88, -120], [-88, -134], [-104, -134], [-104, -120]]})
+        b["world_0_4"]["points"].append({"id": "test_box", "kind": "chest", "x": -96, "z": -127, "region": "z_lau_sau"})
+        self.assertTrue(any("test_box: not reachable" in e for e in self.errors(b)))
+
+    def test_pacing_and_area_targets(self):
+        b = self.fresh()
+        b["world_0_4"]["pacing"]["max_gap_s"] = 2
+        b["world_0_4"]["targets"]["area_ratio_max"] = 2.0
+        errs = self.errors(b)
+        self.assertTrue(any("without a point of interest" in e for e in errs))
+        self.assertTrue(any("x legacy, outside" in e for e in errs))
+
+    def test_map_0_4_must_match_world(self):
+        b = self.fresh()
+        b["map"]["map_0_4"]["chests"][0]["x"] += 3
+        b["map"]["map_0_4"]["discovery_points"][0]["xp_ref"] = "xp_nope"
+        errs = self.errors(b)
+        self.assertTrue(any("differs from world_0_4" in e for e in errs))
+        self.assertTrue(any("xp_nope" in e for e in errs))
+
+    def test_axe_moves_obey_hung6_rule(self):
+        b = self.fresh()
+        self.weapon(b, "wp_riu_xeo")["moves_0_4"][0]["name"] = {"vi": "Bổ mảnh khoen", "en": "Shard chop"}
+        self.assertTrue(any("era_hung_vuong_6" in e for e in self.errors(b)))
+
 if __name__ == "__main__":
     unittest.main()

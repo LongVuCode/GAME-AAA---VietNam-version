@@ -712,5 +712,227 @@
     "min_windup_s_unparryable_in_combo": 0.9,
     "min_windup_s_parryable_in_combo": 0.3,
     "max_combo_steps": 4
+  },
+  "input_0_4": {
+    "_note": "COMBAT_0_4 §2. Ngữ pháp input cho moves_0_4 (ArpgCore chưa đọc; lớp game đọc).",
+    "tokens": [
+      "L",
+      "H",
+      "hold_H",
+      "pause",
+      "fwd",
+      "back",
+      "dodge",
+      "perfect_dodge",
+      "perfect_parry",
+      "sprint",
+      "slide",
+      "air"
+    ],
+    "direction_threshold_ratio": 0.6,
+    "direction_relative_to": "lock_target_or_camera",
+    "pause_s": 0.35,
+    "perfect_dodge_followup_window_s": 0.6,
+    "perfect_parry_followup_window_s": 0.6,
+    "sprint_min_s": 0.4
+  },
+  "momentum_0_4": {
+    "_note": "COMBAT_0_4 §2.1. Đà: tích bằng chơi giỏi, tiêu vào đòn nặng (nguyên lý focus/ki của Wukong, Nioh; chỉ nguyên lý).",
+    "label": "SÁNG TẠO",
+    "name": {
+      "vi": "Đà",
+      "en": "Momentum"
+    },
+    "pips": 3,
+    "gain": {
+      "light_hit_chain_step_at_least": 3,
+      "perfect_dodge": 1,
+      "perfect_parry": 1,
+      "riposte": 1,
+      "finisher": 1
+    },
+    "decay_after_s": 5.0,
+    "decay_pip_every_s": 1.5,
+    "lose_on_hit_taken": 1,
+    "spend": {
+      "hold_H_skip_charge_levels_per_pip": 1,
+      "moves_with_da_cost": "all"
+    },
+    "hud": "3 vạch quanh biểu tượng vũ khí: ngà #E7DEC7 khi trống, vàng đồng #E0B44C khi đầy; không dùng đỏ đồng"
+  },
+  "movement_0_4": {
+    "_note": "COMBAT_0_4 §3. Thêm vào movement 0.2/0.3; giá trị cũ giữ nguyên.",
+    "sprint_build": {
+      "after_s": 2.0,
+      "ramp_s": 0.6,
+      "speed_mps": 7.8
+    },
+    "sprint_start_burst": {
+      "strides": 2,
+      "stride_mult": 1.25,
+      "lean_deg": 14
+    },
+    "sprint_bank_into_turn_deg": 16,
+    "sprint_pivot_skid": {
+      "angle_at_least_deg": 135,
+      "duration_s": 0.28,
+      "keeps_speed_ratio": 0.45,
+      "vfx": "surface"
+    },
+    "slide": {
+      "input": "dodge_while_sprinting_forward",
+      "distance_m": 4.5,
+      "duration_s": 0.6,
+      "mud_mult": 1.3,
+      "shallow_mult": 1.15,
+      "clearance_height_m": 0.7,
+      "attack_after_s": 0.15,
+      "iframes": false,
+      "slope_auto_slide_deg": 28,
+      "slope_slide_speed_mps": 8.0
+    },
+    "landing_roll": {
+      "from_height_m": 2.0,
+      "keeps_speed_ratio": 0.7
+    }
+  },
+  "dodge_0_4": {
+    "_note": "COMBAT_0_4 §3. Biến thể né; i-frame gốc của ArpgCore (dodge.*) không đổi.",
+    "variants": [
+      {
+        "id": "dv_quickstep",
+        "when": "locked_on_tap",
+        "distance_m": 2.0,
+        "duration_s": 0.3,
+        "iframe_start_s": 0.03,
+        "iframe_duration_s": 0.14,
+        "recovery_s": 0.08
+      },
+      {
+        "id": "dv_roll",
+        "when": "default",
+        "distance_m": 3.5,
+        "duration_s": 0.45,
+        "iframe_start_s": 0.05,
+        "iframe_duration_s": 0.2,
+        "recovery_s": 0.15
+      },
+      {
+        "id": "dv_backstep",
+        "when": "neutral",
+        "distance_m": 2.0,
+        "duration_s": 0.35,
+        "iframe_start_s": 0.03,
+        "iframe_duration_s": 0.15,
+        "recovery_s": 0.1
+      },
+      {
+        "id": "dv_long_roll",
+        "when": "second_in_chain",
+        "distance_m": 4.2,
+        "duration_s": 0.6,
+        "iframe_start_s": 0.05,
+        "iframe_duration_s": 0.2,
+        "recovery_s": 0.3
+      },
+      {
+        "id": "dv_slide",
+        "when": "sprinting",
+        "distance_m": 4.5,
+        "duration_s": 0.6,
+        "iframe_start_s": 0.0,
+        "iframe_duration_s": 0.0,
+        "recovery_s": 0.15
+      }
+    ],
+    "perfect_dodge": {
+      "time_scale": 0.4,
+      "slowmo_s": 0.25,
+      "afterimage": "bóng bùn đứng lại chỗ cũ 0,3 s",
+      "followup_window_s": 0.6,
+      "da_gain": 1
+    }
+  },
+  "traversal_0_4": {
+    "_note": "COMBAT_0_4 §3. Leo/vượt theo ngữ cảnh; điểm đặt ở world_0_4.points (traversal).",
+    "mantle": {
+      "min_height_m": 1.0,
+      "max_height_m": 2.2,
+      "duration_s": 0.7
+    },
+    "ledge_drop": {
+      "max_height_m": 4.0,
+      "plunge_from_m": 2.0,
+      "one_way_if_higher_than_m": 2.2
+    },
+    "climb": {
+      "speed_mps": 1.6,
+      "fall_on_hit": true,
+      "attack": false
+    },
+    "pole_vault": {
+      "weapon": "wp_giao_dong",
+      "max_gap_m": 5.0,
+      "duration_s": 0.9,
+      "marked_only": true
+    },
+    "balance": {
+      "speed_mps": 2.5,
+      "sprint": false
+    },
+    "wade": {
+      "speed_mult": 0.6,
+      "sprint": false
+    },
+    "deep_water": "blocked_no_swim"
+  },
+  "hit_feel_0_4": {
+    "_note": "COMBAT_0_4 §2.3. Lớp cảm giác bổ sung.",
+    "chain_last_hit_extra_hitstop_s": 0.03,
+    "counter_hitstop_mult": 1.5,
+    "da_spend_flash_s": 0.08,
+    "trip_camera_dip_m": 0.05,
+    "weak_point_hit": {
+      "extra_hitstop_s": 0.02,
+      "sfx": "tiếng vỏ nứt / bùn vỡ",
+      "vfx": "mảnh bùn bắn theo hướng đòn"
+    }
+  },
+  "enemy_ai_0_4": {
+    "_note": "COMBAT_0_4 §4. Mặc định theo archetype; enemies[].behavior_0_4 ghi đè.",
+    "archetypes": {
+      "shield": {
+        "keeps_front_to_player": true,
+        "flank_speed_mult": 0.8
+      },
+      "ambusher": {
+        "ambush_audio_required": true,
+        "max_offscreen_attackers": 1
+      },
+      "harasser": {
+        "max_airborne_simultaneous": 2,
+        "retreat_after_attack_chance": 0.5
+      },
+      "bruiser": {
+        "commits_to_attacks": true,
+        "turn_rate_mult": 0.7
+      },
+      "ranged_zone": {
+        "keeps_distance_m": 7.0,
+        "requires_line_of_sight": true
+      }
+    },
+    "max_simultaneous_attackers": 2,
+    "grab_cooldown_shared_s": 6.0,
+    "enrage_tell_min_s": 0.8
+  },
+  "boss_rules_0_4": {
+    "_note": "Luật công bằng 0.4 (validator kiểm).",
+    "min_moves_per_phase": 8,
+    "min_new_moves_total": 10,
+    "max_unparryable_ratio_per_phase": 0.6,
+    "min_punish_window_s_unparryable": 0.8,
+    "max_delayed_per_phase": 1,
+    "max_feints_per_phase": 1
   }
 }

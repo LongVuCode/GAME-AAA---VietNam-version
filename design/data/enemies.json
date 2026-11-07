@@ -190,7 +190,193 @@
           "_purpose": "Chống đứng lì sau lưng: đánh hông vẫn đúng nhưng không được đứng yên một chỗ"
         }
       ],
-      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1)."
+      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1).",
+      "lore_kind": "yeu_dam",
+      "description_0_4": {
+        "vi": "Yêu đầm cua: con cua nằm lâu tới mức mai thành đá rêu, vỏ ốc bám kín. Nó giữ ổ; mai trước chặn đòn, hông và bụng là chỗ yếu. Thua thì xoay mình chui xuống bùn.",
+        "en": "A marsh-spirit crab that lay so long its shell turned to mossy stone crusted with snails. It guards its den; its front shell blocks blows, its flanks and belly are weak. Beaten, it spins and burrows into the mud."
+      },
+      "attacks_0_4": [
+        {
+          "id": "cua4_hat_bun",
+          "name": {
+            "vi": "Hất bùn",
+            "en": "Mud Fling"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.5,
+          "active_s": 0.4,
+          "recovery_s": 0.5,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 5.0,
+          "cooldown_s": 7.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "càng gai cắm xuống bùn, mai nghiêng về trước",
+            "audio": "tiếng bùn bị xúc ọp",
+            "color_cue": "none"
+          },
+          "shape": "cone",
+          "player_knockback_m": 0.0,
+          "punish_window_s": 0.5,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "lùi nửa bước, càng phải cắm sâu",
+            "active": "xúc càng hất một quạt bùn 50°",
+            "follow_through": "giũ càng, bùn rơi lộp độp"
+          },
+          "_purpose": "Không sát thương; dính bùn thì chậm ×0,6 trong 2,5 s: phạt đứng trước mặt lâu",
+          "status": {
+            "id": "st_dinh_bun",
+            "speed_mult": 0.6,
+            "duration_s": 2.5
+          }
+        },
+        {
+          "id": "cua4_kim_giu",
+          "name": {
+            "vi": "Kìm giữ",
+            "en": "Vice Grip"
+          },
+          "damage": 26,
+          "player_the_damage": 0,
+          "windup_s": 0.8,
+          "active_s": 0.2,
+          "recovery_s": 1.1,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 1.8,
+          "cooldown_s": 9.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "hai càng gai mở hết cỡ, đốm đom đóm trên cuống mắt sáng dồn",
+            "audio": "ba tiếng lách cách dồn dập",
+            "color_cue": "red_bronze"
+          },
+          "shape": "grab",
+          "player_knockback_m": 1.4,
+          "punish_window_s": 1.1,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "nhổm mai, dang càng",
+            "active": "sập càng ôm lấy người chơi, kẹp hai lần",
+            "follow_through": "nhả, càng mỏi buông thõng 1,1 s"
+          },
+          "_purpose": "Phá lối giơ thủ trước mặt: thủ quá 1,2 s trước mai thì bị kìm (né lùi)",
+          "trigger": {
+            "player_guarding_front_s_at_least": 1.2
+          },
+          "hits": 2
+        },
+        {
+          "id": "cua4_chui_troi",
+          "name": {
+            "vi": "Chui bùn trồi kẹp",
+            "en": "Burrow Ambush"
+          },
+          "damage": 24,
+          "player_the_damage": 10,
+          "windup_s": 1.0,
+          "active_s": 0.25,
+          "recovery_s": 1.4,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 2.0,
+          "cooldown_s": 12.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "vệt bọt bùn bò theo người chơi 2 s rồi đứng yên, sủi dồn",
+            "audio": "tiếng ục ục dưới bùn, to dần",
+            "color_cue": "red_bronze"
+          },
+          "shape": "burrow_emerge",
+          "player_knockback_m": 1.2,
+          "punish_window_s": 1.4,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "chúi mai, xoáy xuống bùn",
+            "active": "trồi lên dưới chân, hất càng lên",
+            "follow_through": "ngửa bụng 1,4 s vì trồi quá đà (điểm yếu)"
+          },
+          "_purpose": "Mánh riêng của cua: chỉ ở bùn hoặc nước nông; trồi lên thì lộ bụng",
+          "surfaces": [
+            "mud",
+            "shallow"
+          ],
+          "track_s": 2.0,
+          "exposes": "wp_cua_bung"
+        }
+      ],
+      "moveset_0_4": [
+        "cua_kep",
+        "cua_kep_doi",
+        "cua_ui_ngang",
+        "cua_kep_xoay",
+        "cua4_hat_bun",
+        "cua4_kim_giu",
+        "cua4_chui_troi"
+      ],
+      "concept_0_4": {
+        "label": "SÁNG TẠO",
+        "archetype": "shield",
+        "lore_kind": "yeu_dam",
+        "monster_flavor": "Yêu đầm cua: mai như tảng đá rêu nứt, vỏ ốc bám, rễ lau lòi ở khe mai; càng phải gai to gấp đôi càng trái; đốm đom đóm trên cuống mắt (STORY_INTEGRATION_0_4 §6.2; không đỏ, không giáp, không đi hàng)",
+        "trick": "Mai đá: mặt trước chặn đòn (sát thương ×0,6, ×0,4 khi co mai); bò ngang giật cục, giữ mặt trước hướng về người chơi"
+      },
+      "weak_points_0_4": [
+        {
+          "id": "wp_cua_hong",
+          "where": "hông hai bên (cung 120°)",
+          "damage_mult": 1.5,
+          "the_mult": 1.3,
+          "how": "đi vòng, Vòng sào qua lưng, Chém gối lách"
+        },
+        {
+          "id": "wp_cua_bung",
+          "where": "bụng khi lật ngửa hoặc sau Chui bùn trồi kẹp",
+          "damage_mult": 2.0,
+          "the_mult": 2.0,
+          "window_s": 2.0,
+          "how": "đòn hất lên (flips_shelled): Bẩy mũi, Chọc lao vọt, Giật rìu"
+        }
+      ],
+      "behavior_0_4": {
+        "label": "SÁNG TẠO",
+        "enrage": {
+          "trigger": "groupmate_driven_off",
+          "name": {
+            "vi": "Giơ càng gai",
+            "en": "Claws Raised"
+          },
+          "duration_s": 12.0,
+          "move_speed_mult": 1.2,
+          "cooldown_mult": 0.8,
+          "side_arc_deg": 140,
+          "tell": "gõ càng xuống bùn hai lần, đốm đom đóm trên mắt nhấp nháy nhanh",
+          "_purpose": "Giận thì hăng hơn nhưng càng giơ cao, hông lộ rộng hơn"
+        },
+        "group": {
+          "tactic": "giu_mat_chui_sau",
+          "desc": "Một con giữ mặt trước, con kia chui bùn trồi lên sau lưng người chơi; không bao giờ cả hai cùng kìm, không đứng thành hàng"
+        },
+        "environment": {
+          "shallow": {
+            "move_speed_mult": 1.2
+          },
+          "mud": {
+            "can_burrow": true
+          },
+          "silt": {
+            "can_burrow": false,
+            "move_speed_mult": 0.9
+          }
+        }
+      }
     },
     {
       "id": "en_bo_ngua_lau",
@@ -374,7 +560,193 @@
           "_purpose": "Phạt đuổi theo mù quáng; né tới trước để bám sát"
         }
       ],
-      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1)."
+      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1).",
+      "lore_kind": "yeu_dam",
+      "description_0_4": {
+        "vi": "Yêu đầm bọ ngựa: đứng im thì là một bụi lau khô, chồm lên cao hơn người. Lưỡi liềm bằng bẹ lau hóa sừng. Đánh rồi rút vào lau; chân mảnh là chỗ yếu.",
+        "en": "A marsh-spirit mantis: still, it is a clump of dry reeds; rearing, it stands taller than a person. Its sickles are reed sheaths grown into horn. It strikes and slips back into the reeds; its thin legs are its weakness."
+      },
+      "attacks_0_4": [
+        {
+          "id": "bn4_canh_doa",
+          "name": {
+            "vi": "Cánh dọa",
+            "en": "Wing Flare"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.6,
+          "active_s": 0.3,
+          "recovery_s": 0.4,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 3.5,
+          "cooldown_s": 10.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "dựng thẳng người, xòe cánh lá lau, đong đưa hai bên",
+            "audio": "tiếng rè cánh rung",
+            "color_cue": "none"
+          },
+          "shape": "aoe",
+          "player_knockback_m": 0.0,
+          "punish_window_s": 0.4,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "rướn cổ, lưỡi liềm gập",
+            "active": "đập cánh tung bụi lau thành mây 3,5 m trong 2,5 s",
+            "follow_through": "lẩn vào mây"
+          },
+          "_purpose": "Mây bụi làm mất khóa mục tiêu; đòn kế từ mép mây có thêm 0,25 s báo hiệu và tiếng tách bắt buộc",
+          "creates_cloud": {
+            "radius_m": 3.5,
+            "duration_s": 2.5,
+            "breaks_lock_on": true,
+            "next_attack_extra_windup_s": 0.25
+          }
+        },
+        {
+          "id": "bn4_luot_canh",
+          "name": {
+            "vi": "Lướt cánh chém",
+            "en": "Gliding Slash"
+          },
+          "damage": 22,
+          "player_the_damage": 14,
+          "windup_s": 0.7,
+          "active_s": 0.5,
+          "recovery_s": 0.6,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 6.0,
+          "cooldown_s": 7.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "ngồi thụp, cánh rung lạch xạch",
+            "audio": "tiếng vù tăng dần",
+            "color_cue": "none"
+          },
+          "shape": "charge",
+          "player_knockback_m": 0.8,
+          "punish_window_s": 0.6,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "nhún sâu, lưỡi liềm dang",
+            "active": "lượn một vòng cung 6 m, chém khi đáp",
+            "follow_through": "trượt chân trên lau"
+          },
+          "_purpose": "Đỡ được khi nó đáp; trúng đòn đâm hoặc đòn nặng lúc đang lượn thì rơi ngửa 1,5 s",
+          "airborne_s": {
+            "min": 0.1,
+            "max": 0.6
+          },
+          "knocked_down_if_hit_airborne_s": 1.5
+        },
+        {
+          "id": "bn4_kep_liem",
+          "name": {
+            "vi": "Kẹp lưỡi liềm",
+            "en": "Sickle Clasp"
+          },
+          "damage": 28,
+          "player_the_damage": 0,
+          "windup_s": 0.7,
+          "active_s": 0.15,
+          "recovery_s": 0.9,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 2.2,
+          "cooldown_s": 9.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "hai lưỡi liềm bẹ lau dang rộng, đầu tam giác nghiêng một bên",
+            "audio": "tiếng tách khô một lần, rồi im",
+            "color_cue": "red_bronze"
+          },
+          "shape": "grab",
+          "player_knockback_m": 0.8,
+          "punish_window_s": 0.9,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "lắc lư chậm như lá lau",
+            "active": "sập hai lưỡi liềm ôm lấy người chơi",
+            "follow_through": "hụt thì lưỡi liềm cắm bùn 0,9 s"
+          },
+          "_purpose": "Đòn bắt: né lùi; hụt là cửa phạt"
+        }
+      ],
+      "moveset_0_4": [
+        "bn_chem_doi",
+        "bn_vo_phuc",
+        "bn_rinh",
+        "bn_nhay_lui",
+        "bn4_canh_doa",
+        "bn4_luot_canh",
+        "bn4_kep_liem"
+      ],
+      "concept_0_4": {
+        "label": "SÁNG TẠO",
+        "archetype": "ambusher",
+        "lore_kind": "yeu_dam",
+        "monster_flavor": "Yêu đầm bọ ngựa: đứng im là một bụi lau cao 1,4 m, chồm lên 2,0 m; thân bó lau khô có đốt, cánh lá lau rách, bờm bông lau; lưỡi liềm bằng bẹ lau hóa sừng (STORY_INTEGRATION_0_4 §6.2)",
+        "trick": "Ẩn lau: đứng yên trong lau gần như vô hình tới 4 m; lộ ra vì lau quanh nó không rung theo gió và tiếng tách nhẹ"
+      },
+      "weak_points_0_4": [
+        {
+          "id": "wp_bn_chan",
+          "where": "chân mảnh",
+          "damage_mult": 1.0,
+          "the_mult": 1.5,
+          "trip_s": 1.5,
+          "how": "đòn quét thấp (trip): Quét cán, Quét nước, Trượt đâm gối, Chém gối lách"
+        },
+        {
+          "id": "wp_bn_tren_khong",
+          "where": "đang lượn",
+          "damage_mult": 1.3,
+          "the_mult": 2.0,
+          "how": "đòn đâm hoặc đòn nặng trúng lúc lượn"
+        }
+      ],
+      "behavior_0_4": {
+        "label": "SÁNG TẠO",
+        "camouflage": {
+          "surface": "reed",
+          "visible_within_m": 4.0,
+          "tells": [
+            "lau quanh không rung theo gió",
+            "tiếng tách nhẹ mỗi 1,5 s"
+          ]
+        },
+        "enrage": {
+          "trigger": "hp_ratio_at_most_0_5",
+          "name": {
+            "vi": "Xòe cánh lá",
+            "en": "Leaf-wings Spread"
+          },
+          "duration_s": 15.0,
+          "move_speed_mult": 1.25,
+          "retreat_after_attack_chance": 0.3,
+          "prefers": "bn4_luot_canh",
+          "tell": "xòe cánh lá lau rách, bông lau bay tung, rít dài"
+        },
+        "group": {
+          "tactic": "cap_canh",
+          "desc": "Một con Cánh dọa, con kia vồ từ mép mây; chỉ một con được tấn công từ ngoài khung hình"
+        },
+        "environment": {
+          "reed": {
+            "ambush": true
+          },
+          "open_ground": {
+            "ambush": false,
+            "retreat_after_attack_chance": 0.8
+          }
+        }
+      }
     },
     {
       "id": "en_u_bun",
@@ -548,7 +920,224 @@
           "_purpose": "Không cho đứng xa chờ; ép người chơi lại gần để phá Thế"
         }
       ],
-      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1)."
+      "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1).",
+      "lore_kind": "yeu_dam",
+      "description_0_4": {
+        "vi": "Yêu đầm ụ bùn: khối bùn quện rễ lau, rễ súng, vỏ ốc, phập phồng như thở. Ném bùn, mọc rễ trói chân, sụp đè. Phá hai lớp vỏ bùn thì lộ lõi rễ. Thua thì sụp xuống, đom đóm bay lên.",
+        "en": "A marsh-spirit mound of mud knotted with reed and lily roots and snail shells, heaving as if breathing. It lobs mud, snares with roots, collapses forward. Break its two mud crusts to bare the root core. Beaten, it slumps and fireflies rise."
+      },
+      "attacks_0_4": [
+        {
+          "id": "ub4_nem_bun",
+          "name": {
+            "vi": "Ném cục bùn",
+            "en": "Mud Lob"
+          },
+          "damage": 16,
+          "player_the_damage": 12,
+          "windup_s": 0.9,
+          "active_s": 0.2,
+          "recovery_s": 0.7,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 12.0,
+          "cooldown_s": 5.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "một cột bùn vươn ra từ sườn, thân xẹp một bên",
+            "audio": "tiếng bùn bị móc ọp",
+            "color_cue": "none"
+          },
+          "shape": "projectile",
+          "player_knockback_m": 0.6,
+          "punish_window_s": 0.7,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "nghiêng thân, cột bùn cuộn ra sau",
+            "active": "ném vòng cung 12 m; chỗ rơi thành vũng bùn 2 m trong 6 s",
+            "follow_through": "thân phồng lại chậm"
+          },
+          "_purpose": "Đỡ nhịp hoàn hảo hất cục bùn ngược lại làm nó khựng 1 s: dạy Đỡ nhịp với đòn tầm xa",
+          "projectile_speed_mps": 11.0,
+          "arc": true,
+          "leaves_mud_pool": {
+            "radius_m": 2.0,
+            "duration_s": 6.0
+          },
+          "perfect_parry_reflects": {
+            "self_stagger_s": 1.0
+          }
+        },
+        {
+          "id": "ub4_re_troi",
+          "name": {
+            "vi": "Rễ trói",
+            "en": "Root Snare"
+          },
+          "damage": 8,
+          "player_the_damage": 10,
+          "windup_s": 1.0,
+          "active_s": 0.3,
+          "recovery_s": 0.6,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 9.0,
+          "cooldown_s": 10.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "vòng bùn sủi bọt dưới chân người chơi, lau quanh rạp vào",
+            "audio": "tiếng rễ nứt lách tách",
+            "color_cue": "red_bronze"
+          },
+          "shape": "aoe_target",
+          "player_knockback_m": 0.0,
+          "punish_window_s": 0.6,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "đáy loe lún xuống, bọt khí phập phồng nhanh",
+            "active": "rễ lau trồi lên trói chân 1 s",
+            "follow_through": "rễ rút xuống"
+          },
+          "_purpose": "Buộc di chuyển; không phải đòn chính",
+          "root_s": 1.0,
+          "radius_m": 1.6
+        },
+        {
+          "id": "ub4_sup_de",
+          "name": {
+            "vi": "Sụp đè",
+            "en": "Collapse Slam"
+          },
+          "damage": 40,
+          "player_the_damage": 35,
+          "windup_s": 1.4,
+          "active_s": 0.3,
+          "recovery_s": 2.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 4.0,
+          "cooldown_s": 14.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "vươn cao gấp rưỡi, bùn nứt dọc thân, rễ lòi ra",
+            "audio": "tiếng ọc trầm kéo dài rồi rắc",
+            "color_cue": "red_bronze"
+          },
+          "shape": "front_wave",
+          "player_knockback_m": 2.0,
+          "punish_window_s": 2.0,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "rướn lên, ngả sau",
+            "active": "đổ sập về trước thành sóng bùn 4 m",
+            "follow_through": "lõi rễ lộ 2 s (điểm yếu), thân gom lại"
+          },
+          "_purpose": "Đòn lớn có cửa phạt dài nhất của Ụ Bùn",
+          "exposes": "wp_ub_loi"
+        },
+        {
+          "id": "ub4_hut_bun",
+          "name": {
+            "vi": "Hút bùn",
+            "en": "Mud Draw"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.4,
+          "active_s": 1.5,
+          "recovery_s": 0.4,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 0.0,
+          "cooldown_s": 18.0,
+          "dodge_hint": "none",
+          "telegraph": {
+            "visual": "lún xuống vũng bùn, bùn xoáy vào thân",
+            "audio": "tiếng hút ực ực",
+            "color_cue": "none"
+          },
+          "shape": "self",
+          "player_knockback_m": 0.0,
+          "punish_window_s": 1.5,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "dừng lại giữa vũng",
+            "active": "hút bùn 1,5 s: hồi 1 lớp vỏ bùn, 30 Thế",
+            "follow_through": "đứng dậy, vỏ mới ướt bóng"
+          },
+          "_purpose": "Sinh thái: kéo nó ra khỏi vũng; đòn nặng trúng lúc hút thì ngắt và làm khuỵu",
+          "requires_surface": "mud_pool",
+          "restores_crust_layers": 1,
+          "restores_the": 30,
+          "interrupt_by_weight": "heavy"
+        }
+      ],
+      "moveset_0_4": [
+        "ub_dap",
+        "ub_lan",
+        "ub_lan_vien",
+        "ub4_nem_bun",
+        "ub4_re_troi",
+        "ub4_sup_de",
+        "ub4_hut_bun"
+      ],
+      "concept_0_4": {
+        "label": "SÁNG TẠO",
+        "archetype": "ranged_zone",
+        "lore_kind": "yeu_dam",
+        "monster_flavor": "Yêu đầm ụ bùn: khối bùn đáy loe cao 2,2 m, không mặt, không tay, không thân người; bùn quện rễ lau, rễ súng, vỏ ốc; bọt khí phập phồng như thở; lỗ hang cua có ánh đom đóm (STORY_INTEGRATION_0_4 §6.2)",
+        "trick": "Vỏ bùn: 2 lớp, mỗi lớp đỡ 60 sát thương; đòn nặng phá ×1,5; trên đất khô (bãi bồi, sân lò) vỏ vỡ nhanh ×1,3"
+      },
+      "weak_points_0_4": [
+        {
+          "id": "wp_ub_loi",
+          "where": "lõi rễ lau giữa ngực bùn",
+          "damage_mult": 1.5,
+          "the_mult": 2.0,
+          "window_s": 2.0,
+          "how": "sau Sụp đè, hoặc khi đã phá đủ 2 lớp vỏ"
+        }
+      ],
+      "behavior_0_4": {
+        "label": "SÁNG TẠO",
+        "crust": {
+          "layers": 2,
+          "hp_per_layer": 60,
+          "heavy_mult": 1.5,
+          "dry_surface_mult": 1.3,
+          "front_mult_while_crusted": 0.5
+        },
+        "enrage": {
+          "trigger": "crust_broken",
+          "name": {
+            "vi": "Gào bùn",
+            "en": "Mud Howl"
+          },
+          "duration_s": 10.0,
+          "cooldown_mult": 0.6,
+          "can_restore_crust": false,
+          "tell": "rung toàn thân, bùn bắn tung tóe"
+        },
+        "group": {
+          "tactic": "giu_vung",
+          "desc": "Đứng sau, ném bùn làm vũng; cua chui trong vũng đó, bọ hung lăn qua thì cục bùn to ra"
+        },
+        "environment": {
+          "mud_pool": {
+            "uses": "ub4_hut_bun"
+          },
+          "silt": {
+            "crust_break_mult": 1.3
+          },
+          "ash_ground": {
+            "crust_break_mult": 1.3
+          }
+        }
+      }
     },
     {
       "id": "boss_lon_loi_dam",
@@ -1522,6 +2111,749 @@
         },
         "attempts_to_win_cheo_do_median": 3,
         "_note": "Đích đo khi playtest (log), không phải luật chạy. Giả định."
+      },
+      "attacks_0_4": [
+        {
+          "id": "ll4_cay_nanh",
+          "name": {
+            "vi": "Cày nanh",
+            "en": "Tusk Furrow"
+          },
+          "damage": 32,
+          "player_the_damage": 30,
+          "windup_s": 1.0,
+          "active_s": 1.2,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 10.0,
+          "cooldown_s": 9.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "chúc mõm xuống bùn, nanh cắm, chân sau cào",
+            "audio": "khịt dài rồi tiếng bùn xé",
+            "color_cue": "red_bronze"
+          },
+          "shape": "furrow_charge",
+          "player_knockback_m": 1.6,
+          "punish_window_s": 1.0,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "hạ đầu tới sát bùn, lưng gù dựng",
+            "active": "cày thẳng 10 m, hai bờ bùn cao 1,2 m dựng hai bên trong 4 s",
+            "follow_through": "đầu kẹt bùn 0,6 s, giũ bùn"
+          },
+          "_purpose": "Đổi hình sân: bờ bùn chặn đường (vượt được bằng vượt theo ngữ cảnh hoặc nhảy)",
+          "mud_walls": {
+            "height_m": 1.2,
+            "duration_s": 4.0
+          }
+        },
+        {
+          "id": "ll4_tam_bun",
+          "name": {
+            "vi": "Tắm bùn giáp",
+            "en": "Armoring Wallow"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.4,
+          "active_s": 1.6,
+          "recovery_s": 0.6,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 6.0,
+          "cooldown_s": 30.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "đi về vũng bùn gần nhất, ngửi bùn",
+            "audio": "tiếng ụt ịt khoái trá",
+            "color_cue": "none"
+          },
+          "shape": "self",
+          "player_knockback_m": 1.0,
+          "punish_window_s": 1.6,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "quỳ xuống mép vũng",
+            "active": "lăn trong bùn 1,6 s, cuối cùng giũ bùn văng vòng 3 m (đẩy, không sát thương)",
+            "follow_through": "đứng dậy, lớp bùn ướt bóng"
+          },
+          "_purpose": "Sinh thái: được 2 lớp giáp bùn (mỗi lớp 80); lưng lộ lúc lăn; dụ nó xa vũng hoặc 2 đòn nặng vào lưng làm khựng",
+          "requires_surface": "mud_pool_within_m_6",
+          "crust": {
+            "layers": 2,
+            "hp_per_layer": 80,
+            "front_the_mult": 0.6,
+            "heavy_mult": 1.5,
+            "dries_after_s": 25.0
+          },
+          "interrupt": {
+            "heavy_hits_on_back": 2,
+            "result": "stagger_1_5s"
+          }
+        },
+        {
+          "id": "ll4_khit_bun",
+          "name": {
+            "vi": "Khịt bùn",
+            "en": "Mud Snort"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.7,
+          "active_s": 0.4,
+          "recovery_s": 0.6,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 7.0,
+          "cooldown_s": 10.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "hít vào, hông phồng, đầu ngóc",
+            "audio": "tiếng hít khò khè dài",
+            "color_cue": "none"
+          },
+          "shape": "cone",
+          "player_knockback_m": 0.3,
+          "punish_window_s": 0.6,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "ngẩng mõm",
+            "active": "phun bùn từ mũi một quạt 7 m, 50°",
+            "follow_through": "lắc đầu, nước mũi bùn"
+          },
+          "_purpose": "Mù bùn 2 s (mép màn hình lấm bùn, mất khóa mục tiêu, minimap ẩn); thường nối vào Càn lầy",
+          "status": {
+            "id": "st_mu_bun",
+            "duration_s": 2.0,
+            "breaks_lock_on": true,
+            "hides_minimap": true,
+            "speed_mult": 0.85
+          }
+        },
+        {
+          "id": "ll4_ui_nhac",
+          "name": {
+            "vi": "Ủi nhấc",
+            "en": "Root-up Toss"
+          },
+          "damage": 34,
+          "player_the_damage": 40,
+          "windup_s": 0.8,
+          "active_s": 0.25,
+          "recovery_s": 0.9,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 2.2,
+          "cooldown_s": 8.0,
+          "dodge_hint": "forward",
+          "telegraph": {
+            "visual": "đầu chúi nghiêng một bên, hai chân trước choãi",
+            "audio": "một tiếng ịt ngắn, trầm",
+            "color_cue": "red_bronze"
+          },
+          "shape": "grab",
+          "player_knockback_m": 2.5,
+          "punish_window_s": 0.9,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "hạ vai, mõm luồn sát đất",
+            "active": "ủi dưới người chơi rồi hất tung 2,5 m",
+            "follow_through": "ngóc đầu nhìn theo, đứng yên 0,9 s"
+          },
+          "_purpose": "Đòn bắt phá lối thủ: né TỚI xuyên qua (mỗi nguy hiểm một lời giải); bị hất thì bấm Nhảy lúc chạm đất để tiếp đất không ngã",
+          "air_recover": {
+            "input": "jump",
+            "window_s": 0.2
+          },
+          "player_knockdown": true
+        },
+        {
+          "id": "ll4_xe_lau",
+          "name": {
+            "vi": "Xé lau đâm ngang",
+            "en": "Reed-Wall Burst"
+          },
+          "damage": 40,
+          "player_the_damage": 40,
+          "windup_s": 1.2,
+          "active_s": 0.6,
+          "recovery_s": 1.2,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 30.0,
+          "cooldown_s": 18.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "lau ở mép sân rạp dần vào trong tại chỗ nó sắp xông ra",
+            "audio": "tiếng lau gãy chạy vòng quanh sân, to dần",
+            "color_cue": "red_bronze"
+          },
+          "shape": "charge",
+          "player_knockback_m": 1.8,
+          "punish_window_s": 1.2,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "biến vào vòng lau quanh sân 2 s",
+            "active": "xông ra cắt ngang sân theo một dây cung",
+            "follow_through": "giũ lau khỏi đầu 1,2 s"
+          },
+          "_purpose": "Phạt đứng sát mép sân; luôn có âm vòng quanh và thêm 0,25 s nếu xông ra ngoài khung hình",
+          "trigger": {
+            "player_within_edge_m": 4.0
+          },
+          "offscreen_extra_windup_s": 0.25
+        },
+        {
+          "id": "ll4_can_ba_goc",
+          "name": {
+            "vi": "Càn ba góc",
+            "en": "Three-Corner Rampage"
+          },
+          "damage": 36,
+          "player_the_damage": 40,
+          "windup_s": 1.2,
+          "active_s": 0.9,
+          "recovery_s": 1.6,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 30.0,
+          "cooldown_s": 16.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "rống trước mỗi lượt càn, trượt quay ở mép sân",
+            "audio": "ba tiếng rống, mỗi lượt một tiếng",
+            "color_cue": "red_bronze"
+          },
+          "shape": "charge",
+          "player_knockback_m": 1.8,
+          "punish_window_s": 1.6,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "cào móng, rống",
+            "active": "càn ba lượt theo hình tam giác, nghỉ 0,6 s ở mỗi góc",
+            "follow_through": "choáng 1,6 s; 2,4 s và mất 60 Thế nếu lượt cuối va cọc"
+          },
+          "_purpose": "Đòn đặc trưng pha 2: né ba lần theo ba tiếng rống; dụ lượt cuối vào cọc",
+          "passes": 3,
+          "pass_windup_s": 0.9,
+          "pause_between_s": 0.6,
+          "stake_hit": {
+            "stun_s": 2.4,
+            "the_damage": 60
+          }
+        },
+        {
+          "id": "ll4_nhan_chim_lay",
+          "name": {
+            "vi": "Nhấn chìm lầy",
+            "en": "Mire Drown"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 1.6,
+          "active_s": 3.5,
+          "recovery_s": 0.8,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 40.0,
+          "cooldown_s": 26.0,
+          "dodge_hint": "none",
+          "telegraph": {
+            "visual": "chồm cao hai chân trước, lau cả sân run, nước gợn dồn về giữa",
+            "audio": "tiếng rên trầm dài rồi một tiếng dậm",
+            "color_cue": "none"
+          },
+          "shape": "arena_flood",
+          "player_knockback_m": 0.0,
+          "punish_window_s": 0.8,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "chồm lên",
+            "active": "dậm: cả sân thành lầy sâu 3,5 s trừ 4 gò khô và chân cọc",
+            "follow_through": "đứng giữa sân thở phì phò"
+          },
+          "_purpose": "Khoảnh khắc điện ảnh có chơi: tìm gò khô; trên lầy sâu chậm ×0,45, không chạy nhanh, né ngắn ×0,5",
+          "deep_mud": {
+            "speed_mult": 0.45,
+            "sprint": false,
+            "dodge_distance_mult": 0.5,
+            "duration_s": 3.5
+          },
+          "safe_points": [
+            "hk_1",
+            "hk_2",
+            "hk_3",
+            "hk_4"
+          ]
+        },
+        {
+          "id": "ll4_nanh_xoay",
+          "name": {
+            "vi": "Nanh xoáy",
+            "en": "Tusk Whirl"
+          },
+          "damage": 28,
+          "player_the_damage": 30,
+          "windup_s": 0.9,
+          "active_s": 0.9,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 3.2,
+          "cooldown_s": 9.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "chân trước đóng chặt, đầu lắc qua lắc lại hai lần",
+            "audio": "tiếng rít cao dần",
+            "color_cue": "red_bronze"
+          },
+          "shape": "spin",
+          "player_knockback_m": 1.4,
+          "punish_window_s": 1.0,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "lắc đầu lấy đà",
+            "active": "xoay hai vòng, nanh quét thấp bán kính 3,2 m",
+            "follow_through": "chóng mặt, lảo đảo 1,0 s"
+          },
+          "_purpose": "Nanh quét thấp: nhảy qua vòng đầu (≥ 0,6 m) hoặc lùi ra ngoài 3,2 m",
+          "hits": 2,
+          "jumpable": true
+        },
+        {
+          "id": "ll4_dam_duoi",
+          "name": {
+            "vi": "Dậm đuổi",
+            "en": "Chasing Stomps"
+          },
+          "damage": 16,
+          "player_the_damage": 25,
+          "windup_s": 0.6,
+          "active_s": 0.15,
+          "recovery_s": 0.9,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.4,
+          "cooldown_s": 10.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "nhấc chân trước theo nhịp, mắt bám người chơi",
+            "audio": "ba tiếng dậm đều như trống (0,6 s)",
+            "color_cue": "none"
+          },
+          "shape": "aoe",
+          "player_knockback_m": 0.6,
+          "punish_window_s": 0.9,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "chồm nhẹ",
+            "active": "ba cú nhảy dậm đuổi theo, mỗi cú sóng nhỏ 2 m",
+            "follow_through": "đứng thở"
+          },
+          "_purpose": "Ba nhịp Đỡ nhịp theo nhịp trống; nhịp ba hoàn hảo mở Phản nhịp",
+          "hits": 3,
+          "beat_interval_s": 0.6,
+          "riposte_on_perfect_parry": true
+        },
+        {
+          "id": "ll4_bat_tung",
+          "name": {
+            "vi": "Bật tung lầy",
+            "en": "Mire Eruption"
+          },
+          "damage": 38,
+          "player_the_damage": 40,
+          "windup_s": 1.2,
+          "active_s": 0.3,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 3.0,
+          "cooldown_s": 22.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "bọt dồn về dưới chân người chơi, mặt bùn phồng lên",
+            "audio": "tiếng ục ục to dần rồi im 0,3 s",
+            "color_cue": "red_bronze"
+          },
+          "shape": "burrow_emerge",
+          "player_knockback_m": 2.0,
+          "punish_window_s": 1.0,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "lặn dưới bùn, vệt bọt vòng quanh",
+            "active": "trồi bật lên dưới chân, hất bùn thành cột",
+            "follow_through": "đứng giữa cột bùn đang rơi, đầu ngửa"
+          },
+          "_purpose": "Dùng trong chuyển pha và hiếm ở pha 2; lần đầu trong trận sát thương ×0,5"
+        }
+      ],
+      "identity_0_4": {
+        "label": "SÁNG TẠO",
+        "theme": "Chủ bãi lầy: dùng bùn làm giáp, làm tường, làm bẫy",
+        "silhouette": "Khối tam giác nặng đầu thấp, lưng gù; khi có giáp bùn thì thân to ra một vòng và sáng màu bùn khô",
+        "signature": [
+          "ll4_cay_nanh",
+          "ll4_nhan_chim_lay",
+          "ll4_can_ba_goc"
+        ],
+        "reads": "Rống = càn (luôn); khịt dài = phun bùn; ụt ịt = đi tắm bùn; lau rạp ở mép sân = xông ra từ lau",
+        "_note": "Bản sắc chiêu chỉ dựa trên tập tính lợn rừng (ủi đất, tắm bùn, húc, càn) và bùn đầm; không phép. Cốt truyện boss do agent cốt truyện chốt."
+      },
+      "phases_0_4": [
+        {
+          "id": "ph4_chu_bai",
+          "name": {
+            "vi": "Chủ bãi lầy",
+            "en": "Master of the Mire"
+          },
+          "narrative": {
+            "vi": "Con thú coi bãi lầy là của nó: cày, tắm bùn, xé lau mà xông ra.",
+            "en": "The beast owns the mire: it ploughs, wallows, bursts out of the reeds."
+          },
+          "enter": {
+            "type": "start"
+          },
+          "speed_mult": 1.0,
+          "telegraph_time_mult": 1.0,
+          "moveset": [
+            "ll_hat_nanh",
+            "ll_quat_doi",
+            "ll_can_lay",
+            "ll_dam_lay",
+            "ll_quay_hong",
+            "ll_song_bun",
+            "ll_cao_mong_gia",
+            "ll4_cay_nanh",
+            "ll4_tam_bun",
+            "ll4_khit_bun",
+            "ll4_ui_nhac",
+            "ll4_xe_lau"
+          ],
+          "combos": [
+            "cb_ba_nhip_nanh",
+            "cb_hat_lui_can",
+            "cb4_khit_can",
+            "cb4_cay_hat",
+            "cb4_hat_ui"
+          ]
+        },
+        {
+          "id": "ph4_lay_day",
+          "name": {
+            "vi": "Lầy dậy",
+            "en": "The Mire Rises"
+          },
+          "narrative": {
+            "vi": "Nó lặn xuống bùn rồi trồi lên dữ hơn; nước rút, cọc cũ lộ ra, và cả bãi lầy thành vũ khí.",
+            "en": "It dives into the mud and rises wilder; the water drains, old stakes show, and the whole mire becomes its weapon."
+          },
+          "enter": {
+            "type": "any",
+            "conditions": [
+              {
+                "khoen_cracks_at_least": 2
+              },
+              {
+                "hp_ratio_at_most": 0.5
+              }
+            ]
+          },
+          "set_piece": "tsp4_lan_lay",
+          "speed_mult": 1.0,
+          "telegraph_time_mult": 1.1,
+          "moveset": [
+            "ll_hat_nanh",
+            "ll_quat_doi",
+            "ll_giay_dau",
+            "ll_song_bun",
+            "ll_can_hai_luot",
+            "ll_dam_cham",
+            "ll4_can_ba_goc",
+            "ll4_nhan_chim_lay",
+            "ll4_nanh_xoay",
+            "ll4_dam_duoi",
+            "ll4_ui_nhac",
+            "ll4_bat_tung"
+          ],
+          "combos": [
+            "cb_giay_don",
+            "cb_song_bun_doi",
+            "cb4_chim_song",
+            "cb4_giay_xoay",
+            "cb4_dam_hat"
+          ]
+        }
+      ],
+      "combos_0_4": [
+        {
+          "id": "cb4_khit_can",
+          "name": {
+            "vi": "Khịt rồi càn",
+            "en": "Snort, Then Charge"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll4_khit_bun",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_can_lay",
+              "windup_mult": 0.85,
+              "gap_s": 0.3
+            }
+          ],
+          "_purpose": "Mù bùn rồi càn: tiếng rống vẫn báo; dạy nghe thay vì nhìn"
+        },
+        {
+          "id": "cb4_cay_hat",
+          "name": {
+            "vi": "Cày rồi hất",
+            "en": "Furrow, Then Toss"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll4_cay_nanh",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_hat_nanh",
+              "windup_mult": 0.8,
+              "gap_s": 0.4,
+              "riposte_on_perfect_parry": true
+            }
+          ],
+          "_purpose": "Người chơi bị bờ bùn dồn vào hành lang thì gặp cú hất đỡ được"
+        },
+        {
+          "id": "cb4_hat_ui",
+          "name": {
+            "vi": "Hất, quật, ủi",
+            "en": "Toss, Swipe, Root-up"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll_hat_nanh",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_quat_doi",
+              "windup_mult": 0.7,
+              "gap_s": 0.15
+            },
+            {
+              "attack": "ll4_ui_nhac",
+              "windup_mult": 1.15,
+              "gap_s": 0.3
+            }
+          ],
+          "_purpose": "Hai nhịp Đỡ nhịp rồi một đòn bắt: kẻ đỡ quen tay bị hất; né tới ở nhịp ba"
+        },
+        {
+          "id": "cb4_chim_song",
+          "name": {
+            "vi": "Chìm rồi sóng",
+            "en": "Drown, Then Wave"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll4_nhan_chim_lay",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_song_bun",
+              "windup_mult": 1.0,
+              "gap_s": 0.4
+            }
+          ],
+          "_purpose": "Đứng trên gò khô thì nhảy qua sóng; dưới lầy sâu thì không kịp"
+        },
+        {
+          "id": "cb4_giay_xoay",
+          "name": {
+            "vi": "Giãy rồi xoáy",
+            "en": "Thrash, Then Whirl"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll_hat_nanh",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_quat_doi",
+              "windup_mult": 0.6,
+              "gap_s": 0.1
+            },
+            {
+              "attack": "ll4_nanh_xoay",
+              "windup_mult": 1.0,
+              "gap_s": 0.25
+            }
+          ],
+          "_purpose": "Hai nhịp đỡ, một vòng xoáy phải nhảy"
+        },
+        {
+          "id": "cb4_dam_hat",
+          "name": {
+            "vi": "Dậm rồi hất",
+            "en": "Stomps, Then Toss"
+          },
+          "label": "SÁNG TẠO",
+          "steps": [
+            {
+              "attack": "ll4_dam_duoi",
+              "windup_mult": 1.0
+            },
+            {
+              "attack": "ll_hat_nanh",
+              "windup_mult": 0.7,
+              "gap_s": 0.3,
+              "riposte_on_perfect_parry": true
+            }
+          ],
+          "_purpose": "Bốn nhịp đỡ liền theo nhịp trống; nhịp cuối Phản nhịp"
+        }
+      ],
+      "set_pieces_0_4": [
+        {
+          "id": "tsp4_lan_lay",
+          "name": {
+            "vi": "Lặn lầy",
+            "en": "Into the Mire"
+          },
+          "label": "SÁNG TẠO",
+          "duration_s": 6.0,
+          "boss_invulnerable": true,
+          "player_control": "full",
+          "camera_skippable": false,
+          "replaces": "tsp_huc_coc_bay",
+          "ends_with_attack": "ll4_bat_tung",
+          "first_time_damage_mult": 0.5,
+          "beats": [
+            "0,0 s: con thú quay lưng, phi vào vũng bùn lớn nhất (8, −140) và lặn mất; camera lùi cao 2 m",
+            "0,8 s: im lặng, chỉ còn tiếng bọt; nhạc rút còn trống thưa",
+            "1,0–3,0 s: vệt bọt chạy hai vòng quanh người chơi (người chơi đi, đỡ, né tự do)",
+            "3,0 s: bọt dồn dưới chân người chơi, mặt bùn phồng (báo hiệu 1,2 s, âm ục ục, đỏ đồng)",
+            "4,2 s: Bật tung lầy: cột bùn, chậm ×0,5 trong 0,4 s, camera thấp nhìn ngược lên",
+            "4,6–6,0 s: nước rút (phase2_0_3), 3 cọc cũ lộ ra, con thú rống; vào pha 2"
+          ],
+          "_purpose": "Khoảnh khắc điện ảnh có chơi: người chơi không xem mà né"
+        },
+        {
+          "id": "csm4_ghi_nanh",
+          "name": {
+            "vi": "Ghì nanh",
+            "en": "Tusk Lock"
+          },
+          "label": "SÁNG TẠO",
+          "ref": "phase2_0_3.tusk_lock_0_3",
+          "_purpose": "Giữ nguyên từ 0.3: một lần mỗi trận khi con thú va cọc trong Càn ba góc"
+        }
+      ],
+      "behavior_0_4": {
+        "label": "SÁNG TẠO",
+        "idle_0_4": {
+          "kind": "co_co",
+          "desc": "đứng yên thì cọ cổ vào bùn, đầu nghiêng về bên lành (STORY_INTEGRATION_0_4 §8)"
+        },
+        "post_attack_idle_s": {
+          "min": 0.3,
+          "max": 0.9
+        },
+        "punish_turtle": {
+          "player_guarding_s_at_least": 2.0,
+          "within_m": 3.0,
+          "response": "ll4_ui_nhac"
+        },
+        "edge_burst": {
+          "player_within_edge_m": 4.0,
+          "for_s": 2.5,
+          "response": "ll4_xe_lau"
+        },
+        "wallow_when": {
+          "crust_layers_at_most": 0,
+          "mud_pool_within_m": 6.0,
+          "hp_ratio_at_least": 0.2
+        },
+        "anti_kite": {
+          "player_farther_than_m": 10.0,
+          "for_s": 3.0,
+          "response": "ll_can_xuyen"
+        },
+        "punish_window_floor_s": 0.8
+      },
+      "arena_0_4": {
+        "label": "SÁNG TẠO",
+        "hummocks": [
+          {
+            "id": "hk_1",
+            "x": -12,
+            "z": -140,
+            "r": 1.8
+          },
+          {
+            "id": "hk_2",
+            "x": 13,
+            "z": -128,
+            "r": 1.8
+          },
+          {
+            "id": "hk_3",
+            "x": 6,
+            "z": -150,
+            "r": 1.6
+          },
+          {
+            "id": "hk_4",
+            "x": -6,
+            "z": -123,
+            "r": 1.6
+          }
+        ],
+        "_note": "Gò khô an toàn khi Nhấn chìm lầy; tọa độ trong z_dau_truong, tránh 3 vũng lầy gốc"
+      },
+      "difficulty_0_4": {
+        "diff_nghe_chuyen": {
+          "can_ba_goc_passes": 2,
+          "nhan_chim_duration_s": 2.5,
+          "first_eruption_damage_mult": 0.3,
+          "punish_turtle": false
+        },
+        "diff_cheo_do": {
+          "can_ba_goc_passes": 3,
+          "nhan_chim_duration_s": 3.5,
+          "first_eruption_damage_mult": 0.5,
+          "punish_turtle": true
+        },
+        "diff_nguoc_nuoc": {
+          "can_ba_goc_passes": 3,
+          "nhan_chim_duration_s": 3.5,
+          "first_eruption_damage_mult": 0.5,
+          "punish_turtle": true
+        },
+        "diff_thac_du": {
+          "can_ba_goc_passes": 3,
+          "nhan_chim_duration_s": 4.0,
+          "first_eruption_damage_mult": 1.0,
+          "punish_turtle": true
+        }
       }
     }
   ],
@@ -1632,5 +2964,589 @@
         "teaches": "Thử thách tùy chọn trước phần thưởng bí mật"
       }
     ]
-  }
+  },
+  "enemies_0_4": [
+    {
+      "id": "en_cao_cao_gai",
+      "name": {
+        "vi": "Cào Cào Gai",
+        "en": "Thornhopper"
+      },
+      "description": {
+        "vi": "Cào cào già to bằng con chó, chân sau mọc gai như bụi tầm xuân, nhảy xa hơn chục bước. Sống thành bầy trong cỏ gai trên gò; bị đánh động thì kéo cả bầy tới. Thua thì bật vào cỏ cao.",
+        "en": "An old, dog-sized grasshopper, its hind legs thorned like briar, leaping over ten paces. Lives in packs in the thorny grass of the knolls; disturb one and the pack comes. Beaten, it springs into the tall grass."
+      },
+      "label": "SÁNG TẠO",
+      "type": "insect",
+      "species_family": "grasshopper",
+      "skeleton_family": "insect_hopper",
+      "rank": "normal",
+      "chapter": "ch_longbien",
+      "zones": [
+        "z_bai_boi",
+        "z_doi_go",
+        "z_lau_sau"
+      ],
+      "spawn_group_size": 3,
+      "hp": 90,
+      "the_max": 40,
+      "the_regen_per_s": 10,
+      "the_regen_delay_s": 1.2,
+      "stagger_duration_s": 1.6,
+      "interrupt_threshold": 6,
+      "front_damage_mult": 1.0,
+      "respawns_at_checkpoint": true,
+      "defeat_behavior": "flee",
+      "attacks": [
+        {
+          "id": "cc_dap_nhay",
+          "name": {
+            "vi": "Đạp nhảy",
+            "en": "Leap Kick"
+          },
+          "damage": 14,
+          "player_the_damage": 10,
+          "windup_s": 0.55,
+          "active_s": 0.2,
+          "recovery_s": 0.5,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 6.0,
+          "cooldown_s": 3.5,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "ngồi thụp, chân sau gập lại, kêu tách tách",
+            "audio": "hai tiếng tách khô",
+            "color_cue": "none"
+          },
+          "shape": "charge",
+          "player_knockback_m": 0.8,
+          "punish_window_s": 0.5,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "nén chân sau",
+            "active": "bật cao 1,6 m, đạp chúc xuống",
+            "follow_through": "đáp chúi, kẹt 0,5 s"
+          },
+          "_purpose": "Đòn chính; đâm thẳng (đòn nhẹ bất kỳ) trong lúc nén chân sau là ngắt",
+          "interruptible_windup": true
+        },
+        {
+          "id": "cc_gam_gai",
+          "name": {
+            "vi": "Gặm gai",
+            "en": "Thorn Bite"
+          },
+          "damage": 8,
+          "player_the_damage": 6,
+          "windup_s": 0.4,
+          "active_s": 0.2,
+          "recovery_s": 0.45,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 1.4,
+          "cooldown_s": 2.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "đầu cúi, hàm mở rộng",
+            "audio": "tiếng rào rạo",
+            "color_cue": "none"
+          },
+          "shape": "melee",
+          "player_knockback_m": 0.2,
+          "punish_window_s": 0.45,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "rướn đầu",
+            "active": "cắn hai nhát",
+            "follow_through": "lùi lại"
+          },
+          "_purpose": "Đòn gần",
+          "hits": 2
+        },
+        {
+          "id": "cc_hat_gai",
+          "name": {
+            "vi": "Hất gai",
+            "en": "Thorn Flick"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.5,
+          "active_s": 0.2,
+          "recovery_s": 0.5,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 7.0,
+          "cooldown_s": 8.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "chân sau cào vào bụi gai, gai dựng lên",
+            "audio": "tiếng sột soạt khô",
+            "color_cue": "none"
+          },
+          "shape": "projectile",
+          "player_knockback_m": 0.0,
+          "punish_window_s": 0.5,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "quay ngang, chân sau co",
+            "active": "đá văng một chùm gai cỏ",
+            "follow_through": "lắc chân"
+          },
+          "_purpose": "Dính gai: Đỡ tốn Thế ×1,5 trong 4 s",
+          "projectile_speed_mps": 12.0,
+          "status": {
+            "id": "st_dinh_gai",
+            "guard_the_cost_mult": 1.5,
+            "duration_s": 4.0
+          }
+        },
+        {
+          "id": "cc_dap_lien",
+          "name": {
+            "vi": "Đạp liên hồi",
+            "en": "Flurry Kicks"
+          },
+          "damage": 18,
+          "player_the_damage": 14,
+          "windup_s": 0.6,
+          "active_s": 0.4,
+          "recovery_s": 0.7,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 1.8,
+          "cooldown_s": 6.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "quay lưng, chân sau co hết cỡ",
+            "audio": "tiếng rít ngắn",
+            "color_cue": "none"
+          },
+          "shape": "rear_arc",
+          "player_knockback_m": 0.6,
+          "punish_window_s": 0.7,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "quay đuôi về người chơi",
+            "active": "đạp hai chân sau ba lần",
+            "follow_through": "nhảy vọt đi"
+          },
+          "_purpose": "Phạt người đứng sau lưng nó",
+          "hits": 3
+        }
+      ],
+      "moveset_0_4": [
+        "cc_dap_nhay",
+        "cc_gam_gai",
+        "cc_hat_gai",
+        "cc_dap_lien"
+      ],
+      "drops": [
+        {
+          "item": "mat_soi_gai",
+          "count": 1,
+          "chance": 0.3
+        },
+        {
+          "item": "it_la_ngai",
+          "count": 1,
+          "chance": 0.1
+        }
+      ],
+      "concept_0_4": {
+        "label": "SÁNG TẠO",
+        "archetype": "harasser",
+        "monster_flavor": "Cào cào xanh xám to bằng con chó, gai nâu sẫm dọc chân sau như bụi tầm xuân, mắt to lồi; bầy kêu rả rích như mưa trên mái. Không phải yêu đầm: thú gò sống lâu ngoài đầm",
+        "trick": "Bật lò xo: thấy người chơi gồng đòn nặng trong 3 m thì 70% bật lùi 4 m. Dạy đòn nhẹ nhanh và đòn đâm"
+      },
+      "weak_points_0_4": [
+        {
+          "id": "wp_cc_dap_dat",
+          "where": "lúc vừa đáp (0,5 s)",
+          "damage_mult": 1.5,
+          "the_mult": 1.5,
+          "how": "chờ đáp rồi đánh"
+        },
+        {
+          "id": "wp_cc_tren_khong",
+          "where": "đang nhảy",
+          "damage_mult": 1.0,
+          "the_mult": 3.0,
+          "how": "trúng bất kỳ đòn nào thì rơi ngửa 1,2 s"
+        }
+      ],
+      "behavior": {
+        "move_speed_mps": 3.2,
+        "radius_m": 0.45,
+        "aggro_radius_m": 14,
+        "leash_radius_m": 24,
+        "turn_rate_deg_s": 360,
+        "preferred_range_m": 5.0,
+        "circle": {
+          "enabled": true,
+          "speed_mps": 3.0,
+          "dir_change_s": {
+            "min": 0.6,
+            "max": 1.4
+          }
+        },
+        "retreat_after_attack_chance": 0.5,
+        "retreat_distance_m": 4.0,
+        "group_role": "flanker",
+        "evade_heavy": {
+          "chance": 0.7,
+          "within_m": 3.0,
+          "hop_m": 4.0
+        },
+        "hit_react": {
+          "knockback_mult": 1.6,
+          "flinch_mult": 1.3
+        },
+        "flee_style": "hop_into_grass",
+        "finisher_motion": "Gạt cán quét chân sau; cào cào lộn nhào, bật vào cỏ cao"
+      },
+      "behavior_0_4": {
+        "label": "SÁNG TẠO",
+        "enrage": {
+          "trigger": "packmate_driven_off",
+          "name": {
+            "vi": "Rả rích",
+            "en": "Chirring"
+          },
+          "duration_s": 8.0,
+          "cooldown_mult": 0.7,
+          "tell": "cả bầy đồng loạt kêu dồn"
+        },
+        "group": {
+          "tactic": "bay_quay",
+          "desc": "Gọi bầy trong 15 m; luân phiên đạp nhảy từ hai phía, tối đa 2 con trên không cùng lúc"
+        },
+        "environment": {
+          "slope": {
+            "leap_m_mult": 1.3
+          },
+          "reed": {
+            "leap_m_mult": 0.8
+          }
+        }
+      }
+    },
+    {
+      "id": "en_bo_hung_bun",
+      "name": {
+        "vi": "Bọ Hung Lăn Bùn",
+        "en": "Mud-Roller Beetle"
+      },
+      "description": {
+        "vi": "Yêu đầm bọ hung cao ngang hông, sừng cong như lưỡi cày, lăn những cục bùn to bằng cái cối. Mất cục bùn thì hoảng, cuống cuồng nặn cục khác. Thua thì đào đất trốn.",
+        "en": "A hip-high marsh-spirit beetle with a horn curved like a ploughshare, rolling mud balls the size of a mortar. Lose its ball and it panics, frantically kneading another. Beaten, it digs away."
+      },
+      "label": "SÁNG TẠO",
+      "type": "insect",
+      "species_family": "beetle",
+      "lore_kind": "yeu_dam",
+      "skeleton_family": "insect_beetle",
+      "rank": "normal",
+      "chapter": "ch_longbien",
+      "zones": [
+        "z_rung_sung",
+        "z_dong_lay_bac"
+      ],
+      "spawn_group_size": 1,
+      "hp": 300,
+      "the_max": 110,
+      "the_regen_per_s": 8,
+      "the_regen_delay_s": 2.0,
+      "stagger_duration_s": 2.8,
+      "interrupt_threshold": 14,
+      "front_damage_mult": 0.7,
+      "respawns_at_checkpoint": true,
+      "defeat_behavior": "flee",
+      "attacks": [
+        {
+          "id": "bh_lan_bun",
+          "name": {
+            "vi": "Lăn cục bùn",
+            "en": "Mud Ball Roll"
+          },
+          "damage": 30,
+          "player_the_damage": 30,
+          "windup_s": 1.0,
+          "active_s": 2.0,
+          "recovery_s": 0.8,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 14.0,
+          "cooldown_s": 6.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "hai chân sau đặt lên cục bùn, đầu chúc xuống, chân trước cào đất",
+            "audio": "tiếng cào sột soạt rồi tiếng lăn ầm ì",
+            "color_cue": "red_bronze"
+          },
+          "shape": "rolling_projectile",
+          "player_knockback_m": 1.8,
+          "punish_window_s": 0.8,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "lùi đít về phía cục bùn",
+            "active": "đạp cục bùn lăn 14 m (7 m/s), bẻ hướng tối đa 15°/s",
+            "follow_through": "đứng nhìn theo cục bùn"
+          },
+          "_purpose": "Đòn chính: né ngang; cục bùn đập vào cây, cọc, tường thì vỡ thành vũng 2,5 m",
+          "projectile_speed_mps": 7.0,
+          "homing_deg_s": 15,
+          "player_knockdown": true,
+          "ball_hp": 80,
+          "on_obstacle": {
+            "leaves_mud_pool": {
+              "radius_m": 2.5,
+              "duration_s": 8.0
+            }
+          },
+          "friendly_fire": true
+        },
+        {
+          "id": "bh_huc_sung",
+          "name": {
+            "vi": "Húc sừng hất",
+            "en": "Horn Toss"
+          },
+          "damage": 22,
+          "player_the_damage": 20,
+          "windup_s": 0.6,
+          "active_s": 0.2,
+          "recovery_s": 0.6,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.0,
+          "cooldown_s": 3.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "cúi sừng sát đất, chân trước dang",
+            "audio": "tiếng khịt khô",
+            "color_cue": "none"
+          },
+          "shape": "melee",
+          "player_knockback_m": 1.0,
+          "punish_window_s": 0.6,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "hạ sừng",
+            "active": "hất sừng lên như cày lật đất",
+            "follow_through": "sừng vẫn ngóc cao 0,6 s"
+          },
+          "_purpose": "Đòn gần, đỡ được"
+        },
+        {
+          "id": "bh_xo_vo",
+          "name": {
+            "vi": "Xô vỏ",
+            "en": "Shell Shove"
+          },
+          "damage": 14,
+          "player_the_damage": 16,
+          "windup_s": 0.5,
+          "active_s": 0.2,
+          "recovery_s": 0.6,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 1.8,
+          "cooldown_s": 5.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "cánh cứng hé mở",
+            "audio": "tiếng vỏ cứng lạch cạch",
+            "color_cue": "none"
+          },
+          "shape": "rear_arc",
+          "player_knockback_m": 0.8,
+          "punish_window_s": 0.6,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "xoay mông",
+            "active": "bung cánh cứng xô ra sau",
+            "follow_through": "khép cánh"
+          },
+          "_purpose": "Phạt đứng sau lưng"
+        },
+        {
+          "id": "bh_lan_vong",
+          "name": {
+            "vi": "Lăn vòng",
+            "en": "Circling Roll"
+          },
+          "damage": 30,
+          "player_the_damage": 30,
+          "windup_s": 1.2,
+          "active_s": 2.5,
+          "recovery_s": 1.0,
+          "parryable": false,
+          "guardable": false,
+          "delayed": false,
+          "range_m": 8.0,
+          "cooldown_s": 12.0,
+          "dodge_hint": "side",
+          "telegraph": {
+            "visual": "đẩy cục bùn chạy vòng quanh người chơi ở 6 m",
+            "audio": "tiếng lăn cao dần rồi khựng",
+            "color_cue": "red_bronze"
+          },
+          "shape": "rolling_projectile",
+          "player_knockback_m": 1.8,
+          "punish_window_s": 1.0,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "vòng ra xa",
+            "active": "lăn vòng rồi cắt vào",
+            "follow_through": "dừng thở, cục bùn nứt"
+          },
+          "_purpose": "Biến thể đòn chính; tiếng lăn cao dần báo lúc cắt vào",
+          "orbit_radius_m": 6.0,
+          "player_knockdown": true
+        },
+        {
+          "id": "bh_nan_bun",
+          "name": {
+            "vi": "Nặn cục bùn",
+            "en": "Knead New Ball"
+          },
+          "damage": 0,
+          "player_the_damage": 0,
+          "windup_s": 0.3,
+          "active_s": 2.5,
+          "recovery_s": 0.3,
+          "parryable": false,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 0.0,
+          "cooldown_s": 0.0,
+          "dodge_hint": "none",
+          "telegraph": {
+            "visual": "quay lưng, cào bùn vun lại",
+            "audio": "tiếng bùn vỗ bì bõm",
+            "color_cue": "none"
+          },
+          "shape": "self",
+          "player_knockback_m": 0.0,
+          "punish_window_s": 2.5,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "hoảng hốt cào đất",
+            "active": "nặn cục mới 2,5 s; lưng lộ",
+            "follow_through": "đẩy thử cục mới"
+          },
+          "_purpose": "Cửa phạt dài khi nó mất cục bùn",
+          "requires": "no_ball",
+          "exposes": "wp_bh_lung"
+        }
+      ],
+      "moveset_0_4": [
+        "bh_lan_bun",
+        "bh_huc_sung",
+        "bh_xo_vo",
+        "bh_lan_vong",
+        "bh_nan_bun"
+      ],
+      "drops": [
+        {
+          "item": "mat_thiec_song",
+          "count": 1,
+          "chance": 0.5
+        },
+        {
+          "item": "mat_day_may",
+          "count": 1,
+          "chance": 0.3
+        }
+      ],
+      "concept_0_4": {
+        "label": "SÁNG TẠO",
+        "archetype": "bruiser",
+        "monster_flavor": "Bọ hung đen bóng như sơn, sừng cong như lưỡi cày, cánh cứng loang bùn khô; cục bùn có rễ lau và vỏ ốc dính. Dùng chung khung xương với phương án lùi Bọ Hung Bùn của agent cốt truyện (§6.1)",
+        "trick": "Cục bùn là vũ khí và là cái nó sợ mất: dụ cục bùn vào cây, cọc hoặc vào quái khác; phá cục bùn bằng đòn nặng (80 máu)"
+      },
+      "weak_points_0_4": [
+        {
+          "id": "wp_bh_lung",
+          "where": "lưng khi đang nặn cục bùn",
+          "damage_mult": 1.5,
+          "the_mult": 1.5,
+          "window_s": 2.5,
+          "how": "phá hoặc làm vỡ cục bùn trước"
+        },
+        {
+          "id": "wp_bh_khong_bun",
+          "where": "khi không có cục bùn",
+          "damage_mult": 1.0,
+          "the_mult": 1.3,
+          "how": "nó chậm ×0,7, mặt trước hết chặn"
+        }
+      ],
+      "behavior": {
+        "move_speed_mps": 1.8,
+        "radius_m": 0.9,
+        "aggro_radius_m": 14,
+        "leash_radius_m": 22,
+        "turn_rate_deg_s": 150,
+        "preferred_range_m": 8.0,
+        "circle": {
+          "enabled": true,
+          "speed_mps": 1.6,
+          "dir_change_s": {
+            "min": 2.0,
+            "max": 4.0
+          }
+        },
+        "retreat_after_attack_chance": 0.4,
+        "retreat_distance_m": 4.0,
+        "group_role": "zone_control",
+        "hit_react": {
+          "knockback_mult": 0.5,
+          "flinch_mult": 0.6,
+          "flinch_min_weight": "medium"
+        },
+        "flee_style": "dig_away",
+        "finisher_motion": "Bẩy sừng bọ hung, lật ngửa; nó giãy chân rồi đào đất trốn"
+      },
+      "behavior_0_4": {
+        "label": "SÁNG TẠO",
+        "enrage": {
+          "trigger": "ball_destroyed_by_player",
+          "name": {
+            "vi": "Giận mất bùn",
+            "en": "Ball Rage"
+          },
+          "duration_s": 8.0,
+          "uses_only": [
+            "bh_huc_sung",
+            "bh_xo_vo"
+          ],
+          "combo_hits": 2,
+          "tell": "đập sừng xuống đất ba lần"
+        },
+        "group": {
+          "tactic": "lan_mo_duong",
+          "desc": "Lăn bùn khi đồng bọn ép người chơi vào giữa; cục bùn trúng cả quái khác"
+        },
+        "environment": {
+          "mud_pool": {
+            "ball_damage_mult": 1.2,
+            "ball_speed_mult": 0.85
+          },
+          "silt": {
+            "ball_cracks_after_rolls": 1
+          }
+        }
+      }
+    }
+  ]
 }

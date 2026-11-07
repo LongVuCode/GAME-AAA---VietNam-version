@@ -1035,5 +1035,939 @@
       "drum_burst"
     ],
     "scale_option": "acc_hud_scale"
+  },
+  "map_0_4": {
+    "_note": "Demo 0.4 (COMBAT_0_4 §6). Lớp UI của world_0_4.json: tên, biểu tượng, phần thưởng. world_point trỏ tới world_0_4.points (validator so tọa độ và vùng). Khối 0.3 phía trên giữ nguyên. Giả định, chờ playtest.",
+    "world_ref": "world_0_4.json",
+    "level_bounds_0_4": {
+      "lvl_dam_lau": {
+        "x0": -140,
+        "x1": 145,
+        "z0": -260,
+        "z1": 50
+      }
+    },
+    "icons_add": [
+      {
+        "id": "ic_track",
+        "name": {
+          "vi": "Vệt dấu",
+          "en": "Track"
+        },
+        "shape": "hoof_print",
+        "on_minimap": true
+      },
+      {
+        "id": "ic_traversal",
+        "name": {
+          "vi": "Lối leo, vượt",
+          "en": "Climb or vault"
+        },
+        "shape": "chevron_up",
+        "on_minimap": false
+      }
+    ],
+    "zones": [
+      {
+        "id": "z_bai_boi",
+        "level": "lvl_dam_lau",
+        "name": {
+          "vi": "Bãi bồi bến cũ",
+          "en": "Old Silt Bank"
+        },
+        "label": "SÁNG TẠO",
+        "region_ref": "z_bai_boi",
+        "map_label_at": {
+          "x": 40,
+          "z": 7
+        }
+      },
+      {
+        "id": "z_doi_go",
+        "level": "lvl_dam_lau",
+        "name": {
+          "vi": "Đồi gò sim",
+          "en": "Myrtle Knolls"
+        },
+        "label": "SÁNG TẠO",
+        "region_ref": "z_doi_go",
+        "map_label_at": {
+          "x": 74,
+          "z": -66
+        }
+      },
+      {
+        "id": "z_rung_sung",
+        "level": "lvl_dam_lau",
+        "name": {
+          "vi": "Rừng sung già",
+          "en": "Old Fig Grove"
+        },
+        "label": "SÁNG TẠO",
+        "region_ref": "z_rung_sung",
+        "map_label_at": {
+          "x": 68,
+          "z": -150
+        }
+      },
+      {
+        "id": "z_dong_lay_bac",
+        "level": "lvl_dam_lau",
+        "name": {
+          "vi": "Đồng lầy bắc",
+          "en": "Northern Mire Flats"
+        },
+        "label": "SÁNG TẠO",
+        "region_ref": "z_dong_lay_bac",
+        "map_label_at": {
+          "x": -2,
+          "z": -195
+        }
+      },
+      {
+        "id": "z_rach_nuoc",
+        "level": "lvl_dam_lau",
+        "name": {
+          "vi": "Rạch nước tây",
+          "en": "Western Creeks"
+        },
+        "label": "SÁNG TẠO",
+        "region_ref": "z_rach_nuoc",
+        "map_label_at": {
+          "x": -54,
+          "z": -17
+        }
+      },
+      {
+        "id": "z_lau_sau",
+        "level": "lvl_dam_lau",
+        "name": {
+          "vi": "Rừng lau sâu",
+          "en": "Deep Reeds"
+        },
+        "label": "SÁNG TẠO",
+        "region_ref": "z_lau_sau",
+        "map_label_at": {
+          "x": -64,
+          "z": -93
+        }
+      },
+      {
+        "id": "z_san_lo",
+        "level": "lvl_dam_lau",
+        "name": {
+          "vi": "Sân lò ngoài",
+          "en": "Kiln Yard"
+        },
+        "label": "SÁNG TẠO",
+        "region_ref": "z_san_lo",
+        "map_label_at": {
+          "x": -44,
+          "z": -137
+        }
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "lm4_fire_go_sim",
+        "kind": "rest",
+        "icon": "ic_rest",
+        "x": 66,
+        "z": -48,
+        "name": {
+          "vi": "Bếp lửa yên ngựa gò",
+          "en": "Knoll Saddle fire"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "fire_go_sim",
+        "fast_travel": true
+      },
+      {
+        "id": "lm4_fire_san_lo",
+        "kind": "rest",
+        "icon": "ic_rest",
+        "x": -40,
+        "z": -140,
+        "name": {
+          "vi": "Bếp lửa sân lò",
+          "en": "Kiln Yard fire"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "fire_san_lo",
+        "fast_travel": true
+      },
+      {
+        "id": "lm4_fire_dau_de",
+        "kind": "rest",
+        "icon": "ic_rest",
+        "x": -8,
+        "z": -182,
+        "name": {
+          "vi": "Bếp lửa đầu đê",
+          "en": "Dike-head fire"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "fire_dau_de",
+        "fast_travel": true
+      },
+      {
+        "id": "lm4_track_bai_lau",
+        "kind": "track",
+        "icon": "ic_track",
+        "x": -14,
+        "z": -72,
+        "name": {
+          "vi": "Vệt nanh trên bùn",
+          "en": "Tusk furrow in the mud"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "track_bai_lau"
+      },
+      {
+        "id": "lm4_track_doi_go",
+        "kind": "track",
+        "icon": "ic_track",
+        "x": 100,
+        "z": -84,
+        "name": {
+          "vi": "Vệt cày trên dốc",
+          "en": "Ploughed slope"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "track_doi_go"
+      },
+      {
+        "id": "lm4_track_rach_nuoc",
+        "kind": "track",
+        "icon": "ic_track",
+        "x": -104,
+        "z": -18,
+        "name": {
+          "vi": "Cọc bẫy bị húc gãy",
+          "en": "Rammed trap stake"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "track_rach_nuoc"
+      },
+      {
+        "id": "lm4_track_lau_sau",
+        "kind": "track",
+        "icon": "ic_track",
+        "x": -98,
+        "z": -72,
+        "name": {
+          "vi": "Lối lau rạp theo vệt",
+          "en": "Trampled reed lane"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "track_lau_sau"
+      },
+      {
+        "id": "lm4_rattan_7",
+        "kind": "gather",
+        "icon": "ic_gather",
+        "x": 45,
+        "z": -140,
+        "name": {
+          "vi": "Mây rừng",
+          "en": "Rattan"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "rattan_7"
+      },
+      {
+        "id": "lm4_rattan_8",
+        "kind": "gather",
+        "icon": "ic_gather",
+        "x": -80,
+        "z": -50,
+        "name": {
+          "vi": "Mây rừng",
+          "en": "Rattan"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "rattan_8"
+      },
+      {
+        "id": "lm4_rattan_9",
+        "kind": "gather",
+        "icon": "ic_gather",
+        "x": -40,
+        "z": -80,
+        "name": {
+          "vi": "Mây rừng",
+          "en": "Rattan"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "rattan_9"
+      },
+      {
+        "id": "lm4_gai_1",
+        "kind": "gather",
+        "icon": "ic_gather",
+        "x": 30,
+        "z": 30,
+        "name": {
+          "vi": "Bụi gai",
+          "en": "Ramie clump"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "gai_1"
+      },
+      {
+        "id": "lm4_gai_2",
+        "kind": "gather",
+        "icon": "ic_gather",
+        "x": 106,
+        "z": -58,
+        "name": {
+          "vi": "Bụi gai",
+          "en": "Ramie clump"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "gai_2"
+      },
+      {
+        "id": "lm4_gate_nam",
+        "kind": "boss_gate",
+        "icon": "ic_boss",
+        "x": 0,
+        "z": -119.5,
+        "name": {
+          "vi": "Cổng bãi lầy nam",
+          "en": "South mire gate"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "gate_nam"
+      },
+      {
+        "id": "lm4_gate_bac",
+        "kind": "boss_gate",
+        "icon": "ic_boss",
+        "x": 0,
+        "z": -158,
+        "name": {
+          "vi": "Cổng bãi lầy bắc",
+          "en": "North mire gate"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "gate_bac"
+      },
+      {
+        "id": "lm4_pv_rach_1",
+        "kind": "traversal",
+        "icon": "ic_traversal",
+        "x": -88,
+        "z": -32,
+        "name": {
+          "vi": "Bãi đu sào",
+          "en": "Pole-vault bank"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "pv_rach_1"
+      },
+      {
+        "id": "lm4_pv_rach_2",
+        "kind": "traversal",
+        "icon": "ic_traversal",
+        "x": -70,
+        "z": 6,
+        "name": {
+          "vi": "Bãi đu sào",
+          "en": "Pole-vault bank"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "pv_rach_2"
+      },
+      {
+        "id": "lm4_ledge_go_lau",
+        "kind": "traversal",
+        "icon": "ic_traversal",
+        "x": 41,
+        "z": -75,
+        "name": {
+          "vi": "Bờ dốc",
+          "en": "Drop-off"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "ledge_go_lau"
+      },
+      {
+        "id": "lm4_climb_lo",
+        "kind": "traversal",
+        "icon": "ic_traversal",
+        "x": -53,
+        "z": -129,
+        "name": {
+          "vi": "Dây leo vách lò",
+          "en": "Kiln wall vines"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "climb_lo"
+      },
+      {
+        "id": "lm4_mantle_hoc_sung",
+        "kind": "traversal",
+        "icon": "ic_traversal",
+        "x": 66,
+        "z": -182,
+        "name": {
+          "vi": "Bờ hộc",
+          "en": "Hollow lip"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "mantle_hoc_sung"
+      },
+      {
+        "id": "lm4_slide_doc_go",
+        "kind": "traversal",
+        "icon": "ic_traversal",
+        "x": 76,
+        "z": -54,
+        "name": {
+          "vi": "Dốc trượt",
+          "en": "Slide slope"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "slide_doc_go"
+      },
+      {
+        "id": "lm4_balance_go_rach",
+        "kind": "traversal",
+        "icon": "ic_traversal",
+        "x": -60,
+        "z": -40,
+        "name": {
+          "vi": "Thân cây bắc ngang",
+          "en": "Fallen trunk bridge"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "balance_go_rach"
+      },
+      {
+        "id": "lm4_vault_sung_do",
+        "kind": "traversal",
+        "icon": "ic_traversal",
+        "x": 90,
+        "z": -130,
+        "name": {
+          "vi": "Thân sung đổ",
+          "en": "Fallen fig trunk"
+        },
+        "label": "SÁNG TẠO",
+        "reveal": "on_discover",
+        "world_point": "vault_sung_do"
+      }
+    ],
+    "discovery_points": [
+      {
+        "id": "dp_thuyen_muc",
+        "x": 48,
+        "z": 22,
+        "zone": "z_bai_boi",
+        "name": {
+          "vi": "Thuyền mục",
+          "en": "Rotting boat"
+        },
+        "label": "SÁNG TẠO",
+        "reveal_radius_m": 35,
+        "xp_ref": "xp_discovery",
+        "world_point": "dp_thuyen_muc"
+      },
+      {
+        "id": "dp_dinh_go_sim",
+        "x": 88,
+        "z": -64,
+        "zone": "z_doi_go",
+        "name": {
+          "vi": "Đỉnh gò sim",
+          "en": "Myrtle Knoll top"
+        },
+        "label": "SÁNG TẠO",
+        "reveal_radius_m": 60,
+        "xp_ref": "xp_discovery",
+        "world_point": "dp_dinh_go_sim"
+      },
+      {
+        "id": "dp_cay_sung_ba_than",
+        "x": 78,
+        "z": -142,
+        "zone": "z_rung_sung",
+        "name": {
+          "vi": "Cây sung ba thân",
+          "en": "Three-trunk fig"
+        },
+        "label": "SÁNG TẠO",
+        "reveal_radius_m": 35,
+        "xp_ref": "xp_discovery",
+        "world_point": "dp_cay_sung_ba_than"
+      },
+      {
+        "id": "dp_go_noi",
+        "x": 8,
+        "z": -218,
+        "zone": "z_dong_lay_bac",
+        "name": {
+          "vi": "Gò nổi giữa lầy",
+          "en": "Hummock in the mire"
+        },
+        "label": "SÁNG TẠO",
+        "reveal_radius_m": 45,
+        "xp_ref": "xp_discovery",
+        "world_point": "dp_go_noi"
+      },
+      {
+        "id": "dp_cau_tre_gay",
+        "x": -62,
+        "z": -4,
+        "zone": "z_rach_nuoc",
+        "name": {
+          "vi": "Cầu tre gãy",
+          "en": "Broken bamboo bridge"
+        },
+        "label": "SÁNG TẠO",
+        "reveal_radius_m": 35,
+        "xp_ref": "xp_discovery",
+        "world_point": "dp_cau_tre_gay"
+      },
+      {
+        "id": "dp_cay_gao_tru",
+        "x": -90,
+        "z": -90,
+        "zone": "z_lau_sau",
+        "name": {
+          "vi": "Cây gạo trụi",
+          "en": "Bare kapok tree"
+        },
+        "label": "SÁNG TẠO",
+        "reveal_radius_m": 45,
+        "xp_ref": "xp_discovery",
+        "world_point": "dp_cay_gao_tru"
+      },
+      {
+        "id": "dp_noc_lo_cu",
+        "x": -53,
+        "z": -137,
+        "zone": "z_san_lo",
+        "name": {
+          "vi": "Nóc lò cũ",
+          "en": "Old kiln roof"
+        },
+        "label": "SÁNG TẠO",
+        "reveal_radius_m": 40,
+        "xp_ref": "xp_discovery",
+        "world_point": "dp_noc_lo_cu"
+      }
+    ],
+    "chests": [
+      {
+        "id": "chest_bai_boi",
+        "x": 62,
+        "z": 8,
+        "zone": "z_bai_boi",
+        "name": {
+          "vi": "Rương dưới thuyền úp",
+          "en": "Chest under the upturned boat"
+        },
+        "label": "SÁNG TẠO",
+        "contents": [
+          {
+            "item": "mat_thiec_song",
+            "count": 2
+          },
+          {
+            "item": "it_cu_sung",
+            "count": 1
+          }
+        ],
+        "world_point": "chest_bai_boi"
+      },
+      {
+        "id": "chest_go_sim",
+        "x": 106,
+        "z": -98,
+        "zone": "z_doi_go",
+        "name": {
+          "vi": "Giỏ mây trên gò bắc",
+          "en": "Rattan basket on the north knoll"
+        },
+        "label": "SÁNG TẠO",
+        "contents": [
+          {
+            "item": "mat_soi_gai",
+            "count": 3
+          },
+          {
+            "item": "it_la_ngai",
+            "count": 1
+          }
+        ],
+        "world_point": "chest_go_sim"
+      },
+      {
+        "id": "chest_hoc_sung",
+        "x": 60,
+        "z": -186,
+        "zone": "z_rung_sung",
+        "name": {
+          "vi": "Hộc rễ sung",
+          "en": "Fig-root hollow"
+        },
+        "label": "SÁNG TẠO",
+        "contents": [
+          {
+            "item": "mat_day_may",
+            "count": 3
+          },
+          {
+            "item": "it_cu_sung",
+            "count": 1
+          }
+        ],
+        "world_point": "chest_hoc_sung"
+      },
+      {
+        "id": "chest_dong_lay",
+        "x": -34,
+        "z": -214,
+        "zone": "z_dong_lay_bac",
+        "name": {
+          "vi": "Rương đầu đàn",
+          "en": "Herd-leader's chest"
+        },
+        "label": "SÁNG TẠO",
+        "contents": [
+          {
+            "item": "mat_thiec_song",
+            "count": 3
+          },
+          {
+            "item": "it_cu_sung",
+            "count": 2
+          }
+        ],
+        "world_point": "chest_dong_lay"
+      },
+      {
+        "id": "chest_coi_rach",
+        "x": -98,
+        "z": -36,
+        "zone": "z_rach_nuoc",
+        "name": {
+          "vi": "Giỏ trên cù lao",
+          "en": "Basket on the islet"
+        },
+        "label": "SÁNG TẠO",
+        "contents": [
+          {
+            "item": "mat_day_may",
+            "count": 2
+          },
+          {
+            "item": "it_la_ngai",
+            "count": 2
+          }
+        ],
+        "world_point": "chest_coi_rach"
+      },
+      {
+        "id": "chest_lau_sau",
+        "x": -96,
+        "z": -126,
+        "zone": "z_lau_sau",
+        "name": {
+          "vi": "Giỏ giữa lau sâu",
+          "en": "Basket deep in the reeds"
+        },
+        "label": "SÁNG TẠO",
+        "contents": [
+          {
+            "item": "mat_soi_gai",
+            "count": 2
+          },
+          {
+            "item": "mat_thiec_song",
+            "count": 1
+          }
+        ],
+        "world_point": "chest_lau_sau"
+      },
+      {
+        "id": "chest_san_lo",
+        "x": -66,
+        "z": -158,
+        "zone": "z_san_lo",
+        "name": {
+          "vi": "Vò đất sau lò",
+          "en": "Clay jar behind the kiln"
+        },
+        "label": "SÁNG TẠO",
+        "contents": [
+          {
+            "item": "mat_dong_lo_lang",
+            "count": 1
+          },
+          {
+            "item": "it_la_ngai",
+            "count": 1
+          }
+        ],
+        "world_point": "chest_san_lo"
+      }
+    ],
+    "environment_secrets": [
+      {
+        "id": "es_luoi_rach",
+        "x": 58,
+        "z": -10,
+        "zone": "z_bai_boi",
+        "name": {
+          "vi": "Lưới rách mắc cọc",
+          "en": "Torn net on a stake"
+        },
+        "label": "SÁNG TẠO",
+        "description": {
+          "vi": "Một tấm lưới rách mắc vào cọc, mấy con chim sẻ đồng vướng trong đó. Gỡ lưới thì chúng bay đi; dưới cọc có cuộn sợi gai ai bỏ lại.",
+          "en": "A torn net is caught on a stake with a few field sparrows tangled in it. Free them and they fly off; under the stake lies a coil of ramie someone left."
+        },
+        "visible_cue": "chim sẻ kêu chiêm chiếp, lưới rung",
+        "interaction": "interact",
+        "detour_s": 20,
+        "xp_ref": "xp_env_secret",
+        "reward": {
+          "items": [
+            {
+              "item": "mat_soi_gai",
+              "count": 2
+            }
+          ]
+        },
+        "world_point": "es_luoi_rach"
+      },
+      {
+        "id": "es_to_ong_bo",
+        "x": 104,
+        "z": -40,
+        "zone": "z_doi_go",
+        "name": {
+          "vi": "Tổ ong bỏ",
+          "en": "Abandoned hive"
+        },
+        "label": "SÁNG TẠO",
+        "description": {
+          "vi": "Tổ ong đất bỏ trống trong hốc đá. Bẻ ra còn ít sáp cũ.",
+          "en": "An empty ground-bee nest in a rock hollow. Break it open for a little old wax."
+        },
+        "visible_cue": "vệt sáp vàng chảy trên đá, ong lẻ bay quanh",
+        "interaction": "interact",
+        "detour_s": 25,
+        "xp_ref": "xp_env_secret",
+        "reward": {
+          "items": [
+            {
+              "item": "mat_sap_ong_cu",
+              "count": 1
+            }
+          ]
+        },
+        "world_point": "es_to_ong_bo"
+      },
+      {
+        "id": "es_bong_sung",
+        "x": 100,
+        "z": -170,
+        "zone": "z_rung_sung",
+        "name": {
+          "vi": "Bọng cây sung",
+          "en": "Hollow fig trunk"
+        },
+        "label": "SÁNG TẠO",
+        "description": {
+          "vi": "Bọng cây sung có một bọc lá người đi rừng gửi lại. Khều ra bằng cán giáo.",
+          "en": "A hollow fig trunk holds a leaf bundle a forest walker left behind. Hook it out with the spear shaft."
+        },
+        "visible_cue": "dây mây buộc dấu quanh thân cây",
+        "interaction": "interact",
+        "detour_s": 20,
+        "xp_ref": "xp_env_secret",
+        "reward": {
+          "items": [
+            {
+              "item": "it_cu_sung",
+              "count": 2
+            }
+          ]
+        },
+        "world_point": "es_bong_sung"
+      },
+      {
+        "id": "es_loi_go_noi",
+        "x": 26,
+        "z": -210,
+        "zone": "z_dong_lay_bac",
+        "name": {
+          "vi": "Lối gò nổi",
+          "en": "Hummock path"
+        },
+        "label": "SÁNG TẠO",
+        "description": {
+          "vi": "Bốn gò nổi giữa lầy lún dần khi đứng lên. Nhảy qua đủ bốn gò trước khi gò lún để tới bụi ngải.",
+          "en": "Four hummocks in the mire sink as you stand on them. Hop all four before they go under to reach the mugwort."
+        },
+        "visible_cue": "bụi ngải xanh mọc trên gò xa nhất",
+        "interaction": "interact",
+        "detour_s": 30,
+        "xp_ref": "xp_env_secret",
+        "reward": {
+          "items": [
+            {
+              "item": "it_la_ngai",
+              "count": 2
+            },
+            {
+              "item": "mat_thiec_song",
+              "count": 1
+            }
+          ]
+        },
+        "world_point": "es_loi_go_noi"
+      },
+      {
+        "id": "es_be_chuoi",
+        "x": -50,
+        "z": -30,
+        "zone": "z_rach_nuoc",
+        "name": {
+          "vi": "Bè chuối mắc cạn",
+          "en": "Stranded banana raft"
+        },
+        "label": "SÁNG TẠO",
+        "description": {
+          "vi": "Bè thân chuối mắc cạn. Đẩy xuống rạch thì thành cầu nổi, mở lối tắt từ Rạch nước về Bến Sậy.",
+          "en": "A banana-trunk raft has run aground. Push it into the creek to make a floating bridge, opening a shortcut from the Western Creeks to Sậy Landing."
+        },
+        "visible_cue": "bè chuối nghiêng, dây buộc lỏng",
+        "interaction": "interact",
+        "detour_s": 15,
+        "xp_ref": "xp_env_secret",
+        "reward": {
+          "items": [
+            {
+              "item": "mat_day_may",
+              "count": 2
+            }
+          ]
+        },
+        "world_point": "es_be_chuoi"
+      },
+      {
+        "id": "es_vong_lau_rap",
+        "x": -60,
+        "z": -116,
+        "zone": "z_lau_sau",
+        "name": {
+          "vi": "Vòng lau rạp",
+          "en": "Ring of flattened reeds"
+        },
+        "label": "SÁNG TẠO",
+        "description": {
+          "vi": "Một vòng lau rạp tròn như có ai giẫm. Giữa vòng có thỏi thiếc rơi từ giỏ người đi cắt lau.",
+          "en": "A ring of reeds flattened as if trampled. In the middle, tin dropped from a reed-cutter's basket."
+        },
+        "visible_cue": "vòng lau rạp nhìn thấy từ Cây gạo trụi",
+        "interaction": "interact",
+        "detour_s": 25,
+        "xp_ref": "xp_env_secret",
+        "reward": {
+          "items": [
+            {
+              "item": "mat_thiec_song",
+              "count": 2
+            }
+          ]
+        },
+        "world_point": "es_vong_lau_rap"
+      },
+      {
+        "id": "es_ong_khoi_do",
+        "x": -30,
+        "z": -150,
+        "zone": "z_san_lo",
+        "name": {
+          "vi": "Ống khói đổ",
+          "en": "Fallen chimney"
+        },
+        "label": "SÁNG TẠO",
+        "description": {
+          "vi": "Chui qua ống khói lò đổ, trong lòng có tổ chim én và nắm ngải khô ai cất.",
+          "en": "Crawl through the fallen chimney: inside, a swallow's nest and a bundle of dried mugwort someone stored."
+        },
+        "visible_cue": "chim én bay ra vào ống khói",
+        "interaction": "interact",
+        "detour_s": 20,
+        "xp_ref": "xp_env_secret",
+        "reward": {
+          "items": [
+            {
+              "item": "it_la_ngai",
+              "count": 1
+            },
+            {
+              "item": "mat_thiec_song",
+              "count": 1
+            }
+          ]
+        },
+        "world_point": "es_ong_khoi_do"
+      }
+    ],
+    "minimap": {
+      "world_radius_m": 34.0,
+      "zoom_steps_m": [
+        24.0,
+        34.0,
+        52.0
+      ]
+    },
+    "world_map": {
+      "zoom_m_per_screen": {
+        "min": 60,
+        "max": 320,
+        "default": 160
+      }
+    },
+    "fast_travel": {
+      "blocked_in": [
+        "z_dau_truong"
+      ],
+      "rests": [
+        "fire_ben_say",
+        "fire_cong_lau",
+        "fire_go_sim",
+        "fire_san_lo",
+        "fire_dau_de"
+      ]
+    }
   }
 }

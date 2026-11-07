@@ -425,6 +425,644 @@
       "skills_0_3": [
         "sk_giao_cam_sao_vot",
         "sk_giao_quet_song"
+      ],
+      "moves_0_4": [
+        {
+          "id": "sp4_l5",
+          "name": {
+            "vi": "Đâm ba mũi",
+            "en": "Triple Point"
+          },
+          "input": "L,L,L,L,L",
+          "chain": "ch_sp_xuoi_dong",
+          "chain_step": 5,
+          "damage": 12,
+          "the_damage": 6,
+          "hits": 3,
+          "startup_s": 0.3,
+          "active_s": 0.3,
+          "recovery_s": 0.6,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 2.6,
+          "arc_deg": 30,
+          "unlock": "mu_sp_xuoi_dong_5",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.6,
+            "lunge_start_s": 0.1,
+            "target_react": "push",
+            "target_knockback_m": 0.6,
+            "hitbox": "line",
+            "trail": "thin_bronze",
+            "hit_stop": "medium",
+            "anticipation": "Lùi chân sau, kéo cán ra sau ngang tai; mũi giáo rung hai nhịp (đọc được là đòn kết chuỗi)",
+            "active": "Ba cú đâm như mái chèo khua nước: cao, giữa, thấp; mỗi cú bước nửa bước, hông xoay theo",
+            "follow_through": "Giữ mũi giáo chĩa thẳng 0,2 s, rồi xoay cán về hông; bùn bắn sau gót"
+          },
+          "last_hit_weight": "heavy"
+        },
+        {
+          "id": "sp4_p1",
+          "name": {
+            "vi": "Xoay cán gạt",
+            "en": "Shaft Twirl"
+          },
+          "input": "L,L,pause,L",
+          "chain": "ch_sp_ngat_nhip",
+          "chain_step": 3,
+          "damage": 14,
+          "the_damage": 10,
+          "hits": 2,
+          "startup_s": 0.22,
+          "active_s": 0.24,
+          "recovery_s": 0.35,
+          "combo_window_s": 0.35,
+          "hit_weight": "light",
+          "range_m": 1.9,
+          "arc_deg": 360,
+          "unlock": "mu_sp_ngat_nhip",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.3,
+            "lunge_start_s": 0.08,
+            "target_react": "push_side",
+            "target_knockback_m": 0.4,
+            "hitbox": "circle",
+            "trail": "wide_shaft",
+            "hit_stop": "light",
+            "anticipation": "Hai tay trượt về giữa cán, nâng giáo ngang ngực; khựng 0,1 s",
+            "active": "Xoay cán một vòng rưỡi trên đầu như guồng nước; đầu và đuôi cán lần lượt quét, gạt bật đòn nhẹ đang tới",
+            "follow_through": "Dừng xoay, đuôi cán chống đất, thân hơi xoay ngược để hãm đà"
+          },
+          "deflects_light_projectiles": true
+        },
+        {
+          "id": "sp4_p2",
+          "name": {
+            "vi": "Chọc lao vọt",
+            "en": "Rising Lunge"
+          },
+          "input": "L,L,pause,L,L",
+          "chain": "ch_sp_ngat_nhip",
+          "chain_step": 4,
+          "damage": 30,
+          "the_damage": 22,
+          "hits": 1,
+          "startup_s": 0.3,
+          "active_s": 0.1,
+          "recovery_s": 0.5,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.8,
+          "arc_deg": 30,
+          "unlock": "mu_sp_ngat_nhip",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 1.4,
+            "lunge_start_s": 0.1,
+            "target_react": "push_up",
+            "target_knockback_m": 0.6,
+            "hitbox": "line",
+            "trail": "thin_bronze",
+            "hit_stop": "heavy",
+            "anticipation": "Hạ thấp gối, mũi giáo chúc xuống mặt bùn, cán dựng chéo sau lưng",
+            "active": "Bật người lên, đâm chéo lên trời; địch nhỏ bị hất khỏi đất 0,8 m",
+            "follow_through": "Mũi giáo trên cao, thân ngửa nhẹ; Nhảy hủy được sau 0,15 s để đuổi lên không"
+          },
+          "launches_rank": [
+            "normal"
+          ],
+          "jump_cancel_after_s": 0.15
+        },
+        {
+          "id": "sp4_h1",
+          "name": {
+            "vi": "Bẩy mũi",
+            "en": "Point Lever"
+          },
+          "input": "H",
+          "chain": "ch_sp_sao_nang",
+          "chain_step": 1,
+          "damage": 34,
+          "the_damage": 26,
+          "hits": 1,
+          "startup_s": 0.38,
+          "active_s": 0.1,
+          "recovery_s": 0.5,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.4,
+          "arc_deg": 40,
+          "unlock": "mu_sp_sao_nang",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.5,
+            "lunge_start_s": 0.13,
+            "target_react": "push_up",
+            "target_knockback_m": 0.4,
+            "hitbox": "arc",
+            "trail": "thin_bronze",
+            "hit_stop": "heavy",
+            "anticipation": "Cắm mũi giáo xuống sát chân địch, tay sau ấn đuôi cán xuống",
+            "active": "Bẩy như bẩy đò mắc cạn: mũi giáo hất ngược lên; cua bị lật ngửa",
+            "follow_through": "Đuôi cán về ngang hông, chân trước lùi nửa bước"
+          },
+          "tap_of_hold": "sp_h1",
+          "flips_shelled": true
+        },
+        {
+          "id": "sp4_h2",
+          "name": {
+            "vi": "Giáng cán",
+            "en": "Shaft Slam"
+          },
+          "input": "H,H",
+          "chain": "ch_sp_sao_nang",
+          "chain_step": 2,
+          "damage": 40,
+          "the_damage": 32,
+          "hits": 1,
+          "startup_s": 0.42,
+          "active_s": 0.1,
+          "recovery_s": 0.6,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.6,
+          "arc_deg": 60,
+          "unlock": "mu_sp_sao_nang",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.4,
+            "lunge_start_s": 0.15,
+            "target_react": "push",
+            "target_knockback_m": 0.8,
+            "hitbox": "arc",
+            "trail": "wide_shaft",
+            "hit_stop": "heavy",
+            "anticipation": "Nhấc giáo quá đầu bằng hai tay, người ngả ra sau, gót nhấc",
+            "active": "Giáng cả thân cán xuống như đập lúa; bùn tóe vòng 1,8 m",
+            "follow_through": "Cán nảy lên một nhịp trên bùn rồi thu về; camera rung dọc",
+            "ground_impact": {
+              "radius_m": 1.8,
+              "the_damage": 10
+            }
+          }
+        },
+        {
+          "id": "sp4_h3",
+          "name": {
+            "vi": "Phóng sào xuyên",
+            "en": "Piercing Pole"
+          },
+          "input": "H,H,H",
+          "chain": "ch_sp_sao_nang",
+          "chain_step": 3,
+          "damage": 50,
+          "the_damage": 40,
+          "hits": 1,
+          "startup_s": 0.5,
+          "active_s": 0.15,
+          "recovery_s": 0.8,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 3.2,
+          "arc_deg": 20,
+          "unlock": "mu_sp_sao_nang",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 3.0,
+            "lunge_start_s": 0.17,
+            "target_react": "push",
+            "target_knockback_m": 1.2,
+            "hitbox": "line",
+            "trail": "thin_bronze",
+            "hit_stop": "finisher",
+            "anticipation": "Lùi chân trước về sau, giáo ôm sát sườn, thân nén như sào cong",
+            "active": "Lao 3 m, mũi giáo xuyên tới 2 địch thẳng hàng",
+            "follow_through": "Trượt một đoạn trên bùn, quỳ một gối, rút giáo"
+          },
+          "pierce_targets": 2
+        },
+        {
+          "id": "sp4_llh",
+          "name": {
+            "vi": "Quét nước",
+            "en": "Water Sweep"
+          },
+          "input": "L,L,H",
+          "chain": "ch_sp_tron",
+          "chain_step": 3,
+          "damage": 28,
+          "the_damage": 24,
+          "hits": 1,
+          "startup_s": 0.3,
+          "active_s": 0.14,
+          "recovery_s": 0.55,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 2.6,
+          "arc_deg": 160,
+          "unlock": "mu_sp_tron",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.3,
+            "lunge_start_s": 0.1,
+            "target_react": "trip",
+            "target_knockback_m": 0.3,
+            "hitbox": "arc",
+            "trail": "wide_shaft",
+            "hit_stop": "medium",
+            "anticipation": "Hạ người thật thấp, mũi giáo kéo sát mặt nước",
+            "active": "Quét một cung thấp ngang mắt cá: bọ ngựa, cào cào bị ngã 1,2 s",
+            "follow_through": "Nước bắn thành vệt cong; xoay về thế thấp"
+          },
+          "trip_s": 1.2
+        },
+        {
+          "id": "sp4_lllh",
+          "name": {
+            "vi": "Xuyên đà",
+            "en": "Momentum Drive"
+          },
+          "input": "L,L,L,H",
+          "chain": "ch_sp_tron",
+          "chain_step": 4,
+          "damage": 14,
+          "the_damage": 10,
+          "hits": 2,
+          "startup_s": 0.34,
+          "active_s": 0.12,
+          "recovery_s": 0.7,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.8,
+          "arc_deg": 30,
+          "unlock": "mu_sp_tron",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.8,
+            "lunge_start_s": 0.12,
+            "target_react": "push",
+            "target_knockback_m": 0.9,
+            "hitbox": "line",
+            "trail": "thin_bronze",
+            "hit_stop": "heavy",
+            "anticipation": "Kéo cán về, hơi thở dồn; mỗi nấc Đà lóe một vạch đồng trên cán",
+            "active": "Hai cú đâm, cộng một cú cho mỗi nấc Đà đã tiêu (tối đa 5); cú cuối đẩy văng",
+            "follow_through": "Mũi giáo dừng sau cú cuối, thở ra một làn hơi"
+          },
+          "da_cost": "all",
+          "extra_hits_per_da": 1
+        },
+        {
+          "id": "sp4_fh",
+          "name": {
+            "vi": "Lao sào",
+            "en": "Pole Rush"
+          },
+          "input": "fwd,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 30,
+          "the_damage": 20,
+          "hits": 1,
+          "startup_s": 0.3,
+          "active_s": 0.12,
+          "recovery_s": 0.5,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 2.6,
+          "arc_deg": 30,
+          "unlock": "mu_sp_huong",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 5.0,
+            "lunge_start_s": 0.1,
+            "target_react": "push",
+            "target_knockback_m": 0.6,
+            "hitbox": "line",
+            "trail": "thin_bronze",
+            "hit_stop": "medium",
+            "anticipation": "Nghiêng người về mục tiêu, cán giáo song song mặt đất",
+            "active": "Lướt 5 m, đâm ở cuối đà",
+            "follow_through": "Chân trước phanh, bùn xòe hình quạt"
+          },
+          "min_target_distance_m": 3.0
+        },
+        {
+          "id": "sp4_bl",
+          "name": {
+            "vi": "Đâm lui",
+            "en": "Retreating Jab"
+          },
+          "input": "back,L",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 16,
+          "the_damage": 8,
+          "hits": 1,
+          "startup_s": 0.14,
+          "active_s": 0.08,
+          "recovery_s": 0.3,
+          "combo_window_s": 0.35,
+          "hit_weight": "light",
+          "range_m": 2.6,
+          "arc_deg": 25,
+          "unlock": "mu_sp_huong",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.0,
+            "lunge_start_s": 0.05,
+            "target_react": "flinch",
+            "target_knockback_m": 0.15,
+            "hitbox": "line",
+            "trail": "thin_bronze",
+            "hit_stop": "light",
+            "anticipation": "Dồn trọng tâm về chân sau",
+            "active": "Chọc nhanh một cú trong lúc nhảy lùi 1,6 m",
+            "follow_through": "Đáp xuống trong thế thấp, giữ khoảng cách",
+            "self_move_after_m": -1.6
+          }
+        },
+        {
+          "id": "sp4_pdl",
+          "name": {
+            "vi": "Mũi ngược dòng",
+            "en": "Upstream Point"
+          },
+          "input": "perfect_dodge,L",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 32,
+          "the_damage": 30,
+          "hits": 1,
+          "startup_s": 0.1,
+          "active_s": 0.1,
+          "recovery_s": 0.35,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.6,
+          "arc_deg": 40,
+          "unlock": "mu_sp_phan",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 1.2,
+            "lunge_start_s": 0.03,
+            "target_react": "push",
+            "target_knockback_m": 0.8,
+            "hitbox": "line",
+            "trail": "thin_bronze",
+            "hit_stop": "heavy",
+            "anticipation": "Còn trong chậm thời gian của né hoàn hảo: xoay ngay về phía địch",
+            "active": "Đâm xuyên ngược hướng đòn vừa né",
+            "follow_through": "Thời gian trở lại bình thường đúng lúc chạm"
+          },
+          "da_gain": 1
+        },
+        {
+          "id": "sp4_pdh",
+          "name": {
+            "vi": "Vòng sào qua lưng",
+            "en": "Vault Behind"
+          },
+          "input": "perfect_dodge,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 36,
+          "the_damage": 34,
+          "hits": 1,
+          "startup_s": 0.2,
+          "active_s": 0.1,
+          "recovery_s": 0.4,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.4,
+          "arc_deg": 60,
+          "unlock": "mu_sp_phan",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.0,
+            "lunge_start_s": 0.07,
+            "target_react": "push",
+            "target_knockback_m": 0.6,
+            "hitbox": "arc",
+            "trail": "thin_bronze",
+            "hit_stop": "heavy",
+            "anticipation": "Cắm đuôi giáo cạnh địch như chống sào",
+            "active": "Đu người vòng qua đầu địch (cao ≤ 2,2 m), đáp sau lưng, đâm ngược",
+            "follow_through": "Đáp quỳ, rút giáo, đứng dậy quay mặt về địch"
+          },
+          "airborne_from_s": 0.05,
+          "airborne_until_s": 0.45,
+          "not_against_rank": [
+            "boss"
+          ],
+          "vs_boss": "vault_to_flank_3m",
+          "rear_hit": true
+        },
+        {
+          "id": "sp4_pph",
+          "name": {
+            "vi": "Đè sào",
+            "en": "Pole Press"
+          },
+          "input": "perfect_parry,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 24,
+          "the_damage": 55,
+          "hits": 1,
+          "startup_s": 0.12,
+          "active_s": 0.1,
+          "recovery_s": 0.45,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.2,
+          "arc_deg": 60,
+          "unlock": "mu_sp_phan",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.3,
+            "lunge_start_s": 0.04,
+            "target_react": "pull",
+            "target_knockback_m": -0.3,
+            "hitbox": "arc",
+            "trail": "wide_shaft",
+            "hit_stop": "heavy",
+            "anticipation": "Ngay sau Đỡ nhịp hoàn hảo, xoay cán đè lên càng hoặc chân địch",
+            "active": "Ghì xuống bùn 0,8 s rồi tự đâm một cú",
+            "follow_through": "Nhấc cán, địch loạng choạng"
+          },
+          "hold_enemy_s": 0.8
+        },
+        {
+          "id": "sp4_sh",
+          "name": {
+            "vi": "Nhảy sào",
+            "en": "Vaulting Strike"
+          },
+          "input": "sprint,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 38,
+          "the_damage": 30,
+          "hits": 1,
+          "startup_s": 0.25,
+          "active_s": 0.12,
+          "recovery_s": 0.55,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.4,
+          "arc_deg": 50,
+          "unlock": "mu_sp_chay",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 5.0,
+            "lunge_start_s": 0.09,
+            "target_react": "push",
+            "target_knockback_m": 0.8,
+            "hitbox": "arc",
+            "trail": "thin_bronze",
+            "hit_stop": "heavy",
+            "anticipation": "Đang chạy nhanh thì cắm sào",
+            "active": "Bay 5 m qua đầu, đâm chúc xuống chỗ đáp; trên không thì vòng sóng mặt đất không chạm",
+            "follow_through": "Đáp lăn một vòng, đứng dậy chạy tiếp được"
+          },
+          "airborne_from_s": 0.1,
+          "airborne_until_s": 0.6
+        },
+        {
+          "id": "sp4_sll",
+          "name": {
+            "vi": "Trượt đâm gối",
+            "en": "Sliding Knee Thrust"
+          },
+          "input": "slide,L",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 22,
+          "the_damage": 18,
+          "hits": 1,
+          "startup_s": 0.08,
+          "active_s": 0.12,
+          "recovery_s": 0.4,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 2.2,
+          "arc_deg": 30,
+          "unlock": "mu_sp_chay",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.0,
+            "lunge_start_s": 0.03,
+            "target_react": "trip",
+            "target_knockback_m": 0.3,
+            "hitbox": "line",
+            "trail": "thin_bronze",
+            "hit_stop": "medium",
+            "anticipation": "Đang trượt, thân ngả sau, giáo dọc theo chân",
+            "active": "Đâm thấp vào gối địch ở cuối cú trượt",
+            "follow_through": "Dùng đà trượt bật đứng dậy"
+          },
+          "trip_s": 1.0
+        }
+      ],
+      "chains_0_4": [
+        {
+          "id": "ch_sp_xuoi_dong",
+          "name": {
+            "vi": "Xuôi dòng",
+            "en": "Downstream"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "L,L,L,L,L",
+          "steps": [
+            "sp_l1",
+            "sp_l2",
+            "sp_l3",
+            "sp_l4",
+            "sp4_l5"
+          ],
+          "kind": "light",
+          "teaches": "Chuỗi nhẹ chuẩn; bước 4 vẫn cần sk_vo_noi_don như 0.1, bước 5 mở bằng mu_sp_xuoi_dong_5"
+        },
+        {
+          "id": "ch_sp_ngat_nhip",
+          "name": {
+            "vi": "Ngắt nhịp",
+            "en": "Broken Rhythm"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "L,L,pause,L,L",
+          "steps": [
+            "sp_l1",
+            "sp_l2",
+            "pause",
+            "sp4_p1",
+            "sp4_p2"
+          ],
+          "kind": "light_pause",
+          "teaches": "Dừng 0,35 s giữa chuỗi đổi nhánh: gạt đòn nhẹ rồi hất lên không"
+        },
+        {
+          "id": "ch_sp_sao_nang",
+          "name": {
+            "vi": "Sào nặng",
+            "en": "Heavy Pole"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "H,H,H",
+          "steps": [
+            "sp4_h1",
+            "sp4_h2",
+            "sp4_h3"
+          ],
+          "kind": "heavy",
+          "teaches": "Bấm H mở chuỗi nặng; giữ H vẫn là Phóng mũi (sp_h1) có gồng"
+        },
+        {
+          "id": "ch_sp_tron",
+          "name": {
+            "vi": "Trộn nhẹ nặng",
+            "en": "Mixed Current"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "L,L,H | L,L,L,H",
+          "steps": [
+            "sp_l1",
+            "sp_l2",
+            "sp4_llh"
+          ],
+          "alt_steps": [
+            "sp_l1",
+            "sp_l2",
+            "sp_l3",
+            "sp4_lllh"
+          ],
+          "kind": "mixed",
+          "teaches": "Kết chuỗi nhẹ bằng đòn nặng ở bước 3 (quét ngã) hoặc 4 (tiêu Đà)"
+        },
+        {
+          "id": "ch_sp_chong_ho",
+          "name": {
+            "vi": "Chống giáo hất (0.1)",
+            "en": "Planted Upswing (0.1)"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "L,L,pause,H",
+          "steps": [
+            "sp_l1",
+            "sp_l2",
+            "pause",
+            "sp_b1"
+          ],
+          "kind": "legacy",
+          "teaches": "Giữ nguyên từ 0.1"
+        }
+      ],
+      "skills_0_4": [
+        "sk4_giao_luot_lau"
       ]
     },
     {
@@ -852,6 +1490,686 @@
       "skills_0_3": [
         "sk_riu_bo_don_cay",
         "sk_riu_moc_thuyen"
+      ],
+      "moves_0_4": [
+        {
+          "id": "ax4_l5",
+          "name": {
+            "vi": "Bổ gốc",
+            "en": "Root Chop"
+          },
+          "input": "L,L,L,L,L",
+          "chain": "ch_ax_bo_doc",
+          "chain_step": 5,
+          "damage": 58,
+          "the_damage": 34,
+          "hits": 1,
+          "startup_s": 0.45,
+          "active_s": 0.12,
+          "recovery_s": 0.8,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.2,
+          "arc_deg": 40,
+          "unlock": "mu_ax_bo_doc_5",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.6,
+            "lunge_start_s": 0.16,
+            "target_react": "push",
+            "target_knockback_m": 0.8,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "finisher",
+            "anticipation": "Rìu vòng qua vai trái, chân trước nhấc cao, thân xoắn",
+            "active": "Dậm chân, bổ thẳng xuống như đốn gốc cây; lưỡi cắm sâu",
+            "follow_through": "Giật rìu khỏi đất bằng cả lưng, vai xoay về thế thủ",
+            "ground_impact": {
+              "radius_m": 2.0,
+              "the_damage": 12
+            }
+          },
+          "era": "era_hung_vuong_6"
+        },
+        {
+          "id": "ax4_p1",
+          "name": {
+            "vi": "Vai húc",
+            "en": "Shoulder Barge"
+          },
+          "input": "L,pause,L",
+          "chain": "ch_ax_ngat_nhip",
+          "chain_step": 2,
+          "damage": 18,
+          "the_damage": 22,
+          "hits": 1,
+          "startup_s": 0.18,
+          "active_s": 0.12,
+          "recovery_s": 0.35,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 1.4,
+          "arc_deg": 60,
+          "unlock": "mu_ax_ngat_nhip",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 1.2,
+            "lunge_start_s": 0.06,
+            "target_react": "push",
+            "target_knockback_m": 0.9,
+            "hitbox": "arc",
+            "trail": "none",
+            "hit_stop": "medium",
+            "anticipation": "Thu rìu sát ngực, hạ vai trước",
+            "active": "Húc vai lao 1,2 m, chịu đòn nhẹ trong lúc lao",
+            "follow_through": "Vai bật lại, rìu đã ở sau lưng chờ nhát kế"
+          },
+          "era": "era_hung_vuong_6",
+          "super_armor_max_weight": "light"
+        },
+        {
+          "id": "ax4_p2",
+          "name": {
+            "vi": "Bổ cắm",
+            "en": "Embedding Chop"
+          },
+          "input": "L,pause,L,L",
+          "chain": "ch_ax_ngat_nhip",
+          "chain_step": 3,
+          "damage": 40,
+          "the_damage": 26,
+          "hits": 1,
+          "startup_s": 0.32,
+          "active_s": 0.1,
+          "recovery_s": 0.55,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.0,
+          "arc_deg": 40,
+          "unlock": "mu_ax_ngat_nhip",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.4,
+            "lunge_start_s": 0.11,
+            "target_react": "push",
+            "target_knockback_m": 0.4,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Hai tay lên cán, rìu dựng thẳng quá đầu",
+            "active": "Bổ dọc, lưỡi cắm vào thân địch hoặc đất 0,2 s",
+            "follow_through": "Ghì cán, chờ nhịp kế (Giật rìu)"
+          },
+          "era": "era_hung_vuong_6",
+          "embed_s": 0.2
+        },
+        {
+          "id": "ax4_p3",
+          "name": {
+            "vi": "Giật rìu",
+            "en": "Wrench Free"
+          },
+          "input": "L,pause,L,L,L",
+          "chain": "ch_ax_ngat_nhip",
+          "chain_step": 4,
+          "damage": 30,
+          "the_damage": 30,
+          "hits": 1,
+          "startup_s": 0.2,
+          "active_s": 0.1,
+          "recovery_s": 0.5,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.0,
+          "arc_deg": 60,
+          "unlock": "mu_ax_ngat_nhip",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.0,
+            "lunge_start_s": 0.07,
+            "target_react": "push_up",
+            "target_knockback_m": 0.5,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Chân đạp, hai tay kéo cán về bụng",
+            "active": "Giật lưỡi rìu ngược lên, hất địch; cua bị lật ngửa",
+            "follow_through": "Rìu vọt lên qua vai, thân ngả sau"
+          },
+          "era": "era_hung_vuong_6",
+          "flips_shelled": true
+        },
+        {
+          "id": "ax4_h1",
+          "name": {
+            "vi": "Quai ngang",
+            "en": "Hip Swing"
+          },
+          "input": "H",
+          "chain": "ch_ax_quai",
+          "chain_step": 1,
+          "damage": 52,
+          "the_damage": 38,
+          "hits": 1,
+          "startup_s": 0.5,
+          "active_s": 0.15,
+          "recovery_s": 0.6,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.4,
+          "arc_deg": 200,
+          "unlock": "mu_ax_quai",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.4,
+            "lunge_start_s": 0.17,
+            "target_react": "push_side",
+            "target_knockback_m": 0.8,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Kéo rìu ra sau hông phải, thân xoắn hết cỡ, mắt nhìn mục tiêu",
+            "active": "Quai một cung ngang 200° bằng đà hông",
+            "follow_through": "Đà kéo người xoay tiếp nửa bước; rìu dừng ở hông trái (sẵn cho Quai ngược)"
+          },
+          "era": "era_hung_vuong_6",
+          "tap_of_hold": "ax_h1"
+        },
+        {
+          "id": "ax4_h2",
+          "name": {
+            "vi": "Quai ngược",
+            "en": "Return Swing"
+          },
+          "input": "H,H",
+          "chain": "ch_ax_quai",
+          "chain_step": 2,
+          "damage": 56,
+          "the_damage": 42,
+          "hits": 1,
+          "startup_s": 0.42,
+          "active_s": 0.15,
+          "recovery_s": 0.65,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.4,
+          "arc_deg": 270,
+          "unlock": "mu_ax_quai",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.4,
+            "lunge_start_s": 0.15,
+            "target_react": "push_side",
+            "target_knockback_m": 0.9,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Không dừng đà: đổi chân trụ, rìu đi ngược",
+            "active": "Quai ngược 270°, mượn đà nhát trước",
+            "follow_through": "Rìu chúc xuống đất, thở dốc"
+          },
+          "era": "era_hung_vuong_6"
+        },
+        {
+          "id": "ax4_h3",
+          "name": {
+            "vi": "Bổ trời giáng",
+            "en": "Sky-fall Chop"
+          },
+          "input": "H,H,H",
+          "chain": "ch_ax_quai",
+          "chain_step": 3,
+          "damage": 80,
+          "the_damage": 60,
+          "hits": 1,
+          "startup_s": 0.7,
+          "active_s": 0.15,
+          "recovery_s": 1.0,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.2,
+          "arc_deg": 30,
+          "unlock": "mu_ax_quai",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 1.0,
+            "lunge_start_s": 0.24,
+            "target_react": "push",
+            "target_knockback_m": 1.2,
+            "hitbox": "line",
+            "trail": "wide_axe",
+            "hit_stop": "finisher",
+            "anticipation": "Nhún gối, nhảy thấp 0,8 m, rìu giơ quá đầu",
+            "active": "Rơi xuống bổ, đất nứt một vệt thẳng 4 m",
+            "follow_through": "Lưỡi cắm, hai gối chùng; né hủy được sau 0,35 s",
+            "ground_impact": {
+              "shape": "line",
+              "length_m": 4.0,
+              "the_damage": 20
+            }
+          },
+          "era": "era_hung_vuong_6"
+        },
+        {
+          "id": "ax4_llh",
+          "name": {
+            "vi": "Cán thúc",
+            "en": "Haft Jab"
+          },
+          "input": "L,L,H",
+          "chain": "ch_ax_tron",
+          "chain_step": 3,
+          "damage": 20,
+          "the_damage": 30,
+          "hits": 1,
+          "startup_s": 0.2,
+          "active_s": 0.08,
+          "recovery_s": 0.4,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 1.6,
+          "arc_deg": 40,
+          "unlock": "mu_ax_tron",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.3,
+            "lunge_start_s": 0.07,
+            "target_react": "pull",
+            "target_knockback_m": -0.6,
+            "hitbox": "line",
+            "trail": "none",
+            "hit_stop": "medium",
+            "anticipation": "Lật rìu, đuôi cán chĩa ra trước",
+            "active": "Thúc đuôi cán vào mặt địch rồi móc lưỡi kéo về",
+            "follow_through": "Rìu về tay thuận, địch bị kéo sát"
+          },
+          "era": "era_hung_vuong_6"
+        },
+        {
+          "id": "ax4_lllh",
+          "name": {
+            "vi": "Xoáy lốc",
+            "en": "Whirlwind"
+          },
+          "input": "L,L,L,H",
+          "chain": "ch_ax_tron",
+          "chain_step": 4,
+          "damage": 22,
+          "the_damage": 16,
+          "hits": 1,
+          "startup_s": 0.4,
+          "active_s": 0.4,
+          "recovery_s": 0.8,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.4,
+          "arc_deg": 360,
+          "unlock": "mu_ax_tron",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 1.5,
+            "lunge_start_s": 0.14,
+            "target_react": "spin_push",
+            "target_knockback_m": 0.6,
+            "hitbox": "circle",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Hạ rìu ngang thắt lưng, mỗi nấc Đà lóe một vạch trên cán",
+            "active": "Xoay 1 vòng, cộng một vòng cho mỗi nấc Đà (tối đa 4), mỗi vòng tiến 1,5 m",
+            "follow_through": "Loạng choạng hai bước sau vòng cuối, rìu kéo lê"
+          },
+          "era": "era_hung_vuong_6",
+          "da_cost": "all",
+          "extra_hits_per_da": 1
+        },
+        {
+          "id": "ax4_fh",
+          "name": {
+            "vi": "Lao vai bổ",
+            "en": "Charging Chop"
+          },
+          "input": "fwd,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 50,
+          "the_damage": 40,
+          "hits": 1,
+          "startup_s": 0.4,
+          "active_s": 0.12,
+          "recovery_s": 0.65,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.2,
+          "arc_deg": 40,
+          "unlock": "mu_ax_huong",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 4.0,
+            "lunge_start_s": 0.14,
+            "target_react": "push",
+            "target_knockback_m": 1.0,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Cúi đầu, vai trước, rìu sau gáy",
+            "active": "Lao 4 m rồi bổ ở cuối đà",
+            "follow_through": "Trượt chân, rìu cắm"
+          },
+          "era": "era_hung_vuong_6",
+          "min_target_distance_m": 3.0
+        },
+        {
+          "id": "ax4_bh",
+          "name": {
+            "vi": "Bổ chặn lui",
+            "en": "Retreating Cleave"
+          },
+          "input": "back,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 44,
+          "the_damage": 30,
+          "hits": 1,
+          "startup_s": 0.3,
+          "active_s": 0.12,
+          "recovery_s": 0.55,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.2,
+          "arc_deg": 90,
+          "unlock": "mu_ax_huong",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.0,
+            "lunge_start_s": 0.1,
+            "target_react": "push",
+            "target_knockback_m": 0.8,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Nhảy lùi, rìu kéo theo",
+            "active": "Bổ xuống chỗ mình vừa đứng, chặn kẻ đuổi theo",
+            "follow_through": "Đáp trong thế thấp",
+            "self_move_after_m": -1.5
+          },
+          "era": "era_hung_vuong_6"
+        },
+        {
+          "id": "ax4_pdl",
+          "name": {
+            "vi": "Bổ quay lưng",
+            "en": "Turnabout Chop"
+          },
+          "input": "perfect_dodge,L",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 44,
+          "the_damage": 36,
+          "hits": 1,
+          "startup_s": 0.14,
+          "active_s": 0.1,
+          "recovery_s": 0.45,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.2,
+          "arc_deg": 120,
+          "unlock": "mu_ax_phan",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.6,
+            "lunge_start_s": 0.05,
+            "target_react": "push",
+            "target_knockback_m": 0.7,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Trong chậm thời gian, xoay gót",
+            "active": "Bổ ngược về phía đòn vừa né",
+            "follow_through": "Thời gian trở lại khi chạm"
+          },
+          "era": "era_hung_vuong_6",
+          "da_gain": 1
+        },
+        {
+          "id": "ax4_pdh",
+          "name": {
+            "vi": "Chém gối lách",
+            "en": "Slipping Knee Cut"
+          },
+          "input": "perfect_dodge,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 40,
+          "the_damage": 44,
+          "hits": 1,
+          "startup_s": 0.16,
+          "active_s": 0.12,
+          "recovery_s": 0.5,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.0,
+          "arc_deg": 90,
+          "unlock": "mu_ax_phan",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.8,
+            "lunge_start_s": 0.06,
+            "target_react": "trip",
+            "target_knockback_m": 0.3,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Lách người qua sườn địch, hạ thấp",
+            "active": "Chém ngang gối từ bên hông: quái nhẹ ngã, quái nặng khuỵu 0,6 s",
+            "follow_through": "Đứng lên sau lưng địch"
+          },
+          "era": "era_hung_vuong_6",
+          "trip_s": 1.2,
+          "rear_hit": true
+        },
+        {
+          "id": "ax4_pph",
+          "name": {
+            "vi": "Móc bẻ càng",
+            "en": "Claw Wrench"
+          },
+          "input": "perfect_parry,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 30,
+          "the_damage": 70,
+          "hits": 1,
+          "startup_s": 0.12,
+          "active_s": 0.12,
+          "recovery_s": 0.55,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 1.8,
+          "arc_deg": 60,
+          "unlock": "mu_ax_phan",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.2,
+            "lunge_start_s": 0.04,
+            "target_react": "pull",
+            "target_knockback_m": -0.8,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Ngay sau Đỡ nhịp hoàn hảo, móc lưỡi vào chân hoặc càng địch",
+            "active": "Bẻ ngoặt, kéo địch mất thăng bằng 1 s",
+            "follow_through": "Đẩy địch ra, rìu về thế thủ"
+          },
+          "era": "era_hung_vuong_6",
+          "off_balance_s": 1.0
+        },
+        {
+          "id": "ax4_sh",
+          "name": {
+            "vi": "Xô cây đổ",
+            "en": "Falling Tree"
+          },
+          "input": "sprint,H",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 62,
+          "the_damage": 48,
+          "hits": 1,
+          "startup_s": 0.4,
+          "active_s": 0.15,
+          "recovery_s": 0.8,
+          "combo_window_s": 0.35,
+          "hit_weight": "heavy",
+          "range_m": 2.2,
+          "arc_deg": 40,
+          "unlock": "mu_ax_chay",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 3.0,
+            "lunge_start_s": 0.14,
+            "target_react": "push",
+            "target_knockback_m": 1.2,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "heavy",
+            "anticipation": "Đang chạy nhanh, nhảy tới, rìu vòng qua đầu",
+            "active": "Đổ cả người theo nhát bổ như cây đổ",
+            "follow_through": "Lăn một vòng ra khỏi chỗ chém"
+          },
+          "era": "era_hung_vuong_6"
+        },
+        {
+          "id": "ax4_sll",
+          "name": {
+            "vi": "Trượt chặt gối",
+            "en": "Sliding Hack"
+          },
+          "input": "slide,L",
+          "chain": "",
+          "chain_step": 0,
+          "damage": 30,
+          "the_damage": 24,
+          "hits": 1,
+          "startup_s": 0.1,
+          "active_s": 0.12,
+          "recovery_s": 0.45,
+          "combo_window_s": 0.35,
+          "hit_weight": "medium",
+          "range_m": 2.0,
+          "arc_deg": 60,
+          "unlock": "mu_ax_chay",
+          "label": "SÁNG TẠO",
+          "motion": {
+            "lunge_m": 0.0,
+            "lunge_start_s": 0.03,
+            "target_react": "trip",
+            "target_knockback_m": 0.3,
+            "hitbox": "arc",
+            "trail": "wide_axe",
+            "hit_stop": "medium",
+            "anticipation": "Đang trượt, rìu kéo lê sát đất",
+            "active": "Chặt ngang ống chân ở cuối cú trượt",
+            "follow_through": "Bật đứng dậy bằng đà"
+          },
+          "era": "era_hung_vuong_6",
+          "trip_s": 1.0
+        }
+      ],
+      "chains_0_4": [
+        {
+          "id": "ch_ax_bo_doc",
+          "name": {
+            "vi": "Bổ dọc thân cây",
+            "en": "Felling Line"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "L,L,L,L,L",
+          "steps": [
+            "ax_l1",
+            "ax_l2",
+            "ax_l3",
+            "ax_l4",
+            "ax4_l5"
+          ],
+          "kind": "light",
+          "teaches": "Chuỗi nhẹ chuẩn, kết bằng Bổ gốc"
+        },
+        {
+          "id": "ch_ax_ngat_nhip",
+          "name": {
+            "vi": "Ngắt nhịp rìu",
+            "en": "Broken Rhythm (axe)"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "L,pause,L,L,L",
+          "steps": [
+            "ax_l1",
+            "pause",
+            "ax4_p1",
+            "ax4_p2",
+            "ax4_p3"
+          ],
+          "kind": "light_pause",
+          "teaches": "Dừng sau nhát đầu: húc vai chịu đòn nhẹ, bổ cắm, giật rìu lật địch"
+        },
+        {
+          "id": "ch_ax_quai",
+          "name": {
+            "vi": "Quai rìu",
+            "en": "Swinging Arcs"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "H,H,H",
+          "steps": [
+            "ax4_h1",
+            "ax4_h2",
+            "ax4_h3"
+          ],
+          "kind": "heavy",
+          "teaches": "Chuỗi nặng mượn đà hông; giữ H vẫn là Bổ gồng (ax_h1)"
+        },
+        {
+          "id": "ch_ax_tron",
+          "name": {
+            "vi": "Trộn rìu",
+            "en": "Mixed Cuts"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "L,L,H | L,L,L,H",
+          "steps": [
+            "ax_l1",
+            "ax_l2",
+            "ax4_llh"
+          ],
+          "alt_steps": [
+            "ax_l1",
+            "ax_l2",
+            "ax_l3",
+            "ax4_lllh"
+          ],
+          "kind": "mixed",
+          "teaches": "Kéo địch sát hoặc tiêu Đà thành vòng xoáy"
+        },
+        {
+          "id": "ch_ax_moc_ho",
+          "name": {
+            "vi": "Móc lưỡi (0.1)",
+            "en": "Blade Hook (0.1)"
+          },
+          "label": "SÁNG TẠO",
+          "inputs": "L,L,pause,H",
+          "steps": [
+            "ax_l1",
+            "ax_l2",
+            "pause",
+            "ax_b1"
+          ],
+          "kind": "legacy",
+          "teaches": "Giữ nguyên từ 0.1"
+        }
+      ],
+      "skills_0_4": [
+        "sk4_riu_don_ba_nhat"
       ]
     }
   ]

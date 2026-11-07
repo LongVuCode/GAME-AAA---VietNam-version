@@ -123,5 +123,510 @@
          "effect_text": {"vi": "Tầm 8 m, móc được 2 đối thủ.", "en": "8 m reach, hooks up to 2 foes."}}
       ]
     }
-  ]
+  ],
+  "rules_0_4": {
+    "_note": "COMBAT_0_4 §2.4. Mỗi vũ khí biết tối đa 3 Thế võ, mang 2 (ô skill_1, skill_2 như 0.3). Đổi ở bếp lửa hoặc trong Hành trang ngoài giao tranh.",
+    "known_per_weapon_max": 3,
+    "equipped_slots": 2,
+    "swap_where": [
+      "rest_fire",
+      "inventory_out_of_combat"
+    ]
+  },
+  "skills_0_4": [
+    {
+      "id": "sk4_giao_luot_lau",
+      "weapon": "wp_giao_dong",
+      "slot": "any",
+      "input": "skill_slot_equipped",
+      "name": {
+        "vi": "Lướt lau ba bước",
+        "en": "Three Reed-Steps"
+      },
+      "description": {
+        "vi": "Ba cú lướt chéo xuyên qua địch như gió rẽ lau, mỗi cú một mũi đâm. Bấm lại đúng nhịp để lướt tiếp.",
+        "en": "Three slanting dashes through foes like wind parting reeds, a thrust on each. Press again on the beat to keep going."
+      },
+      "label": "SÁNG TẠO",
+      "unlock": {
+        "kind": "xp",
+        "cost_xp": 90,
+        "requires_point": "dp_cay_gao_tru"
+      },
+      "motion": {
+        "anticipation": "hạ người, giáo song song mặt đất, mắt khóa hướng chéo",
+        "active": "lướt 3 m chéo trái, chéo phải, thẳng; mỗi lần qua địch là một đâm",
+        "follow_through": "dừng sau lưng nhóm địch, xoay giáo một vòng tay"
+      },
+      "base": {
+        "dashes": 3,
+        "repress_window_s": {
+          "min": 0.25,
+          "max": 0.6
+        },
+        "dash_iframe_start_s": 0.02,
+        "dash_iframe_s": 0.12,
+        "hit_weight": "medium",
+        "multi_target": true
+      },
+      "levels": [
+        {
+          "level": 1,
+          "cost_xp": 0,
+          "cooldown_s": 14.0,
+          "effect": {
+            "dash_m": 3.0,
+            "damage": 18,
+            "the_damage": 14
+          },
+          "effect_text": {
+            "vi": "Ba cú lướt 3 m, mỗi cú 18 sát thương, 14 Thế; né được lúc lướt.",
+            "en": "Three 3 m dashes, 18 damage and 14 Stance each; dodge frames while dashing."
+          }
+        },
+        {
+          "level": 2,
+          "cost_xp": 120,
+          "cooldown_s": 13.0,
+          "effect": {
+            "dash_m": 3.5,
+            "damage": 20,
+            "the_damage": 16,
+            "da_gain_if_all_hit": 1
+          },
+          "effect_text": {
+            "vi": "Lướt 3,5 m; trúng đủ ba cú thì +1 Đà.",
+            "en": "3.5 m dashes; landing all three grants 1 Momentum."
+          }
+        },
+        {
+          "level": 3,
+          "cost_xp": 220,
+          "cooldown_s": 11.0,
+          "effect": {
+            "dash_m": 3.5,
+            "damage": 22,
+            "the_damage": 18,
+            "fourth_dash_on_beat": true,
+            "final_the_damage": 40
+          },
+          "effect_text": {
+            "vi": "Bấm đúng nhịp lần thứ tư: cú đâm kết 40 Thế.",
+            "en": "A fourth on-beat press adds a finishing thrust for 40 Stance."
+          }
+        }
+      ]
+    },
+    {
+      "id": "sk4_riu_don_ba_nhat",
+      "weapon": "wp_riu_xeo",
+      "slot": "any",
+      "input": "skill_slot_equipped",
+      "era": "era_hung_vuong_6",
+      "name": {
+        "vi": "Đốn ba nhát",
+        "en": "Three-Cut Felling"
+      },
+      "description": {
+        "vi": "Ba nhát bổ theo nhịp trống. Bổ trúng nhịp thì nhát sau nặng hơn; nhát thứ ba đúng nhịp phá thế thủ quái thường.",
+        "en": "Three chops on the drum beat. On-beat chops hit harder; an on-beat third chop breaks a common foe's guard."
+      },
+      "label": "SÁNG TẠO",
+      "unlock": {
+        "kind": "xp",
+        "cost_xp": 90
+      },
+      "motion": {
+        "anticipation": "dậm chân hai lần lấy nhịp, rìu đưa lên vai",
+        "active": "ba nhát bổ cách nhau 0,6 s: chéo xuống, chéo ngược, thẳng đứng",
+        "follow_through": "nhát ba cắm đất, thở ra, nhấc rìu"
+      },
+      "base": {
+        "beat_interval_s": 0.6,
+        "on_beat_window_s": 0.12,
+        "on_beat_the_mult": 1.3,
+        "hit_weight": "heavy"
+      },
+      "levels": [
+        {
+          "level": 1,
+          "cost_xp": 0,
+          "cooldown_s": 16.0,
+          "effect": {
+            "damage": [
+              30,
+              40,
+              60
+            ],
+            "the_damage": [
+              20,
+              30,
+              50
+            ],
+            "third_on_beat_guard_break": true
+          },
+          "effect_text": {
+            "vi": "Ba nhát 30/40/60 sát thương; trúng nhịp ×1,3 Thế; nhát ba đúng nhịp phá thế thủ quái thường.",
+            "en": "Chops for 30/40/60; on-beat ×1.3 Stance; an on-beat third chop breaks a common foe's guard."
+          }
+        },
+        {
+          "level": 2,
+          "cost_xp": 120,
+          "cooldown_s": 15.0,
+          "effect": {
+            "damage": [
+              32,
+              44,
+              66
+            ],
+            "the_damage": [
+              22,
+              34,
+              56
+            ],
+            "super_armor_max_weight": "medium"
+          },
+          "effect_text": {
+            "vi": "Chịu đòn vừa trong cả ba nhát.",
+            "en": "Withstand medium hits through all three chops."
+          }
+        },
+        {
+          "level": 3,
+          "cost_xp": 220,
+          "cooldown_s": 13.0,
+          "effect": {
+            "damage": [
+              34,
+              48,
+              72
+            ],
+            "the_damage": [
+              24,
+              38,
+              62
+            ],
+            "third_crack_line_m": 4.0
+          },
+          "effect_text": {
+            "vi": "Nhát ba nứt đất một vệt 4 m.",
+            "en": "The third chop splits the ground in a 4 m line."
+          }
+        }
+      ]
+    }
+  ],
+  "move_unlocks_0_4": [
+    {
+      "id": "mu_sp_ngat_nhip",
+      "weapon": "wp_giao_dong",
+      "name": {
+        "vi": "Ngắt nhịp",
+        "en": "Broken Rhythm"
+      },
+      "description": {
+        "vi": "Dừng giữa chuỗi để đổi nhánh.",
+        "en": "Pause mid-chain to branch."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "sp4_p1",
+        "sp4_p2"
+      ],
+      "cost_xp": 0,
+      "prereqs": []
+    },
+    {
+      "id": "mu_sp_sao_nang",
+      "weapon": "wp_giao_dong",
+      "name": {
+        "vi": "Sào nặng",
+        "en": "Heavy Pole"
+      },
+      "description": {
+        "vi": "Chuỗi ba đòn nặng.",
+        "en": "A three-hit heavy chain."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "sp4_h1",
+        "sp4_h2",
+        "sp4_h3"
+      ],
+      "cost_xp": 0,
+      "prereqs": []
+    },
+    {
+      "id": "mu_sp_xuoi_dong_5",
+      "weapon": "wp_giao_dong",
+      "name": {
+        "vi": "Đâm ba mũi",
+        "en": "Triple Point"
+      },
+      "description": {
+        "vi": "Thêm đòn thứ năm cho chuỗi nhẹ.",
+        "en": "A fifth light-chain hit."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "sp4_l5"
+      ],
+      "cost_xp": 40,
+      "prereqs": []
+    },
+    {
+      "id": "mu_sp_huong",
+      "weapon": "wp_giao_dong",
+      "name": {
+        "vi": "Giáo theo hướng",
+        "en": "Directional Spear"
+      },
+      "description": {
+        "vi": "Đẩy cần về phía hoặc ngược mục tiêu khi đánh.",
+        "en": "Push toward or away from the target as you strike."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "sp4_fh",
+        "sp4_bl"
+      ],
+      "cost_xp": 40,
+      "prereqs": []
+    },
+    {
+      "id": "mu_sp_tron",
+      "weapon": "wp_giao_dong",
+      "name": {
+        "vi": "Trộn nhẹ nặng",
+        "en": "Mixed Current"
+      },
+      "description": {
+        "vi": "Kết chuỗi nhẹ bằng đòn nặng; tiêu Đà.",
+        "en": "End light chains with heavies; spend Momentum."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "sp4_llh",
+        "sp4_lllh"
+      ],
+      "cost_xp": 60,
+      "prereqs": [
+        "mu_sp_sao_nang"
+      ]
+    },
+    {
+      "id": "mu_sp_phan",
+      "weapon": "wp_giao_dong",
+      "name": {
+        "vi": "Phản theo dòng",
+        "en": "Counter-current"
+      },
+      "description": {
+        "vi": "Đòn sau né hoàn hảo và Đỡ nhịp hoàn hảo.",
+        "en": "Strikes after a perfect dodge or perfect parry."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "sp4_pdl",
+        "sp4_pdh",
+        "sp4_pph"
+      ],
+      "cost_xp": 80,
+      "prereqs": [
+        "mu_sp_huong"
+      ]
+    },
+    {
+      "id": "mu_sp_chay",
+      "weapon": "wp_giao_dong",
+      "name": {
+        "vi": "Giáo khi chạy",
+        "en": "Running Spear"
+      },
+      "description": {
+        "vi": "Đòn khi chạy nhanh và khi trượt.",
+        "en": "Sprint and slide strikes."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "sp4_sh",
+        "sp4_sll"
+      ],
+      "cost_xp": 40,
+      "prereqs": []
+    },
+    {
+      "id": "mu_ax_ngat_nhip",
+      "weapon": "wp_riu_xeo",
+      "name": {
+        "vi": "Ngắt nhịp rìu",
+        "en": "Broken Rhythm (axe)"
+      },
+      "description": {
+        "vi": "Dừng sau nhát đầu để húc vai.",
+        "en": "Pause after the first chop to barge."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "ax4_p1",
+        "ax4_p2",
+        "ax4_p3"
+      ],
+      "cost_xp": 0,
+      "prereqs": [],
+      "era": "era_hung_vuong_6"
+    },
+    {
+      "id": "mu_ax_quai",
+      "weapon": "wp_riu_xeo",
+      "name": {
+        "vi": "Quai rìu",
+        "en": "Swinging Arcs"
+      },
+      "description": {
+        "vi": "Chuỗi ba đòn nặng.",
+        "en": "A three-hit heavy chain."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "ax4_h1",
+        "ax4_h2",
+        "ax4_h3"
+      ],
+      "cost_xp": 0,
+      "prereqs": [],
+      "era": "era_hung_vuong_6"
+    },
+    {
+      "id": "mu_ax_bo_doc_5",
+      "weapon": "wp_riu_xeo",
+      "name": {
+        "vi": "Bổ gốc",
+        "en": "Root Chop"
+      },
+      "description": {
+        "vi": "Thêm đòn thứ năm cho chuỗi nhẹ.",
+        "en": "A fifth light-chain hit."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "ax4_l5"
+      ],
+      "cost_xp": 40,
+      "prereqs": [],
+      "era": "era_hung_vuong_6"
+    },
+    {
+      "id": "mu_ax_huong",
+      "weapon": "wp_riu_xeo",
+      "name": {
+        "vi": "Rìu theo hướng",
+        "en": "Directional Axe"
+      },
+      "description": {
+        "vi": "Lao tới hoặc lùi mà bổ.",
+        "en": "Chop while rushing in or stepping back."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "ax4_fh",
+        "ax4_bh"
+      ],
+      "cost_xp": 40,
+      "prereqs": [],
+      "era": "era_hung_vuong_6"
+    },
+    {
+      "id": "mu_ax_tron",
+      "weapon": "wp_riu_xeo",
+      "name": {
+        "vi": "Trộn rìu",
+        "en": "Mixed Cuts"
+      },
+      "description": {
+        "vi": "Kết chuỗi nhẹ bằng đòn nặng; tiêu Đà.",
+        "en": "End light chains with heavies; spend Momentum."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "ax4_llh",
+        "ax4_lllh"
+      ],
+      "cost_xp": 60,
+      "prereqs": [
+        "mu_ax_quai"
+      ],
+      "era": "era_hung_vuong_6"
+    },
+    {
+      "id": "mu_ax_phan",
+      "weapon": "wp_riu_xeo",
+      "name": {
+        "vi": "Phản đòn rìu",
+        "en": "Axe Counters"
+      },
+      "description": {
+        "vi": "Đòn sau né hoàn hảo và Đỡ nhịp hoàn hảo.",
+        "en": "Strikes after a perfect dodge or perfect parry."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "ax4_pdl",
+        "ax4_pdh",
+        "ax4_pph"
+      ],
+      "cost_xp": 80,
+      "prereqs": [
+        "mu_ax_huong"
+      ],
+      "era": "era_hung_vuong_6"
+    },
+    {
+      "id": "mu_ax_chay",
+      "weapon": "wp_riu_xeo",
+      "name": {
+        "vi": "Rìu khi chạy",
+        "en": "Running Axe"
+      },
+      "description": {
+        "vi": "Đòn khi chạy nhanh và khi trượt.",
+        "en": "Sprint and slide strikes."
+      },
+      "label": "SÁNG TẠO",
+      "moves": [
+        "ax4_sh",
+        "ax4_sll"
+      ],
+      "cost_xp": 40,
+      "prereqs": [],
+      "era": "era_hung_vuong_6"
+    }
+  ],
+  "xp_sources_0_4": [
+    {
+      "id": "xp_cao_cao",
+      "kind": "enemy_driven_off",
+      "enemy": "en_cao_cao_gai",
+      "xp": 12
+    },
+    {
+      "id": "xp_bo_hung",
+      "kind": "enemy_driven_off",
+      "enemy": "en_bo_hung_bun",
+      "xp": 35
+    },
+    {
+      "id": "xp_track",
+      "kind": "track_found",
+      "xp": 20
+    }
+  ],
+  "xp_budget_estimate_0_4": {
+    "_note": "Ước tính theo world_0_4.spawns (quái không hồi sinh) và điểm mới; 'all' là đi hết.",
+    "before_boss_all": 1383,
+    "before_boss_main_route_one_wing": 830,
+    "spend_spear_move_tree": 260,
+    "spend_spear_three_arts_to_rank3": 1110
+  }
 }
