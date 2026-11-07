@@ -13,7 +13,7 @@ export const AREAS = [
   { id: 'z_dam_nong', rect: { x0: -30, x1: 30, z0: -46, z1: -6 }, color: 0x56604a, shallow: true },
   { id: 'c12', rect: { x0: -3, x1: 3, z0: -53, z1: -45 }, color: 0x6f6a4e },
   { id: 'z_bai_lau', rect: { x0: -25, x1: 25, z0: -102, z1: -52 }, color: 0x7d7a4c },
-  { id: 'shortcut', rect: { x0: 24, x1: 37, z0: -60, z1: -54 }, color: 0x6f6a4e },
+  { id: 'shortcut', rect: { x0: 24, x1: 37, z0: -60, z1: -53 }, color: 0x6f6a4e },
   { id: 'shortcut', rect: { x0: 31, x1: 37, z0: -54, z1: 10 }, color: 0x6f6a4e },
   { id: 'shortcut', rect: { x0: 14, x1: 37, z0: 4, z1: 10 }, color: 0x6f6a4e },
   { id: 'c24', rect: { x0: -3, x1: 3, z0: -120, z1: -101 }, color: 0x66604a },
@@ -22,7 +22,7 @@ export const AREAS = [
   { id: 'z_dau_truong', circle: { cx: 0, cz: -136, r: 18 }, color: 0x5a4c3a },
   // Hub (separate "level", many days downriver): placed far away in the same scene.
   { id: 'hub', rect: { x0: HUB_X - 15, x1: HUB_X + 15, z0: -15, z1: 15 }, color: 0x86795a },
-  { id: 'hub_bank', rect: { x0: HUB_X - 15, x1: HUB_X + 15, z0: 15, z1: 35 }, color: 0x8a8462 },
+  { id: 'hub_bank', rect: { x0: HUB_X - 15, x1: HUB_X + 15, z0: 14, z1: 35 }, color: 0x8a8462 },
 ];
 
 /** Shallow water sheets inside the marsh [cx, cz, w, d] (visual hint of the speed multiplier; also drawn on the map). */
