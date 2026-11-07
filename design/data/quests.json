@@ -230,8 +230,8 @@
           },
           "objective_key": "obj_0_4_m6",
           "why": {
-            "vi": "Đồng đúc sai thì đúc lại. Bác Gianh biết đồng này.",
-            "en": "Metal cast wrong gets cast again. Uncle Gianh knows this metal."
+            "vi": "Đồng đúc sai thì đúc lại. Bác Sung biết đồng này.",
+            "en": "Metal cast wrong gets cast again. Uncle Sung knows this metal."
           },
           "complete_when": {
             "all": [
@@ -417,8 +417,8 @@
         {
           "id": "sq_dot_s2",
           "objective": {
-            "vi": "Đưa lưỡi bẫy cho bác Gianh đúc lại",
-            "en": "Give the blades to Uncle Gianh to recast"
+            "vi": "Đưa lưỡi bẫy cho bác Sung đúc lại",
+            "en": "Give the blades to Uncle Sung to recast"
           },
           "objective_key": "obj_0_4_s_dot2",
           "why": {
