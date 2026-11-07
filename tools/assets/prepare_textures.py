@@ -133,7 +133,7 @@ def main():
         return out
 
     stack(alb, S).save(os.path.join(tdir, "terrain_albedo.jpg"), quality=86, optimize=True, progressive=True)
-    stack(nrm, S).save(os.path.join(tdir, "terrain_nrm.jpg"), quality=90, subsampling=0, optimize=True)
+    stack(nrm, S).save(os.path.join(tdir, "terrain_nrm.jpg"), quality=82, subsampling=0, optimize=True)
     stack(hgt, HS).save(os.path.join(tdir, "terrain_height.jpg"), quality=90, subsampling=0, optimize=True)
 
     for tid, name, target, size in PROPS:

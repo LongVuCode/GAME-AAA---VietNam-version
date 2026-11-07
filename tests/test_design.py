@@ -528,9 +528,9 @@ class Combat04(unittest.TestCase):
 
     def test_unparryable_new_attack_needs_color_cue(self):
         b = self.fresh()
-        a = next(x for x in self.enemy(b, "en_cua_cang_bun")["attacks_0_4"] if x["id"] == "cua4_kim_giu")
+        a = next(x for x in self.enemy(b, "en_cua_cang_bun")["attacks_0_4"] if x["id"] == "dc4_om_ghi")
         a["telegraph"]["color_cue"] = "none"
-        self.assertTrue(any("cua4_kim_giu: unparryable damaging attack needs a color_cue" in e for e in self.errors(b)))
+        self.assertTrue(any("dc4_om_ghi: unparryable damaging attack needs a color_cue" in e for e in self.errors(b)))
 
     def test_normal_enemy_moveset_rules(self):
         b = self.fresh()

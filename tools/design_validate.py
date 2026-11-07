@@ -25,7 +25,7 @@ DATA_DIR = ROOT / "design" / "data"
 RESEARCH_DIR = ROOT / "research" / "data"
 
 FILES = ("combat_tuning", "weapons", "enemies", "items", "lineage", "secrets", "codex", "strings",
-         "controls", "skills", "map", "dialogue", "quests", "cinematics")
+         "controls", "skills", "map", "dialogue", "quests", "cinematics", "creatures_0_4")
 WORLD_JS = ROOT / "prototype" / "web" / "src" / "game" / "world.js"
 
 ALL_LABELS = {"SỬ LIỆU", "SỬ LIỆU-TRANH LUẬN", "HUYỀN THOẠI", "CỔ TÍCH", "SÁNG TẠO", "CHƯA XÁC MINH"}
@@ -312,7 +312,8 @@ def loc_texts(obj: Any) -> Iterable[tuple[str, str]]:
 
 # Words that betray a forbidden content tag (Story Bible v1.2 §2, SB11-01, SB11-16).
 TAG_WORDS = {
-    "khoen": (["khoen"], ["khoen", "collar", "binding ring"]),
+    # "lưỡi bẫy", "đồng cũ", "mắc ở cổ": talk of the trap blade is talk of the khoen (REVIEW SI-10).
+    "khoen": (["khoen", "lưỡi bẫy", "đồng cũ", "mắc ở cổ"], ["khoen", "collar", "binding ring", "trap blade"]),
     "mảnh": (["mảnh"], ["shard", "shards"]),
     "chốt": (["chốt"], ["pin", "linchpin"]),
     "bear": (["gấu"], ["bear", "bears"]),
@@ -1381,6 +1382,83 @@ def check_story_0_4(b: dict, rep: Report) -> None:
     for k, v in seen.items():
         if v > 1:
             rep.err(f"story 0.4: duplicate id {k!r} ({v}x)")
+    check_creatures_0_4(b, rep, era_ids)
+
+
+# Chapter-1 creature look and lore (creatures_0_4.json, REVIEW SI-03/SI-13/SI-14).
+CREATURE_BRIEF_KEYS = ("silhouette", "materials", "accents", "motion", "keywords", "forbidden")
+# Display names that read as water folk, snakes or a god's retinue in ch_longbien (Story Bible §2, SI-03).
+CREATURE_BANNED_NAME_WORDS = ("cua", "tôm", "rắn", "rùa", "ba ba", "giao long", "thuồng luồng", "cáo", "cá sấu", "dế trũi")
+CREATURE_BANNED_ATTACK_WORDS = ("phun", "kẹp càng", "càng")
+
+
+def check_creatures_0_4(b: dict, rep: Report, era_ids: set) -> None:
+    cr = b["creatures_0_4"].get("creatures", [])
+    en = b["enemies"]
+    all_enemies = {e.get("id"): e for e in en.get("enemies", []) + en.get("enemies_0_4", [])}
+    require_label(cr, "creatures_0_4.creatures", rep)
+    seen: set[str] = set()
+    names: dict[str, str] = {}
+    for c in cr:
+        cid = c.get("id")
+        if cid in seen:
+            rep.err(f"creatures_0_4: duplicate id {cid!r}")
+        seen.add(cid)
+        if c.get("era") not in era_ids:
+            rep.err(f"creatures_0_4.{cid}: unknown era {c.get('era')!r}")
+        e = all_enemies.get(c.get("enemy_ref"))
+        if e is None:
+            rep.err(f"creatures_0_4.{cid}: enemy_ref {c.get('enemy_ref')!r} not in enemies.json")
+            continue
+        if c.get("rig") and e.get("skeleton_family") and c["rig"] != e["skeleton_family"]:
+            rep.err(f"creatures_0_4.{cid}: rig {c['rig']!r} differs from enemies skeleton_family {e['skeleton_family']!r}")
+        for k in ("name", "description"):
+            if not is_loc(c.get(k)):
+                rep.err(f"creatures_0_4.{cid}: {k} must be {{vi, en}}")
+        vi = (c.get("name") or {}).get("vi", "")
+        low = vi.lower()
+        if low.endswith(" tinh"):
+            rep.err(f"creatures_0_4.{cid}: name must not end in 'Tinh' (Sơn Tinh/Thủy Tinh)")
+        if c.get("chapter") in ("ch_longbien", "ch_phudong"):
+            bad = [w for w in CREATURE_BANNED_NAME_WORDS if re.search(rf"(?<!\w){re.escape(w)}(?!\w)", low)]
+            if bad:
+                rep.err(f"creatures_0_4.{cid}: name {vi!r} uses {bad} (SI-03)")
+        for oid, o in all_enemies.items():
+            if oid != c.get("enemy_ref") and (o.get("name") or {}).get("vi", "").lower() == low:
+                rep.err(f"creatures_0_4.{cid}: name {vi!r} already used by {oid}")
+        if low in names:
+            rep.err(f"creatures_0_4.{cid}: name {vi!r} also used by {names[low]}")
+        names[low] = cid
+        br = c.get("brief") or {}
+        for k in CREATURE_BRIEF_KEYS:
+            if not br.get(k):
+                rep.err(f"creatures_0_4.{cid}: brief.{k} missing")
+        if len(br.get("keywords", [])) != 3:
+            rep.err(f"creatures_0_4.{cid}: brief.keywords needs exactly 3 words")
+        an = c.get("anatomy") or {}
+        fl = an.get("forelimbs") or {}
+        if not isinstance(an.get("limbs_total"), int) or not isinstance(fl.get("count"), int):
+            rep.err(f"creatures_0_4.{cid}: anatomy needs limbs_total and forelimbs.count (shared with 3D and combat)")
+        elif an["limbs_total"] != an.get("walking_legs", 0) + an.get("extra_legs", 0) + fl["count"]:
+            rep.err(f"creatures_0_4.{cid}: limbs_total does not add up")
+        if fl.get("count") and not fl.get("length_m"):
+            rep.err(f"creatures_0_4.{cid}: forelimbs.length_m missing")
+        atk_ids = {a.get("id") for k in ("attacks", "attacks_0_2", "attacks_0_4") for a in e.get(k, []) if isinstance(a, dict)}
+        for aid, nm in (c.get("attack_display") or {}).items():
+            if aid not in atk_ids:
+                rep.err(f"creatures_0_4.{cid}: attack_display {aid!r} not an attack of {c['enemy_ref']}")
+            if not is_loc(nm):
+                rep.err(f"creatures_0_4.{cid}: attack_display.{aid} must be {{vi, en}}")
+            elif any(w in nm["vi"].lower() for w in CREATURE_BANNED_ATTACK_WORDS):
+                rep.err(f"creatures_0_4.{cid}: attack name {nm['vi']!r} reads as crab or spitting (SI-03)")
+        # Hub of Bương's era has no marsh spirits (SB11-13).
+        if c.get("era") == "era_hung_vuong_6" and c.get("lore_kind") == "yeu_dam":
+            rep.err(f"creatures_0_4.{cid}: no marsh spirit (yeu_dam) in Hùng 6 hub (SB11-13)")
+    variants = seen
+    for st in b["lineage"].get("handoff", {}).get("steps", []):
+        for x in st.get("enemies", []):
+            if x.get("variant") and x["variant"] not in variants:
+                rep.err(f"lineage.handoff.{st.get('id')}: variant {x['variant']!r} not in creatures_0_4")
 
 
 # ---------------------------------------------------------------- Demo 0.4 combat + world (design/COMBAT_0_4.md)

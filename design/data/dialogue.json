@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "_note": "Story Integration Pass 0.4 (research/narrative/STORY_INTEGRATION_0_4.md). NPC, hội thoại, lựa chọn nhẹ, barks và vè do NPC hát. vi là gốc; en là dịch nháp. Lựa chọn chỉ đặt cờ flag_choice_* và đổi chi tiết lời thoại, không đổi sự kiện truyền thuyết (CLAUDE.md §3); mọi nhánh hội tụ về cùng bước nhiệm vụ (converges_to). Thần không có thoại (Story Bible v1.2 §2): Lạc Long Quân chỉ hiện qua lời người kể. line_ref trỏ tới strings.dialogue. Tên NPC chờ naming_review. Tất cả chờ historian-verifier; tối đa mức B.",
+  "_note": "Story Integration Pass 0.4 (research/narrative/STORY_INTEGRATION_0_4.md). NPC, hội thoại, lựa chọn nhẹ, barks và vè do NPC hát. vi là gốc; en là dịch nháp. Lựa chọn chỉ đặt cờ flag_choice_* và đổi chi tiết lời thoại, không đổi sự kiện truyền thuyết (CLAUDE.md §3); mọi nhánh hội tụ về cùng bước nhiệm vụ (converges_to). Thần không có thoại (Story Bible v1.2 §2): Lạc Long Quân chỉ hiện qua lời người kể. line_ref trỏ tới strings.dialogue. Tên NPC chờ naming_review. Tất cả chờ historian-verifier; tối đa mức B. Sửa theo REVIEW_STORY_INTEGRATION_0_4 (SI-01…17), 2026-11-07.",
   "speakers": [
     {
       "id": "npc_ba_lai_do",
@@ -65,8 +65,8 @@
     {
       "id": "npc_tho_duc_lang",
       "name": {
-        "vi": "Bác Gianh",
-        "en": "Uncle Gianh"
+        "vi": "Bác Sung",
+        "en": "Uncle Sung"
       },
       "role": {
         "vi": "Thợ đúc làng ở bến Lau",
@@ -75,7 +75,8 @@
       "label": "SÁNG TẠO",
       "era": "era_lac_long_quan",
       "naming_review": "pending",
-      "voice_note": "Người nói ra nguồn ác bằng lời thường. Tôn nghề đúc: thợ đúc là người sửa lỗi, không phải người gây lỗi (V4)."
+      "voice_note": "Người nói ra nguồn ác bằng lời thường. Tôn nghề đúc: thợ đúc là người sửa lỗi, không phải người gây lỗi (V4).",
+      "naming_note": "Đổi từ 'Gianh' (gợi sông Gianh, SI-12). 'Sung' bỏ dấu gần 'súng': chờ naming_review."
     },
     {
       "id": "npc_nguoi_gia_ben",
@@ -93,10 +94,10 @@
       "voice_note": "Kể chuyện nhà như kể chuyện làng. Đời Hùng 6: không chữ khoen/mảnh/chốt."
     },
     {
-      "id": "npc_be_sim",
+      "id": "npc_be_ke",
       "name": {
-        "vi": "Bé Sim",
-        "en": "Little Sim"
+        "vi": "Bé Kê",
+        "en": "Little Kê"
       },
       "role": {
         "vi": "Đứa trẻ nhà bến Lau đời Bương, cháu nhiều đời của Nghệ; chỉ hát và hỏi",
@@ -105,7 +106,8 @@
       "label": "SÁNG TẠO",
       "era": "era_hung_vuong_6",
       "naming_review": "pending",
-      "voice_note": "Giọng hát vè; không có lựa chọn phân nhánh."
+      "voice_note": "Giọng hát vè; không có lựa chọn phân nhánh.",
+      "naming_note": "Đổi từ 'Sim' (gợi đồi Sim nơi thờ Quốc Tổ, SI-12). Kê là cây lúa kê; chờ naming_review."
     }
   ],
   "conversations": [
@@ -164,8 +166,8 @@
           "id": "ln_co_05",
           "speaker": "npc_ba_lai_do",
           "text": {
-            "vi": "Thành tinh gì. Con thú nào dữ cũng có cớ.",
-            "en": "Spirit, nothing. A beast that turns fierce has its reasons."
+            "vi": "Nó có thành tinh đâu. Con thú nào dữ cũng có cớ.",
+            "en": "It's no spirit. A beast that turns fierce has its reasons."
           }
         },
         {
@@ -497,8 +499,8 @@
           "id": "ln_mo_03",
           "speaker": "npc_ba_lai_do",
           "text": {
-            "vi": "Người ta kể thứ ở hang đá phía tây chỉ Lạc Long Quân trị được. Còn cái mắc ở cổ con thú thì tay người gỡ được.",
-            "en": "People say only Lạc Long Quân can deal with what lives in the western cave. But what's stuck in a beast's neck, human hands can pull out."
+            "vi": "Người ta kể thứ ở hang đá phía tây chỉ Long Quân trị được. Còn cái mắc ở cổ con thú thì tay người gỡ được.",
+            "en": "People say only Long Quân can deal with what lives in the western cave. But what's stuck in a beast's neck, human hands can pull out."
           }
         }
       ],
@@ -559,8 +561,8 @@
               "id": "ln_gi_04a",
               "speaker": "npc_tho_duc_lang",
               "text": {
-                "vi": "Bùa gì. Đồng đúc sai thôi. Cái sai là ở người muốn thú giữ bến thay mình.",
-                "en": "No charm. Just metal cast wrong. The wrong was in wanting a beast to keep the landing for you."
+                "vi": "Bác đúc đồng cả đời, chưa thấy miếng đồng nào biết làm phép. Cái sai là ở người muốn thú giữ bến thay mình.",
+                "en": "I've cast metal all my life and never met a scrap that could work magic. The wrong was in wanting a beast to keep the landing for you."
               }
             }
           ],
@@ -592,6 +594,14 @@
         }
       ],
       "after_choice": [
+        {
+          "id": "ln_gi_04c",
+          "speaker": "npc_tho_duc_lang",
+          "text": {
+            "vi": "Nhớ lấy: không phải bùa, không ai yểm. Thú dữ vì đau, vì bị trói.",
+            "en": "Remember: no charm, no curse. A beast turns fierce from pain, from being bound."
+          }
+        },
         {
           "id": "ln_gi_05_ref",
           "line_ref": "dlg_03_melting"
@@ -708,8 +718,8 @@
               "id": "ln_nb_03b",
               "speaker": "npc_nan",
               "text": {
-                "vi": "Thế em hát cho chị nghe một câu, bà dạy em đấy.",
-                "en": "Then let me sing you a verse. Grandma taught me."
+                "vi": "Thế em hát chị nghe câu em mới đặt, từ chuyện chị kể.",
+                "en": "Then let me sing you a verse I just made, from the story you told."
               }
             }
           ],
@@ -810,8 +820,8 @@
           "id": "ln_ho_c2",
           "speaker": "chr_coi",
           "text": {
-            "vi": "Buộc lại cho nhớ.",
-            "en": "Tied on, so we remember."
+            "vi": "Buộc lên sào, cho nhớ đường về.",
+            "en": "Tied to the pole, to remember the way home."
           }
         }
       ]
@@ -839,7 +849,7 @@
         },
         {
           "id": "ln_ho_b2",
-          "speaker": "npc_be_sim",
+          "speaker": "npc_be_ke",
           "text": {
             "vi": "Vết này của ai hả ông?",
             "en": "Whose notch is this, Grandpa?"
@@ -855,7 +865,7 @@
         },
         {
           "id": "ln_ho_b4",
-          "speaker": "npc_be_sim",
+          "speaker": "npc_be_ke",
           "text": {
             "vi": "Con lợn lòi thành tinh ạ?",
             "en": "Was it a spirit boar?"
@@ -871,7 +881,7 @@
         },
         {
           "id": "ln_ho_b6",
-          "speaker": "npc_be_sim",
+          "speaker": "npc_be_ke",
           "text": {
             "vi": "Không có bà Cói gọi ông tổ Nghệ ra khỏi sương thì không có nhà mình, ông nhỉ?",
             "en": "If Cói hadn't called our ancestor Nghệ out of the mist, there'd be no family, would there?"
@@ -887,11 +897,12 @@
         },
         {
           "id": "ln_ho_b8",
-          "speaker": "chr_buong",
+          "speaker": "npc_nguoi_gia_ben",
           "text": {
-            "vi": "Buộc lại cho nhớ.",
-            "en": "Tied on, so we remember."
-          }
+            "vi": "Buộc lại cho nhớ việc đưa người về.",
+            "en": "Tied on, to remember the work of bringing people home."
+          },
+          "review_note": "SI-02: người trao sào (còn sống) buộc cho người nhận; nhớ việc, không nhớ người đã khuất."
         },
         {
           "id": "ln_ho_b9",
@@ -1081,8 +1092,8 @@
           "id": "bk_s_call_3",
           "speaker": "chr_coi",
           "text": {
-            "vi": "Về thôi, về ăn cơm, bà chờ ở bến!",
-            "en": "Come home, rice is ready, Grandma's waiting at the landing!"
+            "vi": "Nghệ! Nhìn dải chàm trên sào chị kìa, đi về phía chị!",
+            "en": "Nghệ! Look for the indigo strip on my pole — come toward me!"
           },
           "trigger": "call_name_progress_90"
         },
@@ -1235,8 +1246,8 @@
           "id": "bk_b_crab",
           "speaker": "chr_buong",
           "text": {
-            "vi": "Về sông đi, cua.",
-            "en": "Back to the river, crab."
+            "vi": "Về hang đi.",
+            "en": "Back to your burrow."
           },
           "trigger": "enemy_fled"
         }
@@ -1264,16 +1275,17 @@
         "flag_boss_lon_loi_freed",
         "flag_choice_bell_returned"
       ],
-      "review_note": "Vè đã có (Story Bible §7), nay do NPC hát ở Bến Sậy. Đời Lạc Long Quân: được dùng chữ khoen."
+      "review_note": "Năn tự đặt vè sau khi nghe chuyện ở lò đúc (SI-11), nên chỉ hát sau bước qs_m6. Đời Lạc Long Quân: được dùng chữ khoen. Cần người viết vè người thật.",
+      "after_quest_step": "qs_m6_lo_duc"
     },
     {
       "id": "perf_ve_sim",
       "label": "SÁNG TẠO",
       "era": "era_hung_vuong_6",
-      "singer": "npc_be_sim",
+      "singer": "npc_be_ke",
       "line_ref": "dlg_06_ve_floor",
       "trigger": "handoff_after_practice",
-      "review_note": "Vè bản sàn (SB11-01), nay do bé Sim hát. Không chữ khoen/mảnh/chốt."
+      "review_note": "Vè bản sàn (SB11-01), nay do bé Kê hát. Không chữ khoen/mảnh/chốt."
     }
   ]
 }

@@ -1,0 +1,338 @@
+{
+  "schema_version": 1,
+  "_note": "Nguồn sự thật về tên hiển thị, mô tả và tạo hình quái chương 1 cho Demo 0.4 (STORY_INTEGRATION_0_4 §6, REVIEW SI-03/SI-13/SI-14). Không thay enemies.json (chỉ số và đòn do designer combat giữ); enemy_ref trỏ tới id ở đó. legacy_id=true: id kỹ thuật cũ giữ nguyên, nội dung hiển thị lấy từ file này. attack_display đổi tên hiển thị của đòn có id cũ. brief là ghi chú nội bộ cho agent 3D (tiếng Việt). Mọi mục [SÁNG TẠO], chờ historian-verifier; tối đa mức B.",
+  "creatures": [
+    {
+      "id": "cvd_de_cong_da",
+      "enemy_ref": "en_cua_cang_bun",
+      "legacy_id": true,
+      "legacy_note": "id cũ en_cua_cang_bun giữ để code và test khỏi vỡ; con vật hiển thị KHÔNG còn là cua (SI-03).",
+      "replaces": "Cua Càng Bùn",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "lore_kind": "yeu_dam",
+      "name": {
+        "vi": "Dế Cõng Đá",
+        "en": "Stoneback Burrower"
+      },
+      "description": {
+        "vi": "Yêu đầm: một con dế dũi già sống trong bùn lâu tới mức cõng cả một tảng đá rêu trên lưng. Hai chân trước như hai cái xẻng sừng; quanh mình nó, vỏ lột cũ của bao mùa dính lại thành những chân bùn khô có đốt. Bị đánh thức khi Lợn Lòi Đầm càn phá đầm, nó giữ ổ. Tảng đá chặn đòn đánh thẳng; đánh vào sườn hoặc lật ngửa nó. Hết sức thì đào bùn trốn.",
+        "en": "Marsh spirit: an old mole cricket that has lived in the mud so long it carries a whole mossy stone slab on its back. Its forelegs are two horn spades; around it, the shed skins of many seasons have stuck fast into dry, jointed mud-legs. Woken when the Marsh Boar tore up the marsh, it guards its bed. The slab blocks blows from the front; strike its flanks or flip it over. When spent, it digs away into the mud."
+      },
+      "rig": "crab_small",
+      "rig_mapping": "2 xương càng của crab_small = 2 chân xẻng; 4 chân trước–giữa của rig = 4 chân thật; 4 chân sau của rig = 4 chân bùn (vỏ lột). Không cần rig mới.",
+      "size": {
+        "length_m": 1.4,
+        "height_m": 0.6,
+        "width_m": 1.1,
+        "leg_span_m": 1.8
+      },
+      "anatomy": {
+        "limbs_total": 10,
+        "walking_legs": 4,
+        "extra_legs": 4,
+        "extra_legs_kind": "chân bùn khô có đốt, là vỏ lột cũ dính lại; cứng, ít khớp, lê theo",
+        "forelimbs": {
+          "count": 2,
+          "kind": "chân xẻng đào đất (kiểu dế dũi), lưỡi xẻng có 4 răng sừng; KHÔNG phải kìm hai ngón",
+          "length_m": 0.55,
+          "blade_width_m": 0.35,
+          "ratio_to_body_length": 0.4,
+          "note": "hai xẻng gộp lại rộng hơn đầu; nhìn chính diện che nửa dưới mép tảng đá"
+        },
+        "eyes": "2 mắt nhỏ đen bóng dưới mép đá; râu ngắn",
+        "back": "tảng đá rêu phẳng 1,2 × 0,9 m, dày 0,25 m, nứt, bám vỏ ốc"
+      },
+      "brief": {
+        "silhouette": "Thấp và rộng như một tảng đá biết bò; mép trước tảng đá chìa ra như mái hiên, hai xẻng thò ra dưới mái.",
+        "materials": "Đá rêu nứt, bùn khô, vỏ ốc bám trên đá; thân dưới là vỏ côn trùng nâu bùn; xẻng sừng vàng xám, mòn ở răng; chân bùn xám bạc như vỏ lột.",
+        "accents": "6–8 đốm nấm phát sáng vàng xanh dọc mép tảng đá (nhấp nháy nhanh khi giận); bụng vàng nhạt chỉ lộ khi lật ngửa.",
+        "motion": "Bò ngang giật cục, luôn giữ mặt đá về phía người chơi; xẻng cào hai bên như bơi trong đất khi chui bùn; giận thì gõ hai xẻng xuống bùn hai lần; lật ngửa thì chân quẫy; thua thì đào xoáy chui xuống.",
+        "sound": "Tiếng rỉ rả trầm như dế kêu dưới đất phóng chậm; đá cọ lạo xạo khi bò.",
+        "keywords": [
+          "lưng đá",
+          "xẻng sừng",
+          "chân lột xác"
+        ],
+        "forbidden": [
+          "càng kiểu cua (kìm hai ngón)",
+          "màu đỏ hay cam, kể cả khi trúng đòn",
+          "giáp hay vũ khí người",
+          "đứng hai chân",
+          "đi thành hàng",
+          "phun bất cứ thứ gì",
+          "cánh bay",
+          "nét mặt người",
+          "tên trần 'Dế Trũi' (nhân vật của Tô Hoài)"
+        ],
+        "palette": [
+          "#5E5A44",
+          "#7A7558",
+          "#B9AE84",
+          "#C9D98A"
+        ]
+      },
+      "attack_display": {
+        "cua_kep": {
+          "vi": "Bổ xẻng",
+          "en": "Spade Chop"
+        },
+        "cua_kep_doi": {
+          "vi": "Bổ xẻng đôi",
+          "en": "Double Spade Chop"
+        },
+        "cua_ui_ngang": {
+          "vi": "Ủi đá",
+          "en": "Slab Shove"
+        },
+        "cua_kep_xoay": {
+          "vi": "Xẻng xoay",
+          "en": "Spade Sweep"
+        }
+      },
+      "basis": "Dế dũi (dế trũi) là côn trùng đào đất ẩm ở ruộng, bãi; không phải loài nước, không thấy gắn với vị thần hay nơi thờ nào (theo hiểu biết sẵn có, chưa tra nguồn). Lưng đá, chân lột xác: [SÁNG TẠO].",
+      "review_status": "pending_historian_verifier"
+    },
+    {
+      "id": "cvd_de_cong_da_non",
+      "enemy_ref": "en_cua_cang_bun",
+      "legacy_id": true,
+      "legacy_note": "Biến thể cho trận tập ở bãi sông đời Bương (lineage ho_07_trial).",
+      "label": "SÁNG TẠO",
+      "era": "era_hung_vuong_6",
+      "chapter": "ch_phudong",
+      "lore_kind": "beast",
+      "name": {
+        "vi": "Dế Dũi Bãi Sông",
+        "en": "Riverbank Mole Cricket"
+      },
+      "description": {
+        "vi": "Dế dũi non ở bãi sông, to bằng con mèo. Không cõng đá, không phải yêu đầm; bị động hang thì cào lại rồi đào đất trốn.",
+        "en": "A young mole cricket of the riverbank, the size of a cat. No stone slab and no marsh spirit; disturb its burrow and it scratches back, then digs away."
+      },
+      "rig": "crab_small",
+      "rig_mapping": "Như cvd_de_cong_da, ẩn 4 chân bùn và tảng đá.",
+      "size": {
+        "length_m": 0.6,
+        "height_m": 0.25,
+        "width_m": 0.4,
+        "leg_span_m": 0.7
+      },
+      "anatomy": {
+        "limbs_total": 6,
+        "walking_legs": 4,
+        "extra_legs": 0,
+        "forelimbs": {
+          "count": 2,
+          "kind": "chân xẻng nhỏ",
+          "length_m": 0.2,
+          "blade_width_m": 0.1,
+          "ratio_to_body_length": 0.33
+        },
+        "eyes": "2 mắt nhỏ đen",
+        "back": "vỏ nâu bùn trơn, không đá"
+      },
+      "brief": {
+        "silhouette": "Nhỏ, thấp, dài; đầu tù.",
+        "materials": "Vỏ nâu bùn, lông tơ mịn.",
+        "accents": "Không đốm sáng (không phải yêu đầm).",
+        "motion": "Lủi nhanh, cào đất, đào trốn.",
+        "sound": "Rỉ rả nhỏ.",
+        "keywords": [
+          "non",
+          "lủi nhanh",
+          "đất bãi"
+        ],
+        "forbidden": [
+          "tảng đá trên lưng",
+          "đốm sáng",
+          "càng kiểu cua",
+          "màu đỏ hay cam"
+        ],
+        "palette": [
+          "#6B5A40",
+          "#8C7A58"
+        ]
+      },
+      "review_status": "pending_historian_verifier"
+    },
+    {
+      "id": "cvd_bo_ngua_lau",
+      "enemy_ref": "en_bo_ngua_lau",
+      "legacy_id": false,
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "lore_kind": "yeu_dam",
+      "name": {
+        "vi": "Bọ Ngựa Lau",
+        "en": "Reed Mantis"
+      },
+      "description": {
+        "vi": "Yêu đầm: bọ ngựa già cao ngang vai người, vỏ màu lau úa; lau gãy và bông lau mắc vào gai trên lưng nên đứng im thì như một bụi lau. Hai chân trước là lưỡi liềm vỏ cứng. Nhanh, máu mỏng; né đúng lúc để lấy Nhịp. Hết sức thì bay vụt vào lau.",
+        "en": "Marsh spirit: an old mantis as tall as a person's shoulder, shell the colour of withered reeds; broken reeds and reed plumes catch on the spines of its back, so standing still it looks like a reed clump. Its forelegs are hard-shelled sickles. Fast and frail; time your dodges to build Rhythm. When spent, it whirs off into the reeds."
+      },
+      "rig": "insect_mantis",
+      "size": {
+        "length_m": 1.6,
+        "height_m": 1.4,
+        "height_reared_m": 2.0
+      },
+      "anatomy": {
+        "limbs_total": 6,
+        "walking_legs": 4,
+        "extra_legs": 0,
+        "forelimbs": {
+          "count": 2,
+          "kind": "lưỡi liềm vỏ cứng, mép răng cưa",
+          "length_m": 0.9,
+          "ratio_to_body_length": 0.56
+        },
+        "eyes": "2 mắt lớn, quanh mắt một vòng đốm mờ",
+        "back": "gai vỏ để lau mắc vào"
+      },
+      "brief": {
+        "silhouette": "Đứng im là bụi lau cao; dựng lên thì dài, mảnh, hai lưỡi liềm gập trước ngực.",
+        "materials": "Vỏ côn trùng vàng xám sọc dọc như thân lau; cánh côn trùng rách màu lá lau khô; lau và bông lau chỉ MẮC BÁM ngoài vỏ (SI-14), không phải thân bằng cỏ.",
+        "accents": "Lưỡi liềm sáng màu sừng ở mép; bông lau rơi khi nó cử động.",
+        "motion": "Đung đưa theo gió rồi bật lên; lau quanh nó không rung theo gió (dấu hiệu); bỏ chạy thì bay vụt, để lại bông lau bay.",
+        "sound": "Tiếng tách nhẹ trước khi chém; cánh xào xạc như lá khô.",
+        "keywords": [
+          "lau bám",
+          "lưỡi liềm",
+          "đứng im như bụi"
+        ],
+        "forbidden": [
+          "thân bằng bó cỏ hay gỗ",
+          "xương",
+          "máu",
+          "nét mặt người"
+        ],
+        "palette": [
+          "#A39A6A",
+          "#C8BE8E",
+          "#E8E2C6"
+        ]
+      },
+      "review_status": "pending_historian_verifier"
+    },
+    {
+      "id": "cvd_u_bun",
+      "enemy_ref": "en_u_bun",
+      "legacy_id": false,
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "lore_kind": "yeu_dam",
+      "name": {
+        "vi": "Ụ Bùn",
+        "en": "Mud Mound"
+      },
+      "description": {
+        "vi": "Yêu đầm: ổ bùn và rễ lau nằm quá lâu tới mức tự đứng dậy, quện vỏ ốc và sỏi. Không mặt, không thân người; không do khoen sinh ra, không phải thần đất. Chậm, chịu đòn; dùng đòn nặng để phá vỏ bùn. Hết sức thì sụp lại thành bùn.",
+        "en": "Marsh spirit: a bed of mud and reed roots that lay so long it rose on its own, knotted with snail shells and pebbles. Faceless, with no human body; not born of the khoen, and not an earth god. Slow and sturdy; use heavy attacks to break its mud shell. When spent, it slumps back into mud."
+      },
+      "rig": "blob_biped_nonhuman",
+      "size": {
+        "height_m": 2.2,
+        "base_width_m": 2.5
+      },
+      "anatomy": {
+        "limbs_total": 2,
+        "walking_legs": 2,
+        "extra_legs": 0,
+        "legs_note": "2 chân ngắn mập, cao lộ ra tối đa 0,5 m, giấu dưới váy bùn đáy loe; không có khớp gối hay hông giống người; đi kiểu lê và trườn.",
+        "forelimbs": {
+          "count": 0,
+          "kind": "không có tay cố định; khi đánh, 1–2 cột bùn nhô ra từ thân ở độ cao bất kỳ (không ở vị trí vai)",
+          "temporary_column_length_m": 1.2,
+          "temporary_column_thickness_m": 0.4
+        },
+        "eyes": "không có mắt",
+        "back": "lỗ hang ngẫu nhiên có ánh đom đóm"
+      },
+      "brief": {
+        "silhouette": "Khối bùn thấp dần lên đỉnh, đáy loe như váy; không vai, không cổ, không đầu.",
+        "materials": "Bùn ướt quện rễ lau, rễ súng, vỏ ốc, sỏi.",
+        "accents": "Bọt khí phập phồng như thở; lỗ như hang dế phân bố ngẫu nhiên, trong có ánh đom đóm. KHÔNG xếp thành mặt: kiểm ở 3 góc camera.",
+        "motion": "Lê và trườn, thỉnh thoảng lăn nửa vòng; đập bằng cột bùn nhô ra; khi tan thì sụp xuống, rễ chìm, đom đóm bay lên.",
+        "sound": "Tiếng bùn lép nhép, bọt vỡ lục bục.",
+        "keywords": [
+          "bùn thở",
+          "rễ lau",
+          "lỗ đom đóm"
+        ],
+        "forbidden": [
+          "mặt (hai mắt một miệng)",
+          "tay hay vai kiểu người",
+          "gỗ hay thân cây",
+          "lễ vật hay đồ người đặt trên khối bùn"
+        ],
+        "palette": [
+          "#4A4234",
+          "#5F5641",
+          "#C9D98A"
+        ]
+      },
+      "review_status": "pending_historian_verifier"
+    },
+    {
+      "id": "cvd_lon_loi_dam",
+      "enemy_ref": "boss_lon_loi_dam",
+      "legacy_id": false,
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "lore_kind": "beast_victim",
+      "name": {
+        "vi": "Lợn Lòi Đầm",
+        "en": "Marsh Boar"
+      },
+      "description": {
+        "vi": "Con lợn lòi già to bằng con trâu. Nó không thành tinh: nó đau. Lưỡi bẫy đúc lại từ đồng khoen cũ mắc ở cổ, sát vai trái; đau quá nó càn phá bãi lầy. Sau khi được cạy, nó rụng chiếc nanh nứt rồi đi vào lau.",
+        "en": "An old boar as big as a buffalo. It is no spirit: it is in pain. A trap blade recast from old khoen metal is stuck in its neck, close to the left shoulder; maddened by pain, it ravages the mire. Once pried free, it sheds its cracked tusk and walks into the reeds."
+      },
+      "rig": "quadruped_shared",
+      "size": {
+        "length_m": 3.5,
+        "shoulder_height_m": 2.2
+      },
+      "anatomy": {
+        "limbs_total": 4,
+        "walking_legs": 4,
+        "extra_legs": 0,
+        "forelimbs": {
+          "count": 0,
+          "kind": "thú bốn chân, không chi trước riêng"
+        },
+        "tusks": "nanh trái gãy cụt; nanh phải cong vàng dài 0,45 m",
+        "eyes": "một mắt đục, vệt nước mắt bùn"
+      },
+      "brief": {
+        "silhouette": "Khổng lồ, bờm dựng, đầu luôn nghiêng về bên lành.",
+        "materials": "Lông bện bùn khô thành từng thừng; lau và cỏ năn mắc trong lông.",
+        "accents": "Lưỡi bẫy đồng ten xanh ở cổ sát vai trái; quanh đó da trụi, sưng sẫm, không máu; dây mây đứt của bẫy Đót quấn cổ.",
+        "motion": "Đi lệch; đứng yên thì cọ cổ vào cọc; pha 2 run rẩy, khuỵu; sau khi được cạy thì lắc mình, nanh nứt rụng, đi vào lau.",
+        "sound": "Thở khò khè, rống đứt quãng như khóc.",
+        "keywords": [
+          "khổng lồ",
+          "bùn bện",
+          "đau lệch"
+        ],
+        "forbidden": [
+          "lưỡi bẫy phát sáng, có chữ hay hoa văn Đông Sơn",
+          "máu hay vết thương mở",
+          "vải chàm buộc trên con thú (SI-01)",
+          "gỉ kiểu sắt (đồng chỉ có ten)"
+        ],
+        "palette": [
+          "#4B3B2C",
+          "#6B5840",
+          "#5E8C72"
+        ]
+      },
+      "review_status": "pending_historian_verifier"
+    }
+  ]
+}

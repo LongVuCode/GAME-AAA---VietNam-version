@@ -1602,10 +1602,6 @@
       "vi": "Chú Đót",
       "en": "Uncle Đót"
     },
-    "speaker_npc_be_sim": {
-      "vi": "Bé Sim",
-      "en": "Little Sim"
-    },
     "prompt_carve_notch": {
       "vi": "Giữ để khắc vết",
       "en": "Hold to carve the notch"
@@ -1669,6 +1665,10 @@
     "msg_trap_pulled": {
       "vi": "Đã nhổ bẫy ({n}/{max})",
       "en": "Trap pulled up ({n}/{max})"
+    },
+    "speaker_npc_be_ke": {
+      "vi": "Bé Kê",
+      "en": "Little Kê"
     }
   },
   "dialogue": [
@@ -1712,15 +1712,15 @@
       "label": "SÁNG TẠO",
       "form": "luc_bat",
       "text": {
-        "vi": "Ai đem khoen trói thú rừng\nThú đau hóa dữ, bến chừng chẳng êm\nSào nhà cạy mảnh đêm đêm\nTay người giữ bến, chẳng thèm khoen ai",
-        "en": "Who bound the wild beast with a khoen?\nIn pain it turned fierce, and the landing knew no peace.\nNight after night, the family pole pries the pieces free;\nhuman hands keep the landing, wanting no one's khoen."
+        "vi": "Ai đem khoen trói thú rừng\nThú đau hóa dữ, bến chừng chẳng êm\nSào nhà cạy mảnh một đêm\nTay người giữ bến, chẳng thèm khoen ai",
+        "en": "Who bound the wild beast with a khoen?\nIn pain it turned fierce, and the landing knew no peace.\nOne night the family pole pried the piece free;\nhuman hands keep the landing, wanting no one's khoen."
       },
       "era": "era_lac_long_quan",
       "allowed_eras": [
         "era_lac_long_quan",
         "era_hung_vuong_18"
       ],
-      "review_note": "Cần người viết vè người thật đọc lại."
+      "review_note": "Cần người viết vè người thật đọc lại. Câu 3 đổi 'đêm đêm' thành 'một đêm' (SI-11: lần cạy đầu tiên). Vế cuối 'chẳng thèm khoen ai' còn gượng, chờ người viết vè."
     },
     {
       "id": "dlg_05_handoff",

@@ -84,7 +84,7 @@
             ],
             "fov_deg": 38
           },
-          "direction": "Thuyền nan lật trôi ngang, bó lau tản trên nước. Cói chống sào móc thuyền lại; trong khoang có chiếc nón buộc dải chàm.",
+          "direction": "Thuyền nan lật trôi ngang, bó lau tản trên nước. Cói chống sào móc thuyền lại; trong khoang có chiếc nón đan thô (không dáng nón lá chóp hiện đại, SI-17) buộc dải chàm.",
           "line_refs": [
             "ln_co_02"
           ],
@@ -111,7 +111,7 @@
             ],
             "fov_deg": 30
           },
-          "direction": "Cận tay Cói gỡ dải chàm khỏi nón, buộc vào cổ tay. Nhạc dừng một nhịp.",
+          "direction": "Cận tay Cói gỡ dải chàm khỏi nón, buộc lên đầu cán sào của đò nhà, để Nghệ nhận ra đò chị trong sương. Không buộc lên người (SI-01). Nhạc dừng một nhịp.",
           "line_refs": [],
           "t_s": 30.0
         },
@@ -184,7 +184,7 @@
             ],
             "fov_deg": 45
           },
-          "direction": "Lia về phía bắc: sương trắng nhạt đứng trên bãi lau; xa hơn về phía tây là khối đá tối của hang. Không hiện sinh vật nào.",
+          "direction": "Lia về phía tây bắc: sương trắng nhạt đứng trên bãi lau; xa hơn về phía tây là khối đá tối của hang. Không hiện sinh vật nào.",
           "line_refs": [
             "ln_co_06"
           ],
@@ -303,7 +303,7 @@
             "subject": "tool_mui_sao",
             "fov_deg": 28
           },
-          "direction": "Người chơi giữ nút: Cói khắc vết đầu tiên lên bịt đồng.",
+          "direction": "Người chơi giữ nút: Cói khắc vết đầu tiên lên bịt đồng; dải chàm của Nghệ vẫn buộc trên cán.",
           "line_refs": [
             "ln_ho_c1"
           ],
@@ -323,7 +323,7 @@
             "subject": "tool_mui_sao",
             "fov_deg": 28
           },
-          "direction": "Người chơi giữ nút: Cói buộc dải chàm của Nghệ vào cán sào.",
+          "direction": "Người chơi giữ nút: Cói buộc chặt lại dải chàm trên cán sào, đã bạc vì nước.",
           "line_refs": [
             "ln_ho_c2"
           ],
@@ -378,7 +378,7 @@
             ],
             "fov_deg": 48
           },
-          "direction": "Mùa 2: lau trổ bông trắng rồi bị cắt; mái gianh thay mới. Một bà cụ buộc dải chàm mới lên cán sào. Vè câu 2.",
+          "direction": "Mùa 2: lau trổ bông trắng rồi bị cắt; mái gianh thay mới. Cói đã già trao sào cho một người trẻ trong nhà và buộc dải chàm mới cho người ấy (người còn sống buộc cho người nhận, SI-02). Vè câu 2.",
           "line_refs": [],
           "era": "era_hung_vuong_6",
           "ve_line_index": 1,
@@ -491,7 +491,7 @@
             ],
             "fov_deg": 38
           },
-          "direction": "Bé Sim chạy tới, chỉ vết khắc. Ông Vầu kể.",
+          "direction": "Bé Kê chạy tới, chỉ vết khắc. Ông Vầu kể.",
           "line_refs": [
             "ln_ho_b2",
             "ln_ho_b3",
@@ -509,7 +509,7 @@
             "subject": "npc_be_sim",
             "fov_deg": 34
           },
-          "direction": "Bé Sim hỏi; ông Vầu gật.",
+          "direction": "Bé Kê hỏi; ông Vầu gật.",
           "line_refs": [
             "ln_ho_b6",
             "ln_ho_b7"
@@ -525,7 +525,7 @@
             "subject": "chr_buong",
             "fov_deg": 30
           },
-          "direction": "Người chơi giữ nút: Bương buộc dải chàm mới cạnh dải cũ.",
+          "direction": "Người chơi giữ nút: ông Vầu buộc dải chàm mới cạnh dải cũ, Bương giữ sào (SI-02). Dải chàm trơn, không thêu; không đặt cạnh Thạp hay chỗ thờ.",
           "line_refs": [
             "ln_ho_b8"
           ],
@@ -535,7 +535,8 @@
             "hold_s": 1.0,
             "fail": "none"
           },
-          "t_s": 96.0
+          "t_s": 96.0,
+          "subject": "npc_nguoi_gia_ben"
         },
         {
           "id": "ho_s13",
@@ -548,13 +549,13 @@
               -6
             ],
             "look_at": [
-              200,
-              3,
-              -40
+              300,
+              0,
+              20
             ],
             "fov_deg": 46
           },
-          "direction": "Ông Vầu nhìn về thượng nguồn, kể chuyện hang đá. Chỉ có trời và nước, không hình thần.",
+          "direction": "Ông Vầu nhìn mặt nước, kể chuyện hang đá. Chỉ có trời và nước, không hình thần; không nhìn về thượng nguồn (SI-15).",
           "line_refs": [
             "ln_ho_b9"
           ],
@@ -599,7 +600,7 @@
             ],
             "fov_deg": 44
           },
-          "direction": "Sau buổi tập ở bãi sông. Bé Sim hát vè bản sàn.",
+          "direction": "Sau buổi tập ở bãi sông. Bé Kê hát vè bản sàn.",
           "line_refs": [
             "dlg_06_ve_floor"
           ],

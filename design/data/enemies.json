@@ -191,17 +191,14 @@
         }
       ],
       "_drops_note_0_3": "DEMO_0_3 §5.4. Rơi ở chỗ con vật bỏ chạy hoặc tan: đồ người làng đánh rơi bị cày lên, thiếc trong bùn; KHÔNG BAO GIỜ là phần cơ thể thú (SB-05, FUN_PASS_0_2 P1). chance < 1 chỉ cho quái thường (ArpgCore chỉ đọc drops của boss, phải = 1).",
+      "_note_0_4": "Phản biện văn hóa: id en_cua_cang_bun thành một yêu đầm nhiều chân [SÁNG TẠO], thân thấp, dùng lại rig crab_small. Tên, mô tả, brief tạo hình do agent cốt truyện chốt ở design/data/creatures_0_4.json (chưa có khi viết); khối dưới chỉ là bộ chiêu. Không đòn phun; tên chiêu hiển thị không dùng chữ 'cua'.",
       "lore_kind": "yeu_dam",
-      "description_0_4": {
-        "vi": "Yêu đầm cua: con cua nằm lâu tới mức mai thành đá rêu, vỏ ốc bám kín. Nó giữ ổ; mai trước chặn đòn, hông và bụng là chỗ yếu. Thua thì xoay mình chui xuống bùn.",
-        "en": "A marsh-spirit crab that lay so long its shell turned to mossy stone crusted with snails. It guards its den; its front shell blocks blows, its flanks and belly are weak. Beaten, it spins and burrows into the mud."
-      },
       "attacks_0_4": [
         {
-          "id": "cua4_hat_bun",
+          "id": "dc4_hat_bun",
           "name": {
-            "vi": "Hất bùn",
-            "en": "Mud Fling"
+            "vi": "Cào hất bùn",
+            "en": "Mud Rake"
           },
           "damage": 0,
           "player_the_damage": 0,
@@ -215,7 +212,7 @@
           "cooldown_s": 7.0,
           "dodge_hint": "side",
           "telegraph": {
-            "visual": "càng gai cắm xuống bùn, mai nghiêng về trước",
+            "visual": "hai chân trước cắm sâu xuống bùn, thân thấp nghiêng về trước",
             "audio": "tiếng bùn bị xúc ọp",
             "color_cue": "none"
           },
@@ -224,11 +221,11 @@
           "punish_window_s": 0.5,
           "label": "SÁNG TẠO",
           "anim": {
-            "anticipation": "lùi nửa bước, càng phải cắm sâu",
-            "active": "xúc càng hất một quạt bùn 50°",
-            "follow_through": "giũ càng, bùn rơi lộp độp"
+            "anticipation": "lùi nửa bước, các chân sau bám chặt",
+            "active": "cào hai chân trước hất một quạt bùn 50°",
+            "follow_through": "giũ chân, bùn rơi lộp độp"
           },
-          "_purpose": "Không sát thương; dính bùn thì chậm ×0,6 trong 2,5 s: phạt đứng trước mặt lâu",
+          "_purpose": "Không sát thương, không phun: dính bùn thì chậm ×0,6 trong 2,5 s; phạt đứng trước mặt lâu",
           "status": {
             "id": "st_dinh_bun",
             "speed_mult": 0.6,
@@ -236,10 +233,10 @@
           }
         },
         {
-          "id": "cua4_kim_giu",
+          "id": "dc4_om_ghi",
           "name": {
-            "vi": "Kìm giữ",
-            "en": "Vice Grip"
+            "vi": "Ôm ghì",
+            "en": "Leg Lock"
           },
           "damage": 26,
           "player_the_damage": 0,
@@ -253,8 +250,8 @@
           "cooldown_s": 9.0,
           "dodge_hint": "back",
           "telegraph": {
-            "visual": "hai càng gai mở hết cỡ, đốm đom đóm trên cuống mắt sáng dồn",
-            "audio": "ba tiếng lách cách dồn dập",
+            "visual": "nhổm thân, sáu chân trước xòe rộng như nan quạt, đốm sáng trên thân dồn lại",
+            "audio": "tiếng chân gõ lách cách dồn dập ba lần",
             "color_cue": "red_bronze"
           },
           "shape": "grab",
@@ -262,20 +259,20 @@
           "punish_window_s": 1.1,
           "label": "SÁNG TẠO",
           "anim": {
-            "anticipation": "nhổm mai, dang càng",
-            "active": "sập càng ôm lấy người chơi, kẹp hai lần",
-            "follow_through": "nhả, càng mỏi buông thõng 1,1 s"
+            "anticipation": "nhổm cao, các chân xòe",
+            "active": "sập các chân ôm ghì người chơi, siết hai lần",
+            "follow_through": "nhả, các chân mỏi buông thõng 1,1 s"
           },
-          "_purpose": "Phá lối giơ thủ trước mặt: thủ quá 1,2 s trước mai thì bị kìm (né lùi)",
+          "_purpose": "Phá lối giơ thủ trước mặt: thủ quá 1,2 s trước lưng đá thì bị ôm ghì (né lùi)",
           "trigger": {
             "player_guarding_front_s_at_least": 1.2
           },
           "hits": 2
         },
         {
-          "id": "cua4_chui_troi",
+          "id": "dc4_chui_troi",
           "name": {
-            "vi": "Chui bùn trồi kẹp",
+            "vi": "Chui bùn trồi",
             "en": "Burrow Ambush"
           },
           "damage": 24,
@@ -299,17 +296,50 @@
           "punish_window_s": 1.4,
           "label": "SÁNG TẠO",
           "anim": {
-            "anticipation": "chúi mai, xoáy xuống bùn",
-            "active": "trồi lên dưới chân, hất càng lên",
+            "anticipation": "các chân xoáy, thân lún xuống bùn",
+            "active": "trồi lên dưới chân người chơi, hất thân lên",
             "follow_through": "ngửa bụng 1,4 s vì trồi quá đà (điểm yếu)"
           },
-          "_purpose": "Mánh riêng của cua: chỉ ở bùn hoặc nước nông; trồi lên thì lộ bụng",
+          "_purpose": "Mánh riêng: chỉ ở bùn hoặc nước nông; trồi lên thì lộ bụng",
           "surfaces": [
             "mud",
             "shallow"
           ],
           "track_s": 2.0,
-          "exposes": "wp_cua_bung"
+          "exposes": "wp_dc_bung"
+        },
+        {
+          "id": "dc4_bo_xoay",
+          "name": {
+            "vi": "Bò xoáy",
+            "en": "Skitter Spin"
+          },
+          "damage": 18,
+          "player_the_damage": 18,
+          "windup_s": 0.6,
+          "active_s": 0.5,
+          "recovery_s": 0.8,
+          "parryable": true,
+          "guardable": true,
+          "delayed": false,
+          "range_m": 2.2,
+          "cooldown_s": 6.0,
+          "dodge_hint": "back",
+          "telegraph": {
+            "visual": "các chân một bên nhấc lên, thân nghiêng",
+            "audio": "tiếng chân lạo xạo chạy vòng",
+            "color_cue": "none"
+          },
+          "shape": "spin",
+          "player_knockback_m": 0.6,
+          "punish_window_s": 0.8,
+          "label": "SÁNG TẠO",
+          "anim": {
+            "anticipation": "dồn các chân sang một bên",
+            "active": "bò xoáy một vòng sát đất, lưng đá quét quanh",
+            "follow_through": "khựng, chân rối 0,8 s"
+          },
+          "_purpose": "Đỡ được; dạy Đỡ nhịp với đòn quét vòng của kẻ thấp"
         }
       ],
       "moveset_0_4": [
@@ -317,32 +347,42 @@
         "cua_kep_doi",
         "cua_ui_ngang",
         "cua_kep_xoay",
-        "cua4_hat_bun",
-        "cua4_kim_giu",
-        "cua4_chui_troi"
+        "dc4_hat_bun",
+        "dc4_om_ghi",
+        "dc4_chui_troi",
+        "dc4_bo_xoay"
       ],
       "concept_0_4": {
         "label": "SÁNG TẠO",
         "archetype": "shield",
         "lore_kind": "yeu_dam",
-        "monster_flavor": "Yêu đầm cua: mai như tảng đá rêu nứt, vỏ ốc bám, rễ lau lòi ở khe mai; càng phải gai to gấp đôi càng trái; đốm đom đóm trên cuống mắt (STORY_INTEGRATION_0_4 §6.2; không đỏ, không giáp, không đi hàng)",
-        "trick": "Mai đá: mặt trước chặn đòn (sát thương ×0,6, ×0,4 khi co mai); bò ngang giật cục, giữ mặt trước hướng về người chơi"
+        "monster_flavor": "Yêu đầm nhiều chân: thân thấp và rộng, lưng như tảng đá rêu nứt, 8–10 chân bùn có đốt, hai chân trước to (dùng lại khớp càng của rig crab_small); đi ngang giật cục. Chờ brief ở creatures_0_4.json; không đỏ, không giáp, không đi hàng, không phun",
+        "trick": "Lưng đá: mặt trước chặn đòn (sát thương ×0,6, ×0,4 khi thu chân nằm bẹp); bò ngang giữ mặt trước hướng về người chơi",
+        "legacy_attack_names_note": "Tên hiển thị cũ của cua_kep/cua_kep_doi/cua_ui_ngang/cua_kep_xoay ('Kẹp càng'...) do agent cốt truyện đổi theo creatures_0_4.json"
       },
       "weak_points_0_4": [
         {
-          "id": "wp_cua_hong",
-          "where": "hông hai bên (cung 120°)",
+          "id": "wp_dc_hong",
+          "where": "hai sườn (cung 120°), chỗ chân bám vào thân",
           "damage_mult": 1.5,
           "the_mult": 1.3,
           "how": "đi vòng, Vòng sào qua lưng, Chém gối lách"
         },
         {
-          "id": "wp_cua_bung",
-          "where": "bụng khi lật ngửa hoặc sau Chui bùn trồi kẹp",
+          "id": "wp_dc_bung",
+          "where": "bụng khi lật ngửa hoặc sau Chui bùn trồi",
           "damage_mult": 2.0,
           "the_mult": 2.0,
           "window_s": 2.0,
           "how": "đòn hất lên (flips_shelled): Bẩy mũi, Chọc lao vọt, Giật rìu"
+        },
+        {
+          "id": "wp_dc_chan",
+          "where": "chân dài nhất mỗi bên",
+          "damage_mult": 1.0,
+          "the_mult": 1.2,
+          "trip_s": 0.8,
+          "how": "đòn quét thấp làm nó khuỵu một bên 0,8 s"
         }
       ],
       "behavior_0_4": {
@@ -350,19 +390,19 @@
         "enrage": {
           "trigger": "groupmate_driven_off",
           "name": {
-            "vi": "Giơ càng gai",
-            "en": "Claws Raised"
+            "vi": "Dựng chân",
+            "en": "Legs Raised"
           },
           "duration_s": 12.0,
           "move_speed_mult": 1.2,
           "cooldown_mult": 0.8,
           "side_arc_deg": 140,
-          "tell": "gõ càng xuống bùn hai lần, đốm đom đóm trên mắt nhấp nháy nhanh",
-          "_purpose": "Giận thì hăng hơn nhưng càng giơ cao, hông lộ rộng hơn"
+          "tell": "gõ hai chân trước xuống bùn hai lần, đốm sáng trên thân nhấp nháy nhanh",
+          "_purpose": "Giận thì hăng hơn nhưng nhổm cao, sườn lộ rộng hơn"
         },
         "group": {
           "tactic": "giu_mat_chui_sau",
-          "desc": "Một con giữ mặt trước, con kia chui bùn trồi lên sau lưng người chơi; không bao giờ cả hai cùng kìm, không đứng thành hàng"
+          "desc": "Một con giữ mặt trước, con kia chui bùn trồi lên sau lưng người chơi; không bao giờ cả hai cùng ôm ghì, không đứng thành hàng"
         },
         "environment": {
           "shallow": {
@@ -1104,6 +1144,7 @@
       ],
       "behavior_0_4": {
         "label": "SÁNG TẠO",
+        "locomotion_0_4": "trườn bằng đáy loe, không chân, không tay (brief mới STORY_INTEGRATION_0_4 §6.2; thay \"khối bùn hai chân\" của ART_DIRECTION/0.1)",
         "crust": {
           "layers": 2,
           "hp_per_layer": 60,
@@ -2198,8 +2239,8 @@
         {
           "id": "ll4_khit_bun",
           "name": {
-            "vi": "Khịt bùn",
-            "en": "Mud Snort"
+            "vi": "Hất mõm bùn",
+            "en": "Snout Fling"
           },
           "damage": 0,
           "player_the_damage": 0,
@@ -2213,8 +2254,8 @@
           "cooldown_s": 10.0,
           "dodge_hint": "side",
           "telegraph": {
-            "visual": "hít vào, hông phồng, đầu ngóc",
-            "audio": "tiếng hít khò khè dài",
+            "visual": "mõm cắm sâu xuống bùn, móng trước cào, hông phồng",
+            "audio": "tiếng khịt khò khè dài",
             "color_cue": "none"
           },
           "shape": "cone",
@@ -2222,9 +2263,9 @@
           "punish_window_s": 0.6,
           "label": "SÁNG TẠO",
           "anim": {
-            "anticipation": "ngẩng mõm",
-            "active": "phun bùn từ mũi một quạt 7 m, 50°",
-            "follow_through": "lắc đầu, nước mũi bùn"
+            "anticipation": "chúi mõm xuống bùn như đang ủi đất",
+            "active": "hất mõm tung một quạt bùn 7 m, 50° (ủi hất, không phun)",
+            "follow_through": "lắc đầu, bùn rơi lộp độp"
           },
           "_purpose": "Mù bùn 2 s (mép màn hình lấm bùn, mất khóa mục tiêu, minimap ẩn); thường nối vào Càn lầy",
           "status": {
@@ -2509,7 +2550,7 @@
           "ll4_nhan_chim_lay",
           "ll4_can_ba_goc"
         ],
-        "reads": "Rống = càn (luôn); khịt dài = phun bùn; ụt ịt = đi tắm bùn; lau rạp ở mép sân = xông ra từ lau",
+        "reads": "Rống = càn (luôn); khịt dài và mõm cắm bùn = hất bùn; ụt ịt = đi tắm bùn; lau rạp ở mép sân = xông ra từ lau",
         "_note": "Bản sắc chiêu chỉ dựa trên tập tính lợn rừng (ủi đất, tắm bùn, húc, càn) và bùn đầm; không phép. Cốt truyện boss do agent cốt truyện chốt."
       },
       "phases_0_4": [

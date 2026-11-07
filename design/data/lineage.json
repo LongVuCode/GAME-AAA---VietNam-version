@@ -450,7 +450,8 @@
         "enemies": [
           {
             "enemy": "en_cua_cang_bun",
-            "count": 2
+            "count": 2,
+            "variant": "cvd_de_cong_da_non"
           }
         ],
         "goal": "swap_weapon_at_least_once",
@@ -461,7 +462,8 @@
             "count": 2
           }
         ],
-        "location": "hub_river_bank"
+        "location": "hub_river_bank",
+        "_note_0_4": "id cũ en_cua_cang_bun giữ để code khỏi vỡ; hiển thị là Dế Cõng Đá non (biến thể cvd_de_cong_da_non trong creatures_0_4.json): dế dũi non ở bãi sông, không lưng đá, không phải yêu đầm (SI-03, SB11-13)."
       },
       {
         "id": "ho_08_ve",
