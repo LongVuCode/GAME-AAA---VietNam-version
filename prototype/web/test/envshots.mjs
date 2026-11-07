@@ -28,6 +28,7 @@ export const VIEWS = [
   ['lausau', -40, -66, -2.4, 0.75, 0.2],
   ['rach', -36, 2, -2.2, 0.95, 0.24],
   ['sung', 52, -126, 2.6, -0.55, 0.16],
+  ['sanlo', -40, -128, -2.6, 0.6, 0.22],
 ];
 const frames = (n) => page.evaluate((k) => new Promise((res) => { let i = 0; const f = () => (++i >= k ? res() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
 

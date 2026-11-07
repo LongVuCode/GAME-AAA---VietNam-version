@@ -10,7 +10,8 @@ const N = Math.PI;  // yaw facing north (-z)
 
 /**
  * STAGING[shotId] = { actors: { id: { at:[x,z] | from/to, y?, yaw? | face:[x,z], pose? } }, props: { id: {...} },
- *   cam?: { from:[x,y,z], look:[x,y,z], fov } (subject-framed shots), effects?: [ids] }
+ *   cam?: { from:[x,y,z], look:[x,y,z], fov } | { pole: true, side: ±1, fov, back? } (close-up on the Mũi Sào tip,
+ *   from the live pole), camShift?: [dx,dy,dz] added to the data camera, effects?: [ids] }
  * Actor ids: chr_coi / chr_buong (the player rig), npc_* (story NPCs), npc_heir (the young heir, ho_s05).
  * Poses: idle, pole (holding the Mũi Sào), offer (both hands, handover), torch, child, sit.
  */
@@ -54,16 +55,16 @@ export const STAGING = {
   // ---------------- cin_handoff (114 s)
   ho_s01: { actors: { chr_coi: { at: [H, -10.5], yaw: N, pose: 'offer' }, npc_nghe: { at: [H + 1.2, -10.7], face: [H, -10.5], pose: 'idle' } } },
   ho_s02: { actors: { chr_coi: { at: [H, -10.5], yaw: N, pose: 'offer' }, npc_nghe: { at: [H + 1.2, -10.7], face: [H, -10.5], pose: 'idle' } },
-    cam: { from: [H + 0.55, 1.25, -11.75], look: [H, 0.95, -10.95], fov: 28 }, effects: ['strip_on_pole'] },
+    cam: { pole: true, side: 1, fov: 28 }, effects: ['strip_on_pole'] },
   ho_s03: { actors: { chr_coi: { at: [H, -10.5], yaw: N, pose: 'offer' }, npc_nghe: { at: [H + 1.2, -10.7], face: [H, -10.5], pose: 'idle' } },
-    cam: { from: [H - 0.6, 1.2, -11.7], look: [H, 0.95, -10.95], fov: 28 }, effects: ['strip_on_pole', 'notch'] },
+    cam: { pole: true, side: -1, fov: 28 }, effects: ['strip_on_pole', 'notch'] },
   ho_s04: { actors: { chr_coi: { at: [H, -2], yaw: 0, pose: 'pole', aged: 1 } }, props: { flood: {} }, effects: ['flood'] },
   ho_s05: { actors: { chr_coi: { at: [H - 0.6, -3], face: [H + 0.6, -3], pose: 'offer', aged: 2 }, npc_heir: { at: [H + 0.6, -3], face: [H - 0.6, -3], pose: 'idle' } }, props: { bloom: {} } },
   ho_s06: { actors: {}, props: { old_boat: { at: [H - 6, 22], yaw: 1.2 }, boat: { at: [H + 4, 37], yaw: 1.4 } }, effects: ['house2'] },
   ho_s07: { actors: { chr_buong: { from: [H, 6], to: [H, 12], yaw: 0, pose: 'idle' } }, props: { old_boat: { at: [H - 6, 22], yaw: 1.2 } }, effects: ['house2', 'drum_big', 'to_buong'] },
   ho_s08: { actors: { npc_nguoi_gia_ben: { at: [H - 0.4, -11.9], face: [H + 0.8, -10.9], pose: 'offer' }, chr_buong: { at: [H + 0.8, -10.9], face: [H - 0.4, -11.9], pose: 'idle' } }, effects: ['house2', 'drum_big'] },
   ho_s09: { actors: { npc_nguoi_gia_ben: { at: [H - 0.4, -11.9], face: [H + 0.8, -10.9], pose: 'idle' }, chr_buong: { at: [H + 0.8, -10.9], yaw: N, pose: 'offer' } },
-    cam: { from: [H + 1.35, 1.25, -12.15], look: [H + 0.8, 0.95, -11.35], fov: 28 }, effects: ['house2', 'drum_big', 'strip_on_pole', 'notch'] },
+    cam: { pole: true, side: 1, fov: 28 }, effects: ['house2', 'drum_big', 'strip_on_pole', 'notch'] },
   ho_s10: { actors: { npc_be_ke: { at: [H - 0.6, -10.1], face: [H + 0.9, -10.6], pose: 'child' }, npc_nguoi_gia_ben: { at: [H + 0.2, -11.9], face: [H - 0.6, -10.1], pose: 'idle' },
     chr_buong: { at: [H + 0.9, -10.6], face: [H - 0.6, -10.1], pose: 'pole' } }, effects: ['house2', 'drum_big', 'strip_on_pole', 'notch'] },
   ho_s11: { actors: { npc_be_ke: { at: [H - 0.6, -10.1], face: [H + 0.2, -11.9], pose: 'child' }, npc_nguoi_gia_ben: { at: [H + 0.2, -11.9], face: [H - 0.6, -10.1], pose: 'idle' },
@@ -71,7 +72,7 @@ export const STAGING = {
     cam: { from: [H - 1.6, 1.0, -8.6], look: [H - 0.6, 0.75, -10.1], fov: 34 }, effects: ['house2', 'drum_big', 'strip_on_pole', 'notch'] },
   ho_s12: { actors: { npc_nguoi_gia_ben: { at: [H + 0.1, -11.8], face: [H + 0.9, -10.6], pose: 'offer' }, chr_buong: { at: [H + 0.9, -10.6], face: [H + 0.1, -11.8], pose: 'offer' },
     npc_be_ke: { at: [H - 0.6, -10.1], face: [H + 0.9, -10.6], pose: 'child' } },
-    cam: { from: [H + 2.1, 1.35, -10.0], look: [H + 0.6, 1.0, -11.1], fov: 30 }, effects: ['house2', 'drum_big', 'strip_on_pole', 'notch', 'strip_new'] },
+    cam: { pole: true, side: -1, fov: 30, back: 0.6 }, effects: ['house2', 'drum_big', 'strip_on_pole', 'notch', 'strip_new'] },
   ho_s13: { actors: { npc_nguoi_gia_ben: { at: [H - 0.5, -7], yaw: 0, pose: 'idle' }, chr_buong: { at: [H + 0.6, -7.2], yaw: 0, pose: 'pole' }, npc_be_ke: { at: [H + 1.5, -7.6], yaw: 0, pose: 'child' } },
     effects: ['house2', 'drum_big', 'strip_on_pole', 'notch', 'strip_new'] },
 
@@ -95,7 +96,8 @@ for (const id of DRUM_SHOTS) {
   const st = STAGING[id];
   const xz = (v) => { if (v) v[1] += DRUM_CLEAR_Z; };
   for (const group of [st.actors ?? {}, st.props ?? {}]) for (const spec of Object.values(group)) { xz(spec.at); xz(spec.from); xz(spec.to); xz(spec.face); }
-  if (st.cam) { st.cam.from[2] += DRUM_CLEAR_Z; st.cam.look[2] += DRUM_CLEAR_Z; }
+  if (st.cam?.from) { st.cam.from[2] += DRUM_CLEAR_Z; st.cam.look[2] += DRUM_CLEAR_Z; }
+  st.camShift = [0, 0, DRUM_CLEAR_Z]; // the data camera (cinematics.json from / look_at) moves with the people
 }
 
 /** Display entry of a creature (creatures_0_4.json) for an enemy id in an era: the era's variant first. */

@@ -308,7 +308,7 @@ export function dressWorld04(lib, root, heightAt, L, field) {
     for (let k = 0; k < n; k++) {
       const a = R() * Math.PI * 2, r = rad * (0.35 + 0.6 * R()), x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r;
       if ((L.paths ?? []).some((pp) => distToPolyline(x, z, pp.points) < pp.width * 0.5 + 1.5) || (L.keepOut ?? []).some((k2) => Math.hypot(k2.x - x, k2.z - z) < k2.r + 1)) continue;
-      mesh(`rock_moss_set_01_rock0${1 + Math.floor(R() * 6)}`, x, z, R() * 6.28, 0.45 + R() * 0.9, 0.3);
+      mesh(`rock_moss_set_01_rock0${1 + Math.floor(R() * 6)}`, x, z, R() * 6.28, 0.7 + R() * 0.9, 0.45);
     }
   }
   // Rừng sung: the fallen fig to vault, the hollow trunk.

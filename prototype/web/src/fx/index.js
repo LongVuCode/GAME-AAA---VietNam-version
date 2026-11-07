@@ -32,7 +32,7 @@ const PAL = {
 };
 const QUALITY = {
   high: { add: 700, alpha: 1000, bloom: true, pixelRatio: 1.5, msaa: 4 },
-  low: { add: 220, alpha: 320, bloom: false, pixelRatio: 1, msaa: 0 },
+  low: { add: 220, alpha: 320, bloom: false, pixelRatio: 0.7, msaa: 0 }, // Demo 0.4: Low renders at 70% (terrain shader is fill-bound)
 };
 
 const _v = new THREE.Vector3(), _n = new THREE.Vector3(), _t1 = new THREE.Vector3(), _t2 = new THREE.Vector3();

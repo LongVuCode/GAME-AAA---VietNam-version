@@ -280,6 +280,7 @@ test('cut-scene blocking: nobody stands inside the village drum (hub shots of ci
       const d = Math.hypot(p[0] - DRUM.x, p[1] - DRUM.z);
       assert.ok(d > DRUM.r + 0.35, `${s.id} ${id} at ${p} is ${d.toFixed(2)} m from the drum centre`);
     }
-    if (st.cam) assert.ok(Math.hypot(st.cam.from[0] - DRUM.x, st.cam.from[2] - DRUM.z) > DRUM.r + 0.2, `${s.id} camera outside the drum`);
+    if (st.cam?.from) assert.ok(Math.hypot(st.cam.from[0] - DRUM.x, st.cam.from[2] - DRUM.z) > DRUM.r + 0.2, `${s.id} camera outside the drum`);
+    const c0 = s.camera?.from; if (c0 && st.camShift) assert.ok(Math.hypot(c0[0] - DRUM.x, c0[2] + st.camShift[2] - DRUM.z) > DRUM.r + 0.2, `${s.id} data camera outside the drum`);
   }
 });

@@ -16,8 +16,12 @@ const { chromium } = require('playwright');
 const here = dirname(fileURLToPath(import.meta.url));
 const SHOTS = process.env.SHOTS_DIR ?? '/tmp/claude-0/-home-user/c58ad2cd-0dde-5c55-b1e4-0cacdf2a6473/scratchpad/proto-shots';
 mkdirSync(SHOTS, { recursive: true });
-// SMOKE_QUERY adds URL parameters (e.g. env=0 skips the 0.4 environment assets on slow software GL).
-const url = `${pathToFileURL(join(here, '..', 'dist', 'index.html')).href}?debug=1${process.env.SMOKE_QUERY ? `&${process.env.SMOKE_QUERY}` : ''}`;
+// SMOKE_QUERY adds URL parameters. Default `env=0`: the smoke runs from file:// (no environment assets
+// can load there) on SwiftShader, where the 0.4 terrain/water/mist layer costs ~1.5 s per frame even at
+// Low and the timed bot sections cannot finish; gameplay (walkable regions, ground heights) is the same.
+// The environment itself is checked over HTTP with every asset by test/envshots.mjs. SMOKE_QUERY= (empty) keeps it on.
+const query = process.env.SMOKE_QUERY ?? 'env=0';
+const url = `${pathToFileURL(join(here, '..', 'dist', 'index.html')).href}?debug=1${query ? `&${query}` : ''}`;
 
 const errors = [];
 const external = [];
@@ -28,6 +32,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
+// Demo 0.4 big map: High frames take seconds under SwiftShader (CPU), so Playwright actions/screenshots get 3 min.
+page.setDefaultTimeout(180000);
 page.on('console', (m) => { if (m.type() === 'error') errors.push(`console.error: ${m.text()}`); });
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
 page.on('request', (r) => { if (!/^(file|data|blob):/.test(r.url())) external.push(r.url()); });
@@ -470,6 +476,12 @@ try {
   s = await waitFor((x) => x.flags.includes('flag_boss_lon_loi_freed'), 8000);
   check('freed flag set, shed tusk received, no khoen item', !!s && s.inventory.mat_nanh_rung === 1 && !Object.keys(s.inventory).some((k) => /khoen/.test(k)), JSON.stringify(s?.inventory));
   check('house move learned + 2 craft points', !!s && s.skills.points >= 4, `points=${s?.skills.points}`);
+  if (!pryOk) {
+    // The pry checks above already failed (frame-rate bound on software GL); put the world in the freed
+    // state the pry would leave so the hub / handoff / story sections below still run and report.
+    log('pry not completed: forcing the freed state for the later sections (the pry checks stay FAIL)');
+    await page.evaluate(() => { const g = window.__demo.game; g.gen.flags.add('flag_boss_lon_loi_freed'); g.give('mat_nanh_rung', 1); g.story.record('boss_freed', 'boss_lon_loi_dam'); });
+  }
   sto = await ST();
   check('main quest: arena reached and boss freed → step 6 "bring the blade to the furnace"', sto.tracked?.step === 'qs_m6_lo_duc' && sto.facts.includes('enter_zone:z_dau_truong'), JSON.stringify(sto.tracked));
   check('Cói barks on the pry ("Một… Hai… Ba!") and the verse after it', ['bk_s_pry_1', 'bk_s_pry_2', 'bk_s_pry_3'].some((id) => sto.lineLog.some((l) => l.id === id)) && sto.lineLog.some((l) => l.id.startsWith('dlg_04_ve_after_pry#')), sto.lineLog.slice(-12).map((l) => l.id).join(','));
@@ -617,7 +629,8 @@ try {
   check('practice goal: swap weapon once + crabs driven off', !!s);
   await shot('16_buong_practice.png');
   const hudBuong = await page.evaluate(() => document.getElementById('hud').innerText);
-  if (forbidden.test(hudBuong)) leak.push('hud');
+  const hudHit = hudBuong.match(forbidden);
+  if (hudHit) { leak.push('hud'); log('hud leak:', JSON.stringify(hudBuong.slice(Math.max(0, hudHit.index - 100), hudHit.index + 60))); }
   // Practice done → the demo hook cut-scene (cin_demo_hook: Kê's verse, "Đò ơi!" from the far bank) → end.
   s = await waitFor((x) => (x.cinematic?.id === 'cin_demo_hook') || x.mode === 'end', 15000, 100);
   let hookShot = false;

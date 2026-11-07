@@ -510,11 +510,13 @@ export class StoryDirector {
     this.dlg = null; this.ui.dialog(null);
     this.seen.add(d.conv.id);
     g.mode = d.prevMode === 'dialogue' ? 'playing' : d.prevMode;
-    g.cam.init = false; g.input.clearAll(); g.input.requestLock();
+    g.cam.init = false; g.input.clearAll();
     this.record('talk', d.conv.id);
     if (d.conv.id === 'cv_nghe_rescue') g.after(1.2, () => this.placeNpcs()); // Nghệ walks home to Bến Sậy
     if (d.conv.id === 'cv_nan_basket' && this._songReady()) g.after(0.8, () => this._playSong());
     d.onEnd?.();
+    // Re-lock the mouse only when play resumes (onEnd may open a screen, e.g. the furnace: a lock would eat its clicks).
+    if (g.mode === 'playing') g.input.requestLock();
   }
 
   // ================================================================== cut-scenes
@@ -646,7 +648,9 @@ export class StoryDirector {
   _camera(s, u) {
     const g = this.g, c = this.cin, st = STAGING[s.id] ?? {};
     let pose = shotCamera(s, u);
-    if (!pose && st.cam) pose = { pos: st.cam.from, look: st.cam.look, fov: st.cam.fov ?? s.camera?.fov_deg ?? 40 };
+    if (pose && st.camShift) { const [dx, dy, dz] = st.camShift; pose.pos = [pose.pos[0] + dx, pose.pos[1] + dy, pose.pos[2] + dz]; pose.look = [pose.look[0] + dx, pose.look[1] + dy, pose.look[2] + dz]; }
+    if (!pose && st.cam?.pole) pose = this._poleCamera(st.cam, u);
+    else if (!pose && st.cam) pose = { pos: st.cam.from, look: st.cam.look, fov: st.cam.fov ?? s.camera?.fov_deg ?? 40 };
     if (s.camera?.kind === 'blend_to_gameplay') {
       const p = g.player, dist = this.data.combat.feel?.camera_distance_m ?? 6.5, pitch = 0.38;
       g.cam.yaw = p.yaw + Math.PI; g.cam.pitch = pitch; g.cam.dist = dist;
@@ -666,6 +670,18 @@ export class StoryDirector {
     g.camera.lookAt(pose.look[0], pose.look[1], pose.look[2]);
     g.fx.baseFov = pose.fov;
     c.lastCam = { pos: pose.pos, look: pose.look };
+  }
+  /** Close-up on the tip of the live Mũi Sào (notch, indigo strip): beside the tip, slightly above, drifting in. */
+  _poleCamera(spec, u) {
+    const pole = this.g.player?.pole; if (!pole) return null;
+    pole.updateWorldMatrix(true, false);
+    const tip = new THREE.Vector3(0, 0, 2.25).applyMatrix4(pole.matrixWorld), base = new THREE.Vector3(0, 0, 1.0).applyMatrix4(pole.matrixWorld);
+    const dir = tip.clone().sub(base).normalize(), up = new THREE.Vector3(0, 1, 0);
+    const side = new THREE.Vector3().crossVectors(dir, up); if (side.lengthSq() < 1e-4) side.set(1, 0, 0); side.normalize().multiplyScalar(spec.side ?? 1);
+    const dist = 0.95 - 0.12 * ease(u) + (spec.back ?? 0);
+    const pos = tip.clone().addScaledVector(side, dist).addScaledVector(up, 0.32).addScaledVector(dir, -0.35);
+    const look = tip.clone().addScaledVector(dir, -0.05);
+    return { pos: [pos.x, pos.y, pos.z], look: [look.x, look.y, look.z], fov: spec.fov ?? 30 };
   }
   _finishCinematic(skipped) {
     const g = this.g, c = this.cin; if (!c) return;

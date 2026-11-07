@@ -19,8 +19,13 @@ export const ASSETS = {
 };
 
 export const assetUrl = (rel) => new URL(rel, document.baseURI).href;
+/** file:// pages cannot fetch() and their images taint WebGL (cross-origin): skip every asset there
+ *  (the environment keeps its palette terrain/water; served over HTTP everything loads). */
+export const assetsBlocked = () => typeof location !== 'undefined' && location.protocol === 'file:';
+const blocked = (rel) => Promise.reject(new Error(`not loaded from file:// (${rel}); serve dist over HTTP (node test/serve.mjs)`));
 
 export function loadImage(rel) {
+  if (assetsBlocked()) return blocked(rel);
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.decoding = 'async';
@@ -63,8 +68,9 @@ export function gltfLoader() {
   if (!_gltf) { _gltf = new GLTFLoader(); _gltf.setMeshoptDecoder(MeshoptDecoder); }
   return _gltf;
 }
-export function loadGLB(rel) { return gltfLoader().loadAsync(assetUrl(rel)); }
+export function loadGLB(rel) { return assetsBlocked() ? blocked(rel) : gltfLoader().loadAsync(assetUrl(rel)); }
 
 export function loadHDR(rel) {
+  if (assetsBlocked()) return blocked(rel);
   return new RGBELoader().setDataType(THREE.HalfFloatType).loadAsync(assetUrl(rel));
 }
