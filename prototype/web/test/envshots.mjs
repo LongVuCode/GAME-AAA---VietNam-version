@@ -33,7 +33,7 @@ page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') 
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
 page.on('request', (r) => { if (!r.url().startsWith(srv.url) && !/^(data|blob):/.test(r.url())) external.push(r.url()); });
 try {
-  await page.goto(`${srv.url}index.html?debug=1`);
+  await page.goto(`${srv.url}index.html?debug=1${process.env.SHOTS_QUERY ? '&' + process.env.SHOTS_QUERY : ''}`);
   await page.waitForSelector('[data-screen=title]');
   await page.click('[data-act=start]');
   await page.waitForFunction(() => window.__demo?.state().mode === 'playing', null, { timeout: 15000 });

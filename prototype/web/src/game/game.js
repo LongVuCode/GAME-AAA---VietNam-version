@@ -1349,6 +1349,10 @@ export class Game {
       grant(id, n = 1) { return g.ui03.grant(id, n); },
       /** Story 0.4 read-out: cut-scene (shot, era, skip / hold progress), dialogue node, quests, line log. */
       story: () => g.story.debug(),
+      /** Test-only: run the active cut-scene forward by `s` real seconds in 0.1 s steps (no skip, no hold held). */
+      cinAdvance(s) { const none = { isDown: () => false, pressed: () => false }; for (let t = 0; t < s && g.mode === 'cinematic'; t += 0.1) g.story.updateCinematic(0.1, none); return g.story.debug().cinematic; },
+      /** Test-only: record a story fact (quests.json complete_when) as the game would. */
+      storyFact(type, ref) { return g.story.record(type, ref).map((e) => `${e.type}:${e.step?.id ?? e.quest?.id}`); },
     };
   }
 }
