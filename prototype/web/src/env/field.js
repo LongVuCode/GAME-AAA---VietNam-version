@@ -46,11 +46,18 @@ export function createField(L) {
         const t = 1 - Math.hypot(x - f.cx, z - f.cz) / f.radius_m;
         if (t > 0) v = f.height_m * (f.falloff === 'linear' ? t : t * t * (3 - 2 * t));
       } else if (f.kind === 'ridge') {
-        const t = 1 - distPolyline(x, z, [[f.ax, f.az], [f.bx, f.bz]]) / (f.width_m / 2 + 4);
+        // Flanks wide enough to stay under the 35° walk limit (world_0_4.heightmap.max_walkable_slope_deg).
+        const t = 1 - distPolyline(x, z, [[f.ax, f.az], [f.bx, f.bz]]) / (f.width_m / 2 + Math.max(4, f.height_m * 1.6));
         if (t > 0) v = f.height_m * smoothstep(0, 1, t);
       } else if (f.kind === 'plateau') {
-        const sd = sdShape(x, z, { polygon: f.polygon });
-        v = f.height_m * (1 - smoothstep(-0.5, 3, sd));
+        // Edge kind per side (edges: {west: 'cliff', east: 'ramp', ...}): cliffs drop within ~1 m (one-way
+        // ledge, steeper than the walk limit), ramps run out over ~3.5 x the height.
+        // Edge 2 m inside the design polygon: paths that clip a corner (path_main_west at the kiln
+        // floor) stay on the low ground instead of climbing a cliff lip.
+        const sd = sdShape(x, z, { polygon: f.polygon }) + 2.0;
+        const kind = f.edges ? f.edges[edgeSide(x, z, f.polygon)] : null;
+        const run = kind === 'ramp' ? Math.max(6, f.height_m * 3.5) : kind === 'cliff' || kind === 'climb_wall' ? 0.9 : 3;
+        v = f.height_m * (1 - smoothstep(-0.3, run, sd));
       } else if (f.kind === 'slope') {
         const ex = f.bx - f.ax, ez = f.bz - f.az, l2 = ex * ex + ez * ez || 1;
         const t = ((x - f.ax) * ex + (z - f.az) * ez) / l2;
@@ -66,15 +73,36 @@ export function createField(L) {
     return reg.height + features(x, z) + amp * (fbm(x / nscale, z / nscale, seed) - 0.5) * 2;
   }
 
+  /** Blend of the region base heights around (x, z): continuous across region seams (no step where a
+   *  0.4 region at height_m 0.5 overlaps a 0.3 area at 0), plus how much of it is 0.3 ground (0..1). */
+  function blended(x, z) {
+    let sw = 0, sh = 0, sl = 0;
+    for (const e of walk) {
+      let dmin = Infinity;
+      for (const { s, b } of e.shapes) { if (x < b.x0 || x > b.x1 || z < b.z0 || z > b.z1) continue; dmin = Math.min(dmin, sdShape(x, z, s)); }
+      if (dmin > 3) continue;
+      const w = 1 - smoothstep(-3, 3, dmin) + 1e-4;
+      sw += w; sh += w * (e.r.legacy ? 0 : e.r.height); if (e.r.legacy) sl += w;
+    }
+    return sw > 0 ? { base: sh / sw, leg: sl / sw } : { base: 0, leg: 0 };
+  }
+  function walkHeight(x, z, reg) {
+    const { base, leg } = blended(x, z);
+    const dips = -0.024 * fbm(x * 0.35, z * 0.35, seed + 3);
+    if (leg >= 0.999) return dips;
+    const k = smoothstep(0, 1, 1 - leg);
+    return base + (features(x, z) + amp * (fbm(x / nscale, z / nscale, seed) - 0.5) * 2) * k + dips * (1 - k);
+  }
+
   /** Terrain height (m). */
   function height(x, z, nn = nearest(x, z)) {
     const { d, reg } = nn;
     let h;
-    if (d <= 0 && !inDock(x, z)) {
-      h = reg.legacy ? -0.035 * fbm(x * 0.35, z * 0.35, seed + 3) - (reg.surface === 'shallow' ? 0.02 : 0) : regionSurfaceHeight(reg, x, z);
+    if (d <= 0) { // land wins where the jetty starts on the bank (z_ben_say overlaps the dock rect)
+      h = walkHeight(x, z, reg);
     } else {
       const dd = Math.max(0, d);
-      const edgeH = regionSurfaceHeight(reg, x, z);
+      const edgeH = reg ? walkHeight(x, z, reg) : 0;
       const n = vnoise(x * 0.07, z * 0.07, seed + 11);
       const bankW = 1.2 + 5.5 * n;
       const bankH = 0.05 + 0.28 * vnoise(x * 0.13, z * 0.13, seed + 13);
@@ -87,15 +115,24 @@ export function createField(L) {
       const far = smoothstep(14, 30, dd);
       if (m > 0.53 && far > 0) h = Math.max(h, bottom + (Math.min(0.45, (m - 0.53) * 4) * 4.2 + (W + 0.35 - bottom)) * far * smoothstep(0.53, 0.6, m));
       if (!reg?.legacy) h = Math.max(h, edgeH > 0.6 ? features(x, z) + bottom * 0.2 : -Infinity);
+      // Far shore: the marsh is ringed by low wooded land 45-80 m out (a horizon instead of an endless
+      // water sheet); the river south of the landing (ferry side, +z) opens wider.
+      if (L.source === 'world_0_4') {
+        const start = z > 30 ? 70 : 46, n2 = fbm(x * 0.018, z * 0.018, seed + 41);
+        const sh = smoothstep(start + 14 * n2, start + 22 + 14 * n2, dd);
+        if (sh > 0) h = h + (W + 0.3 + 1.6 * fbm(x * 0.035, z * 0.035, seed + 43) - h) * sh;
+      }
     }
     // Carves.
+    // Shallow sheets / mud pools sit in hollows below their water plane (SHEET_Y = -0.03): the water edge is
+    // where the ground rises through it (an organic shoreline, noisy), not the plane's rectangle.
     for (const s of L.shallow) {
-      const sd = sdRect(x, z, s);
-      if (sd < 1.2) h = Math.min(h, -0.07 * (1 - smoothstep(-1.5, 1.2, sd)) + (sd > 0 ? h : 0) * smoothstep(-1.5, 1.2, sd));
+      const sd = sdRect(x, z, s) + 1.4 * (vnoise(x * 0.35, z * 0.35, seed + 51) - 0.5) + 0.6 * (vnoise(x * 1.1, z * 1.1, seed + 53) - 0.5);
+      if (sd < 1.4) h = Math.min(h, -0.17 * (1 - smoothstep(-2.2, 1.4, sd)) + (sd > 0 ? h : 0) * smoothstep(-2.2, 1.4, sd));
     }
     for (const p of L.mudPools) {
-      const t = Math.hypot(x - p.cx, z - p.cz) / p.r;
-      if (t < 1.25) h = Math.min(h, -0.08 * (1 - smoothstep(0.7, 1.25, t)));
+      const t = Math.hypot(x - p.cx, z - p.cz) / p.r + 0.18 * (vnoise(x * 0.8, z * 0.8, seed + 55) - 0.5);
+      if (t < 1.25) h = Math.min(h, -0.15 * (1 - smoothstep(0.75, 1.25, t)));
     }
     for (const v of L.ditches) {
       const dl = distPolyline(x, z, [[v.ax, v.az], [v.bx, v.bz]]);
@@ -166,6 +203,24 @@ function sdRect(x, z, r) {
   const cx = (r.x0 + r.x1) / 2, cz = (r.z0 + r.z1) / 2, hx = (r.x1 - r.x0) / 2, hz = (r.z1 - r.z0) / 2;
   const dx = Math.abs(x - cx) - hx, dz = Math.abs(z - cz) - hz;
   return Math.hypot(Math.max(dx, 0), Math.max(dz, 0)) + Math.min(Math.max(dx, dz), 0);
+}
+/** Compass side ('west' -x, 'east' +x, 'north' -z, 'south' +z) of the polygon edge nearest to (x, z). */
+function edgeSide(x, z, poly) {
+  let best = Infinity, side = 'west';
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [ax, az] = poly[j], [bx, bz] = poly[i], ex = bx - ax, ez = bz - az;
+    const t = Math.max(0, Math.min(1, ((x - ax) * ex + (z - az) * ez) / (ex * ex + ez * ez || 1)));
+    const d = Math.hypot(x - ax - ex * t, z - az - ez * t);
+    if (d < best) {
+      best = d;
+      // Outward normal from the polygon centroid side.
+      const cx = poly.reduce((a, p) => a + p[0], 0) / poly.length, cz = poly.reduce((a, p) => a + p[1], 0) / poly.length;
+      let nx = ez, nz = -ex; const mx = ax + ex / 2 - cx, mz = az + ez / 2 - cz;
+      if (nx * mx + nz * mz < 0) { nx = -nx; nz = -nz; }
+      side = Math.abs(nx) > Math.abs(nz) ? (nx < 0 ? 'west' : 'east') : (nz < 0 ? 'north' : 'south');
+    }
+  }
+  return side;
 }
 function pad(b, m) { return { x0: b.x0 - m, x1: b.x1 + m, z0: b.z0 - m, z1: b.z1 + m }; }
 function boundsOf(pts) {

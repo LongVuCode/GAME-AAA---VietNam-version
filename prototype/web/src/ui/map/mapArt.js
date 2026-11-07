@@ -4,17 +4,22 @@
 // and 'dark' (minimap, on the HUD charcoal). Unexplored cells are covered by blank cloth with faint
 // reed hatching (fog.unexplored_style). Canvas 2D only; built once per level, fog composed on change.
 import { AREAS, MUD_POOLS_BASE, VAULTS, SHALLOW_SHEETS, mulberry32 } from '../../game/world.js';
+import { sdArea, areaBounds, BLOCKERS_04, CHANNELS_04 } from '../../game/world04.js';
 
 const ZONE_TINT = {
   cloth: {
     z_ben_say: 'rgba(176,146,98,0.50)', z_dam_nong: 'rgba(120,138,112,0.45)', z_bai_lau: 'rgba(181,160,104,0.50)',
     z_lo_bo_hoang: 'rgba(150,104,76,0.45)', z_dau_truong: 'rgba(98,76,54,0.55)', hub: 'rgba(170,140,96,0.5)', hub_bank: 'rgba(166,150,110,0.5)',
     path: 'rgba(168,140,96,0.55)',
+    z_bai_boi: 'rgba(170,150,112,0.45)', z_doi_go: 'rgba(132,140,92,0.50)', z_rung_sung: 'rgba(110,120,82,0.50)', z_dong_lay_bac: 'rgba(104,84,60,0.50)',
+    z_rach_nuoc: 'rgba(112,134,118,0.45)', z_lau_sau: 'rgba(160,150,96,0.50)', z_san_lo: 'rgba(150,108,80,0.45)',
   },
   dark: {
     z_ben_say: 'rgba(140,116,80,0.85)', z_dam_nong: 'rgba(86,102,82,0.85)', z_bai_lau: 'rgba(124,128,78,0.85)',
     z_lo_bo_hoang: 'rgba(118,88,66,0.85)', z_dau_truong: 'rgba(92,72,52,0.9)', hub: 'rgba(134,121,90,0.85)', hub_bank: 'rgba(138,132,98,0.85)',
     path: 'rgba(170,150,110,0.85)',
+    z_bai_boi: 'rgba(136,122,90,0.85)', z_doi_go: 'rgba(104,114,74,0.85)', z_rung_sung: 'rgba(84,98,64,0.85)', z_dong_lay_bac: 'rgba(88,70,50,0.88)',
+    z_rach_nuoc: 'rgba(80,100,90,0.85)', z_lau_sau: 'rgba(118,118,74,0.85)', z_san_lo: 'rgba(116,88,66,0.85)',
   },
 };
 const INK = { cloth: '#2b241c', dark: '#d8c9a4' };
@@ -55,15 +60,17 @@ function weave(ctx, w, h, rnd, base, alpha) {
  * { canvas, blank, s (px per m), x0, z0, w, h, P(x, z) -> [px, py] }.
  */
 export function buildLevelArt(level, mapData, palette = 'cloth', s = 8) {
-  const b = level.bounds, w = Math.round((b.x1 - b.x0) * s), h = Math.round((b.z1 - b.z0) * s);
+  const b = level.bounds;
+  s = Math.min(s, 1800 / Math.max(b.x1 - b.x0, b.z1 - b.z0)); // 0.4 big level: keep the canvas <= 1800 px
+  const w = Math.round((b.x1 - b.x0) * s), h = Math.round((b.z1 - b.z0) * s);
   const P = (x, z) => [(x - b.x0) * s, (z - b.z0) * s];
   const rnd = mulberry32(palette === 'cloth' ? 11 : 12);
   const c = blankCanvas(w, h), ctx = c.getContext('2d');
   const ink = INK[palette], tint = ZONE_TINT[palette];
-  const inLevel = (a) => (a.rect ? a.rect.x1 >= b.x0 && a.rect.x0 <= b.x1 && a.rect.z1 >= b.z0 && a.rect.z0 <= b.z1
-    : a.circle.cx >= b.x0 && a.circle.cx <= b.x1 && a.circle.cz >= b.z0 && a.circle.cz <= b.z1);
-  const areas = AREAS.filter((a) => inLevel(a) && a.id !== 'shortcut');
-  const walkable = (x, z) => AREAS.some((a) => (a.rect ? x >= a.rect.x0 && x <= a.rect.x1 && z >= a.rect.z0 && z <= a.rect.z1 : Math.hypot(x - a.circle.cx, z - a.circle.cz) <= a.circle.r));
+  const inLevel = (a) => { const r = areaBounds(a); return r.x1 >= b.x0 && r.x0 <= b.x1 && r.z1 >= b.z0 && r.z0 <= b.z1; };
+  // 0.4 regions first (under the 0.3 areas, which keep their tints on top).
+  const areas = AREAS.filter((a) => inLevel(a) && a.id !== 'shortcut').sort((p, q) => (q.poly ? 1 : 0) - (p.poly ? 1 : 0));
+  const walkable = (x, z) => AREAS.some((a) => sdArea(x, z, a) <= 0);
 
   if (palette === 'cloth') {
     weave(ctx, w, h, rnd, '#cfbf98', 0.07);
@@ -82,6 +89,7 @@ export function buildLevelArt(level, mapData, palette = 'cloth', s = 8) {
     const key = a.id.startsWith('c') && a.id.length <= 3 ? 'path' : a.id;
     ctx.fillStyle = tint[key] ?? tint.path;
     if (a.rect) { const [x0, y0] = P(a.rect.x0, a.rect.z0); const [x1, y1] = P(a.rect.x1, a.rect.z1); ctx.fillRect(x0, y0, x1 - x0, y1 - y0); }
+    else if (a.poly) { ctx.beginPath(); a.poly.forEach(([x, z], i) => { const [px, py] = P(x, z); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.closePath(); ctx.fill(); }
     else { const [cx, cy] = P(a.circle.cx, a.circle.cz); ctx.beginPath(); ctx.arc(cx, cy, a.circle.r * s, 0, Math.PI * 2); ctx.fill(); }
   }
   ctx.strokeStyle = ink; ctx.globalAlpha = palette === 'cloth' ? 0.55 : 0.35; ctx.lineWidth = palette === 'cloth' ? 1.6 : 1.2;
@@ -90,7 +98,7 @@ export function buildLevelArt(level, mapData, palette = 'cloth', s = 8) {
       if (a.rect) {
         const [x0, y0] = P(a.rect.x0, a.rect.z0); const [x1, y1] = P(a.rect.x1, a.rect.z1);
         sketch(ctx, [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], rnd, palette === 'cloth' ? 3 : 1, true);
-      } else { const [cx, cy] = P(a.circle.cx, a.circle.cz); sketch(ctx, circlePts(cx, cy, a.circle.r * s), rnd, palette === 'cloth' ? 3 : 1, true); }
+      } else if (a.poly) { sketch(ctx, a.poly.map(([x, z]) => P(x, z)), rnd, palette === 'cloth' ? 3 : 1, true); } else { const [cx, cy] = P(a.circle.cx, a.circle.cz); sketch(ctx, circlePts(cx, cy, a.circle.r * s), rnd, palette === 'cloth' ? 3 : 1, true); }
     }
   }
   ctx.globalAlpha = 1;
@@ -116,6 +124,18 @@ export function buildLevelArt(level, mapData, palette = 'cloth', s = 8) {
     for (let i = 0; i < 160; i++) { const a = rnd() * Math.PI * 2, r = 18.5 + rnd() * 5; tuft(Math.cos(a) * r, -136 + Math.sin(a) * r, 0.9); }
     for (let i = 0; i < 140; i++) { const x = -30 + rnd() * 60, z = -46 + rnd() * 40; if (Math.abs(x) > 24 || z < -42 || z > -9) tuft(x, z, 0.8); }
   }
+  // 0.4: wading creeks (blue-grey band), deep water and reed walls (dense tuft lines).
+  for (const c of CHANNELS_04) {
+    ctx.strokeStyle = palette === 'cloth' ? 'rgba(60,92,96,0.45)' : 'rgba(80,130,132,0.8)'; ctx.lineWidth = c.hw * 2 * s; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); c.points.forEach(([x, z], i) => { const [px, py] = P(x, z); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.stroke();
+  }
+  for (const bl of BLOCKERS_04) {
+    const water = bl.kind === 'deep_water';
+    ctx.strokeStyle = water ? (palette === 'cloth' ? 'rgba(40,64,70,0.7)' : 'rgba(50,90,100,0.95)') : (palette === 'cloth' ? 'rgba(60,56,30,0.6)' : 'rgba(200,190,130,0.6)');
+    ctx.lineWidth = bl.hw * 2 * s; ctx.beginPath(); bl.points.forEach(([x, z], i) => { const [px, py] = P(x, z); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.stroke();
+    if (!water) for (let i = 0; i + 1 < bl.points.length; i++) { const [ax, az] = bl.points[i], [bx, bz] = bl.points[i + 1]; for (let t = 0; t <= 1; t += 0.08) tuft(ax + (bx - ax) * t, az + (bz - az) * t, 1.1); }
+  }
+  ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
   // Mud pools of the mire: dark wash + spiral strokes.
   for (const m of MUD_POOLS_BASE) {
     const [cx, cy] = P(m.cx, m.cz);

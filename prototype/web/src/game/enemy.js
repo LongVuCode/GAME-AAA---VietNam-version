@@ -68,7 +68,7 @@ export class Enemy {
         staggerS: d.stagger_duration_s ?? tun.enemy_the_defaults.stagger_duration_s,
         afterStaggerRatio: tun.enemy_the_defaults.post_stagger_the_ratio });
     }
-    this.mesh.root.visible = true; this.mesh.root.position.set(this.x, 0, this.z); this.mesh.root.scale.setScalar(1);
+    this.mesh.root.visible = true; this.mesh.root.position.set(this.x, this.game.walk?.groundAt?.(this.x, this.z) ?? 0, this.z); this.mesh.root.scale.setScalar(1);
     this.mesh.rig.position.set(0, 0, 0); this.mesh.rig.rotation.set(0, 0, 0);
     if (this.projectileMesh) this.projectileMesh.visible = false;
     this._hideDecals();
@@ -745,7 +745,7 @@ export class Enemy {
 
   _sync(dt) {
     const root = this.mesh.root;
-    root.position.set(this.x, 0, this.z); root.rotation.y = this.yaw;
+    root.position.set(this.x, this.game.walk?.groundAt?.(this.x, this.z) ?? 0, this.z); root.rotation.y = this.yaw;
     const c = this.ctx;
     c.state = this.state; c.stateT = this.stateT; c.speed = this.speed;
     if (this.attack && this.state === 'attack') { const a = this.atkCtx; a.id = this.attack.id; a.t = this.atkT; a.tl = this.tl; c.attack = a; } else c.attack = null;

@@ -14,7 +14,7 @@ import { INPUT_GRACE_S } from '../logic/shackle.js';
 import { Inventory, craft, missingFor, baoKhiEffect } from '../logic/crafting.js';
 import { newGeneration, handoff, handoffWarnings, skillPointsFor, eraTags, forbiddenHits } from '../logic/lineage.js';
 import { PROTO } from '../logic/proto.js';
-import { buildWorld, Walkable, POINTS, SPAWNS, zoneAt, mulberry32, encounterSpawns } from './world.js';
+import { buildWorld, Walkable, POINTS, SPAWNS, zoneAt, mulberry32, encounterSpawns, CORRIDOR_IDS } from './world.js';
 import { Enemy, normAngle } from './enemy.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
@@ -223,6 +223,7 @@ export class Game {
     // Cold open (cinematics.json cin_cold_open, 90 s, hold to skip); the main quest starts on its end and the
     // key tips come after it (STORY_INTEGRATION_0_4 §3: no key toasts over the opening).
     this.story.play('cin_cold_open', { onEnd: () => this._afterColdOpen() });
+    if (this.opts.skipIntro) this.story.skip();
   }
   _afterColdOpen() {
     this.mode = 'playing'; this.ui.showHud(true); this.input.clearAll(); this.input.requestLock();
@@ -267,7 +268,7 @@ export class Game {
     this.practiceEnemies = [];
     this._rebuildAll();
     this.walk.resetMud(); this.props.addedMud.visible = false;
-    this.villager.root.position.set(10, 0, -81); this.props.mist.visible = true; this.props.mist.material.opacity = 0.35;
+    this.villager.root.position.set(10, this.walk?.groundAt?.(10, -81) ?? 0, -81); this.props.mist.visible = true; this.props.mist.material.opacity = 0.35;
     for (const g of Object.values(this.props.rattan)) g.visible = true;
     this.props.kilnPieces.forEach((m) => { m.visible = true; });
     this.props.hollow.visible = true; this.props.hubHouse2.visible = false; this.elder.root.visible = false;
@@ -374,7 +375,8 @@ export class Game {
     const bias = lt ? (lt.isBoss ? 0.35 : 0.18) : 0;
     c.lookBias += (bias - c.lookBias) * Math.min(1, dt * 4);
     // Follow lag on the focus point (feel.camera_follow_lag_s).
-    const tx = p.x + (lt ? (lt.x - p.x) * c.lookBias : 0), tz = p.z + (lt ? (lt.z - p.z) * c.lookBias : 0), ty = 1.6 + (lt?.isBoss ? 0.3 : 0);
+    // Focus height follows the ground under the player (world_0_4 heightmap, Player.groundY smoothing).
+    const tx = p.x + (lt ? (lt.x - p.x) * c.lookBias : 0), tz = p.z + (lt ? (lt.z - p.z) * c.lookBias : 0), ty = 1.6 + (lt?.isBoss ? 0.3 : 0) + (p._gy ?? 0);
     if (!c.init || Math.hypot(tx - c.fx, tz - c.fz) > 8) { c.fx = tx; c.fy = ty; c.fz = tz; c.init = true; }
     const k = 1 - Math.exp(-dt / Math.max(0.01, feel.camera_follow_lag_s ?? 0.08));
     c.fx += (tx - c.fx) * k; c.fy += (ty - c.fy) * k; c.fz += (tz - c.fz) * k;
@@ -387,6 +389,9 @@ export class Game {
     }
     const yaw = c.yaw + c.orbit;
     this.camera.position.set(c.fx + Math.sin(yaw) * Math.cos(c.pitch) * c.dist + c.punchX, c.fy + Math.sin(c.pitch) * c.dist + c.punchY, c.fz + Math.cos(yaw) * Math.cos(c.pitch) * c.dist + c.punchZ);
+    // Never inside the ground: keep the eye 0.45 m above the terrain under it (hills, banks, knolls).
+    const cp = this.camera.position, gMin = this.walk.groundAt(cp.x, cp.z) + 0.45;
+    if (cp.y < gMin) cp.y = gMin;
     this.camera.lookAt(c.fx, c.fy, c.fz);
     this.fx.applyCamera(); // shake offset (obeys acc_camera_shake)
   }
@@ -778,7 +783,7 @@ export class Game {
   // ------------------------------------------------------------------ zones, interactions
   updateZone() {
     const z = zoneAt(this.player.x, this.player.z);
-    if (z && !['c01', 'c12', 'c24', 'c3', 'shortcut'].includes(z)) {
+    if (z && !CORRIDOR_IDS.has(z)) {
       if (z !== this.zone && this.era === 'era_lac_long_quan') this.story.record('enter_zone', z);
       this.zone = z;
     }
@@ -796,8 +801,8 @@ export class Game {
   zoneName() {
     if (this.zone === 'hub') return this.loc(this.data.codex.entries.find((e) => e.id === 'cx_ben_lau').title);
     if (this.zone === 'hub_bank') return this.i18n.t('zone_bai_song');
-    const l = this.data.secrets.locations.find((x) => x.id === this.zone);
-    return l ? this.loc(l.name) : '';
+    const l = this.data.secrets.locations.find((x) => x.id === this.zone) ?? this.data.map.zones?.find((x) => x.id === this.zone);
+    return l?.name ? this.loc(l.name) : '';
   }
   secretVisible() { return this.era === this.secret.chain.era_restriction; }
 
@@ -983,7 +988,7 @@ export class Game {
       const cv = this.data.dialogue.conversations.find((c) => c.id === 'cv_nghe_rescue');
       if (this.mode === 'playing' && cv) this.story.startConversation(cv, 'npc_nghe');
     });
-    this.after(2.5, () => { this.villager.root.position.set(-7, 0, 19); this.villager.root.rotation.y = Math.PI; this.villager.homeYaw = Math.PI; });
+    this.after(2.5, () => { if (this.mode === 'playing') this.story.placeNpcs(); }); // Nghệ walks home (-7, 19), ground height from the heightmap
   }
 
   travel(pos) {

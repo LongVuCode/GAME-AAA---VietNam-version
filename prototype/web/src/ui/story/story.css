@@ -52,9 +52,10 @@
 
 /* quest tracker in the HUD top-right track */
 .h-qtitle { font-size: calc(12px * var(--hud-fs)); letter-spacing: 1.5px; color: #ffd37a; text-transform: uppercase; }
-.h-quest { display: grid; gap: 2px; justify-items: end; max-width: min(340px, 38vw); }
+.h-quest { display: grid; gap: 2px; justify-items: end; max-width: min(340px, 38vw); text-shadow: 0 1px 2px #000, 0 0 8px rgba(0,0,0,0.85); }
+.h-qtitle { text-shadow: 0 1px 2px #000, 0 0 8px rgba(0,0,0,0.85); }
 .h-quest .qt { font-size: calc(12px * var(--hud-fs)); color: #e0d6bd; }
-.h-quest .qw { font-size: calc(12px * var(--hud-fs)); color: rgba(224,214,189,0.8); font-style: italic; }
+.h-quest .qw { font-size: calc(12px * var(--hud-fs)); color: #efe4c8; font-style: italic; text-align: right; }
 .h-quest .qs { display: grid; gap: 2px; margin-top: 4px; justify-items: end; }
 .h-quest .side { font-size: calc(12px * var(--hud-fs)); color: #d6ccb3; display: grid; justify-items: end; }
 .h-quest .side b { font-weight: 600; color: #cdb98a; font-size: 0.92em; }

@@ -855,9 +855,19 @@ export class Player {
   }
 
   // ---------------------------------------------------------------- animation
+  /** Visual ground height under the player (world_0_4 heightmap): follows rises at once, falls off a
+   *  ledge with gravity (no snap), resets on teleports. this.y stays the jump height above it. */
+  groundY(dt = 0) {
+    const target = this.game.walk.groundAt?.(this.x, this.z) ?? 0;
+    const moved = this._gyAt ? Math.hypot(this.x - this._gyAt.x, this.z - this._gyAt.z) : Infinity;
+    if (this._gy === undefined || moved > 4 || target >= this._gy - 0.05) { this._gy = target; this._gvy = 0; }
+    else { this._gvy = (this._gvy ?? 0) + 22 * dt; this._gy = Math.max(target, this._gy - this._gvy * dt); }
+    this._gyAt = { x: this.x, z: this.z };
+    return this._gy;
+  }
   _anim(dt) {
     const rig = this.rig, c = this.animCtx, l = this.loco;
-    rig.root.position.set(this.x, this.y, this.z); rig.root.rotation.y = this.yaw;
+    rig.root.position.set(this.x, this.groundY(dt) + this.y, this.z); rig.root.rotation.y = this.yaw;
     // The blob shadow stays on the ground and shrinks with height (jump readability).
     const sh = this._blob ?? (this._blob = rig.root.children.find((o) => o.userData.blobShadow));
     if (sh) { sh.position.y = 0.03 - this.y; sh.scale.setScalar(Math.max(0.45, 1 - this.y * 0.35)); }

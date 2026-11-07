@@ -85,6 +85,19 @@ export const STAGING = {
   hk_s05: { actors: {}, effects: ['black'] },
 };
 
+/** The village drum stands at (HUB_X, -11) (world.js, radius 0.9, x1.25 in Bương's era): the hub blocking
+ *  above was laid out on the drum itself, so the drum-side shots are moved south by DRUM_CLEAR_Z (people
+ *  stand in front of the drum, the drum stays in the background of the close-ups). */
+export const DRUM = { x: H, z: -11, r: 0.9 * 1.25 };
+export const DRUM_CLEAR_Z = 3.2;
+const DRUM_SHOTS = ['ho_s01', 'ho_s02', 'ho_s03', 'ho_s08', 'ho_s09', 'ho_s10', 'ho_s11', 'ho_s12'];
+for (const id of DRUM_SHOTS) {
+  const st = STAGING[id];
+  const xz = (v) => { if (v) v[1] += DRUM_CLEAR_Z; };
+  for (const group of [st.actors ?? {}, st.props ?? {}]) for (const spec of Object.values(group)) { xz(spec.at); xz(spec.from); xz(spec.to); xz(spec.face); }
+  if (st.cam) { st.cam.from[2] += DRUM_CLEAR_Z; st.cam.look[2] += DRUM_CLEAR_Z; }
+}
+
 /** Display entry of a creature (creatures_0_4.json) for an enemy id in an era: the era's variant first. */
 export function creatureFor(data, enemyId, era) {
   const list = data.creatures?.creatures ?? [];

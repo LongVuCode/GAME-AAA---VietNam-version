@@ -2,6 +2,7 @@
 // [SÁNG TẠO]; no lake, temple, shrine or real site is modelled. Sizes follow the design's assumed
 // dimensions (Z0 30x25 m, Z1 60x40, Z2 50x50, Z3 20x20, boss mire r≈18 with 3 mud pools).
 import * as THREE from 'three';
+import { AREAS_04, BLOCKERS_04, CHANNELS_04, POINTS_04, terrainModel, treeSpots, sdArea, distPolyline } from './world04.js';
 
 export const HUB_X = 300;
 
@@ -23,7 +24,24 @@ export const AREAS = [
   // Hub (separate "level", many days downriver): placed far away in the same scene.
   { id: 'hub', rect: { x0: HUB_X - 15, x1: HUB_X + 15, z0: -15, z1: 15 }, color: 0x86795a },
   { id: 'hub_bank', rect: { x0: HUB_X - 15, x1: HUB_X + 15, z0: 14, z1: 35 }, color: 0x8a8462 },
+  // Demo 0.4 big map (design/data/world_0_4.json, src/game/world04.js): new regions around the 0.3 areas
+  // (rects or polygons {poly: [[x, z], ...]}), listed after them so 0.3 ids win zoneAt() on overlaps.
+  ...AREAS_04,
 ];
+/** Max uphill slope the characters walk (world_0_4.heightmap.max_walkable_slope_deg): steeper edges are one-way drops. */
+export const MAX_SLOPE_DEG = 35;
+const MAX_RISE = Math.tan(MAX_SLOPE_DEG * Math.PI / 180);
+const LEGACY_CONST = () => ({ AREAS, SHALLOW_SHEETS, MUD_POOLS_BASE, POINTS, VAULTS, HUB_X, SPAWNS });
+/** Ground height (m) under (x, z): the world_0_4 heightmap, same samples as the rendered terrain. */
+const DOCKS = AREAS.filter((a) => a.dock).map((a) => a.rect);
+export function groundAt(x, z) {
+  // Jetty deck (z_ben_say dock rect): the planks at y 0.02, not the water bed under them.
+  // (0.5 m apron: the terrain right beside the jetty is the water bed it stands in.)
+  for (const r of DOCKS) if (x >= r.x0 - 0.5 && x <= r.x1 + 0.5 && z >= r.z0 - 0.5 && z <= r.z1 + 0.5) return 0.02;
+  const M = terrainModel(LEGACY_CONST());
+  for (const G of M.grids) if (G.contains(x, z)) return G.heightAt(x, z);
+  return M.field.height(x, z);
+}
 
 /** Shallow water sheets inside the marsh [cx, cz, w, d] (visual hint of the speed multiplier; also drawn on the map). */
 export const SHALLOW_SHEETS = [[-14, -18, 14, 10], [10, -36, 16, 9], [18, -14, 8, 7]];
@@ -68,6 +86,13 @@ function segDist(px, pz, v) {
 }
 
 export const GATE = { x0: 30.5, x1: 37.5, z0: -53.2, z1: -51.6 };
+/** Mire gates of world_0_4.progression.boss_gates (gate_nam on c24, gate_bac on c_bac). Walkable.bossGates
+ *  = { gate_nam: bool, gate_bac: bool } closes them when set (null = open, 0.3 behaviour; the story layer
+ *  owns the "tracks found" rule). */
+export const BOSS_GATES = [
+  { id: 'gate_nam', x: 0, z: -119.5, hx: 3.2, hz: 0.6 },
+  { id: 'gate_bac', x: 0, z: -158, hx: 4.2, hz: 0.6 },
+];
 
 export const SPAWNS = {
   player_start: { x: 0, z: 18 },
@@ -137,17 +162,51 @@ export const POINTS = [
   { id: 'trap_dot_2', kind: 'quest_interact', x: -12, z: -84, r: 2 },
   { id: 'trap_dot_3', kind: 'quest_interact', x: -24, z: -118, r: 2 },
 ];
+// Demo 0.4 points (world_0_4.json, legacy=false): fires, lookouts, chests, secrets, tracks, gates, traversals.
+POINTS.push(...POINTS_04);
 
 export function zoneAt(x, z) {
   for (const a of AREAS) {
     if (a.rect && x >= a.rect.x0 && x <= a.rect.x1 && z >= a.rect.z0 && z <= a.rect.z1) return a.id;
     if (a.circle && Math.hypot(x - a.circle.cx, z - a.circle.cz) <= a.circle.r) return a.id;
+    if (a.poly && sdArea(x, z, a) <= 0) return a.id;
   }
   return null;
 }
+/** Corridor ids (no zone banner): 0.3 corridors and the 0.4 corridor regions. */
+export const CORRIDOR_IDS = new Set(['c01', 'c12', 'c24', 'c3', 'shortcut', ...AREAS_04.filter((a) => a.corridor).map((a) => a.id)]);
+const AREA_BOUNDS = AREAS.map((a) => (a.poly ? polyBounds(a.poly) : null));
+function polyBounds(p) { const xs = p.map((q) => q[0]), zs = p.map((q) => q[1]); return { x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs) }; }
+/** Signed distance to area i (negative inside); polygons are skipped cheaply outside their bounds. */
+function areaSd(i, x, z) {
+  const b = AREA_BOUNDS[i];
+  if (b && (x < b.x0 - 1 || x > b.x1 + 1 || z < b.z0 - 1 || z > b.z1 + 1)) return 1;
+  return sdArea(x, z, AREAS[i]);
+}
+function blocked04(x, z, pad) {
+  for (const b of BLOCKERS_04) if (distPolyline(x, z, b.points) < b.hw + pad) return true;
+  const cell = solidCells().get(cellKey(Math.floor(x / 8), Math.floor(z / 8)));
+  if (cell) for (const t of cell) if (Math.hypot(t.x - x, t.z - z) < t.r + pad) return true; // tree trunks
+  return false;
+}
+let SOLIDS = null;
+const cellKey = (i, j) => (i + 4096) * 8192 + (j + 4096);
+/** Trunks of the trees standing on walkable ground (world04.treeSpots), hashed in 8 m cells (with neighbours). */
+function solidCells() {
+  if (SOLIDS) return SOLIDS;
+  SOLIDS = new Map();
+  for (const t of treeSpots(LEGACY_CONST())) {
+    if (!t.solid) continue;
+    for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) {
+      const k = cellKey(Math.floor(t.x / 8) + dx, Math.floor(t.z / 8) + dz);
+      (SOLIDS.get(k) ?? SOLIDS.set(k, []).get(k)).push(t);
+    }
+  }
+  return SOLIDS;
+}
 
 export class Walkable {
-  constructor() { this.gateOpen = false; this.mudPools = MUD_POOLS_BASE.map((m) => ({ ...m })); }
+  constructor() { this.gateOpen = false; this.bossGates = null; this.mudPools = MUD_POOLS_BASE.map((m) => ({ ...m })); }
   resetMud() { this.mudPools = MUD_POOLS_BASE.map((m) => ({ ...m })); }
   addMudPool(cx, cz, r) { this.mudPools.push({ cx, cz, r, added: true }); }
   /** A vault obstacle in front within `gap` m: returns the landing point beyond it, or null. */
@@ -168,30 +227,46 @@ export class Walkable {
   inside(x, z, margin = 0.3) {
     if (!this.gateOpen && x >= GATE.x0 && x <= GATE.x1 && z >= GATE.z0 && z <= GATE.z1) return false;
     if (margin > 0) for (const v of VAULTS) if (segDist(x, z, v) < v.hw + margin * 0.5) return false;
-    for (const a of AREAS) {
+    if (blocked04(x, z, margin * 0.5)) return false;
+    if (this.bossGates) for (const g of BOSS_GATES) if (!this.bossGates[g.id] && Math.abs(x - g.x) <= g.hx && Math.abs(z - g.z) <= g.hz) return false;
+    let n = 0;
+    for (let i = 0; i < AREAS.length; i++) {
+      const a = AREAS[i];
       if (a.rect) {
         if (x >= a.rect.x0 + margin && x <= a.rect.x1 - margin && z >= a.rect.z0 + margin && z <= a.rect.z1 - margin) return true;
-      } else if (Math.hypot(x - a.circle.cx, z - a.circle.cz) <= a.circle.r - margin) return true;
+        if (x >= a.rect.x0 && x <= a.rect.x1 && z >= a.rect.z0 && z <= a.rect.z1) n++;
+      } else {
+        const d = a.circle ? Math.hypot(x - a.circle.cx, z - a.circle.cz) - a.circle.r : areaSd(i, x, z);
+        if (d <= -margin) return true;
+        if (d <= 0) n++;
+      }
     }
     // Overlap seams between areas: accept if inside with zero margin of two areas.
-    let n = 0;
-    for (const a of AREAS) {
-      if (a.rect ? (x >= a.rect.x0 && x <= a.rect.x1 && z >= a.rect.z0 && z <= a.rect.z1)
-        : Math.hypot(x - a.circle.cx, z - a.circle.cz) <= a.circle.r) n++;
-    }
     return n >= 2;
+  }
+  /** Ground height under (x, z) (world_0_4 heightmap; 0.3 areas stay within a few cm of y = 0). */
+  groundAt(x, z) { return groundAt(x, z); }
+  /** A step uphill steeper than MAX_SLOPE_DEG is refused (cliff edges are one-way: you can drop, not climb). */
+  slopeOk(x, z, nx, nz) {
+    const run = Math.hypot(nx - x, nz - z);
+    if (run < 1e-6) return true;
+    const rise = groundAt(nx, nz) - groundAt(x, z);
+    return rise <= MAX_RISE * run + 0.015;
   }
   /** Moves from (x,z) by (dx,dz) with axis sliding. Returns new {x,z}. */
   move(x, z, dx, dz, margin = 0.3) {
-    if (this.inside(x + dx, z + dz, margin)) return { x: x + dx, z: z + dz };
-    if (this.inside(x + dx, z, margin)) return { x: x + dx, z };
-    if (this.inside(x, z + dz, margin)) return { x, z: z + dz };
+    const ok = (nx, nz) => this.inside(nx, nz, margin) && this.slopeOk(x, z, nx, nz);
+    if (ok(x + dx, z + dz)) return { x: x + dx, z: z + dz };
+    if (ok(x + dx, z)) return { x: x + dx, z };
+    if (ok(x, z + dz)) return { x, z: z + dz };
     return { x, z };
   }
   speedMult(x, z) {
     for (const m of this.mudPools) if (Math.hypot(x - m.cx, z - m.cz) <= m.r) return 'mud';
     const a = AREAS.find((ar) => ar.shallow && ar.rect && x >= ar.rect.x0 && x <= ar.rect.x1 && z >= ar.rect.z0 && z <= ar.rect.z1);
-    return a ? 'shallow' : null;
+    if (a) return 'shallow';
+    for (const c of CHANNELS_04) if (distPolyline(x, z, c.points) <= c.hw) return 'shallow'; // wading creek (world_0_4.water)
+    return null;
   }
 }
 
@@ -225,6 +300,7 @@ export function buildWorld() {
 
   for (const a of AREAS) {
     let g;
+    if (a.poly) continue; // 0.4 regions: drawn by the terrain mesh only (src/env, built at once, no asset needed)
     if (a.rect) {
       g = new THREE.PlaneGeometry(a.rect.x1 - a.rect.x0, a.rect.z1 - a.rect.z0);
       const m = new THREE.Mesh(g, lam(a.color));
@@ -394,6 +470,10 @@ export function buildWorld() {
   // Illusory mist around the entranced villager.
   props.mist = new THREE.Mesh(new THREE.SphereGeometry(2.4, 18, 12), new THREE.MeshBasicMaterial({ color: 0xd8e4ec, transparent: true, opacity: 0.35, depthWrite: false }));
   props.mist.position.set(10, 1.2, -81); scene.add(props.mist);
+  // Stand point props on the terrain (0.4 heightmap; the 0.3 areas stay within a few cm of y = 0).
+  const ground = (g) => { if (g) g.position.y = groundAt(g.position.x, g.position.z); };
+  for (const f of Object.values(props.fires)) ground(f.parent);
+  for (const g of [...Object.values(props.rattan), ...Object.values(props.points03)]) ground(g);
 
   return { scene, props, sun, hemi, layers };
 }

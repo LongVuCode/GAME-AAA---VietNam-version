@@ -10,37 +10,40 @@
 //   env.onHdri = (texture, meanLum) => ...   hook for the sky / IBL (atmosphere)
 import * as THREE from 'three';
 import { HUB_X, AREAS, SHALLOW_SHEETS, MUD_POOLS_BASE, POINTS, VAULTS, SPAWNS } from '../game/world.js';
-import { legacyLayout, world04Layout } from './layout.js';
+import { legacyLayout } from './layout.js';
+import { terrainModel, treeSpots, canopySpots } from '../game/world04.js';
 import { createField } from './field.js';
 import { buildPatchGrid, buildTerrainMeshes, terrainMaterial, setTerrainTextures, heightTexture } from './terrain.js';
 import { waterMaterial, waterPlane } from './water.js';
 import { buildFoliage } from './foliage.js';
 import { scatter } from './scatter.js';
-import { PropLibrary, dressLegacy, hideGrayLayers } from './props.js';
+import { PropLibrary, dressLegacy, dressWorld04, instancedTrees, canopyBlobs, hideGrayLayers } from './props.js';
 import { Mist } from './mist.js';
 import { ASSETS, loadArrayTexture, loadTexture, loadGLB, loadHDR } from './assets.js';
 
-/* global __WORLD_04__ */
-const WORLD_04 = typeof __WORLD_04__ !== 'undefined' ? __WORLD_04__ : null;
 const LEGACY = { AREAS, SHALLOW_SHEETS, MUD_POOLS_BASE, POINTS, VAULTS, HUB_X, SPAWNS };
 
+/** Water level of the shallow sheets and mud pools (their hollows are carved below it in env/field.js). */
+const SHEET_Y = -0.03;
 export const ENV_QUALITY = {
-  high: { mist: 36, terrainLod: 110, terrainFar: 320, anisotropy: 8 },
-  low: { mist: 6, terrainLod: 45, terrainFar: 170, anisotropy: 1 },
+  high: { mist: 36, terrainLod: 110, terrainFar: 320, anisotropy: 8, treeDist: 190, canopyDist: 330 },
+  low: { mist: 6, terrainLod: 45, terrainFar: 170, anisotropy: 1, treeDist: 105, canopyDist: 200 },
 };
 
-/** Which layout to build: ?world=04 uses design/data/world_0_4.json when it was bundled. */
+/** Which layout to build: the Demo 0.4 world (design/data/world_0_4.json, the one the game walks on);
+ *  ?world=03 renders the old 0.3 layout for look-dev comparisons only (gameplay stays on 0.4). */
 export function pickSource(search = typeof location !== 'undefined' ? location.search : '') {
-  const want = new URLSearchParams(search).get('world');
-  return want === '04' && WORLD_04 ? 'world_0_4' : 'world_0_3';
+  return new URLSearchParams(search).get('world') === '03' ? 'world_0_3' : 'world_0_4';
 }
 
 export class Environment {
   constructor(world, renderer, { source = pickSource(), load = true } = {}) {
     this.world = world; this.renderer = renderer; this.scene = world.scene; this.quality = 'high';
     this.source = source;
-    this.layout = source === 'world_0_4' ? world04Layout(WORLD_04, LEGACY) : legacyLayout(LEGACY);
-    this.field = createField(this.layout);
+    // 0.4: the same layout + height field as the game's ground (world.js groundAt), so feet, camera and terrain agree.
+    const model = source === 'world_0_4' ? terrainModel(LEGACY) : null;
+    this.layout = model ? model.layout : legacyLayout(LEGACY);
+    this.field = model ? model.field : createField(this.layout);
     this.timing = {};
     const t0 = performance.now();
     this.grids = this.layout.patches.map((p) => buildPatchGrid(this.field, p));
@@ -75,13 +78,13 @@ export class Environment {
       const main = waterMaterial(ht, G, L.waterY, { deep: 0x4f5138, shallow: 0x6a694d, reflect: 0.8 });
       this.water.push(waterPlane(P.x0, P.x1, P.z0, P.z1, L.waterY, main)); this.waterMats.push(main);
       if (i !== 0) return;
-      const sheet = waterMaterial(ht, G, 0.035, { deep: 0x5e5d43, shallow: 0x6a694d, reflect: 0.65, clarity: 4.5, opacityMax: 0.9 });
+      const sheet = waterMaterial(ht, G, SHEET_Y, { deep: 0x5e5d43, shallow: 0x6a694d, reflect: 0.65, clarity: 4.5, opacityMax: 0.9 });
       this.waterMats.push(sheet);
-      for (const s of L.shallow) this.water.push(waterPlane(s.x0 - 1.6, s.x1 + 1.6, s.z0 - 1.6, s.z1 + 1.6, 0.035, sheet));
+      for (const s of L.shallow) this.water.push(waterPlane(s.x0 - 2.6, s.x1 + 2.6, s.z0 - 2.6, s.z1 + 2.6, SHEET_Y, sheet));
       for (const v of L.ditches) this.water.push(waterPlane(Math.min(v.ax, v.bx) - 1, Math.max(v.ax, v.bx) + 1, Math.min(v.az, v.bz) - v.hw - 1, Math.max(v.az, v.bz) + v.hw + 1, -0.04, sheet));
-      const mire = waterMaterial(ht, G, 0.012, { deep: 0x2a241c, shallow: 0x3a3024, reflect: 0.45, ripple: 0.25, clarity: 14, opacityMax: 0.98 });
+      const mire = waterMaterial(ht, G, SHEET_Y, { deep: 0x2a241c, shallow: 0x3a3024, reflect: 0.45, ripple: 0.25, clarity: 14, opacityMax: 0.98 });
       this.waterMats.push(mire);
-      for (const p of L.mudPools) this.water.push(waterPlane(p.cx - p.r * 1.3, p.cx + p.r * 1.3, p.cz - p.r * 1.3, p.cz + p.r * 1.3, 0.012, mire));
+      for (const p of L.mudPools) this.water.push(waterPlane(p.cx - p.r * 1.3, p.cx + p.r * 1.3, p.cz - p.r * 1.3, p.cz + p.r * 1.3, SHEET_Y, mire));
     });
     for (const w of this.water) this.root.add(w);
   }
@@ -123,15 +126,21 @@ export class Environment {
     const lib = this.lib = new PropLibrary(propsGltf, natureGltf);
     const hAt = (x, z) => this.heightAt(x, z);
     this.propsPlaced = dressLegacy(lib, this.world, this.root, hAt, this.layout);
+    if (this.source === 'world_0_4') {
+      this.propsPlaced.push(...dressWorld04(lib, this.root, hAt, this.layout, this.field));
+      this.trees = instancedTrees(lib, this.root, 'cay_sung', treeSpots(LEGACY));
+      this.trees.push(...canopyBlobs(this.root, canopySpots(LEGACY), lib.mats.shrub_03));
+    }
     const I = this.items;
     this.scatterMeshes = [
-      ...lib.instanced(this.root, ['fern_02_a', 'fern_02_b', 'fern_02_c', 'fern_02_d'], I.ferns),
+      // fern_02 is not drawn: its decimated fronds lie flat and read as striped mats (look-dev 0.4).
       ...lib.instanced(this.root, ['shrub_03_a', 'shrub_03_b', 'shrub_03_c', 'shrub_03_d'], I.shrubs),
       ...lib.instanced(this.root, ['weed_plant_02_a_LOD0', 'weed_plant_02_b_LOD0', 'weed_plant_02_c_LOD0', 'weed_plant_02_d_LOD0', 'weed_plant_02_e_LOD0'], I.weeds),
       ...lib.instanced(this.root, ['dry_branches_medium_01_a', 'dry_branches_medium_01_b', 'dry_branches_medium_01_c'], I.branches, { shadows: false }),
       ...lib.instanced(this.root, [1, 2, 3, 4, 5, 6].map((k) => `rock_moss_set_01_rock0${k}`), I.rocks, { sink: 0.3 }),
       ...lib.instanced(this.root, ['tree_stump_01'], I.stumps, { sink: 0.1 }),
     ];
+    this.scatterMeshes.push(...(this.trees ?? []));
   }
 
   heightAt(x, z) {
@@ -146,7 +155,9 @@ export class Environment {
     for (const f of this.foliage) f.setQuality(this.quality);
     this.mist.setCount(Q.mist);
     // Low: only the larger scatter (rocks, stumps, shrubs) stays; ground clutter (weeds, ferns, branches) is High only.
-    for (const m of this.scatterMeshes) m.visible = this.quality === 'high' || /rock|stump|shrub/.test(m.name);
+    for (const m of this.scatterMeshes) m.visible = this.quality === 'high' || /rock|stump|shrub|tree_/.test(m.name);
+    // Low: trees stay (they are landmarks / the forest), without leaf shadows.
+    for (const m of this.trees ?? []) m.castShadow = this.quality === 'high' || /_trunk$/.test(m.name);
   }
 
   /** dt real seconds; focus {x, z} (player); mood: atmosphere's current blended values. */
@@ -166,6 +177,15 @@ export class Environment {
       u.uTime.value += dt; if (mood) u.uWind.value = mood.wind;
       if (focus) u.uPlayer.value.set(focus.x, 0, focus.z);
       f.update(camera);
+    }
+    // Tree cells beyond the fog are skipped (64 m cells, bounding spheres from instancedTrees).
+    if (this.trees?.length && camera) {
+      const Q = ENV_QUALITY[this.quality], cp = camera.position;
+      for (const m of this.trees) {
+        const bs = m.boundingSphere; if (!bs) continue;
+        const d = Math.hypot(bs.center.x - cp.x, bs.center.z - cp.z) - bs.radius;
+        m.visible = d < (m.name === 'tree_canopy_far' ? Q.canopyDist : Q.treeDist);
+      }
     }
     if (mood) { this.mist.u.uAmount.value = mood.mist ?? 0.6; this.mist.u.uColor.value.copy(mood.horizon).lerp(mood.fog, 0.5); }
     if (fog) this.mist.u.fogColor.value.copy(fog.color);

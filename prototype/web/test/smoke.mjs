@@ -16,7 +16,8 @@ const { chromium } = require('playwright');
 const here = dirname(fileURLToPath(import.meta.url));
 const SHOTS = process.env.SHOTS_DIR ?? '/tmp/claude-0/-home-user/c58ad2cd-0dde-5c55-b1e4-0cacdf2a6473/scratchpad/proto-shots';
 mkdirSync(SHOTS, { recursive: true });
-const url = `${pathToFileURL(join(here, '..', 'dist', 'index.html')).href}?debug=1`;
+// SMOKE_QUERY adds URL parameters (e.g. env=0 skips the 0.4 environment assets on slow software GL).
+const url = `${pathToFileURL(join(here, '..', 'dist', 'index.html')).href}?debug=1${process.env.SMOKE_QUERY ? `&${process.env.SMOKE_QUERY}` : ''}`;
 
 const errors = [];
 const external = [];
@@ -40,6 +41,36 @@ async function waitFor(pred, timeoutMs, stepMs = 100) {
 }
 const press = (k) => page.keyboard.press(k);
 const click = async () => { await page.mouse.move(640, 360); await page.mouse.down(); await page.mouse.up(); };
+// Story 0.4 (src/story): read-out, story screenshots (outside the repo), talk through a conversation.
+const ST = () => D('story');
+const SHOTS04 = process.env.SHOTS04_DIR ?? join(SHOTS, '..', 'story04-shots');
+mkdirSync(SHOTS04, { recursive: true });
+const shot04 = async (name) => { await page.screenshot({ path: join(SHOTS04, name) }); log('shot', join(SHOTS04, name)); };
+const FORBIDDEN_HV6 = /khoen|mảnh|chốt|lưỡi bẫy|đồng cũ|mắc ở cổ|collar|shard|trap blade/i;
+/** Press E through the open conversation, choosing `pick` (1/2) at choices. Returns the lines and choices seen. */
+async function talkThrough(pick = 1, shotName = null) {
+  const lines = [], choices = [];
+  for (let k = 0; k < 60; k++) {
+    const d = (await ST()).dialogue;
+    if (!d) break;
+    if (d.node === 'choice') {
+      if (shotName) { await sleep(300); await shot04(shotName); shotName = null; }
+      choices.push(pick); await press(`Digit${pick}`); await sleep(300); continue;
+    }
+    if (lines[lines.length - 1] !== d.line) lines.push(d.line);
+    if (shotName && lines.length === 1) { await sleep(300); await shot04(shotName); shotName = null; }
+    await sleep(300); await press('e'); await sleep(150);
+  }
+  return { lines, choices, done: !(await ST()).dialogue };
+}
+/** Hold `key` while the cut-scene waits on its interactive shot (hold-to-act); returns the shot id held. */
+async function holdThrough(key = 'e') {
+  const c0 = (await ST()).cinematic;
+  await page.keyboard.down(key);
+  for (let k = 0; k < 150; k++) { const c = (await ST()).cinematic; if (!c || !c.waiting || c.shot !== c0?.shot) break; await sleep(60); }
+  await page.keyboard.up(key);
+  return c0?.shot ?? null;
+}
 
 try {
   await page.goto(url);
@@ -57,10 +88,29 @@ try {
   await page.click('[data-act=back]');
 
   await page.click('[data-act=start]');
-  let s = await waitFor((x) => x.mode === 'playing', 5000);
+  // ---- Story 0.4 cold open (cinematics.json cin_cold_open): letterbox, subtitles, HUD hidden, hold Space to skip.
+  let s = await waitFor((x) => x.mode === 'cinematic', 8000);
+  let sto = await ST();
+  const cinDom = await page.evaluate(() => ({ bars: !document.querySelector('.st-bars').classList.contains('hidden'), hudCin: window.__demo.game.ui.hudView.el.classList.contains('cinematic'), skip: document.querySelector('.st-skip .txt')?.textContent ?? '' }));
+  check('cold open plays on a new game (letterbox, HUD hidden, skip prompt)', !!s && sto.cinematic?.id === 'cin_cold_open' && cinDom.bars && cinDom.hudCin && cinDom.skip.length > 3, JSON.stringify({ cin: sto.cinematic, cinDom }));
+  await sleep(600); await shot04('story_01_cold_open_title.png');
+  await D('cinAdvance', 20); await sleep(900);
+  sto = await ST();
+  check('cold open: shots advance on real time, named subtitle shown', sto.cinematic?.shot === 'co_s03' && !!sto.subtitle?.speaker, JSON.stringify({ c: sto.cinematic, sub: sto.subtitle }));
+  await shot04('story_02_cold_open_hat.png');
+  await D('cinAdvance', 36); await sleep(900);
+  await shot04('story_03_cold_open_mo.png');
+  await page.keyboard.down('Space');
+  s = await waitFor((x) => x.mode === 'playing', 10000, 60);
+  await page.keyboard.up('Space');
+  sto = await ST();
+  check('cold open skipped by holding Space; main quest "Người chưa về" starts at step 1', !!s && sto.cinLog[0]?.skipped === true && sto.tracked?.step === 'qs_m1_vet_lon_loi', JSON.stringify({ log: sto.cinLog, tr: sto.tracked }));
   check('game starts (mode playing)', !!s);
   await sleep(1500);
+  const trackerText = await page.evaluate(() => document.querySelector('.h-qtitle')?.textContent + ' | ' + document.querySelector('.h-obj')?.textContent);
+  check('quest tracker (HUD top-right) shows the quest and step 1', /Người chưa về/i.test(trackerText) && /vệt lợn lòi/.test(trackerText), trackerText);
   await shot('03_play_start.png');
+  await shot04('story_04_quest_tracker.png');
 
   // ---- FX at High quality (default): lighting/shadows/bloom on, effects spawn from fixed pools.
   let fx = await D('fx');
@@ -287,12 +337,41 @@ try {
   await shot('05b_hints.png');
   await page.click('[data-screen=hints] [data-act=back]');
 
+  // ---- Story 0.4 NPCs: Năn at Bến Sậy and Đót by the broken trap (named box, choices set flag_choice_* only).
+  await waitFor((x) => x.mode === 'playing', 3000);
+  await D('teleport', 4, 21.6, Math.PI); await sleep(400);
+  const nanPrompt = await page.textContent('#prompt');
+  await press('e');
+  await waitFor((x) => !!x.dialogue, 4000);
+  const dlgName = await page.textContent('.st-dialog .nm');
+  const nanTalk = await talkThrough(2, 'story_05_dialogue_nan.png');
+  sto = await ST();
+  check('talk to Năn: named dialogue box, a choice, conversation ends', /Năn/.test(nanPrompt) && /Năn/.test(dlgName) && nanTalk.choices.length === 1 && nanTalk.done && sto.seen.includes('cv_nan_ben_say'), JSON.stringify({ nanPrompt, dlgName, nanTalk }));
+  s = await S();
+  check('choices only set flag_choice_* flags', s.flags.filter((f) => f.startsWith('flag_choice_')).length >= 1, s.flags.join(','));
+  await D('teleport', 2, -7.8, Math.PI); await sleep(400);
+  await press('e'); await sleep(700);
+  s = await S(); sto = await ST();
+  check('story trace (quests.new_points) shows its description and opens a Codex entry', s.codex.includes('cx_suong_bai_lau') && !!sto.subtitle?.text, JSON.stringify(sto.subtitle));
+  await shot04('story_06_trace_reeds.png');
+
   // ---- Secret chain: trap marks → bronze scrap → kiln lip (match) → hollow.
   for (const [x, z] of [[-17.5, -29.5], [6.5, -75.5], [-31, -114.6], [-31, -112.2]]) {
     await D('teleport', x, z, 0); await sleep(300); await press('e'); await sleep(400);
   }
   s = await S();
   check('secret chain finished (Sáp ong cũ + Codex extra)', s.secret.completed.includes('sn_end') && s.inventory.mat_sap_ong_cu === 1, JSON.stringify(s.secret.completed));
+  sto = await ST();
+  check('main quest step 1 done by the broken trap (trap_a) → step 2 "ask Đót"', sto.tracked?.step === 'qs_m2_hoi_dot', JSON.stringify(sto.tracked));
+  await D('teleport', -14, -25.6, Math.PI); await sleep(400);
+  await press('e');
+  await waitFor((x) => !!x.dialogue, 4000);
+  const dotTalk = await talkThrough(1, 'story_07_dialogue_dot.png');
+  sto = await ST();
+  check('talk to Đót (2nd NPC) → step 3 "call Nghệ"; side quest "Bẫy nhà chú Đót" starts', dotTalk.done && dotTalk.choices.length === 1 && sto.tracked?.step === 'qs_m3_goi_nghe' && sto.quests.sq_bay_nha_dot.status === 'active', JSON.stringify({ dotTalk, tr: sto.tracked }));
+  await D('teleport', 18, -16.8, Math.PI); await sleep(400); await press('e'); await sleep(400);
+  sto = await ST();
+  check("pull one of Đót's traps (quest_interact)", sto.facts.includes('interact:trap_dot_1'), '');
 
   // ---- Entranced villager: hold E "Gọi tên" (non-combat).
   await D('teleport', 10, -79, Math.PI);
@@ -301,6 +380,10 @@ try {
   s = await waitFor((x) => x.flags.includes('flag_nguoi_bi_me_saved'), 30000, 100);
   await page.keyboard.up('e');
   check('villager called back by holding E (no combat)', !!s);
+  await waitFor((x) => !!x.dialogue, 5000);
+  const ngheTalk = await talkThrough(2, 'story_08_dialogue_nghe.png');
+  sto = await ST();
+  check('Nghệ wakes and talks (cv_nghe_rescue) → step 4', ngheTalk.done && sto.tracked?.step === 'qs_m4_theo_dau', JSON.stringify({ ngheTalk, tr: sto.tracked }));
 
   // ---- Boss: bring it to the pry (posture breaks crack the khoen) and complete the 3-beat pry.
   await D('teleport', 0, -127, Math.PI);
@@ -387,6 +470,9 @@ try {
   s = await waitFor((x) => x.flags.includes('flag_boss_lon_loi_freed'), 8000);
   check('freed flag set, shed tusk received, no khoen item', !!s && s.inventory.mat_nanh_rung === 1 && !Object.keys(s.inventory).some((k) => /khoen/.test(k)), JSON.stringify(s?.inventory));
   check('house move learned + 2 craft points', !!s && s.skills.points >= 4, `points=${s?.skills.points}`);
+  sto = await ST();
+  check('main quest: arena reached and boss freed → step 6 "bring the blade to the furnace"', sto.tracked?.step === 'qs_m6_lo_duc' && sto.facts.includes('enter_zone:z_dau_truong'), JSON.stringify(sto.tracked));
+  check('Cói barks on the pry ("Một… Hai… Ba!") and the verse after it', ['bk_s_pry_1', 'bk_s_pry_2', 'bk_s_pry_3'].some((id) => sto.lineLog.some((l) => l.id === id)) && sto.lineLog.some((l) => l.id.startsWith('dlg_04_ve_after_pry#')), sto.lineLog.slice(-12).map((l) => l.id).join(','));
 
   // ---- Demo 0.3 UI (ui/inventory, ui/map): minimap top-left, Pack (B) with equipment / skills / map / codex tabs.
   const SHOTS03 = process.env.SHOTS03_DIR ?? join(SHOTS, '..', 'ui03-shots');
@@ -454,28 +540,69 @@ try {
   check('ferry to hub (Lau Landing)', !!s);
   await D('teleport', 292, -5.5);
   await sleep(300); await press('e');
-  await waitFor((x) => x.screen === 'craft', 3000);
+  // Bác Sung reads the trap blade first (cv_gianh_furnace), then the furnace opens.
+  await waitFor((x) => !!x.dialogue, 4000);
+  const sungTalk = await talkThrough(1, 'story_09_dialogue_sung.png');
+  check('Bác Sung at the village furnace (step 6 talk), then the furnace opens', sungTalk.done && (await ST()).facts.includes('talk:cv_gianh_furnace'), JSON.stringify(sungTalk));
+  await waitFor((x) => x.screen === 'craft', 4000);
   await page.click('[data-rcp=rcp_nanh_dam]');
   await sleep(300);
   await shot('13_craft.png');
   s = await S();
   check('crafted Nanh Đầm', !!s.owned.bk_nanh_dam, JSON.stringify(s.owned));
+  sto = await ST();
+  check('main quest done (6 steps) → handoff quest "khắc vạch" tracked', sto.quests.q_main_nguoi_chua_ve.status === 'done' && sto.tracked?.step === 'qs_h1_khac_vet', JSON.stringify(sto.tracked));
   await page.click('[data-screen=craft] [data-act=back]');
+  // Minimal HUD option (checked here, out of combat at the hub, before the handoff): the player cluster hides and comes back at low health.
+  await waitFor((x) => x.mode === 'playing', 3000);
+  await D('setAcc', 'acc_hud_minimal', true);
+  let hm = null;
+  for (let k = 0; k < 80 && (hm = await D('hud')).playerVisible; k++) await sleep(100);
+  const hiddenOk = !hm.playerVisible;
+  await page.evaluate(() => { const p = window.__demo.game.player; p.hp = p.hpMax * 0.4; });
+  for (let k = 0; k < 20 && !(hm = await D('hud')).playerVisible; k++) await sleep(60);
+  check('hud: minimal HUD hides out of combat, shows again at low health', hiddenOk && hm.playerVisible, JSON.stringify(hm));
+  await D('setAcc', 'acc_hud_minimal', false);
+  await page.evaluate(() => { const p = window.__demo.game.player; p.hp = p.hpMax; });
   await D('teleport', 300, -8.6);
   await sleep(300); await press('e');
   await waitFor((x) => x.screen === 'confirm', 3000);
   await shot('14_handoff_confirm.png');
   await page.click('[data-act=yes]');
-  s = await waitFor((x) => x.player.state === 'handover', 2000, 30);
+  // ---- Story 0.4 handoff cut-scene cin_handoff: hold E to carve the notch / tie the strip / fit the shaft.
+  s = await waitFor((x) => x.player.state === 'handover', 4000, 30);
   const handoverSeen = !!s;
   if (s) { await sleep(500); await shot('14b_handover.png'); }
-  await waitFor((x) => (x.screen ?? '').startsWith('handoff'), 6000, 50);
-  check('in-world handover beat (Cói offers the Mũi Sào) before the cards', handoverSeen);
-  const forbidden = /khoen|mảnh|chốt|collar|shard/i;
+  check('in-world handover beat (Cói offers the Mũi Sào) in the handoff cut-scene', handoverSeen && (await ST()).cinematic?.id === 'cin_handoff');
+  const forbidden = FORBIDDEN_HV6;
   let leak = [];
+  const holds = [];
+  let shotHold = false, shotBuong = false;
+  for (let guard = 0; guard < 120; guard++) {
+    const c = (await ST()).cinematic;
+    if (!c) break;
+    if (c.waiting) {
+      if (!shotHold) { await sleep(300); await shot04('story_10_handoff_hold_notch.png'); shotHold = true; }
+      const shotId = c.shot;
+      await holdThrough('e'); holds.push(shotId);
+      if (shotId === 'ho_s02') { await sleep(500); await shot04('story_11_handoff_notch_done.png'); }
+      continue;
+    }
+    if (c.shot === 'ho_s10' && !shotBuong) { await D('cinAdvance', 6); await sleep(700); await shot04('story_12_handoff_buong_ke.png'); shotBuong = true; continue; }
+    if (c.shot === 'ho_s12' && !c.waiting) { await sleep(400); }
+    await D('cinAdvance', 4);
+  }
+  sto = await ST();
+  const hoLog = sto.cinLog.find((x) => x.id === 'cin_handoff');
+  check('handoff cut-scene ran to its end with 4 held actions (carve, tie, fit, tie)', !!hoLog && hoLog.skipped === false && holds.length === 4 && sto.strip.notch && sto.strip.fresh, JSON.stringify({ hoLog, holds, strip: sto.strip }));
+  const hv6Lines = sto.lineLog.filter((l) => l.era === 'era_hung_vuong_6' && l.ok);
+  const hv6Leak = hv6Lines.filter((l) => forbidden.test(l.vi));
+  check("handoff: lines shown in Bương's era pass the forbidden words (incl. lưỡi bẫy / đồng cũ / mắc ở cổ)", hv6Lines.length >= 10 && hv6Leak.length === 0, `${hv6Lines.length} lines; leaks: ${hv6Leak.map((l) => l.id).join(',')}`);
+  await waitFor((x) => (x.screen ?? '').startsWith('handoff'), 6000, 50);
   for (let k = 0; k < 6; k++) {
     await sleep(250);
     const sc = await S();
+    if (!(sc.screen ?? '').startsWith('handoff')) break;
     const txt = await page.evaluate(() => document.querySelector('.screen')?.innerText ?? '');
     if (forbidden.test(txt)) leak.push(sc.screen);
     if (sc.screen === 'handoff_ho_03_thap') await shot('15_handoff_thap.png');
@@ -488,32 +615,33 @@ try {
   for (const e of (await S()).practice) await D('hitEnemy', e.uid, 9999, 0);
   s = await waitFor((x) => x.practiceState?.done, 8000);
   check('practice goal: swap weapon once + crabs driven off', !!s);
-  // Minimal HUD option: the player cluster hides out of combat and comes back at low health.
-  await D('setAcc', 'acc_hud_minimal', true);
-  let hm = null;
-  for (let k = 0; k < 80 && (hm = await D('hud')).playerVisible; k++) await sleep(100);
-  const hiddenOk = !hm.playerVisible;
-  await page.evaluate(() => { const p = window.__demo.game.player; p.hp = p.hpMax * 0.4; });
-  for (let k = 0; k < 20 && !(hm = await D('hud')).playerVisible; k++) await sleep(60);
-  check('hud: minimal HUD hides out of combat, shows again at low health', hiddenOk && hm.playerVisible, JSON.stringify(hm));
-  await D('setAcc', 'acc_hud_minimal', false);
-  await page.evaluate(() => { const p = window.__demo.game.player; p.hp = p.hpMax; });
   await shot('16_buong_practice.png');
   const hudBuong = await page.evaluate(() => document.getElementById('hud').innerText);
   if (forbidden.test(hudBuong)) leak.push('hud');
-  await D('teleport', 300, -8.6);
-  await sleep(300); await press('e');
+  // Practice done → the demo hook cut-scene (cin_demo_hook: Kê's verse, "Đò ơi!" from the far bank) → end.
+  s = await waitFor((x) => (x.cinematic?.id === 'cin_demo_hook') || x.mode === 'end', 15000, 100);
+  let hookShot = false;
+  for (let guard = 0; guard < 40; guard++) {
+    const c = (await ST()).cinematic;
+    if (!c) break;
+    if (!hookShot && c.shot === 'hk_s03') { await sleep(500); await shot04('story_13_demo_hook.png'); hookShot = true; }
+    await D('cinAdvance', 3);
+  }
+  sto = await ST();
+  check('demo hook cut-scene played after the practice', sto.cinLog.some((x) => x.id === 'cin_demo_hook'), JSON.stringify(sto.cinLog));
+  const hookLeak = sto.lineLog.filter((l) => l.era === 'era_hung_vuong_6' && l.ok && forbidden.test(l.vi));
+  if (hookLeak.length) leak.push(...hookLeak.map((l) => l.id));
   for (let k = 0; k < 3; k++) {
     await sleep(300);
     const txt = await page.evaluate(() => document.querySelector('.screen')?.innerText ?? '');
     if (forbidden.test(txt)) leak.push(`end-${k}`);
     const sc = await S();
     if (sc.screen === 'end') break;
-    await page.click('[data-act=next]');
+    if (await page.$('[data-act=next]')) await page.click('[data-act=next]');
   }
-  s = await waitFor((x) => x.screen === 'end', 4000);
+  s = await waitFor((x) => x.screen === 'end', 6000);
   check('demo end screen', !!s);
-  check("no khoen/mảnh/chốt words shown in Bương's era", leak.length === 0, leak.join(','));
+  check("no khoen/mảnh/chốt/lưỡi bẫy/đồng cũ/mắc ở cổ words shown in Bương's era", leak.length === 0, leak.join(','));
   await shot('17_end.png');
   s = await S();
   check('no missing UI strings', s.missingStrings.length === 0, s.missingStrings.join(','));

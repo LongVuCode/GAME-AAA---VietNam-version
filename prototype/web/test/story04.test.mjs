@@ -8,7 +8,7 @@ import { CinematicTimeline, scriptedLength, lineSlots, shotCamera, INTERACTIVE_T
 import { QuestLog } from '../src/story/quests.js';
 import { DialogueRun, BarkBook, conversationAvailable, conversationsFor, lineIndex, resolveLine } from '../src/story/dialogue.js';
 import { forbiddenHits, eraTags, TAG_WORDS } from '../src/logic/lineage.js';
-import { creatureFor, storyLineAllowed, STAGING } from '../src/story/staging.js';
+import { creatureFor, storyLineAllowed, STAGING, DRUM } from '../src/story/staging.js';
 
 const cin = (id) => DATA.cinematics.cinematics.find((c) => c.id === id);
 const conv = (id) => DATA.dialogue.conversations.find((c) => c.id === id);
@@ -66,6 +66,7 @@ test('handoff: interactive shots wait for the hold (fail none), then play their 
   ev = run(tl, c.shots[1].interactive.hold_s + 0.1, 1 / 60, { actionHeld: true });
   assert.ok(ev.some((e) => e.type === 'interactive_done'));
   assert.ok(ev.some((e) => e.type === 'line' && e.ref === 'ln_ho_c1'));
+  assert.ok(!tl.waiting, 'no longer waiting once the hold is done (tail plays on)');
   ev = run(tl, INTERACTIVE_TAIL_S + 0.1);
   assert.equal(tl.shot.id, 'ho_s03');
   // Release while holding halves back (no instant completion by tapping).
@@ -270,4 +271,15 @@ test('creature display: Dế Cõng Đá replaces the crab name (id kept), Bươn
   const tags = eraTags(DATA.lineage, 'era_hung_vuong_6');
   const v = creatureFor(DATA, 'en_cua_cang_bun', 'era_hung_vuong_6');
   assert.deepEqual(forbiddenHits([v.name, v.description], tags), []);
+});
+
+test('cut-scene blocking: nobody stands inside the village drum (hub shots of cin_handoff / cin_demo_hook)', () => {
+  for (const c of ['cin_handoff', 'cin_demo_hook'].map(cin)) for (const s of c.shots) {
+    const st = STAGING[s.id];
+    for (const [id, spec] of Object.entries(st.actors ?? {})) for (const p of [spec.at, spec.from, spec.to].filter(Boolean)) {
+      const d = Math.hypot(p[0] - DRUM.x, p[1] - DRUM.z);
+      assert.ok(d > DRUM.r + 0.35, `${s.id} ${id} at ${p} is ${d.toFixed(2)} m from the drum centre`);
+    }
+    if (st.cam) assert.ok(Math.hypot(st.cam.from[0] - DRUM.x, st.cam.from[2] - DRUM.z) > DRUM.r + 0.2, `${s.id} camera outside the drum`);
+  }
 });

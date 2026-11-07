@@ -71,7 +71,7 @@ export class CinematicTimeline {
       if (s.interactive && !this.interactiveDone) {
         if (input.actionHeld) this.holdT += left; else this.holdT = Math.max(0, this.holdT - left * 2);
         if (this.holdT >= s.interactive.hold_s) {
-          this.interactiveDone = true;
+          this.interactiveDone = true; this.waiting = false;
           out.push({ type: 'interactive_done', shot: s });
           this._pendingLines = lineSlots({ ...s, duration_s: Math.max(INTERACTIVE_TAIL_S, s.duration_s - this.t) }).map((l) => ({ ...l, at: this.t + l.at }));
           this.tail = Math.max(this.t + INTERACTIVE_TAIL_S, s.duration_s);

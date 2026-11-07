@@ -774,6 +774,16 @@ def parse_world_points(path: Path = WORLD_JS) -> dict[str, tuple[float, float]] 
     out = {}
     for m in re.finditer(r"\{\s*id:\s*'([^']+)'[^}]*?\bx:\s*([^,]+),\s*z:\s*([^,}]+)", body.group(1)):
         out[m.group(1)] = (num(m.group(2)), num(m.group(3)))
+    # Demo 0.4: world.js appends the non-legacy world_0_4 points (POINTS.push(...POINTS_04), src/game/world04.js
+    # copies id/x/z from design/data/world_0_4.json), so they are world.js POINTS with the data coordinates.
+    if re.search(r"POINTS\.push\(\.\.\.POINTS_04\)", src):
+        try:
+            w4 = json.loads((DATA_DIR / "world_0_4.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            w4 = {}
+        for p in w4.get("points", []):
+            if not p.get("legacy") and p.get("id") not in out:
+                out[p["id"]] = (float(p["x"]), float(p["z"]))
     return out
 
 

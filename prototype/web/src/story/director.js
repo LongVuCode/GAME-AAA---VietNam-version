@@ -77,6 +77,8 @@ export class StoryDirector {
     this.reset();
   }
   get era() { return this.g.gen?.era ?? COI_ERA; }
+  /** Ground height under (x, z) (world_0_4 heightmap through Walkable.groundAt; 0 on the flat 0.3 world). */
+  gy(x, z) { return this.g.walk?.groundAt?.(x, z) ?? 0; }
   t(k, v) { return this.g.i18n.t(k, v); }
   loc(o) { return this.g.i18n.loc(o); }
   hasFlag(f) { return !!this.g.gen?.flags?.has(f); }
@@ -117,7 +119,7 @@ export class StoryDirector {
     for (const pt of POINTS) {
       if (pt.kind !== 'env_story' && pt.kind !== 'quest_interact') continue;
       if (pt.offmap) continue;
-      const m = this._envMesh(pt); m.position.set(pt.x, 0, pt.z); scene.add(m); this.envMeshes[pt.id] = m;
+      const m = this._envMesh(pt); m.position.set(pt.x, this.gy(pt.x, pt.z), pt.z); scene.add(m); this.envMeshes[pt.id] = m;
     }
     this.placeNpcs();
   }
@@ -143,8 +145,17 @@ export class StoryDirector {
     const rim = box(1.16, 0.06, 4.45, 0x3e3022); rim.position.y = 0.2; g.add(rim);
     if (capsized) {
       g.rotation.z = Math.PI * 0.92; g.position.y = 0.05;
-      const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.3, 0.12, 9), lam(0xc9b27a)); hat.position.set(0.5, -0.3, 0.4); hat.rotation.z = Math.PI * 0.9; g.add(hat);
       const reed = new THREE.Group(); for (let k = 0; k < 6; k++) { const r = cyl(0.015, 0.015, 1.6, 0xc8b878, 4); r.rotation.z = Math.PI / 2; r.position.set(0.9 + k * 0.08, 0.35, -0.6 + k * 0.25); reed.add(r); } g.add(reed);
+      // Nghệ's rough woven hat with its indigo strip, caught on the upturned hull (cold open shots 3-4):
+      // outside the flipped hull group so it sits right side up and reads at a glance.
+      const outer = new THREE.Group(); outer.add(g);
+      const hat = new THREE.Group();
+      const brim = new THREE.Mesh(new THREE.ConeGeometry(0.36, 0.2, 12), lam(0xd9c38a)); brim.position.y = 0.1; hat.add(brim);
+      const band = new THREE.Mesh(new THREE.TorusGeometry(0.235, 0.032, 6, 16), lam(INDIGO)); band.rotation.x = Math.PI / 2; band.position.y = 0.07; hat.add(band);
+      const tail = box(0.06, 0.02, 0.45, INDIGO); tail.position.set(0.2, 0.05, 0.26); tail.rotation.y = 0.5; hat.add(tail);
+      hat.position.set(-0.15, 0.24, 0.9); hat.rotation.set(0.25, 0, -0.2); outer.add(hat);
+      outer.userData.hat = hat;
+      return outer;
     }
     return g;
   }
@@ -194,7 +205,7 @@ export class StoryDirector {
       if (id === 'npc_nghe' && g.villagerSaved) { x = -7; z = 19; }
       n.root.visible = home.era === era;
       if (id === 'npc_nguoi_gia_ben') n.root.visible = era !== COI_ERA && !!g.practice; // appears with the river-bank practice
-      n.root.position.set(x, 0, z);
+      n.root.position.set(x, this.gy(x, z), z);
       n.root.rotation.y = home.face ? Math.atan2(home.face[0] - x, home.face[1] - z) : (home.yaw ?? 0);
       n.homeYaw = n.root.rotation.y; n.pose = 'idle';
       if (n.rig.torch) n.rig.torch.visible = true;
@@ -487,10 +498,11 @@ export class StoryDirector {
     const nx = n.root.position.x, nz = n.root.position.z, mx = (p.x + nx) / 2, mz = (p.z + nz) / 2;
     const dx = nx - p.x, dz = nz - p.z, l = Math.hypot(dx, dz) || 1, sx = -dz / l, sz = dx / l;
     const side = d.side ?? (d.side = (Math.sin(g.cam.yaw) * sx + Math.cos(g.cam.yaw) * sz) >= 0 ? 1 : -1);
-    const pos = _v.set(mx + sx * 3.0 * side - dx / l * 0.9, 1.75, mz + sz * 3.0 * side - dz / l * 0.9);
+    const ground = this.gy(mx, mz);
+    const pos = _v.set(mx + sx * 3.0 * side - dx / l * 0.9, 1.75 + ground, mz + sz * 3.0 * side - dz / l * 0.9);
     d.camBlend = Math.min(1, (d.camBlend ?? 0) + dt * 2);
     g.camera.position.lerpVectors(d.cam0.pos, pos, ease(d.camBlend));
-    const look = lerp3([d.cam0.look.x, d.cam0.look.y, d.cam0.look.z], [nx * 0.6 + p.x * 0.4, 1.35, nz * 0.6 + p.z * 0.4], ease(d.camBlend));
+    const look = lerp3([d.cam0.look.x, d.cam0.look.y, d.cam0.look.z], [nx * 0.6 + p.x * 0.4, 1.35 + ground, nz * 0.6 + p.z * 0.4], ease(d.camBlend));
     g.camera.lookAt(look[0], look[1], look[2]);
   }
   _endConversation() {
@@ -500,6 +512,7 @@ export class StoryDirector {
     g.mode = d.prevMode === 'dialogue' ? 'playing' : d.prevMode;
     g.cam.init = false; g.input.clearAll(); g.input.requestLock();
     this.record('talk', d.conv.id);
+    if (d.conv.id === 'cv_nghe_rescue') g.after(1.2, () => this.placeNpcs()); // Nghệ walks home to Bến Sậy
     if (d.conv.id === 'cv_nan_basket' && this._songReady()) g.after(0.8, () => this._playSong());
     d.onEnd?.();
   }
@@ -544,6 +557,8 @@ export class StoryDirector {
     this.ui.hold(it ? { html: `${g.kbd('interact')} ${g.ui.esc(this.t(it.prompt_key))}`, progress: tl.holdProgress } : null);
     this.ui.skip(c.def.skippable !== false ? { text: this.t('cin_skip_hold', { key: g.glyphText('jump') }), progress: tl.skipProgress } : null);
   }
+  /** End the running cut-scene now, as a completed skip (test hook ?intro=0, same end state as holding skip). */
+  skip() { if (this.cin) this._finishCinematic(true); }
   _enterShot(s) {
     const c = this.cin, g = this.g;
     c.prevShot = c.shot; c.shot = s; c.shotEra = s.era ?? c.def.era;
@@ -605,10 +620,13 @@ export class StoryDirector {
       if (id === 'flood') m.position.y = -0.3 + 0.55 * Math.sin(Math.PI * u);
     }
     if ((st.effects ?? []).includes('strip_on_pole_mid') && u > 0.45) this.strip.tied = true;
+    const hat = this.props.capsized?.userData.hat; // the strip leaves the hat once Cói ties it on her pole
+    if (hat) hat.children[1].visible = hat.children[2].visible = !this.strip.tied;
     for (const [id, spec] of Object.entries(st.actors ?? {})) {
       if (id === 'chr_coi' || id === 'chr_buong') {
         const p = g.player, q = this._place(p, spec, u);
-        p.x = q.x; p.z = q.z; p.y = q.y; p.yaw = q.yaw;
+        // On the boat q.y is absolute (water); on land it is above the ground (the player rig adds the ground).
+        p.x = q.x; p.z = q.z; p.y = spec.on ? q.y - this.gy(q.x, q.z) : q.y; p.yaw = q.yaw;
         p.state = spec.pose === 'offer' ? 'handover' : 'free'; p.loco.speed = spec.from ? 1.1 : 0;
         p.showPole(spec.pose === 'pole' || spec.pose === 'offer');
         p.animOverride = null; p.rig.root.visible = true;
@@ -618,7 +636,7 @@ export class StoryDirector {
       }
       const n = this.npcs[id]; if (!n) continue;
       const q = this._place(n.root, spec, u);
-      n.root.position.set(q.x, q.y, q.z); n.root.rotation.y = q.yaw; n.root.visible = true;
+      n.root.position.set(q.x, q.y + (spec.on ? 0 : this.gy(q.x, q.z)), q.z); n.root.rotation.y = q.yaw; n.root.visible = true;
       n.pose = spec.pose === 'pole' ? 'idle' : spec.pose ?? 'idle';
       if (n.rig.torch) n.rig.torch.visible = spec.pose === 'torch';
     }
@@ -643,6 +661,8 @@ export class StoryDirector {
     // A slow breathing drift keeps locked shots alive (5 cm, never on the black card).
     const t = g.playTime, drift = s.camera?.kind?.startsWith('locked') ? 0 : 0.05;
     g.camera.position.set(pose.pos[0] + Math.sin(t * 0.7) * drift, pose.pos[1] + Math.sin(t * 0.9) * drift * 0.6, pose.pos[2]);
+    const cp = g.camera.position, gMin = this.gy(cp.x, cp.z) + 0.45; // never inside a bank or knoll
+    if (cp.y < gMin) cp.y = gMin;
     g.camera.lookAt(pose.look[0], pose.look[1], pose.look[2]);
     g.fx.baseFov = pose.fov;
     c.lastCam = { pos: pose.pos, look: pose.look };
@@ -722,9 +742,9 @@ export class StoryDirector {
     };
     if (g.mode === 'playing' && this.era === COI_ERA) {
       for (const pt of POINTS) {
-        if (pt.kind === 'npc' && this.pointAvailable(pt) && this.hasNew(pt.id, pt.npc)) { const n = this.npcs[pt.npc]; add(pt.id, n.root.position.x, 2.2 * (NPC_LOOK[pt.npc]?.height ?? 1), n.root.position.z); }
-        if (pt.id === 'npc_ba_lai_do' && this.hasNew(pt.id, 'npc_ba_lai_do') && this.npcs.npc_ba_lai_do.root.visible) add(pt.id, pt.x, 2.1, pt.z + 0.8);
-        if (pt.kind === 'quest_interact' && this.pointAvailable(pt)) add(pt.id, pt.x, 1.5, pt.z);
+        if (pt.kind === 'npc' && this.pointAvailable(pt) && this.hasNew(pt.id, pt.npc)) { const n = this.npcs[pt.npc]; add(pt.id, n.root.position.x, n.root.position.y + 2.2 * (NPC_LOOK[pt.npc]?.height ?? 1), n.root.position.z); }
+        if (pt.id === 'npc_ba_lai_do' && this.hasNew(pt.id, 'npc_ba_lai_do') && this.npcs.npc_ba_lai_do.root.visible) add(pt.id, pt.x, this.gy(pt.x, pt.z) + 2.1, pt.z + 0.8);
+        if (pt.kind === 'quest_interact' && this.pointAvailable(pt)) add(pt.id, pt.x, this.gy(pt.x, pt.z) + 1.5, pt.z);
       }
     }
     this.ui.marks(list);

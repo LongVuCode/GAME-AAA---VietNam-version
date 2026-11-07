@@ -8,6 +8,7 @@ const debug = params.get('debug') === '1';
 const game = new Game(document.getElementById('app'), DATA_02, {
   debug,
   khoenEnabled: params.get('khoen') !== '0', // feature_khoen (V9): ?khoen=0 tests the K0 fallback
+  skipIntro: debug && params.get('intro') === '0', // test-only: ?debug=1&intro=0 skips the cold open (as if held to skip)
   buildId: typeof __BUILD_ID__ === 'string' ? __BUILD_ID__ : 'dev',
 });
 game.boot();

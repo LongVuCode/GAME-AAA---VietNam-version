@@ -15,9 +15,6 @@ const dirty = git('git status --porcelain -- .') || git('git status --porcelain 
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
 const buildId = `demo0.3-web-${hash}${dirty}-${stamp}`;
 
-// Demo 0.4 world data (design agent, in progress): bundled when present, used with ?world=04 (src/env).
-const world04Path = join(here, '../../design/data/world_0_4.json');
-const world04 = existsSync(world04Path) ? JSON.stringify(JSON.parse(readFileSync(world04Path, 'utf8'))) : 'null';
 const result = await build({
   entryPoints: [join(here, 'src/main.js')],
   bundle: true,
@@ -26,7 +23,7 @@ const result = await build({
   write: false,
   target: ['es2022'],
   legalComments: 'none',
-  define: { __BUILD_ID__: JSON.stringify(buildId), __WORLD_04__: world04 },
+  define: { __BUILD_ID__: JSON.stringify(buildId) },
   logLevel: 'warning',
 });
 const js = result.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');

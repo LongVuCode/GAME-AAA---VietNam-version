@@ -129,6 +129,10 @@ const TERRAIN_MAP = /* glsl */`
   float w[5];
   w[1] = vSplat.x; w[2] = vSplat.y; w[3] = vSplat.z; w[4] = vSplat.w;
   w[0] = max(0.0, 1.0 - (vSplat.x + vSplat.y + vSplat.z + vSplat.w));
+  // Slope: grass and worn path give way to bare earth / leaf-strewn bank on steep faces (knolls, banks, kiln floor).
+  float slope = 1.0 - clamp(normalize(vTN).y, 0.0, 1.0);
+  float sk = smoothstep(0.06, 0.26, slope);
+  w[1] *= 1.0 - 0.85 * sk; w[2] *= 1.0 - 0.7 * sk; w[3] += 0.55 * sk; w[4] += 0.35 * sk; w[0] *= 1.0 - 0.5 * sk;
   vec2 p = vec2(vTW.x, -vTW.z);
   vec2 gx = dFdx(p), gy = dFdy(p); // explicit gradients: sampling happens in per-pixel branches
   float macro = tNoise(p * 0.045) * 0.6 + tNoise(p * 0.17) * 0.4;
@@ -176,7 +180,7 @@ const TERRAIN_MAP = /* glsl */`
   float under = smoothstep(uWaterY + 0.02, uWaterY - 0.25, vTW.y);
   alb *= mix(1.0, 0.52, wet) * mix(1.0, 0.7, under);
   diffuseColor.rgb *= alb;
-  tRough = mix(nr.b, 0.22, wet * 0.85);
+  tRough = mix(nr.b, 0.36, wet * 0.75); // wet mud: satin, not a mirror (grazing views turned it sky-white)
   tN = vec3((nr.xy * 2.0 - 1.0) * (1.0 - 0.6 * wet), 1.0); tN.z = sqrt(max(0.05, 1.0 - dot(tN.xy, tN.xy)));
   tCav = mix(1.0, 0.45 + 1.1 * cav, 0.7);
 }`;

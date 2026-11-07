@@ -6,6 +6,14 @@
 export function inShape(x, z, s) {
   if (s.rect) return x >= s.rect.x0 && x <= s.rect.x1 && z >= s.rect.z0 && z <= s.rect.z1;
   if (s.circle) return Math.hypot(x - s.circle.cx, z - s.circle.cz) <= s.circle.r;
+  if (s.polygon) { // even-odd rule (world_0_4 region polygons, merged into map.json zones by world04.mergeMap04)
+    let inside = false;
+    for (let i = 0, j = s.polygon.length - 1; i < s.polygon.length; j = i++) {
+      const [ax, az] = s.polygon[j], [bx, bz] = s.polygon[i];
+      if ((bz > z) !== (az > z) && x < ((ax - bx) * (z - bz)) / (az - bz) + bx) inside = !inside;
+    }
+    return inside;
+  }
   return false;
 }
 /** map.json zone containing (x, z), or null. */

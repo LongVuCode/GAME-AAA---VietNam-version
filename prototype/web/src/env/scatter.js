@@ -41,7 +41,7 @@ export function scatter(L, F, grids, { density = 1 } = {}) {
         let pr = 0;
         if (reg) {
           const s = reg.surface;
-          pr = s === 'reed' ? 0.12 * smoothstep(0.45, 0.6, n) + 0.03 : s === 'reed_dense' ? 0.55 : s === 'shallow' ? (d > -4 ? 0.35 : 0.02) : s === 'ground' || s === 'grass' || s === 'silt' ? (d > -1.6 ? 0.25 : 0.0) : 0;
+          pr = s === 'reed' ? 0.42 * smoothstep(0.35, 0.6, n) + 0.06 : s === 'reed_dense' ? 0.6 : s === 'shallow' ? (d > -4 ? 0.35 : 0.02) : s === 'ground' || s === 'grass' || s === 'silt' ? (d > -1.6 ? 0.25 : 0.0) : 0;
           if (s === 'mud' || s === 'path' || s === 'dock' || s === 'ash_ground') pr = d > -1.0 ? 0.15 : 0;
         } else {
           pr = d < 12 ? 0.8 * smoothstep(0.25, 0.45, n + 0.25 * n2) + 0.1 : h > W + 0.05 ? 0.55 * smoothstep(0.3, 0.5, n) : 0.04;
@@ -58,7 +58,7 @@ export function scatter(L, F, grids, { density = 1 } = {}) {
         // ---------------- grass tufts (land only)
         if (h > W + 0.04 && d < 8) {
           let pg = reg ? ({ ground: 0.5, grass: 0.8, reed: 0.45, silt: 0.2, leaf_litter: 0.3, shallow: 0.15, mud: 0.05, ash_ground: 0.08 }[reg.surface] ?? 0.1) : 0.55;
-          pg *= smoothstep(0.3, 0.55, n * 0.6 + n2 * 0.6);
+          pg = Math.min(1, pg * 1.9 * smoothstep(0.22, 0.5, n * 0.6 + n2 * 0.6));
           if (R() < pg * density && free(jx, jz, -0.8) && !onPath(jx, jz, -0.3)) {
             const s = 0.55 + R() * 0.55;
             out.grass.push({ x: jx, y: h - 0.02, z: jz, rot: R() * Math.PI, w: s, h: s, var: Math.floor(R() * 4), tint: [0.9 + R() * 0.2, 0.9 + R() * 0.2, 0.85 + R() * 0.15] });
@@ -66,6 +66,14 @@ export function scatter(L, F, grids, { density = 1 } = {}) {
         }
         // ---------------- small CC0 props
         const r2 = R();
+        // Forest floor / knoll undergrowth inside the 0.4 regions (ferns and shrubs under the figs, weeds on the knolls).
+        if (reg && !reg.legacy && h > W + 0.05 && free(jx, jz, 0.4) && !onPath(jx, jz, 0.3)) {
+          const s = reg.surface;
+          if (s === 'leaf_litter' && r2 < 0.03 * density) { out.shrubs.push({ x: jx, y: h - 0.02, z: jz, rot: R() * 6.28, s: 1.8 + R() * 1.6, var: Math.floor(R() * 4) }); continue; }
+          if (s === 'leaf_litter' && r2 > 0.985) { out.branches.push({ x: jx, y: h, z: jz, rot: R() * 6.28, s: 1 + R() * 0.6, var: Math.floor(R() * 3) }); continue; }
+          if ((s === 'grass' || s === 'silt') && r2 < 0.012 * density) { out.weeds.push({ x: jx, y: h, z: jz, rot: R() * 6.28, s: 2.0 + R() * 1.6, var: Math.floor(R() * 5) }); continue; }
+          if (s === 'grass' && r2 > 0.9965) { out.rocks.push({ x: jx, y: h, z: jz, rot: R() * 6.28, s: 0.3 + R() * 0.5, var: Math.floor(R() * 6) }); continue; }
+        }
         if (h > W + 0.02 && d > -3 && d < 7 && r2 < 0.012 * density && free(jx, jz, 0.5)) out.ferns.push({ x: jx, y: h, z: jz, rot: R() * 6.28, s: 1.2 + R() * 0.9, var: Math.floor(R() * 4) });
         else if (h > W + 0.05 && d > -2 && d < 9 && r2 < 0.02 * density && free(jx, jz, 0.5)) out.shrubs.push({ x: jx, y: h - 0.02, z: jz, rot: R() * 6.28, s: 2.4 + R() * 1.6, var: Math.floor(R() * 4) });
         else if (h > W + 0.02 && d < 1 && r2 < 0.034 * density && free(jx, jz, -0.5) && !onPath(jx, jz)) out.weeds.push({ x: jx, y: h, z: jz, rot: R() * 6.28, s: 2.0 + R() * 1.6, var: Math.floor(R() * 5) });

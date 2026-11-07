@@ -193,7 +193,8 @@ export class Fx {
    */
   impact(position, normal = null, { weight = 'light', surface = 'flesh', ground = null, sound = true, pan = 0, scale = 1 } = {}) {
     const sp = impactSpec(weight, surface);
-    const x = position.x, y = position.y ?? 1, z = position.z;
+    // Heights from the game hooks are above the local ground (world_0_4 heightmap): lift by the terrain.
+    const x = position.x, y = (position.y ?? 1) + (this.atmo?.env?.heightAt && !position.absolute ? Math.max(0, this.atmo.env.heightAt(x, position.z)) : 0), z = position.z;
     const dir = normal ? _v.set(normal.x, normal.y ?? 0, normal.z).normalize() : null;
     const q = this.quality === 'high' ? 1 : 0.6;
     this.counters.impacts++;

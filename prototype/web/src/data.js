@@ -16,6 +16,7 @@ import quests from '../../../design/data/quests.json' with { type: 'json' };
 import cinematics from '../../../design/data/cinematics.json' with { type: 'json' };
 import creatures from '../../../design/data/creatures_0_4.json' with { type: 'json' };
 import { applyTuningChanges } from './logic/tuning.js';
+import { mergeMap04 } from './game/world04.js';
 
 /** The design data exactly as in design/data (unit tests that mirror ArpgCore use this). */
 export const DATA = Object.freeze({ combat, weapons, enemies, items, lineage, secrets, codex, strings, controls, skills, map, dialogue, quests, cinematics, creatures });
@@ -23,7 +24,9 @@ export const DATA = Object.freeze({ combat, weapons, enemies, items, lineage, se
 /** What the Demo 0.2 prototype runs on: DATA + combat_tuning.tuning_changes_0_2 applied on a copy
  *  (prototype-only override; the JSON values stay as they are, see logic/tuning.js). */
 export const TUNED = applyTuningChanges(DATA);
-export const DATA_02 = TUNED.data;
+// Demo 0.4 big map: the game plays on world_0_4 (src/game/world04.js); map.json's map_0_4 block (0.4 level
+// bounds, zones, landmarks, lookouts, chests, secrets) is merged into the prototype's copy of map.json.
+export const DATA_02 = Object.freeze({ ...TUNED.data, map: mergeMap04(TUNED.data.map) });
 
 export function findById(list, id) {
   const found = list.find((e) => e.id === id);

@@ -19,8 +19,19 @@ export const MOODS = {
   boss_p2:  { zenith: 0x7f8788, horizon: 0x9c9c94, fog: 0x9a9b94, density: 0.02, sun: 0xcfc8b6, sunI: 1.1, sky: 0xb0b6b4, ground: 0x4a453c, hemiI: 1.35, wind: 0.08, glow: 0.04, exposure: 1.0, envI: 1.0, mist: 1.0 },
   pry:      { zenith: 0x7f8788, horizon: 0x9c9c94, fog: 0x9a9b94, density: 0.019, sun: 0xd8c8a8, sunI: 1.5, sky: 0xb0b6b4, ground: 0x4a453c, hemiI: 1.3, wind: 0.0, glow: 0.1, exposure: 1.0, envI: 0.95, mist: 0.9 },
   freed:    { zenith: 0x8ea0a8, horizon: 0xd2b48c, fog: 0xc0ab8c, density: 0.011, sun: 0xffcf8f, sunI: 3.2, sky: 0xc9d0cc, ground: 0x5e4a33, hemiI: 1.1, wind: 1.0, glow: 0.55, exposure: 1.04, envI: 0.9, mist: 0.4 },
+  // Demo 0.4 regions (world_0_4.json): dry-season knolls in slanting sun, the dim fig grove, the misty
+  // northern mire, the creeks under a flat sky, the deep reeds closing in, the ash-grey kiln yard.
+  go_sim:   { zenith: 0x8aa1ad, horizon: 0xd6c9a6, fog: 0xc4bea4, density: 0.0072, sun: 0xf6cb8a, sunI: 3.9, sky: 0xc6d0cc, ground: 0x5e4c34, hemiI: 1.0, wind: 1.1, glow: 0.55, exposure: 0.98, envI: 0.85, mist: 0.3 },
+  rung_sung:{ zenith: 0x87979a, horizon: 0xb4b49a, fog: 0x9fa38f, density: 0.0125, sun: 0xeec98e, sunI: 3.0, sky: 0xaab6a8, ground: 0x41392a, hemiI: 0.95, wind: 0.6, glow: 0.3, exposure: 1.02, envI: 0.8, mist: 0.55 },
+  dong_lay: { zenith: 0x828c8e, horizon: 0xaaa898, fog: 0xa4a496, density: 0.017, sun: 0xdccdb0, sunI: 1.6, sky: 0xb2b8b2, ground: 0x4a4236, hemiI: 1.35, wind: 0.5, glow: 0.12, exposure: 1.02, envI: 1.0, mist: 0.95 },
+  rach:     { zenith: 0x8c9b9d, horizon: 0xb4b6a6, fog: 0xaaad9f, density: 0.0115, sun: 0xeed6ae, sunI: 2.3, sky: 0xbcc8c4, ground: 0x4f4634, hemiI: 1.35, wind: 0.9, glow: 0.2, exposure: 1.03, envI: 0.95, mist: 0.75 },
+  lau_sau:  { zenith: 0x8e9b95, horizon: 0xbab69a, fog: 0xaaa88f, density: 0.0155, sun: 0xefc98c, sunI: 2.5, sky: 0xbfc8bf, ground: 0x544833, hemiI: 1.15, wind: 1.4, glow: 0.3, exposure: 1.0, envI: 0.9, mist: 0.7 },
+  san_lo:   { zenith: 0x8d9494, horizon: 0xc0b49c, fog: 0xaea592, density: 0.0115, sun: 0xf0c385, sunI: 3.0, sky: 0xbcc0ba, ground: 0x55473a, hemiI: 1.1, wind: 0.7, glow: 0.4, exposure: 1.0, envI: 0.85, mist: 0.45 },
   hub:      { zenith: 0x9aabb3, horizon: 0xd8dacb, fog: 0xd0d2c4, density: 0.0085, sun: 0xf1c78a, sunI: 3.2, sky: 0xcdd6d4, ground: 0x5c4a35, hemiI: 1.1, wind: 0.9, glow: 0.5, exposure: 1.0, envI: 0.85, mist: 0.55 },
 };
+// Demo 0.4 look-dev grade over every mood (PBR terrain, HDRI IBL, bigger world): thinner haze, a
+// stronger key light against a weaker fill, so forms and shadows read (A/B shots, env04-shots r3).
+const LOOK_04 = { density: 0.68, sunI: 1.3, hemiI: 0.72, envI: 0.75, exposure: 0.95 };
 const COLOR_KEYS = ['zenith', 'horizon', 'fog', 'sun', 'sky', 'ground'];
 const NUM_KEYS = ['density', 'sunI', 'hemiI', 'wind', 'glow', 'exposure', 'envI', 'mist'];
 
@@ -237,7 +248,8 @@ export class Atmosphere {
   _resolve(m) {
     const o = {};
     for (const k of COLOR_KEYS) o[k] = new THREE.Color(m[k]);
-    for (const k of NUM_KEYS) o[k] = m[k];
+    for (const k of NUM_KEYS) o[k] = m[k] * (LOOK_04[k] ?? 1);
+    o.fog.multiplyScalar(0.92); o.horizon.multiplyScalar(0.94); // a touch less milky
     return o;
   }
   /** Zone mood id (see MOODS). Blends over ~2 s; `instant` snaps (teleports, respawn). */

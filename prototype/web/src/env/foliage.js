@@ -98,7 +98,8 @@ export function foliageMaterial(tex, cols, { stiff = 1, tint = 0xffffff } = {}) 
  */
 export function buildFoliage(kind, items, tex, cols, { width = 1, height = 1 } = {}) {
   const geo = clumpGeometry(width, height, kind === 'reed' ? 3 : 2);
-  const { mat, depth, u } = foliageMaterial(tex, cols, { stiff: kind === 'reed' ? 1 : 0.5 });
+  // Tints keep the Blender-rendered plumes from glowing white under the bright marsh sky (ART_DIRECTION: lau khô #C6AE78).
+  const { mat, depth, u } = foliageMaterial(tex, cols, { stiff: kind === 'reed' ? 1 : 0.5, tint: kind === 'reed' ? 0xc9bb98 : 0xc4c4a2 });
   const cells = new Map();
   for (const it of items) {
     const key = `${Math.floor(it.x / CELL)},${Math.floor(it.z / CELL)}`;

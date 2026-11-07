@@ -13,7 +13,11 @@ const BODY = {
   en_u_bun: { h: 1.3, surface: 'mud' },
   boss_lon_loi_dam: { h: 1.5, surface: 'flesh' },
 };
-const ZONE_MOOD = { z_ben_say: 'ben_say', z_dam_nong: 'dam_nong', z_bai_lau: 'bai_lau', z_lo_bo_hoang: 'bai_lau', hub: 'hub', hub_bank: 'hub' };
+const ZONE_MOOD = {
+  z_ben_say: 'ben_say', z_dam_nong: 'dam_nong', z_bai_lau: 'bai_lau', z_lo_bo_hoang: 'bai_lau', hub: 'hub', hub_bank: 'hub',
+  // Demo 0.4 regions (fx/atmosphere.js MOODS).
+  z_bai_boi: 'ben_say', z_doi_go: 'go_sim', z_rung_sung: 'rung_sung', z_dong_lay_bac: 'dong_lay', z_rach_nuoc: 'rach', z_lau_sau: 'lau_sau', z_san_lo: 'san_lo',
+};
 const TRAIL = {
   wp_giao_dong: { color: 0xf1c78a, width: 0.75, durationS: 0.14 },
   wp_riu_xeo: { color: 0xe7c48e, width: 0.55, durationS: 0.16 },

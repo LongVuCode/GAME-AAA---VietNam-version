@@ -98,7 +98,9 @@ function finish(L, W) {
   L.mudPools = (W.MUD_POOLS_BASE ?? []).map((m) => ({ ...m }));
   L.ditches = (W.VAULTS ?? []).filter((v) => v.kind === 'ditch').map((v) => ({ ...v }));
   L.logs = (W.VAULTS ?? []).filter((v) => v.kind === 'log').map((v) => ({ ...v }));
-  L.points = (W.POINTS ?? []).map((p) => ({ id: p.id, kind: p.kind, x: p.x, z: p.z, r: p.r ?? 2 })).concat(L.extraPoints ?? []);
+  L.points = (W.POINTS ?? []).map((p) => ({ id: p.id, kind: p.kind, x: p.x, z: p.z, r: p.r ?? 2 }));
+  const have = new Set(L.points.map((p) => p.id));
+  for (const p of L.extraPoints ?? []) if (!have.has(p.id)) L.points.push(p); // world.js may already hold the 0.4 points
   const enemies = W.SPAWNS?.enemies ?? [];
   L.keepOut = [
     ...L.points.map((p) => ({ x: p.x, z: p.z, r: Math.max(2.6, p.r + 1.2) })),
