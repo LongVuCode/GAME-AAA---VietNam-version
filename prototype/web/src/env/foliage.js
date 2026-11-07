@@ -9,7 +9,7 @@ import * as THREE from 'three';
 const CELL = 24;
 export const FOLIAGE_QUALITY = {
   high: { reedDist: 120, grassDist: 55, reedFull: 45, grassFull: 22, density: 1, shadowDist: 26, a2c: true },
-  low: { reedDist: 70, grassDist: 26, reedFull: 25, grassFull: 10, density: 0.5, shadowDist: 0, a2c: false },
+  low: { reedDist: 60, grassDist: 18, reedFull: 18, grassFull: 8, density: 0.4, shadowDist: 0, a2c: false },
 };
 
 function clumpGeometry(width, height, planes = 3) {

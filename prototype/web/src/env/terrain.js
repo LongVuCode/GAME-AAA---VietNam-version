@@ -1,4 +1,4 @@
-// env/terrain.js - heightmap terrain from the env field: 32 m chunks with two LOD meshes (1 m / 4 m
+// env/terrain.js - heightmap terrain from the env field: 64 m chunks with two LOD meshes (1 m / 4 m
 // cells, skirts hide LOD cracks) and a PBR splat material (MeshStandardMaterial patched): 5 CC0 layers
 // in texture arrays (albedo / normal+roughness / height+cavity), height-based blending, slope and
 // wetness (wet mud darkens and turns glossy near the water line), macro variation against tiling.
@@ -10,7 +10,7 @@ export const TERRAIN_LAYERS = LAYERS; // order = layer index in the texture arra
 // Tiling in metres per texture repeat, per layer; fallback colours before the textures arrive.
 const TILE_M = [3.2, 2.6, 3.0, 3.6, 2.8];
 const FALLBACK = [0x4a3b2b, 0x626640, 0x6e5a42, 0x77654c, 0x56503a];
-const CHUNK = 32;
+const CHUNK = 64;
 
 export function buildPatchGrid(field, patch) {
   const nx = patch.x1 - patch.x0 + 1, nz = patch.z1 - patch.z0 + 1;
@@ -96,7 +96,7 @@ export function buildTerrainMeshes(G, material) {
     const hi = new THREE.Mesh(chunkGeometry(G, ci, cj, 1), material);
     const lo = new THREE.Mesh(chunkGeometry(G, ci, cj, 4), material);
     for (const m of [hi, lo]) { m.receiveShadow = true; m.castShadow = false; m.userData.fxShadowTagged = true; m.userData.fxOwned = true; }
-    lod.addLevel(hi, 0); lod.addLevel(lo, 80);
+    lod.addLevel(hi, 0); lod.addLevel(lo, 80); lod.addLevel(new THREE.Object3D(), 320); // beyond the fog: nothing
     lod.userData.fxOwned = true;
     group.add(lod); lods.push(lod);
   }

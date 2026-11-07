@@ -243,6 +243,7 @@ export class Gameplay03 {
     this.tusk = { boss, judge, tl, msg: T(judge.auto ? 'pry_auto' : judge.holdMode ? 'pry_hint_hold' : 'pry_hint', { key: g.glyphText('interact') }), t: 0 };
     g.ui.center(T('prompt_pin_tusk'), 1.4);
     g.sfx.telegraph('boar_pain', 'nodamage', 0);
+    g.story?.bark('pin_tusk_start', { force: true, seconds: 2 }); // Story 0.4: Coi's quiet line (dialogue.json bk_s_pin_start)
   }
   _updateTusk(realDt, i) {
     const g = this.g, tk = this.tusk, { judge, boss } = tk, p = g.player, T = g.i18n.t;
@@ -273,11 +274,13 @@ export class Gameplay03 {
       g.onHitResult(boss, r);
       this._drumAdd(tl.on_success?.drum_gain ?? 50);
       this.stats.tuskLocks.push({ type: 'success' });
+      g.story?.bark('pin_tusk_success', { force: true, seconds: 2 });
     } else {
       const f = tl.on_fail ?? {};
       p.takeHit({ hp: f.player_damage ?? 10, the: 0 }, false, 'hit', { fromX: boss.x, fromZ: boss.z, knockM: 0 });
       p.push(boss.x, boss.z, f.player_knockback_m ?? 2.5);
       this.stats.tuskLocks.push({ type: 'fail' });
+      g.story?.bark('pin_tusk_fail', { force: true, seconds: 1.5 });
     }
   }
 

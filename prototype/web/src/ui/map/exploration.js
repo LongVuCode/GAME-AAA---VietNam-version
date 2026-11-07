@@ -9,6 +9,9 @@ const COI_ERA = 'era_lac_long_quan';
 const OBJECTIVE_TARGETS = {
   obj_find_villager: 'villager', obj_boss: 'lm_boss_arena', obj_return: 'ferry_ben_say', obj_craft: 'furnace', obj_handoff: 'drum',
   obj_practice: 'drum', obj_end: 'drum',
+  // Story 0.4 main quest "Người chưa về" (quests.json); game.story.objectiveRef() refines hub / marsh targets.
+  obj_0_4_m1: 'trap_a', obj_0_4_m2: 'npc_dot_dam_nong', obj_0_4_m3: 'villager', obj_0_4_m4: 'lm_boss_arena', obj_0_4_m5: 'lm_boss_arena',
+  obj_0_4_m6: 'furnace', obj_0_4_h1: 'drum',
 };
 
 export class Exploration {
@@ -110,7 +113,7 @@ export class Exploration {
   objectiveTarget() {
     if (!this.tracking) return null;
     const key = this.objectiveKey(); if (!key) return null;
-    const ref = OBJECTIVE_TARGETS[key];
+    const ref = this.g.story?.objectiveRef?.(key) ?? OBJECTIVE_TARGETS[key];
     const lm = this.map.landmarks.find((l) => l.id === ref || l.world_point === ref);
     const pt = POINTS.find((x) => x.id === ref);
     const x = lm?.x ?? pt?.x, z = lm?.z ?? pt?.z;

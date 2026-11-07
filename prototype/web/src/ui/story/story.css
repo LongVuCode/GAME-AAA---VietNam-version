@@ -1,0 +1,71 @@
+/* ui/story - Story Integration 0.4: cut-scene letterbox, subtitles, hold prompts, dialogue box, quest tracker. */
+.story-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+.story-layer .hidden { display: none !important; }
+
+/* letterbox (2.2:1 bars) and black card */
+.st-bars i { position: absolute; left: 0; right: 0; height: 11vh; background: #000; animation: st-bar-in 0.6s ease-out; }
+.st-bars .top { top: 0; } .st-bars .bot { bottom: 0; }
+@keyframes st-bar-in { from { height: 0; } }
+.st-black { position: absolute; inset: 0; background: #000; display: grid; place-items: center; }
+.st-card { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); margin: 0; font-size: 30px; letter-spacing: 2px; color: #efe2c2; text-align: center;
+  text-shadow: 0 0 14px rgba(255,190,110,0.45), 0 2px 6px #000; opacity: 0; transition: opacity 0.9s; white-space: pre-line; width: min(900px, 90vw); }
+.st-card.on { opacity: 1; }
+
+/* subtitles: same size / background options as the game subtitles (acc_subtitle_size, acc_subtitle_bg) */
+.st-subs { position: absolute; left: 50%; bottom: calc(11vh + 18px); transform: translateX(-50%); width: min(980px, 92vw); text-align: center; }
+.story-layer:not(.cin) .st-subs { bottom: 205px; }
+.st-subs .line { display: inline-block; padding: 7px 16px; border-radius: 6px; font-size: var(--sub-size); background: rgba(0,0,0,var(--sub-bg)); white-space: pre-line; text-shadow: 0 1px 2px #000; animation: fadein 0.25s; }
+.st-subs .speaker { display: block; color: var(--focus); font-weight: 600; font-size: 0.8em; letter-spacing: 0.5px; }
+.st-subs .line.song { font-style: italic; color: #f3e6c4; }
+
+/* hold-to-act (carve / tie / fit) and hold-to-skip */
+.st-hold { position: absolute; left: 50%; bottom: calc(11vh + 110px); transform: translateX(-50%); padding: 8px 18px; border-radius: 18px; font-size: 16px;
+  background: linear-gradient(rgba(29,27,25,0.92), rgba(20,18,16,0.92)); border: 1px solid rgba(227,196,138,0.7); box-shadow: 0 0 18px rgba(227,196,138,0.35); text-align: center; animation: st-pulse 1.6s infinite; }
+.st-hold .kbd { border-color: #e3c48a; color: #fff3d6; background: #15110d; font-weight: 700; margin-right: 6px; }
+.st-hold .bar { display: block; height: 4px; margin-top: 6px; background: rgba(255,255,255,0.15); border-radius: 2px; overflow: hidden; }
+.st-hold .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #e3c48a, #fff1cc); }
+@keyframes st-pulse { 50% { box-shadow: 0 0 28px rgba(227,196,138,0.6); } }
+.st-skip { position: absolute; right: 26px; bottom: calc(11vh - 34px); font-size: 13px; color: rgba(239,226,194,0.75); display: flex; align-items: center; gap: 8px; }
+.st-skip .ring { width: 70px; height: 3px; background: rgba(255,255,255,0.18); border-radius: 2px; overflow: hidden; }
+.st-skip .ring i { display: block; height: 100%; width: 0; background: #e3c48a; }
+.st-skip.active { color: #fff3d6; }
+
+/* quest banner (top-centre) */
+.st-banner { position: absolute; left: 50%; top: 16%; transform: translateX(-50%); text-align: center; padding: 10px 40px 12px; min-width: 340px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(20,17,14,0.82), rgba(20,17,14,0) 72%); }
+.st-banner.in { animation: st-banner 0.7s ease-out; }
+.st-banner small { display: block; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #e3c48a; }
+.st-banner b { display: block; font-size: 30px; font-weight: 600; color: #fff3d6; text-shadow: 0 0 14px rgba(255,190,110,0.45), 0 2px 6px #000; }
+.st-banner span { display: block; font-size: 15px; color: #e0d6bd; max-width: 560px; margin: 2px auto 0; text-shadow: 0 1px 3px #000; }
+@keyframes st-banner { from { opacity: 0; transform: translate(-50%, -12px); } }
+
+/* dialogue box (bottom-centre, named speaker, numbered choices) */
+.st-dialog { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); width: min(820px, 92vw); padding: 14px 22px 12px; pointer-events: auto;
+  background: linear-gradient(rgba(29,27,25,0.94), rgba(18,16,14,0.95)); border: 1px solid rgba(227,196,138,0.5); border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadein 0.2s; }
+.st-dialog .nm { display: inline-block; margin: -26px 0 8px -6px; padding: 2px 12px; background: #2a221a; border: 1px solid #e3c48a; color: #ffd37a; font-weight: 600; letter-spacing: 0.5px; font-size: calc(var(--sub-size) * 0.8); }
+.st-dialog .tx { font-size: var(--sub-size); line-height: 1.45; white-space: pre-line; min-height: 1.4em; }
+.st-dialog .ch { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.st-dialog .ch button { width: 100%; text-align: left; font-size: calc(var(--sub-size) * 0.85); background: rgba(255,255,255,0.04); border-color: rgba(227,196,138,0.3); }
+.st-dialog .ch button.focus, .st-dialog .ch button:hover { border-color: #ffd37a; background: rgba(227,196,138,0.12); }
+.st-dialog .ch .kbd { margin-right: 10px; }
+.st-dialog .hint { margin-top: 6px; text-align: right; font-size: 12px; color: rgba(239,226,194,0.7); }
+
+/* quest tracker in the HUD top-right track */
+.h-qtitle { font-size: calc(12px * var(--hud-fs)); letter-spacing: 1.5px; color: #ffd37a; text-transform: uppercase; }
+.h-quest { display: grid; gap: 2px; justify-items: end; max-width: min(340px, 38vw); }
+.h-quest .qt { font-size: calc(12px * var(--hud-fs)); color: #e0d6bd; }
+.h-quest .qw { font-size: calc(12px * var(--hud-fs)); color: rgba(224,214,189,0.8); font-style: italic; }
+.h-quest .qs { display: grid; gap: 2px; margin-top: 4px; justify-items: end; }
+.h-quest .side { font-size: calc(12px * var(--hud-fs)); color: #d6ccb3; display: grid; justify-items: end; }
+.h-quest .side b { font-weight: 600; color: #cdb98a; font-size: 0.92em; }
+.h-obj.new { animation: st-objnew 1.6s ease-out; }
+@keyframes st-objnew { 0% { background: rgba(227,196,138,0.55); color: #fff; } 100% { } }
+#toasts { top: 250px; }
+
+/* NPC markers: a bronze diamond above someone with something new to say */
+.st-mark { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; transform: rotate(45deg); background: #e3c48a; border: 2px solid #1d1b19; box-shadow: 0 0 10px rgba(255,210,140,0.8); animation: st-bob 1.4s ease-in-out infinite; }
+@keyframes st-bob { 50% { margin-top: -12px; } }
+.reduce-flash .st-mark, .reduce-flash .st-hold { animation: none; }
+
+/* feedback: optional V8 summary */
+.fb-v8 textarea { width: 100%; min-height: 64px; font: inherit; color: var(--ink); background: rgba(0,0,0,0.35); border: 1px solid var(--line); border-radius: 6px; padding: 8px; }

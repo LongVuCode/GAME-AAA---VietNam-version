@@ -1669,6 +1669,54 @@
     "speaker_npc_be_ke": {
       "vi": "Bé Kê",
       "en": "Little Kê"
+    },
+    "env_name_np_bo_lau_bo": {
+      "vi": "Bó lau bỏ lại",
+      "en": "Abandoned reed bundles"
+    },
+    "env_name_np_cay_vet_ten": {
+      "vi": "Thân cây tróc vỏ",
+      "en": "Rubbed tree trunk"
+    },
+    "env_name_np_o_bun_xoi": {
+      "vi": "Ổ bùn bị xới",
+      "en": "Churned mud bed"
+    },
+    "env_name_trap_dot": {
+      "vi": "Bẫy còn giương",
+      "en": "A trap still set"
+    },
+    "env_desc_np_bo_lau_bo": {
+      "vi": "Bó lau, cái liềm cắt lau nằm vương dọc lối vào đầm. Người cắt lau bỏ cả đồ mà chạy.",
+      "en": "Reed bundles and a reed sickle lie scattered along the path into the marsh. The reed-cutters dropped everything and ran."
+    },
+    "env_desc_np_cay_vet_ten": {
+      "vi": "Thân cây tróc vỏ ngang tầm cổ một con lợn lòi lớn; vệt xanh như ten đồng, không có máu.",
+      "en": "The bark is rubbed away at the height of a big boar's neck; a green smear like bronze patina, and no blood."
+    },
+    "env_desc_np_o_bun_xoi": {
+      "vi": "Ổ bùn bị cày lật. Bùn còn phập phồng bọt khí, như có gì đang thở bên dưới: thứ nằm lâu trong đầm đã bị đánh thức.",
+      "en": "A mud bed churned over. Bubbles still swell in the mud, as if something underneath were breathing: what lay long in the marsh has been woken."
+    },
+    "env_desc_trap_dot": {
+      "vi": "Cói nhổ cọc, gỡ cái bẫy còn giương ra khỏi lối thú đi.",
+      "en": "Cói pulls the stake and lifts the set trap off the animal track."
+    },
+    "tut4_parry": {
+      "vi": "Dế Cõng Đá giơ xẻng là sắp bổ: bấm {key} đúng lúc để Đỡ nhịp, giữ {key} để Đỡ.",
+      "en": "A Stoneback Burrower raising its spades is about to chop: tap {key} on time to parry, hold {key} to guard."
+    },
+    "codex_creature_moves": {
+      "vi": "Đòn",
+      "en": "Moves"
+    },
+    "fb_v8_title": {
+      "vi": "Tóm lại câu chuyện (không bắt buộc)",
+      "en": "Sum up the story (optional)"
+    },
+    "fb_v8_hint": {
+      "vi": "Theo bạn, cái gì đã làm con lợn lòi phá đầm? Viết một câu nếu muốn; câu trả lời chỉ được thêm vào khối thông tin bên dưới để bạn chép gửi.",
+      "en": "In your view, what drove the boar to wreck the marsh? Write one sentence if you like; it is only added to the info block below for you to copy and send."
     }
   },
   "dialogue": [

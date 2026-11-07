@@ -2,9 +2,10 @@
 // era content rule (lineage.json). Mirrors ArpgCore Handover (Lineage.h): skills carry over by
 // skill_tree_carryover_ratio, house moves + weapons + Thạp + tools carry over.
 
-/** Words that betray a forbidden content tag. Mirror of tools/design_validate.py TAG_WORDS. */
+/** Words that betray a forbidden content tag. Mirror of tools/design_validate.py TAG_WORDS.
+ *  "lưỡi bẫy", "đồng cũ", "mắc ở cổ": talk of the trap blade is talk of the khoen (REVIEW SI-10). */
 export const TAG_WORDS = {
-  khoen: [['khoen'], ['khoen', 'collar', 'binding ring']],
+  khoen: [['khoen', 'lưỡi bẫy', 'đồng cũ', 'mắc ở cổ'], ['khoen', 'collar', 'binding ring', 'trap blade']],
   'mảnh': [['mảnh'], ['shard', 'shards']],
   'chốt': [['chốt'], ['pin', 'linchpin']],
   bear: [['gấu'], ['bear', 'bears']],

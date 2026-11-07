@@ -331,8 +331,11 @@ export class UI {
     const g = this.g, n = navigator;
     return [`build: ${g.buildId}`, `ua: ${n.userAgent}`, `lang: ${this.i18n.lang}`, `screen: ${screen.width}x${screen.height} @${devicePixelRatio}`,
       `viewport: ${innerWidth}x${innerHeight}`, `gl: ${g.glInfo ?? '?'}`, `difficulty: ${g.settings.difficulty}`,
-      `playtime_s: ${Math.round(g.playTime ?? 0)}`, `progress: ${[...(g.gen?.flags ?? [])].join(',') || '-'}`, `fps_avg: ${g.fpsAvg ?? '-'}`].join('\n');
+      `playtime_s: ${Math.round(g.playTime ?? 0)}`, `progress: ${[...(g.gen?.flags ?? [])].join(',') || '-'}`, `fps_avg: ${g.fpsAvg ?? '-'}`,
+      ...(this.v8Answer ? [`v8_summary: ${this.v8Answer.replace(/\s+/g, ' ').trim()}`] : [])].join('\n');
   }
+  /** Phép thử V8 (optional, light): after the chapter the tester may sum up the source of the trouble. */
+  v8Available() { return !!this.g.gen?.flags?.has('flag_boss_lon_loi_freed') || this.g.era !== 'era_lac_long_quan'; }
 
   showFeedback(back) {
     this.rerender = () => this.showFeedback(back);
@@ -340,11 +343,14 @@ export class UI {
     this._screen('feedback', `<h2>${esc(this.t('feedback_title'))}</h2>
       <p>${esc(this.t('feedback_text'))}</p>
       <h3>${esc(this.t('feedback_questions_title'))}</h3><ol>${qs}</ol>
+      ${this.v8Available() ? `<div class="fb-v8"><h3>${esc(this.t('fb_v8_title'))}</h3><p class="dim">${esc(this.t('fb_v8_hint'))}</p><textarea data-v8 maxlength="400">${esc(this.v8Answer ?? '')}</textarea></div>` : ''}
       <h3>${esc(this.t('fb_build'))} / ${esc(this.t('fb_browser'))}</h3>
       <textarea class="copy" readonly>${esc(this.feedbackInfo())}</textarea>
       <div class="row"><button data-act="copy">${esc(this.t('feedback_copy'))}</button><button data-act="back">${esc(this.t('btn_back'))}</button></div>`);
+    const v8 = this.screen.querySelector('[data-v8]');
+    if (v8) v8.addEventListener('input', () => { this.v8Answer = v8.value; this.screen.querySelector('textarea.copy').value = this.feedbackInfo(); });
     this._bind('[data-act=copy]', (e, b) => {
-      const ta = this.screen.querySelector('textarea'); ta.select();
+      const ta = this.screen.querySelector('textarea.copy'); ta.select();
       const done = () => { b.textContent = this.t('feedback_copied'); };
       try { navigator.clipboard.writeText(ta.value).then(done, () => { document.execCommand?.('copy'); done(); }); } catch { done(); }
     });
@@ -488,7 +494,7 @@ export class UI {
 
   journalHtml() {
     const g = this.g;
-    let html = '';
+    let html = g.story?.journalHtml(esc) ?? ''; // Story 0.4: quests of the current era (Việc chính / Việc phụ)
     if (g.secretVisible()) {
       const ch = g.secret.chain;
       html += `<h3>${esc(this.loc(ch.name))}</h3><p class="dim">${esc(this.loc(ch.description))}</p>`;
@@ -512,7 +518,7 @@ export class UI {
   }
 
   codexHtml(sel) {
-    const g = this.g, entries = g.data.codex.entries;
+    const g = this.g, entries = g.codexEntries?.() ?? g.data.codex.entries; // + creatures_0_4 entries (Story 0.4)
     const selected = sel ?? this.codexSel ?? entries.find((e) => g.codexUnlocked(e.id))?.id;
     this.codexSel = selected;
     const list = entries.map((e) => {
@@ -523,6 +529,7 @@ export class UI {
     let detail = '';
     if (e && g.codexUnlocked(e.id)) {
       detail = `<h2>${esc(this.loc(e.title))}</h2><p>${this.labelBadge(e.label)}</p><p>${esc(this.loc(e.text))}</p>`;
+      if (e.moves?.length) detail += `<p><b>${esc(this.t('codex_creature_moves'))}:</b> ${e.moves.map((m) => esc(this.loc(m))).join(' · ')}</p>`;
       if (e.text_extra && g.codexExtraUnlocked(e)) detail += `<h3>${esc(this.t('codex_extra_unlocked'))}</h3><p>${esc(this.loc(e.text_extra))}</p>`;
       if (e.sources.length) detail += `<p class="dim">${esc(this.t('codex_sources'))}: ${e.sources.map(esc).join(', ')}${e.research_refs?.length ? ` (${e.research_refs.map(esc).join(', ')})` : ''}</p>`;
       if (e.verification) detail += `<p class="dim">${esc(this.t('codex_verification', { v: e.verification }))}</p>`;

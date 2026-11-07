@@ -124,6 +124,18 @@ export const POINTS = [
   { id: 'thap', kind: 'thap', x: HUB_X + 6, z: -9, r: 2.2 },
   { id: 'drum', kind: 'drum', x: HUB_X, z: -11, r: 2.6 },
   { id: 'ferry_hub', kind: 'ferry_to_marsh', x: HUB_X - 13, z: 0, r: 2.4 },
+  // Story Integration 0.4 (quests.json new_points, same coordinates; NPCs, story traces, Đót's traps).
+  // Resolved by src/story/director.js (kinds npc / env_story / quest_interact).
+  { id: 'npc_nan_ben_say', kind: 'npc', npc: 'npc_nan', x: 4, z: 20, r: 2.2 },
+  { id: 'npc_nghe_ben_say', kind: 'npc', npc: 'npc_nghe', x: -6, z: 19.5, r: 2.2 },
+  { id: 'npc_dot_dam_nong', kind: 'npc', npc: 'npc_dot', x: -14, z: -27, r: 2.4 },
+  { id: 'np_thuyen_lat', kind: 'env_story', x: 3, z: 40, r: 2, offmap: true }, // cut-scene only (cold open)
+  { id: 'np_bo_lau_bo', kind: 'env_story', x: 2, z: -9, r: 2.2 },
+  { id: 'np_cay_vet_ten', kind: 'env_story', x: -9, z: -40, r: 2.2 },
+  { id: 'np_o_bun_xoi', kind: 'env_story', x: 15, z: -56, r: 2.4 },
+  { id: 'trap_dot_1', kind: 'quest_interact', x: 18, z: -18, r: 2 },
+  { id: 'trap_dot_2', kind: 'quest_interact', x: -12, z: -84, r: 2 },
+  { id: 'trap_dot_3', kind: 'quest_interact', x: -24, z: -118, r: 2 },
 ];
 
 export function zoneAt(x, z) {

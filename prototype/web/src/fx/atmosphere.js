@@ -6,21 +6,23 @@
 // "moods" from docs/ART_DIRECTION.md §3 (marsh overcast, boss phase 1 slanted afternoon sun,
 // phase 2 clouded/still/misty/desaturated, the pry with no wind, the release warming one step).
 import * as THREE from 'three';
+import { SKY_GLSL, skyUniforms, installHeightFog } from '../env/shading.js';
+import { Environment } from '../env/index.js';
 
 // Palette notes (sRGB hex): mist #D8DACB, marsh water #6A694D, mud #47392A, reeds #7C884E,
 // marsh sky #A6ACA5, sun #F1C78A, boss sky #C7A27A, dry mud #6E5A42, mire #2F2820.
 export const MOODS = {
-  ben_say:  { zenith: 0x8ea3ad, horizon: 0xd8dacb, fog: 0xc6c8b8, density: 0.0105, sun: 0xf1c78a, sunI: 3.2, sky: 0xc9d4d2, ground: 0x5c4a35, hemiI: 1.15, wind: 1.0, glow: 0.45, exposure: 1.0 },
-  dam_nong: { zenith: 0x8d9a9a, horizon: 0xa6aca5, fog: 0xa0a59c, density: 0.0135, sun: 0xe9d6b0, sunI: 1.9, sky: 0xbac6c4, ground: 0x4f4634, hemiI: 1.45, wind: 0.9, glow: 0.12, exposure: 1.05 },
-  bai_lau:  { zenith: 0x93a19c, horizon: 0xc2bea4, fog: 0xb3b29c, density: 0.012, sun: 0xf0c88c, sunI: 2.7, sky: 0xc3cdc6, ground: 0x5a4c34, hemiI: 1.2, wind: 1.25, glow: 0.35, exposure: 1.0 },
-  boss_p1:  { zenith: 0x8a959c, horizon: 0xc7a27a, fog: 0xb39b7e, density: 0.0095, sun: 0xffc27e, sunI: 3.6, sky: 0xbdc3c0, ground: 0x5a4632, hemiI: 0.95, wind: 0.8, glow: 0.65, exposure: 1.0 },
-  boss_p2:  { zenith: 0x7f8788, horizon: 0x9c9c94, fog: 0x9a9b94, density: 0.02, sun: 0xcfc8b6, sunI: 1.1, sky: 0xb0b6b4, ground: 0x4a453c, hemiI: 1.35, wind: 0.08, glow: 0.04, exposure: 1.0 },
-  pry:      { zenith: 0x7f8788, horizon: 0x9c9c94, fog: 0x9a9b94, density: 0.019, sun: 0xd8c8a8, sunI: 1.5, sky: 0xb0b6b4, ground: 0x4a453c, hemiI: 1.3, wind: 0.0, glow: 0.1, exposure: 1.0 },
-  freed:    { zenith: 0x8ea0a8, horizon: 0xd2b48c, fog: 0xc0ab8c, density: 0.011, sun: 0xffcf8f, sunI: 3.2, sky: 0xc9d0cc, ground: 0x5e4a33, hemiI: 1.1, wind: 1.0, glow: 0.55, exposure: 1.04 },
-  hub:      { zenith: 0x9aabb3, horizon: 0xd8dacb, fog: 0xd0d2c4, density: 0.0085, sun: 0xf1c78a, sunI: 3.2, sky: 0xcdd6d4, ground: 0x5c4a35, hemiI: 1.1, wind: 0.9, glow: 0.5, exposure: 1.0 },
+  ben_say:  { zenith: 0x8ea3ad, horizon: 0xd8dacb, fog: 0xc6c8b8, density: 0.0105, sun: 0xf1c78a, sunI: 3.2, sky: 0xc9d4d2, ground: 0x5c4a35, hemiI: 1.15, wind: 1.0, glow: 0.45, exposure: 1.0, envI: 0.85, mist: 0.6 },
+  dam_nong: { zenith: 0x8d9a9a, horizon: 0xa6aca5, fog: 0xa0a59c, density: 0.0135, sun: 0xe9d6b0, sunI: 1.9, sky: 0xbac6c4, ground: 0x4f4634, hemiI: 1.45, wind: 0.9, glow: 0.12, exposure: 1.05, envI: 1.0, mist: 0.85 },
+  bai_lau:  { zenith: 0x93a19c, horizon: 0xc2bea4, fog: 0xb3b29c, density: 0.012, sun: 0xf0c88c, sunI: 2.7, sky: 0xc3cdc6, ground: 0x5a4c34, hemiI: 1.2, wind: 1.25, glow: 0.35, exposure: 1.0, envI: 0.9, mist: 0.5 },
+  boss_p1:  { zenith: 0x8a959c, horizon: 0xc7a27a, fog: 0xb39b7e, density: 0.0095, sun: 0xffc27e, sunI: 3.6, sky: 0xbdc3c0, ground: 0x5a4632, hemiI: 0.95, wind: 0.8, glow: 0.65, exposure: 1.0, envI: 0.75, mist: 0.35 },
+  boss_p2:  { zenith: 0x7f8788, horizon: 0x9c9c94, fog: 0x9a9b94, density: 0.02, sun: 0xcfc8b6, sunI: 1.1, sky: 0xb0b6b4, ground: 0x4a453c, hemiI: 1.35, wind: 0.08, glow: 0.04, exposure: 1.0, envI: 1.0, mist: 1.0 },
+  pry:      { zenith: 0x7f8788, horizon: 0x9c9c94, fog: 0x9a9b94, density: 0.019, sun: 0xd8c8a8, sunI: 1.5, sky: 0xb0b6b4, ground: 0x4a453c, hemiI: 1.3, wind: 0.0, glow: 0.1, exposure: 1.0, envI: 0.95, mist: 0.9 },
+  freed:    { zenith: 0x8ea0a8, horizon: 0xd2b48c, fog: 0xc0ab8c, density: 0.011, sun: 0xffcf8f, sunI: 3.2, sky: 0xc9d0cc, ground: 0x5e4a33, hemiI: 1.1, wind: 1.0, glow: 0.55, exposure: 1.04, envI: 0.9, mist: 0.4 },
+  hub:      { zenith: 0x9aabb3, horizon: 0xd8dacb, fog: 0xd0d2c4, density: 0.0085, sun: 0xf1c78a, sunI: 3.2, sky: 0xcdd6d4, ground: 0x5c4a35, hemiI: 1.1, wind: 0.9, glow: 0.5, exposure: 1.0, envI: 0.85, mist: 0.55 },
 };
 const COLOR_KEYS = ['zenith', 'horizon', 'fog', 'sun', 'sky', 'ground'];
-const NUM_KEYS = ['density', 'sunI', 'hemiI', 'wind', 'glow', 'exposure'];
+const NUM_KEYS = ['density', 'sunI', 'hemiI', 'wind', 'glow', 'exposure', 'envI', 'mist'];
 
 const SUN_DIR = new THREE.Vector3(-0.72, 0.42, 0.22).normalize(); // low sun from the west: long side shadows, readable lit faces
 const SHADOW_HALF = 24; // m, half size of the shadow frustum around the player
@@ -40,16 +42,10 @@ void main() {
   gl_Position = p.xyww; // at the far plane
 }`;
 const SKY_FRAG = /* glsl */`
-uniform vec3 uZenith; uniform vec3 uHorizon; uniform vec3 uFog; uniform vec3 uSunColor; uniform vec3 uSunDir; uniform float uGlow;
+${SKY_GLSL}
 varying vec3 vDir;
 void main() {
-  vec3 d = normalize(vDir);
-  float h = d.y;
-  vec3 col = mix(uHorizon, uZenith, pow(smoothstep(0.0, 0.65, h), 0.8));
-  col = mix(col, uFog, 1.0 - smoothstep(-0.02, 0.12, h)); // the horizon melts into the fog
-  float s = max(dot(d, uSunDir), 0.0);
-  col += uSunColor * (pow(s, 6.0) * 0.25 * uGlow + pow(s, 48.0) * 0.5 * uGlow + smoothstep(0.9993, 0.9997, s) * 3.0 * uGlow);
-  gl_FragColor = vec4(col, 1.0);
+  gl_FragColor = vec4(envSky(normalize(vDir), true), 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }`;
@@ -150,7 +146,8 @@ function patchReeds(mat, u) {
 
 export class Atmosphere {
   /** world: return value of buildWorld() ({ scene, props, sun, hemi, layers }). */
-  constructor(world, renderer) {
+  constructor(world, renderer, opts = {}) {
+    installHeightFog(); // before any material compiles (env/shading.js)
     this.world = world; this.renderer = renderer; this.scene = world.scene;
     this.sun = world.sun; this.hemi = world.hemi; this.time = 0; this.quality = 'high';
     this.cur = this._resolve(MOODS.ben_say); this.target = this._resolve(MOODS.ben_say); this.moodId = 'ben_say';
@@ -164,8 +161,7 @@ export class Atmosphere {
     // Fog (exponential, depth) + sky dome.
     this.scene.fog = new THREE.FogExp2(this.cur.fog.clone(), this.cur.density);
     this.scene.background = this.cur.fog.clone();
-    this.skyU = { uZenith: { value: new THREE.Color() }, uHorizon: { value: new THREE.Color() }, uFog: { value: new THREE.Color() },
-      uSunColor: { value: new THREE.Color() }, uSunDir: { value: SUN_DIR.clone() }, uGlow: { value: 0.4 } };
+    this.skyU = skyUniforms(); this.skyU.uSunDir.value.copy(SUN_DIR);
     this.sky = new THREE.Mesh(new THREE.SphereGeometry(300, 32, 16), new THREE.ShaderMaterial({
       vertexShader: SKY_VERT, fragmentShader: SKY_FRAG, uniforms: this.skyU, side: THREE.BackSide, depthWrite: false, fog: false }));
     // Drawn after the opaque world (depth = far plane): only uncovered pixels run the sky shader.
@@ -213,9 +209,29 @@ export class Atmosphere {
       for (let i = 0; i < r.count; i++) { c.copy(pal[Math.floor(rnd() * pal.length)]).multiplyScalar(0.85 + rnd() * 0.25); r.setColorAt(i, c); }
       r.instanceColor.needsUpdate = true;
     }
+    // Demo 0.4 environment (src/env): terrain, water, foliage, CC0 / Blender props, HDRI, mist.
+    this.env = null;
+    if (opts.env !== false && !/[?&]env=0\b/.test(typeof location !== 'undefined' ? location.search : '')) {
+      try {
+        this.env = new Environment(world, renderer, opts.envOptions ?? {});
+        this.env.onHdri = (tex, lum) => this._setHdri(tex, lum);
+        for (const m of this.env.waterMats) m.uniforms.uSunDir.value.copy(SUN_DIR);
+      } catch (e) { console.warn('[env] environment disabled:', e); this.env = null; }
+    }
     this.flames = Object.values(world.props?.fires ?? {}).map((f) => ({ mesh: f, base: f.material.color.clone() }));
     this._shadowTagT = 0;
     this.apply(1);
+  }
+
+  /** CC0 HDRI (Poly Haven, see docs/ASSET_LICENSE_REGISTER.md): image-based lighting + cloud detail in the sky and water. */
+  _setHdri(tex, meanLum) {
+    tex.mapping = THREE.EquirectangularReflectionMapping;
+    const pm = new THREE.PMREMGenerator(this.renderer);
+    this.scene.environment = pm.fromEquirectangular(tex).texture;
+    pm.dispose();
+    const tint = new THREE.Color(meanLum, meanLum, meanLum);
+    for (const u of [this.skyU, ...(this.env?.waterMats ?? []).map((m) => m.uniforms)]) { u.tSky.value = tex; u.uSkyMix.value = 0.85; u.uSkyTint.value.copy(tint); }
+    this.apply(0);
   }
 
   _resolve(m) {
@@ -236,6 +252,7 @@ export class Atmosphere {
     const high = this.quality === 'high';
     this.sun.castShadow = high;
     this.sun.shadow.mapSize.set(2048, 2048);
+    this.env?.setQuality(this.quality);
     if (this.sun.shadow.map) { this.sun.shadow.map.dispose(); this.sun.shadow.map = null; }
     for (const f of this.flames) f.mesh.material.color.copy(f.base).multiplyScalar(high ? 2.4 : 1.2);
     this.scene.traverse((o) => {
@@ -257,7 +274,10 @@ export class Atmosphere {
     this.skyU.uZenith.value.copy(c.zenith); this.skyU.uHorizon.value.copy(c.horizon); this.skyU.uFog.value.copy(c.fog);
     this.skyU.uSunColor.value.copy(c.sun); this.skyU.uGlow.value = c.glow;
     this.sun.color.copy(c.sun); this.sun.intensity = c.sunI;
-    this.hemi.color.copy(c.sky); this.hemi.groundColor.copy(c.ground); this.hemi.intensity = c.hemiI;
+    this.hemi.color.copy(c.sky); this.hemi.groundColor.copy(c.ground);
+    const ibl = !!this.scene.environment;
+    this.hemi.intensity = c.hemiI * (ibl ? 0.45 : 1); // the HDRI lights the ambient term once loaded
+    this.scene.environmentIntensity = (c.envI ?? 1) * 0.75;
     this.renderer.toneMappingExposure = c.exposure;
     this.u.uWind.value = c.wind;
     for (const m of this.waterMats) {
@@ -274,6 +294,7 @@ export class Atmosphere {
     for (const m of this.waterMats) m.uniforms.uTime.value = this.time;
     if (dt > 0) this.apply(Math.min(1, dt * this.blendRate));
     this.sky.position.copy(camera.position);
+    this.env?.update(dt, focus, camera, this.cur);
     if (focus) {
       // Texel-snapped follow (reduces shadow shimmer while moving).
       const texel = (SHADOW_HALF * 2) / this.sun.shadow.mapSize.x;

@@ -49,6 +49,18 @@ export class PropLibrary {
     g.computeBoundingSphere();
     return { geo: g, mat: mesh.material };
   }
+  /** Placed Mesh with the normalized geometry (centred, base on y = 0): safe for CC0 parts whose vertices are offset. */
+  mesh(name, parent, x, y, z, rotY = 0, scale = 1, sink = 0) {
+    const key = `${name}|${sink}`;
+    this._norm ??= {};
+    const gm = this._norm[key] ?? (this._norm[key] = this.geometry(name, sink));
+    if (!gm) return null;
+    const m = new THREE.Mesh(gm.geo, gm.mat);
+    m.position.set(x, y, z); m.rotation.y = rotY;
+    if (typeof scale === 'number') m.scale.setScalar(scale); else m.scale.set(scale[0], scale[1], scale[2]);
+    m.castShadow = !FOLIAGE_MATS.has(gm.mat.name); m.receiveShadow = true; m.userData.fxShadowTagged = true;
+    parent.add(m); return m;
+  }
   /** One InstancedMesh per variant name; items [{x, y, z, rot, s, var}]. */
   instanced(parent, names, items, { sink = 0, shadows = true } = {}) {
     const out = [];
@@ -126,9 +138,9 @@ export function dressLegacy(lib, world, root, heightAt, L) {
     const g = flame.parent; if (!g) continue;
     for (let k = 0; k < 9; k++) {
       const a = (k / 9) * Math.PI * 2;
-      lib.place(`rock_moss_set_01_rock0${1 + (k % 6)}`, g, Math.cos(a) * 0.72, -0.05, Math.sin(a) * 0.72, a * 3, 0.11);
+      lib.mesh(`rock_moss_set_01_rock0${1 + (k % 6)}`, g, Math.cos(a) * 0.72, -0.04, Math.sin(a) * 0.72, a * 3, 0.13, 0.2);
     }
-    for (let k = 0; k < 3; k++) lib.place('dead_tree_trunk', g, 0, 0.12, 0, k * 2.1, [0.28, 0.45, 0.45]);
+    for (let k = 0; k < 3; k++) lib.mesh('dead_tree_trunk', g, 0, 0.0, 0, k * 2.1, [0.26, 0.5, 0.5]);
   }
   // Fallen gáo trunk (contextual vault): CC0 dead trunk stretched to the vault segment.
   const lv = L.logs[0];
@@ -141,7 +153,7 @@ export function dressLegacy(lib, world, root, heightAt, L) {
       m.scale.set(len / 3.05, 3.3, 3.3); m.position.set((lv.ax + lv.bx) / 2, -0.06, (lv.az + lv.bz) / 2);
       m.rotation.y = -Math.atan2(lv.bz - lv.az, lv.bx - lv.ax); m.castShadow = m.receiveShadow = true; m.userData.fxShadowTagged = true;
       root.add(m); placed.push(m);
-      put('tree_stump_01', root, lv.ax - 1.2, -0.05, lv.az - 0.6, 0.4, 0.9);
+      placed.push(lib.mesh('tree_stump_01', root, lv.ax - 1.2, -0.05, lv.az - 0.6, 0.4, 0.9, 0.1));
     }
   }
   hide('ditchRails');
@@ -167,8 +179,8 @@ export function dressLegacy(lib, world, root, heightAt, L) {
   // A few fixed rocks / stumps as composition anchors (kiln yard, arena rim, hub bank, reed beds).
   const anchors = [[-36.5, -116, 0, 0.55], [-25.5, -105.5, 2, 0.4], [-38, -103, 3, 0.35], [19.5, -131, 4, 0.5], [-17, -146, 5, 0.6], [13, -152, 1, 0.45],
     [-19.5, -128, 2, 0.4], [HUB + 16, 33, 3, 0.45], [HUB - 16, 31, 0, 0.4], [27, -70, 5, 0.35], [-28, -60, 1, 0.4]];
-  for (const [x, z, v, s] of anchors) put(`rock_moss_set_01_rock0${1 + v}`, root, x, groundY(x, z) - 0.25 * s, z, x + z, s);
-  for (const [x, z, s] of [[-22, -95, 0.8], [21, -60, 0.9], [-12, -48, 0.7], [HUB + 13, -14, 0.8]]) put('tree_stump_01', root, x, groundY(x, z) - 0.05, z, x, s);
+  for (const [x, z, v, s] of anchors) placed.push(lib.mesh(`rock_moss_set_01_rock0${1 + v}`, root, x, groundY(x, z), z, x + z, s, 0.25));
+  for (const [x, z, s] of [[-22, -95, 0.8], [21, -60, 0.9], [-12, -48, 0.7], [HUB + 13, -14, 0.8]]) placed.push(lib.mesh('tree_stump_01', root, x, groundY(x, z), z, x, s, 0.1));
   // 0.4 visual landmarks (when the layout comes from world_0_4.json).
   for (const lm of L.landmarks ?? []) {
     if (lm.id.includes('sung') || lm.id.includes('gao') || lm.id.includes('sim')) put('cay_sung', root, lm.x, heightAt(lm.x, lm.z) - 0.1, lm.z, lm.x, Math.max(1, lm.height / 8));

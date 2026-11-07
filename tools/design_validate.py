@@ -1250,13 +1250,16 @@ def check_story_0_4(b: dict, rep: Report) -> None:
 
     # ---- quests
     conv_ids = ids(convs)
-    points = set((parse_world_points() or {}).keys())
+    world_pts = parse_world_points() or {}
+    points = set(world_pts.keys())
     new_pts = qs.get("new_points", [])
     zones = {z.get("id"): z for z in mp.get("zones", [])}
     for npnt in new_pts:
         note(npnt.get("id"))
-        if npnt.get("id") in points:
-            rep.err(f"quests.new_points.{npnt.get('id')}: already in world.js")
+        # Once the prototype adds a proposed point to world.js POINTS it must keep the data coordinates.
+        wp = world_pts.get(npnt.get("id"))
+        if wp is not None and (abs(wp[0] - npnt["x"]) > 0.01 or abs(wp[1] - npnt["z"]) > 0.01):
+            rep.err(f"quests.new_points.{npnt.get('id')}: world.js has ({wp[0]}, {wp[1]}), data has ({npnt['x']}, {npnt['z']})")
         z = npnt.get("zone")
         if z == OFFMAP_ZONE:
             continue
@@ -1610,10 +1613,14 @@ def check_world_0_4(b: dict, rep: Report, enemy_ids: set) -> dict[str, dict]:
             rep.err(f"world_0_4.points.{pid}: ({p['x']}, {p['z']}) is outside region {p['region']}")
     # Legacy compatibility: every POINTS id of world.js exists with the same coordinates (legacy_map).
     legacy = parse_world_points()
+    story_pts = {p.get("id") for p in b.get("quests", {}).get("new_points", [])} if isinstance(b.get("quests"), dict) else set()
     if legacy is not None:
         for lid, (lx, lz) in legacy.items():
             p = pts.get(lid)
-            if p is None:
+            if p is None and lid in story_pts:
+                # Story 0.4 points (quests.new_points) came after world_0_4 was laid out: to be mapped by the world pass.
+                rep.warn(f"world_0_4: story point {lid!r} (quests.new_points, now in world.js) not yet placed in world_0_4")
+            elif p is None:
                 rep.err(f"world_0_4: legacy point {lid!r} from world.js is missing (legacy_map: same_id_same_xz)")
             elif abs(p["x"] - lx) > 0.01 or abs(p["z"] - lz) > 0.01:
                 rep.err(f"world_0_4.points.{lid}: moved from world.js ({lx}, {lz}) without a legacy_map entry")

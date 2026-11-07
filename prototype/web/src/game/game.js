@@ -14,17 +14,18 @@ import { INPUT_GRACE_S } from '../logic/shackle.js';
 import { Inventory, craft, missingFor, baoKhiEffect } from '../logic/crafting.js';
 import { newGeneration, handoff, handoffWarnings, skillPointsFor, eraTags, forbiddenHits } from '../logic/lineage.js';
 import { PROTO } from '../logic/proto.js';
-import { buildWorld, Walkable, POINTS, SPAWNS, zoneAt, HUB_X, mulberry32, encounterSpawns } from './world.js';
+import { buildWorld, Walkable, POINTS, SPAWNS, zoneAt, mulberry32, encounterSpawns } from './world.js';
 import { Enemy, normAngle } from './enemy.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
 import { Sfx } from './audio.js';
 import { UI } from './ui.js';
-import { makeHumanoid, makeTusk } from './meshes.js';
+import { makeTusk } from './meshes.js';
 import { createFx, gameStep } from '../fx/index.js';
 import { GameFxHooks } from '../fx/hooks.js';
 import { Gameplay03 } from './gameplay03.js';
 import { createGameProgress, installUi03 } from '../ui/inventory/index.js'; // Demo 0.3 Pack / map / minimap
+import { StoryDirector } from '../story/director.js'; // Story Integration 0.4: cut-scenes, NPCs, dialogue, quests
 
 const SETTINGS_KEY = 'ngb_demo01_settings_v1';
 const WEIGHT_RANK = { light: 0, medium: 1, heavy: 2, finisher: 3 };
@@ -125,6 +126,7 @@ export class Game {
     this.cam = { yaw: 0, pitch: 0.38, dist: this.data.combat.feel?.camera_distance_m ?? 6.5, fx: 0, fy: 1.6, fz: 0, init: false, punchX: 0, punchY: 0, punchZ: 0, pvx: 0, pvy: 0, pvz: 0, orbit: 0, lookBias: 0 };
     this.feedbackLog = [];
     this.ui = new UI(this.container, this);
+    this.story = new StoryDirector(this); // Story 0.4 (src/story): DOM layer now, world props in buildNpcs()
     this.progress = createGameProgress(this); // Demo 0.3 progression API (logic/progression.js)
     this.tokens = new AttackTokens(this.data.combat.enemy_ai);
     this.applySettings();
@@ -166,7 +168,7 @@ export class Game {
     this.equipped = null; this.zone = 'z_ben_say';
     this.walk.gateOpen = false; if (this.props) this.props.gate.visible = true;
     this.mods = this.gen.skills.modifiers();
-    this.progress?.reset(); this.ui03?.reset();
+    this.progress?.reset(); this.ui03?.reset(); this.story?.reset();
   }
 
   get era() { return this.gen.era; }
@@ -190,16 +192,9 @@ export class Game {
   /** Every enemy actor in play (world + practice); cached, no per-frame allocation. */
   allEnemies() { return this._all ?? []; }
 
-  buildNpcs() {
-    const ferrywoman = makeHumanoid({ body: 0x5a4a6a, hatColor: 0xc8b47a, height: 0.95 });
-    ferrywoman.root.position.set(-4, 0, 22.8); ferrywoman.root.rotation.y = Math.PI; this.scene.add(ferrywoman.root);
-    this.villager = makeHumanoid({ body: 0x6a6a52, hat: false });
-    this.villager.root.position.set(10, 0, -81); this.villager.root.rotation.y = 0.6; this.scene.add(this.villager.root);
-    const caster = makeHumanoid({ body: 0x704a3a, hat: false, height: 1.05 });
-    caster.root.position.set(HUB_X - 10.5, 0, -6.5); caster.root.rotation.y = 1.2; this.scene.add(caster.root);
-    this.elder = makeHumanoid({ body: 0x606060, hat: true, hatColor: 0xa89a70, height: 0.92 });
-    this.elder.root.position.set(HUB_X + 2.5, 0, -12); this.elder.root.visible = false; this.scene.add(this.elder.root);
-  }
+  /** Story NPCs (src/story/director.js): Bà Mơ, Nghệ (the entranced villager), Năn, Đót, Bác Sung, Ông Vầu, Bé Kê.
+   *  this.villager = Nghệ and this.elder = Ông Vầu keep the 0.1-0.3 call sites working. */
+  buildNpcs() { this.story.build(); }
 
   resize() {
     const w = innerWidth, h = innerHeight;
@@ -221,17 +216,22 @@ export class Game {
 
   startGame() {
     this.sfx.init(); this.sfx.setVolume(this.settings.volume); this.sfx.startAmbience();
-    this.ui.close(); this.ui.showHud(true);
-    this.mode = 'playing'; this.input.clearAll();
+    this.ui.close();
+    this.input.clearAll();
     for (const id of START_CODEX) this.codexUnlock(id, true);
     this.input.requestLock();
-    const d = this.i18n.dialogue('dlg_01_opening');
-    this.after(0.8, () => this.say(d.speaker, d.text, 5));
+    // Cold open (cinematics.json cin_cold_open, 90 s, hold to skip); the main quest starts on its end and the
+    // key tips come after it (STORY_INTEGRATION_0_4 §3: no key toasts over the opening).
+    this.story.play('cin_cold_open', { onEnd: () => this._afterColdOpen() });
+  }
+  _afterColdOpen() {
+    this.mode = 'playing'; this.ui.showHud(true); this.input.clearAll(); this.input.requestLock();
+    this.player.respawn({ x: -1.2, z: 21.4 }); this.player.yaw = Math.PI;
     const g = (a) => this.glyphText(a);
     const tips = [['tut2_move', () => ({ move: [g('move_up'), g('move_left'), g('move_down'), g('move_right')].join(''), sprint: g('sprint'), walk: g('walk') })],
-      ['tut2_parry', () => ({ key: g('parry') })], ['tut2_unparryable', () => ({ key: g('dodge') })],
+      ['tut4_parry', () => ({ key: g('parry') })], ['tut2_unparryable', () => ({ key: g('dodge') })],
       ['tut2_lock', () => ({ key: g('lock_on') })], ['tut2_drum', () => ({ key: g('drum_burst') })]];
-    tips.forEach(([k, v], i) => this.after(6 + i * 6, () => this.ui.toast(this.i18n.t(k, v()), 6)));
+    tips.forEach(([k, v], i) => this.after(5 + i * 6, () => this.ui.toast(this.i18n.t(k, v()), 6)));
   }
 
   pause(tab) {
@@ -286,7 +286,10 @@ export class Game {
     this.fps = this.fpsFrames.length;
     this.input.pollGamepad();
     if (this.mode === 'playing') this.update(realDt, now / 1000, wallDt);
+    else if (this.mode === 'cinematic') { this.playTime += wallDt; this.story.updateCinematic(wallDt, this.input); }
+    else if (this.mode === 'dialogue') { this.playTime += wallDt; this.story.updateDialogue(wallDt, this.input); }
     else { this.handleMenuKeys(); this._menuAnim(wallDt); }
+    this.story?.uiTick(wallDt);
     this.ui.tick(wallDt);
     this.ui03?.tick(wallDt);
     this.render(wallDt);
@@ -338,6 +341,7 @@ export class Game {
     this.updatePractice();
     this.updateCamera(realDt, i);
     this.fxh.update(wallDt);
+    this.story.tick(wallDt);
     this.updateHud(wallDt);
   }
 
@@ -405,7 +409,8 @@ export class Game {
     const t = performance.now() / 1000;
     for (const f of Object.values(this.props.fires)) f.scale.y = 1 + Math.sin(t * 9 + f.id) * (this.settings.acc.acc_reduce_flash ? 0.02 : 0.12);
     // FX run on real time and freeze while paused / in menus.
-    this.fx.update(this.mode === 'playing' && !this.debugFxFrozen ? wallDt : 0, this.player);
+    const live = this.mode === 'playing' || this.mode === 'cinematic' || this.mode === 'dialogue';
+    this.fx.update(live && !this.debugFxFrozen ? wallDt : 0, this.player);
     this.fx.render();
     if (this.mode === 'playing' || this.mode === 'paused') this.updateMarkers();
   }
@@ -526,6 +531,7 @@ export class Game {
       if (!sweepHits(att, { x: d.position.x, z: d.position.z, radius: 0.4 }, spec, u0, u1)) continue;
       cur.dummies.add(d);
       d.rotation.z = 0.3; setTimeout(() => { d.rotation.z = 0; }, 160); this.fxh.dummyHit(d);
+      if (!this.practice.dummyBark) { this.practice.dummyBark = true; this.story?.bark('dummy_broken'); }
     }
   }
   _targetsInReach(range, arcDeg) {
@@ -564,6 +570,7 @@ export class Game {
     if (r.broke) {
       this.player.drum.gain('the_break'); this.hitstop.trigger(hitStopFor(this.data.combat.hit_stop, 'heavy')); this.fxh.postureBreak(e);
       this.sfx.drum(true); this.input.rumble(0.7, 0.2);
+      if (!e.isBoss) this.story?.bark('guard_break');
     }
     if (r.cracked) { this.fxh.khoenCrack(e); this.ui.center(this.i18n.t('msg_khoen_crack', { n: e.enc.khoen.cracks }), 1.6); }
     if (r.phaseChanged) this.onBossPhase2(e);
@@ -591,6 +598,7 @@ export class Game {
       case 'kneel': this.sfx.telegraph('boar_pain', 'nodamage', 0); break;
       case 'line': { const d = this.i18n.dialogue('dlg_02_see_shard'); this.say(d.speaker, d.text, 4); break; }
       case 'stand': {
+        this.after(1.6, () => this.story.bark('boss_phase2_stakes_revealed', { force: true, seconds: 3 }));
         // The fourth mud pool spreads where the stake fell (arena_change: mud_pool_added_at_stake).
         const r = 2.6; this.walk.addMudPool(st.position.x, st.position.z, r);
         const m = this.props.addedMud; m.position.set(st.position.x, 0.025, st.position.z); m.scale.setScalar(r); m.visible = true;
@@ -635,6 +643,7 @@ export class Game {
         this.ui.toast(T(perfect ? 'msg_perfect_parry' : 'msg_parry'), 1.5);
         if (perfect) p.perfectParryUntil = this.gameNow + g.perfect_parry_counter_window_s;
         if (perfect) this.gp?.onPerfectParry(enemy, atk); // 0.3 Phản nhịp
+        if (perfect) this.story?.bark('perfect_parry');
         return;
       }
       default: {
@@ -658,11 +667,12 @@ export class Game {
     return nc.progress_kept_on_interrupt;
   }
 
-  onBurst() { this.sfx.drum(true); this.fxh.drumBurst(); this.ui.center(this.loc(this.player.weapon.drum_burst.name), 1.2); }
+  onBurst() { this.sfx.drum(true); this.fxh.drumBurst(); this.ui.center(this.loc(this.player.weapon.drum_burst.name), 1.2); this.story?.bark('drum_burst'); }
 
   onEnemyDefeated(e) {
     const key = e.def.defeat_behavior === 'dissipate' ? 'msg_enemy_dissipated' : 'msg_enemy_fled';
-    this.ui.toast(this.i18n.t(key, { name: this.loc(e.def.name) }), 2.5);
+    this.ui.toast(this.i18n.t(key, { name: this.story?.creatureName(e.def) ?? this.loc(e.def.name) }), 2.5); // creatures_0_4 display name (id unchanged)
+    if (!e.isBoss) this.after(0.6, () => this.story?.bark(e.def.defeat_behavior === 'dissipate' ? 'enemy_dissipated' : 'enemy_fled'));
     this.fxh.enemyDefeated(e);
     this.ui03?.onEnemyDefeated(e); // XP + drops (0.3)
     this.gp?.onEnemyDefeated(e);
@@ -736,10 +746,12 @@ export class Game {
     this.ui.toast(this.i18n.t('msg_swap', { name: this.loc(p.weapon.name) }), 1.5);
     this.sfx.whoosh(0.8, 'light');
     if (this.practice) this.practice.swaps += 1;
+    this.story?.bark(p.weaponId === 'wp_riu_xeo' ? 'swap_to_axe' : 'swap_to_spear');
   }
 
   loc(o) { return this.i18n.loc(o); }
   speakerName(id) {
+    const st = this.story?.speakerName(id); if (st) return st; // dialogue.json speakers (Bà Mơ, Năn, ...)
     const ch = this.data.lineage.characters.find((c) => c.id === id);
     if (ch) return this.loc(ch.name);
     if (id === this.data.secrets.chains[0].hint_giver.npc) return this.loc(this.data.secrets.chains[0].hint_giver.name);
@@ -748,9 +760,12 @@ export class Game {
   say(speaker, text, s) { this.ui.subtitle(speaker ? this.speakerName(speaker) : '', this.loc(text), s); }
 
   // ------------------------------------------------------------------ codex
+  /** Codex list: codex.json entries + creature entries from creatures_0_4.json (Story 0.4). */
+  codexEntries() { return this._codexAll ?? (this._codexAll = [...this.data.codex.entries, ...this.story.codexEntries()]); }
   codexUnlock(id, silent = false) {
     if (this.codex.has(id)) return false;
-    const e = this.data.codex.entries.find((x) => x.id === id);
+    const e = this.codexEntries().find((x) => x.id === id);
+    if (!e) return false;
     // SB11-17: no new entry using an era's forbidden words may unlock in that era.
     if (forbiddenHits([e.title, e.text], eraTags(this.data.lineage, this.era)).length) return false;
     this.codex.add(id);
@@ -763,8 +778,15 @@ export class Game {
   // ------------------------------------------------------------------ zones, interactions
   updateZone() {
     const z = zoneAt(this.player.x, this.player.z);
-    if (z && !['c01', 'c12', 'c24', 'c3', 'shortcut'].includes(z)) this.zone = z;
-    if (z === 'z_dau_truong' && !this.bossSeen && this.boss.state !== 'freed') { this.bossSeen = true; this.codexUnlock('cx_lon_loi_dam'); }
+    if (z && !['c01', 'c12', 'c24', 'c3', 'shortcut'].includes(z)) {
+      if (z !== this.zone && this.era === 'era_lac_long_quan') this.story.record('enter_zone', z);
+      this.zone = z;
+    }
+    if (z === 'z_dau_truong' && !this.bossSeen && this.boss.state !== 'freed') {
+      this.bossSeen = true; this.codexUnlock('cx_lon_loi_dam');
+      this.after(1.2, () => this.story.bark('boss_intro', { force: true, seconds: 3.2 }));
+    }
+    if (z === 'z_bai_lau' && this.era === 'era_lac_long_quan' && !this.villagerSaved) this.codexUnlock('cx_suong_bai_lau');
     for (const pt of POINTS.filter((x) => x.kind === 'trace')) {
       if (!this.tracesSeen.has(pt.id) && this.era === 'era_lac_long_quan' && Math.hypot(pt.x - this.player.x, pt.z - this.player.z) < pt.r) {
         this.tracesSeen.add(pt.id); this.ui.subtitle('', this.loc(this.boss.def.intro_traces[pt.trace]), 4);
@@ -783,7 +805,8 @@ export class Game {
     const coi = this.era === 'era_lac_long_quan', freed = this.gen.flags.has(FREED_FLAG);
     switch (pt.kind) {
       case 'rest': case 'hint_npc': case 'ferry_to_hub': return coi;
-      case 'secret': return coi && this.secret.isAvailable(pt.node);
+      // trap_a is also step 1 of the main quest: inspectable for the quest even when the secret took the other trail.
+      case 'secret': return coi && (this.secret.isAvailable(pt.node) || (pt.id === 'trap_a' && !this.story.quests.has('inspect', 'trap_a')));
       case 'kiln_piece': return coi && this.secret.isAvailable('sn_kiln');
       case 'gather': return coi && !this.gathered.has(pt.id);
       case 'call_name': return coi && !this.villagerSaved;
@@ -792,6 +815,7 @@ export class Game {
       case 'thap': return true;
       case 'drum': return (coi && freed) || (!coi && this.practice?.done && !this.endReached);
       case 'ferry_to_marsh': return coi;
+      case 'npc': case 'env_story': case 'quest_interact': return this.story.pointAvailable(pt);
       default: return this.ui03?.pointAvailable(pt) ?? false;
     }
   }
@@ -811,6 +835,7 @@ export class Game {
       case 'furnace': return k('prompt_craft');
       case 'thap': return k('prompt_open_thap');
       case 'drum': return k(coi ? 'prompt_handoff' : 'prompt_continue');
+      case 'npc': case 'env_story': case 'quest_interact': return this.story.promptFor(pt);
       default: return this.ui03?.promptFor(pt) ?? '';
     }
   }
@@ -856,7 +881,13 @@ export class Game {
       // acc_call_name_mode: hold (default) or a single press that runs until done / hit / out of range.
       if (this.settings.acc.acc_call_name_mode === 'toggle') { if (i.pressed('call_name')) this.callLatched = !this.callLatched; } else this.callLatched = false;
       const holding = (i.isDown('call_name') || this.callLatched) && (p.state === 'free' || p.state === 'guard');
-      if (holding) { this.callProgress = Math.min(1, this.callProgress + dt / nc.hold_s); p.animOverride = 'call'; }
+      if (holding) {
+        this.callProgress = Math.min(1, this.callProgress + dt / nc.hold_s); p.animOverride = 'call';
+        // Three calls of rising urgency (bk_s_call_1..3); the last points at the indigo strip on her pole.
+        for (const [at, trig] of [[0, 'call_name_progress_0'], [0.5, 'call_name_progress_50'], [0.9, 'call_name_progress_90']]) {
+          if (this.callProgress >= at && !this.story.callBarks.has(trig)) { this.story.callBarks.add(trig); this.story.bark(trig, { force: true, seconds: 2.4 }); }
+        }
+      }
       this.ui.prompt(this.promptFor(best), this.callProgress);
       if (this.callProgress >= 1) { this.callLatched = false; this.saveVillager(); }
       return;
@@ -869,12 +900,15 @@ export class Game {
     const T = this.i18n.t;
     switch (pt.kind) {
       case 'rest': this.restAt(pt.id); this.sfx.ui(); break;
-      case 'hint_npc': this.openScreen('hints'); break;
+      case 'hint_npc': if (!this.story.talk(pt.id, 'npc_ba_lai_do')) this.openScreen('hints'); break; // story first, then the 3-tier hints
       case 'ferry_to_hub':
         if (!this.gen.flags.has(FREED_FLAG)) { this.ui.toast(T('msg_ferry_locked'), 4); break; }
         this.travel(SPAWNS.hub_arrive); break;
       case 'ferry_to_marsh': this.travel({ x: 0, z: 27 }); break;
-      case 'secret': this.completeSecret(pt.node); break;
+      case 'secret':
+        if (this.secret.isAvailable(pt.node)) this.completeSecret(pt.node);
+        else { this.story.inspect(pt.id); this.after(0.3, () => this.story.bark(`inspect:${pt.id}`, { force: true, seconds: 3.5 })); }
+        break;
       case 'kiln_piece':
         if (pt.correct) { this.props.kilnPieces[pt.piece].visible = false; this.completeSecret('sn_kiln'); }
         else this.ui.toast(T('msg_puzzle_wrong'), 2.5);
@@ -884,12 +918,21 @@ export class Game {
         this.give('mat_day_may', 1); break;
       }
       case 'shortcut': this.walk.gateOpen = true; this.props.gate.visible = false; this.ui.toast(T('msg_shortcut_open'), 3); this.sfx.ui(); break;
-      case 'furnace':
-        if (!this.gen.flags.has('flag_village_bronze')) { this.gen.flags.add('flag_village_bronze'); this.give('mat_dong_lo_lang', 1); }
-        this.openScreen('craft'); break;
+      case 'furnace': {
+        const open = () => {
+          if (!this.gen.flags.has('flag_village_bronze')) { this.gen.flags.add('flag_village_bronze'); this.give('mat_dong_lo_lang', 1); }
+          this.openScreen('craft');
+        };
+        // Bác Sung reads the trap blade first (cv_gianh_furnace, step 6), then the furnace opens.
+        if (!this.story.talk('npc_tho_duc_lang', 'npc_tho_duc_lang', open)) open();
+        break;
+      }
       case 'thap': this.openThap(); break;
       case 'drum': if (this.era === 'era_lac_long_quan') this.confirmHandoff(); else this.finishDemo(); break;
-      default: this.ui03?.interact(pt); break;
+      case 'npc': case 'env_story': case 'quest_interact': this.story.interact(pt); break;
+      default:
+        if (this.ui03?.interact(pt)) this.story.record(pt.kind === 'chest' ? 'open_chest' : 'environment_secret', pt.id);
+        break;
     }
   }
 
@@ -902,6 +945,8 @@ export class Game {
   completeSecret(nodeId) {
     const r = this.secret.complete(nodeId);
     if (!r.ok) return;
+    const spot = POINTS.find((x) => x.node === nodeId && x.kind === 'secret');
+    if (spot) { this.story.inspect(spot.id); this.after(6.2, () => this.story.bark(`inspect:${spot.id}`, { force: true, seconds: 3.5 })); }
     for (const c of r.granted) {
       const clue = this.secret.chain.clues.find((x) => x.id === c);
       this.ui.toast(this.i18n.t('msg_clue', { name: this.loc(clue.name) }), 4);
@@ -913,7 +958,7 @@ export class Game {
       for (const it of r.reward.items ?? []) this.give(it.item, it.count);
       this.props.hollow.visible = false;
       for (const cx of r.reward.codex_unlock_extra ?? []) {
-        const e = this.data.codex.entries.find((x) => x.id === cx);
+        const e = this.codexEntries().find((x) => x.id === cx);
         this.codexUnlock(cx, true);
         this.ui.toast(this.i18n.t('msg_codex_extra', { name: this.loc(e.title) }), 4);
       }
@@ -932,7 +977,13 @@ export class Game {
     this.sfx.pickup();
     const mist = this.props.mist;
     let t = 0; const iv = setInterval(() => { t += 0.05; mist.material.opacity = Math.max(0, 0.35 * (1 - t)); if (t >= 1) { clearInterval(iv); mist.visible = false; } }, 50);
-    this.after(2.5, () => { this.villager.root.position.set(-7, 0, 19); this.villager.root.rotation.y = Math.PI; });
+    this.story.record('non_combat_success', nc.id);
+    // Nghệ wakes and talks (cv_nghe_rescue: choice "drive it out" / "see what hurts it"); then walks home.
+    this.after(1.2, () => {
+      const cv = this.data.dialogue.conversations.find((c) => c.id === 'cv_nghe_rescue');
+      if (this.mode === 'playing' && cv) this.story.startConversation(cv, 'npc_nghe');
+    });
+    this.after(2.5, () => { this.villager.root.position.set(-7, 0, 19); this.villager.root.rotation.y = Math.PI; this.villager.homeYaw = Math.PI; });
   }
 
   travel(pos) {
@@ -978,8 +1029,9 @@ export class Game {
         this.player.pryBeats = ev.beat; this.player.anim.pryBeat(); this.shake('medium'); this.input.rumble(0.6, 0.1);
         boss.mesh.cracks.forEach((c) => { c.scale.y = 1 + ev.beat * 0.6; });
         this.pry.msg = T('pry_beat_hit'); this.player.drum.gain('pry_beat');
+        this.story.bark(`pry_beat_${ev.beat}`, { force: true, seconds: 1.2 }); // "Một… Hai… Ba!" (display only, never the clock)
       }
-      if (ev.type === 'miss') { this.sfx.miss(); this.fxh.pryMiss(boss); this.pry.msg = T('pry_beat_miss'); }
+      if (ev.type === 'miss') { this.sfx.miss(); this.fxh.pryMiss(boss); this.pry.msg = T('pry_beat_miss'); this.story.bark('pry_beat_miss', { force: true, seconds: 1.5 }); }
     }
     const slotFrac = judge.holdMode ? 0 : Math.max(0, Math.min(1, judge.timeToSlot / judge.interval));
     this.ui.pryWidget({ beats: judge.beats, hit: judge.beat, slotFrac, hold: judge.holdMode, holdProgress: judge.holdProgress / judge.holdDuration, msg: this.pry.msg });
@@ -1013,14 +1065,17 @@ export class Game {
     this.after(tun.pry.silence_after_s + 0.2, () => {
       this.ui.showHud(true);
       boss.walkOff();
-      const ve = this.i18n.dialogue('dlg_04_ve_after_pry');
-      if ((ve.allowed_eras ?? [ve.era]).includes(this.era)) this.say(ve.speaker, ve.text, 9);
+      // qs_m5 on_complete: Cói's line in the silence, the verse line by line, then she picks up the blade.
+      this.story.bark('after_pry_silence_before_ve', { force: true, seconds: 2.8 });
+      const veS = this.story.sing('dlg_04_ve_after_pry', null, { delay: 3.0, perLine: 3.4 });
+      this.after(3.4 + veS, () => this.story.bark('after_ve_pick_blade', { force: true, seconds: 4 }));
       this.player.showPole(false); this.player.state = 'free'; this.player.pryBeats = 0; this.locked = false; this.lockTarget = null;
     });
     this.after(tun.pry.silence_after_s + 3, () => {
       for (const d of kh.on_pry_success.drops) this.give(d.item, d.count);
       this.scene.remove(tusk);
       this.gen.flags.add(kh.on_pry_success.sets_flag);
+      this.story.record('boss_freed', boss.def.id);
       const pts = skillPointsFor(this.data.lineage, kh.on_pry_success.sets_flag);
       this.gen.skills.points += pts; this.ui.toast(T('msg_skill_points', { n: pts }), 4);
       for (const hm of this.data.lineage.house_moves.filter((h) => h.unlock.flag === kh.on_pry_success.sets_flag)) {
@@ -1037,6 +1092,7 @@ export class Game {
     this.after(2, () => {
       for (const d of fb.drops) this.give(d.item, d.count);
       this.gen.flags.add(fb.sets_flag);
+      this.story.record('boss_freed', boss.def.id);
       const pts = skillPointsFor(this.data.lineage, fb.sets_flag); this.gen.skills.points += pts;
     });
   }
@@ -1050,6 +1106,7 @@ export class Game {
     const it = this.data.items.items.find((x) => x.id === res.crafted.item);
     this.equipped = it.category === 'bao_khi' ? it.id : this.equipped;
     this.gen.flags.add(`crafted:${id}`);
+    this.story.record('craft', id);
     this.ui.toast(this.i18n.t(r.type === 'upgrade' ? 'msg_upgraded' : 'msg_crafted', { name: this.loc(it.name) }), 4);
     this.sfx.pickup();
     const d = this.data.strings.dialogue.find((x) => x.trigger === `craft_${id}`);
@@ -1076,10 +1133,16 @@ export class Game {
     this.ui.showConfirm(this.i18n.t('handoff_confirm'), names, () => this.runHandoff(), () => this.resume());
   }
 
-  /** Handoff sequence (lineage.handoff.steps). Everything shown here belongs to the next era and must
-   *  pass that era's forbidden-word rule (checked by test/handoff.test.mjs). */
+  /** Handoff sequence. Story 0.4: the cut-scene cin_handoff (carve the notch, tie the strip, seasons, Bương fits
+   *  a new shaft, Ông Vầu ties a new strip) replaces the title / line / tool / verse / theme cards
+   *  (cinematics.replaces_handoff_steps); then the remaining lineage.handoff.steps (then_handoff_steps), the
+   *  practice, the demo hook cin_demo_hook and the end. Everything shown in Bương's era must pass that era's
+   *  forbidden-word rule (test/handoff.test.mjs, test/story04.test.mjs, smoke). */
   runHandoff() {
-    const L = this.data.lineage, steps = L.handoff.steps, e = (s) => this.ui.esc(s), T = this.i18n.t;
+    const L = this.data.lineage, e = (s) => this.ui.esc(s), T = this.i18n.t;
+    const cins = this.data.cinematics.cinematics, ho = cins.find((c) => c.id === 'cin_handoff'), hook = cins.find((c) => c.id === 'cin_demo_hook');
+    const byId = (id) => L.handoff.steps.find((x) => x.id === id);
+    const steps = [...ho.then_handoff_steps.map(byId), { id: hook.id, kind: 'cinematic', ref: hook.id }, ...hook.then_handoff_steps.map(byId)].filter(Boolean);
     const prev = this.gen;
     if (this.equipped && !prev.owned[this.equipped]) this.equipped = null;
     this.gen = handoff(L, prev);
@@ -1119,17 +1182,15 @@ export class Game {
           break;
         }
         case 'practice_fight': this.startPractice(st, next); break;
+        case 'cinematic': this.ui.close(); this.story.play(st.ref, { onEnd: () => { this.mode = 'paused'; next(); } }); break;
         case 'demo_end': this.showEnd(); break;
         default: next();
       }
     };
     this.handoffNext = next;
-    // In-world handover beat before the cards: Cói kneels and offers the Mũi Sào with both hands.
-    const p = this.player;
-    this.mode = 'playing'; this.ui.close(); this.locked = true; this.lockTarget = null;
-    p.showPole(true); p.state = 'handover'; p.stateT = 0; this.handoverPose = true;
-    this.cam.yaw = p.yaw + Math.PI * 0.75; this.cam.pitch = 0.2;
-    this.after(1.8, () => { this.handoverPose = false; p.showPole(false); p.state = 'free'; this.locked = false; this.mode = 'paused'; next(); });
+    this.story.record('interact', 'drum'); // qs_h1_khac_vet -> on_complete cin_handoff
+    this.ui.close();
+    this.story.play('cin_handoff', { onEnd: () => { this.mode = 'paused'; this.input.exitLock(); next(); } });
   }
 
   startPractice(step, next) {
@@ -1160,6 +1221,7 @@ export class Game {
     if (pr.swaps >= 1 && allGone) {
       pr.done = true; this.ui.toast(this.i18n.t('msg_practice_done'), 4);
       this.ui.center(this.i18n.t('msg_practice_done'), 2);
+      this.after(3, () => { if (!this.endReached && this.mode === 'playing') this.finishDemo(); }); // -> cin_demo_hook
     } else if (allGone && !pr.respawnT) {
       // Practice can't be lost or exhausted: crabs come back until the goal is met.
       pr.respawnT = true;
@@ -1168,6 +1230,7 @@ export class Game {
   }
 
   finishDemo() {
+    if (this.endReached) return;
     this.endReached = true;
     this.mode = 'paused'; this.input.exitLock();
     this.handoffNext?.();
@@ -1193,6 +1256,7 @@ export class Game {
   objective() {
     const T = this.i18n.t, f = this.gen.flags;
     if (this.era !== 'era_lac_long_quan') return this.practice && !this.practice.done ? T('obj_practice') : T('obj_end');
+    const story = this.story?.objectiveText(); if (story) return story; // quests.json "Người chưa về" (0.4)
     if (!this.villagerSaved) return T('obj_find_villager');
     if (!f.has(FREED_FLAG)) return T('obj_boss');
     if (!f.has('crafted:rcp_nanh_dam')) return this.zone === 'hub' || this.zone === 'hub_bank' ? T('obj_craft') : T('obj_return');
@@ -1213,7 +1277,7 @@ export class Game {
       otherWeapon: this.gen.slots > 1 ? this.data.weapons.weapons.find((w) => w.id === this.gen.weapons[(p.slot ?? 0) === 0 ? 1 : 0]) ?? null : null,
       combat: this.allEnemies().some((e) => e.engaged && e.alive && Math.hypot(e.x - p.x, e.z - p.z) < 30), // minimal HUD
       zone: this.zoneName(), objective: this.objective(), fps: this.settings.showFps ? this.fps : null,
-      boss: bossOn ? { name: this.loc(b.def.name), phase: this.loc(b.enc.phase.name), hp: b.enc.hpRatio, the: b.posture.ratio,
+      boss: bossOn ? { name: this.story.creatureName(b.def), phase: this.loc(b.enc.phase.name), hp: b.enc.hpRatio, the: b.posture.ratio,
         cracks: b.enc.khoen.cracks, showCracks: b.enc.khoen.enabled } : null,
     }, dt);
     if (this.playTime > 2) this.fpsAvg = Math.round(this.fps);
@@ -1283,6 +1347,8 @@ export class Game {
       openPack(tab) { g.ui03.openTab(tab); },
       addXp(n) { return g.progress.addXp(n); },
       grant(id, n = 1) { return g.ui03.grant(id, n); },
+      /** Story 0.4 read-out: cut-scene (shot, era, skip / hold progress), dialogue node, quests, line log. */
+      story: () => g.story.debug(),
     };
   }
 }

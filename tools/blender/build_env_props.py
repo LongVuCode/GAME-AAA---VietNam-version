@@ -581,13 +581,13 @@ def nature(M):
                             m.node_tree.links.new(n.outputs["Alpha"], bsdf.inputs["Alpha"])
         return obs
 
-    imp("rock_moss_set_01", {"*": 1800}, lod=0.3)
-    imp("dead_tree_trunk", {"*": 5000}, lod=0.25)
-    imp("tree_stump_01", {"*": 2500}, lod=0.3)
-    imp("shrub_03", {"*": 1400}, alpha=True, img_size=1024)
-    imp("fern_02", {}, alpha=True, img_size=512)
-    imp("weed_plant_02", {"*": 2500}, alpha=True, img_size=512)
-    imp("dry_branches_medium_01", {"*": 2500}, img_size=512)
+    imp("rock_moss_set_01", {"*": 1200}, lod=0.3)
+    imp("dead_tree_trunk", {"*": 3000}, lod=0.25)
+    imp("tree_stump_01", {"*": 1500}, lod=0.3)
+    imp("shrub_03", {"*": 600}, alpha=True, img_size=1024)
+    imp("fern_02", {"*": 500}, alpha=True, img_size=512)
+    imp("weed_plant_02", {"*": 320}, alpha=True, img_size=512)
+    imp("dry_branches_medium_01", {"*": 700}, img_size=512)
     out.append(fig_tree(M))
     return out
 
