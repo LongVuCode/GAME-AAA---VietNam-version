@@ -1,0 +1,2743 @@
+{
+  "schema_version": 1,
+  "_note": "Demo 0.4 (design/COMBAT_0_4.md §6). Thế giới bán mở ch_longbien, mở rộng từ graybox 0.3. Tọa độ mét như prototype/web/src/game/world.js (-z là bắc). Mọi vùng, điểm, id cũ giữ NGUYÊN tọa độ (legacy=true; ánh xạ ở legacy_map); vùng mới bao quanh. Tên địa danh [SÁNG TẠO], tên tạm, cần naming_review. Không bơi, không nước sâu đi được (Story Bible v1.2 §2). Mọi con số là giả định, chờ playtest.",
+  "label": "SÁNG TẠO",
+  "chapter": "ch_longbien",
+  "level": "lvl_dam_lau",
+  "north": "-z",
+  "bounds": {
+    "x0": -140,
+    "x1": 145,
+    "z0": -260,
+    "z1": 50
+  },
+  "legacy_map": {
+    "_note": "0.3 → 0.4: mọi id POINTS, AREAS, ENCOUNTER_LAYOUT, VAULTS cũ giữ nguyên id và tọa độ. Thay đổi hành vi duy nhất: cổng bãi lầy nam (cọc cổng ±3,4 m tại z −119) mở khi tìm đủ vệt dấu (progression.boss_gates).",
+    "points": "same_id_same_xz",
+    "areas": "same_id_same_shapes",
+    "encounters": "same_id_same_anchor",
+    "vaults": [
+      "log_dam",
+      "ditch_ben"
+    ],
+    "renamed": [],
+    "removed": []
+  },
+  "spawn": {
+    "player_start": {
+      "x": 0,
+      "z": 18
+    },
+    "hub_arrive": {
+      "x": 290,
+      "z": 0
+    }
+  },
+  "regions": [
+    {
+      "id": "z_ben_say",
+      "legacy": true,
+      "kind": "zone",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -15,
+            "x1": 15,
+            "z0": 0,
+            "z1": 25
+          }
+        },
+        {
+          "rect": {
+            "x0": -2,
+            "x1": 2,
+            "z0": 24,
+            "z1": 33
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground",
+      "role": "start",
+      "name": {
+        "vi": "Bến Sậy",
+        "en": "Sậy Landing"
+      }
+    },
+    {
+      "id": "z_dam_nong",
+      "legacy": true,
+      "kind": "zone",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -30,
+            "x1": 30,
+            "z0": -46,
+            "z1": -6
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "shallow",
+      "role": "main",
+      "name": {
+        "vi": "Đầm nông",
+        "en": "Shallow Marsh"
+      }
+    },
+    {
+      "id": "z_bai_lau",
+      "legacy": true,
+      "kind": "zone",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -25,
+            "x1": 25,
+            "z0": -102,
+            "z1": -52
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "reed",
+      "role": "main",
+      "name": {
+        "vi": "Bãi lau",
+        "en": "Reed Beds"
+      }
+    },
+    {
+      "id": "z_lo_bo_hoang",
+      "legacy": true,
+      "kind": "zone",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -41,
+            "x1": -20,
+            "z0": -121,
+            "z1": -101
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground",
+      "role": "secret",
+      "name": {
+        "vi": "Lò bỏ hoang",
+        "en": "Abandoned Kiln"
+      }
+    },
+    {
+      "id": "z_dau_truong",
+      "legacy": true,
+      "kind": "zone",
+      "shapes": [
+        {
+          "circle": {
+            "cx": 0,
+            "cz": -136,
+            "r": 18
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "mud",
+      "role": "boss",
+      "name": {
+        "vi": "Bãi lầy lò cũ",
+        "en": "Old Kiln Mire"
+      }
+    },
+    {
+      "id": "c01",
+      "legacy": true,
+      "kind": "corridor",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -3,
+            "x1": 3,
+            "z0": -7,
+            "z1": 1
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground"
+    },
+    {
+      "id": "c12",
+      "legacy": true,
+      "kind": "corridor",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -3,
+            "x1": 3,
+            "z0": -53,
+            "z1": -45
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground"
+    },
+    {
+      "id": "c24",
+      "legacy": true,
+      "kind": "corridor",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -3,
+            "x1": 3,
+            "z0": -120,
+            "z1": -101
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground"
+    },
+    {
+      "id": "c3",
+      "legacy": true,
+      "kind": "corridor",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -21,
+            "x1": -2,
+            "z0": -114,
+            "z1": -108
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground"
+    },
+    {
+      "id": "shortcut",
+      "legacy": true,
+      "kind": "corridor",
+      "gate": "gate_lever_shortcut",
+      "shapes": [
+        {
+          "rect": {
+            "x0": 24,
+            "x1": 37,
+            "z0": -60,
+            "z1": -53
+          }
+        },
+        {
+          "rect": {
+            "x0": 31,
+            "x1": 37,
+            "z0": -54,
+            "z1": 10
+          }
+        },
+        {
+          "rect": {
+            "x0": 14,
+            "x1": 37,
+            "z0": 4,
+            "z1": 10
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground"
+    },
+    {
+      "id": "z_bai_boi",
+      "kind": "zone",
+      "shapes": [
+        {
+          "polygon": [
+            [
+              13,
+              12
+            ],
+            [
+              13,
+              -2
+            ],
+            [
+              38,
+              -22
+            ],
+            [
+              62,
+              -24
+            ],
+            [
+              74,
+              2
+            ],
+            [
+              64,
+              30
+            ],
+            [
+              38,
+              36
+            ],
+            [
+              15,
+              27
+            ]
+          ]
+        }
+      ],
+      "height_m": 0.2,
+      "surface": "silt",
+      "role": "main_east",
+      "name": {
+        "vi": "Bãi bồi bến cũ",
+        "en": "Old Silt Bank"
+      }
+    },
+    {
+      "id": "z_doi_go",
+      "kind": "zone",
+      "shapes": [
+        {
+          "polygon": [
+            [
+              38,
+              -20
+            ],
+            [
+              66,
+              -24
+            ],
+            [
+              96,
+              -24
+            ],
+            [
+              112,
+              -46
+            ],
+            [
+              112,
+              -92
+            ],
+            [
+              100,
+              -118
+            ],
+            [
+              62,
+              -114
+            ],
+            [
+              40,
+              -98
+            ],
+            [
+              36,
+              -60
+            ]
+          ]
+        }
+      ],
+      "height_m": 0.5,
+      "surface": "grass",
+      "role": "main_east",
+      "name": {
+        "vi": "Đồi gò sim",
+        "en": "Myrtle Knolls"
+      }
+    },
+    {
+      "id": "c_go_lau",
+      "kind": "corridor",
+      "shapes": [
+        {
+          "rect": {
+            "x0": 22,
+            "x1": 42,
+            "z0": -80,
+            "z1": -70
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground",
+      "one_way_from": "z_doi_go",
+      "_note": "Bờ dốc 2,4 m: nhảy xuống từ Đồi gò (ledge_go_lau); không leo ngược được (cao hơn mantle.max_height_m)."
+    },
+    {
+      "id": "z_rung_sung",
+      "kind": "zone",
+      "shapes": [
+        {
+          "polygon": [
+            [
+              60,
+              -112
+            ],
+            [
+              102,
+              -116
+            ],
+            [
+              112,
+              -150
+            ],
+            [
+              100,
+              -186
+            ],
+            [
+              64,
+              -196
+            ],
+            [
+              32,
+              -184
+            ],
+            [
+              30,
+              -150
+            ],
+            [
+              40,
+              -110
+            ]
+          ]
+        }
+      ],
+      "height_m": 0.3,
+      "surface": "leaf_litter",
+      "role": "main_east",
+      "name": {
+        "vi": "Rừng sung già",
+        "en": "Old Fig Grove"
+      }
+    },
+    {
+      "id": "z_dong_lay_bac",
+      "kind": "zone",
+      "shapes": [
+        {
+          "polygon": [
+            [
+              30,
+              -186
+            ],
+            [
+              52,
+              -202
+            ],
+            [
+              34,
+              -222
+            ],
+            [
+              -24,
+              -228
+            ],
+            [
+              -54,
+              -208
+            ],
+            [
+              -54,
+              -178
+            ],
+            [
+              -18,
+              -168
+            ],
+            [
+              18,
+              -170
+            ]
+          ]
+        }
+      ],
+      "height_m": -0.1,
+      "surface": "mud",
+      "role": "main_north",
+      "name": {
+        "vi": "Đồng lầy bắc",
+        "en": "Northern Mire Flats"
+      }
+    },
+    {
+      "id": "c_bac",
+      "kind": "corridor",
+      "gate": "gate_bac",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -4,
+            "x1": 4,
+            "z0": -172,
+            "z1": -150
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "mud"
+    },
+    {
+      "id": "z_rach_nuoc",
+      "kind": "zone",
+      "shapes": [
+        {
+          "polygon": [
+            [
+              -13,
+              12
+            ],
+            [
+              -13,
+              0
+            ],
+            [
+              -28,
+              -4
+            ],
+            [
+              -28,
+              -48
+            ],
+            [
+              -58,
+              -62
+            ],
+            [
+              -100,
+              -54
+            ],
+            [
+              -110,
+              -22
+            ],
+            [
+              -90,
+              10
+            ],
+            [
+              -46,
+              14
+            ]
+          ]
+        }
+      ],
+      "height_m": -0.1,
+      "surface": "shallow",
+      "role": "main_west",
+      "name": {
+        "vi": "Rạch nước tây",
+        "en": "Western Creeks"
+      }
+    },
+    {
+      "id": "z_lau_sau",
+      "kind": "zone",
+      "shapes": [
+        {
+          "polygon": [
+            [
+              -58,
+              -64
+            ],
+            [
+              -23,
+              -58
+            ],
+            [
+              -23,
+              -100
+            ],
+            [
+              -38,
+              -104
+            ],
+            [
+              -64,
+              -140
+            ],
+            [
+              -100,
+              -136
+            ],
+            [
+              -108,
+              -84
+            ],
+            [
+              -98,
+              -60
+            ]
+          ]
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "reed_dense",
+      "role": "main_west",
+      "name": {
+        "vi": "Rừng lau sâu",
+        "en": "Deep Reeds"
+      }
+    },
+    {
+      "id": "z_san_lo",
+      "kind": "zone",
+      "shapes": [
+        {
+          "polygon": [
+            [
+              -36,
+              -98
+            ],
+            [
+              -38,
+              -122
+            ],
+            [
+              -24,
+              -126
+            ],
+            [
+              -28,
+              -160
+            ],
+            [
+              -62,
+              -168
+            ],
+            [
+              -76,
+              -150
+            ]
+          ]
+        }
+      ],
+      "height_m": 0.2,
+      "surface": "ash_ground",
+      "role": "main_west",
+      "name": {
+        "vi": "Sân lò ngoài",
+        "en": "Kiln Yard"
+      }
+    },
+    {
+      "id": "c_de_tay",
+      "kind": "corridor",
+      "shapes": [
+        {
+          "rect": {
+            "x0": -52,
+            "x1": -38,
+            "z0": -182,
+            "z1": -158
+          }
+        }
+      ],
+      "height_m": 0.6,
+      "surface": "ground",
+      "_note": "Bờ đê đất nối Sân lò với Đồng lầy bắc"
+    }
+  ],
+  "hub_regions": [
+    {
+      "id": "hub",
+      "legacy": true,
+      "kind": "hub",
+      "shapes": [
+        {
+          "rect": {
+            "x0": 285,
+            "x1": 315,
+            "z0": -15,
+            "z1": 15
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground"
+    },
+    {
+      "id": "hub_bank",
+      "legacy": true,
+      "kind": "hub",
+      "shapes": [
+        {
+          "rect": {
+            "x0": 285,
+            "x1": 315,
+            "z0": 14,
+            "z1": 35
+          }
+        }
+      ],
+      "height_m": 0.0,
+      "surface": "ground"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "rw_1",
+      "kind": "reed_wall",
+      "points": [
+        [
+          -50,
+          -68
+        ],
+        [
+          -50,
+          -94
+        ]
+      ],
+      "half_width_m": 1.2
+    },
+    {
+      "id": "rw_2",
+      "kind": "reed_wall",
+      "points": [
+        [
+          -68,
+          -80
+        ],
+        [
+          -96,
+          -80
+        ]
+      ],
+      "half_width_m": 1.2
+    },
+    {
+      "id": "rw_3",
+      "kind": "reed_wall",
+      "points": [
+        [
+          -82,
+          -100
+        ],
+        [
+          -82,
+          -126
+        ]
+      ],
+      "half_width_m": 1.2
+    },
+    {
+      "id": "rw_4",
+      "kind": "reed_wall",
+      "points": [
+        [
+          -96,
+          -98
+        ],
+        [
+          -104,
+          -108
+        ]
+      ],
+      "half_width_m": 1.2
+    },
+    {
+      "id": "rw_5",
+      "kind": "reed_wall",
+      "points": [
+        [
+          -34,
+          -84
+        ],
+        [
+          -44,
+          -84
+        ]
+      ],
+      "half_width_m": 1.0
+    }
+  ],
+  "water": [
+    {
+      "id": "wc_rach_1",
+      "kind": "water_channel",
+      "points": [
+        [
+          -40,
+          12
+        ],
+        [
+          -60,
+          -20
+        ],
+        [
+          -52,
+          -56
+        ]
+      ],
+      "width_m": 4.0,
+      "depth_m": 0.45,
+      "speed_mult": 0.6,
+      "sprint": false,
+      "_note": "Lội được; chậm, không chạy nhanh"
+    },
+    {
+      "id": "wc_rach_2",
+      "kind": "water_channel",
+      "points": [
+        [
+          -76,
+          10
+        ],
+        [
+          -94,
+          -28
+        ],
+        [
+          -84,
+          -58
+        ]
+      ],
+      "width_m": 6.0,
+      "depth_m": 0.45,
+      "speed_mult": 0.6,
+      "sprint": false
+    },
+    {
+      "id": "wc_rach_sau",
+      "kind": "deep_water",
+      "points": [
+        [
+          -108,
+          -38
+        ],
+        [
+          -100,
+          -30
+        ],
+        [
+          -92,
+          -24
+        ]
+      ],
+      "width_m": 7.0,
+      "depth_m": 1.6,
+      "walkable": false,
+      "_note": "Nước sâu quanh cù lao: không bơi (Story Bible §2), qua bằng đu sào pv_rach_1"
+    }
+  ],
+  "heightmap": {
+    "_note": "Lớp game dựng mặt đất: h(x,z) = region.height_m + max(features) + noise; vùng nước dùng depth_m. Giả định.",
+    "label": "SÁNG TẠO",
+    "cell_m": 1.0,
+    "noise": {
+      "amplitude_m": 0.25,
+      "scale_m": 14.0,
+      "seed": 404
+    },
+    "max_walkable_slope_deg": 35,
+    "auto_slide_slope_deg": 28,
+    "features": [
+      {
+        "id": "hm_go_sim_dinh",
+        "kind": "hill",
+        "cx": 88,
+        "cz": -64,
+        "radius_m": 30,
+        "height_m": 9.0,
+        "falloff": "smoothstep"
+      },
+      {
+        "id": "hm_go_sim_nho",
+        "kind": "hill",
+        "cx": 58,
+        "cz": -36,
+        "radius_m": 16,
+        "height_m": 4.0,
+        "falloff": "smoothstep"
+      },
+      {
+        "id": "hm_go_sim_bac",
+        "kind": "hill",
+        "cx": 110,
+        "cz": -96,
+        "radius_m": 14,
+        "height_m": 6.0,
+        "falloff": "smoothstep"
+      },
+      {
+        "id": "hm_go_sim_song",
+        "kind": "ridge",
+        "ax": 60,
+        "az": -36,
+        "bx": 88,
+        "bz": -64,
+        "width_m": 10,
+        "height_m": 4.5
+      },
+      {
+        "id": "hm_bo_doc_go_lau",
+        "kind": "plateau",
+        "polygon": [
+          [
+            36,
+            -60
+          ],
+          [
+            52,
+            -60
+          ],
+          [
+            52,
+            -98
+          ],
+          [
+            40,
+            -98
+          ]
+        ],
+        "height_m": 2.4,
+        "edges": {
+          "west": "cliff",
+          "east": "ramp"
+        }
+      },
+      {
+        "id": "hm_sung_go",
+        "kind": "hill",
+        "cx": 80,
+        "cz": -160,
+        "radius_m": 25,
+        "height_m": 2.5,
+        "falloff": "smoothstep"
+      },
+      {
+        "id": "hm_sung_hoc",
+        "kind": "basin",
+        "cx": 60,
+        "cz": -186,
+        "radius_m": 8,
+        "height_m": -1.2,
+        "falloff": "smoothstep"
+      },
+      {
+        "id": "hm_lo_nen",
+        "kind": "plateau",
+        "polygon": [
+          [
+            -60,
+            -130
+          ],
+          [
+            -46,
+            -130
+          ],
+          [
+            -46,
+            -144
+          ],
+          [
+            -60,
+            -144
+          ]
+        ],
+        "height_m": 3.0,
+        "edges": {
+          "north": "climb_wall",
+          "south": "ramp",
+          "east": "cliff",
+          "west": "cliff"
+        }
+      },
+      {
+        "id": "hm_rach_cu_lao",
+        "kind": "hill",
+        "cx": -98,
+        "cz": -36,
+        "radius_m": 6,
+        "height_m": 0.6,
+        "falloff": "linear"
+      },
+      {
+        "id": "hm_de_tay",
+        "kind": "ridge",
+        "ax": -45,
+        "az": -158,
+        "bx": -45,
+        "bz": -182,
+        "width_m": 12,
+        "height_m": 0.8
+      },
+      {
+        "id": "hm_go_noi_1",
+        "kind": "hill",
+        "cx": 18,
+        "cz": -206,
+        "radius_m": 3.5,
+        "height_m": 0.9,
+        "falloff": "linear"
+      },
+      {
+        "id": "hm_go_noi_2",
+        "kind": "hill",
+        "cx": 26,
+        "cz": -212,
+        "radius_m": 3.0,
+        "height_m": 0.9,
+        "falloff": "linear"
+      },
+      {
+        "id": "hm_go_noi_3",
+        "kind": "hill",
+        "cx": 8,
+        "cz": -218,
+        "radius_m": 4.0,
+        "height_m": 1.1,
+        "falloff": "linear"
+      },
+      {
+        "id": "hm_bai_boi_doc",
+        "kind": "slope",
+        "ax": 40,
+        "az": 0,
+        "bx": 72,
+        "bz": 30,
+        "from_height_m": 0.4,
+        "to_height_m": 0.0
+      }
+    ]
+  },
+  "paths": [
+    {
+      "id": "path_main_center",
+      "kind": "main",
+      "width_m": 4,
+      "points": [
+        [
+          0,
+          18
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          0,
+          -26
+        ],
+        [
+          0,
+          -49
+        ],
+        [
+          0,
+          -77
+        ],
+        [
+          0,
+          -104
+        ],
+        [
+          0,
+          -117
+        ]
+      ]
+    },
+    {
+      "id": "path_main_east",
+      "kind": "main",
+      "width_m": 4,
+      "points": [
+        [
+          6,
+          9
+        ],
+        [
+          25,
+          6
+        ],
+        [
+          48,
+          12
+        ],
+        [
+          60,
+          0
+        ],
+        [
+          62,
+          -30
+        ],
+        [
+          66,
+          -48
+        ],
+        [
+          82,
+          -60
+        ],
+        [
+          100,
+          -84
+        ],
+        [
+          96,
+          -110
+        ],
+        [
+          90,
+          -130
+        ],
+        [
+          78,
+          -142
+        ],
+        [
+          86,
+          -158
+        ],
+        [
+          70,
+          -176
+        ],
+        [
+          40,
+          -196
+        ],
+        [
+          16,
+          -206
+        ],
+        [
+          0,
+          -190
+        ],
+        [
+          -8,
+          -182
+        ],
+        [
+          0,
+          -170
+        ],
+        [
+          0,
+          -156
+        ]
+      ]
+    },
+    {
+      "id": "path_main_west",
+      "kind": "main",
+      "width_m": 4,
+      "points": [
+        [
+          -10,
+          8
+        ],
+        [
+          -30,
+          4
+        ],
+        [
+          -52,
+          0
+        ],
+        [
+          -62,
+          -4
+        ],
+        [
+          -84,
+          -14
+        ],
+        [
+          -100,
+          -24
+        ],
+        [
+          -98,
+          -48
+        ],
+        [
+          -98,
+          -72
+        ],
+        [
+          -74,
+          -74
+        ],
+        [
+          -60,
+          -92
+        ],
+        [
+          -64,
+          -104
+        ],
+        [
+          -92,
+          -110
+        ],
+        [
+          -96,
+          -132
+        ],
+        [
+          -70,
+          -132
+        ],
+        [
+          -60,
+          -150
+        ],
+        [
+          -40,
+          -140
+        ],
+        [
+          -45,
+          -168
+        ],
+        [
+          -30,
+          -186
+        ],
+        [
+          -8,
+          -182
+        ],
+        [
+          0,
+          -170
+        ],
+        [
+          0,
+          -156
+        ]
+      ]
+    },
+    {
+      "id": "path_side_go_dinh",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          66,
+          -48
+        ],
+        [
+          76,
+          -54
+        ],
+        [
+          88,
+          -64
+        ]
+      ]
+    },
+    {
+      "id": "path_side_go_bac",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          100,
+          -84
+        ],
+        [
+          106,
+          -98
+        ]
+      ]
+    },
+    {
+      "id": "path_side_ong",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          62,
+          -30
+        ],
+        [
+          104,
+          -40
+        ],
+        [
+          106,
+          -58
+        ]
+      ]
+    },
+    {
+      "id": "path_side_sung_hoc",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          70,
+          -176
+        ],
+        [
+          60,
+          -186
+        ],
+        [
+          45,
+          -170
+        ],
+        [
+          45,
+          -140
+        ]
+      ]
+    },
+    {
+      "id": "path_side_bong_sung",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          86,
+          -158
+        ],
+        [
+          100,
+          -170
+        ]
+      ]
+    },
+    {
+      "id": "path_side_go_noi",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          16,
+          -206
+        ],
+        [
+          18,
+          -206
+        ],
+        [
+          26,
+          -210
+        ],
+        [
+          8,
+          -218
+        ],
+        [
+          -20,
+          -216
+        ],
+        [
+          -34,
+          -214
+        ]
+      ]
+    },
+    {
+      "id": "path_side_cu_lao",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          -84,
+          -14
+        ],
+        [
+          -88,
+          -32
+        ],
+        [
+          -98,
+          -36
+        ]
+      ]
+    },
+    {
+      "id": "path_side_be_chuoi",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          -30,
+          4
+        ],
+        [
+          -50,
+          -30
+        ],
+        [
+          -60,
+          -40
+        ],
+        [
+          -80,
+          -50
+        ]
+      ]
+    },
+    {
+      "id": "path_side_lau_sau",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          -96,
+          -132
+        ],
+        [
+          -96,
+          -126
+        ]
+      ]
+    },
+    {
+      "id": "path_side_lau_gao",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          -74,
+          -74
+        ],
+        [
+          -90,
+          -90
+        ],
+        [
+          -98,
+          -72
+        ]
+      ]
+    },
+    {
+      "id": "path_side_lo_noc",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          -60,
+          -150
+        ],
+        [
+          -66,
+          -158
+        ],
+        [
+          -53,
+          -144
+        ],
+        [
+          -53,
+          -137
+        ]
+      ]
+    },
+    {
+      "id": "path_side_khoi",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          -40,
+          -140
+        ],
+        [
+          -30,
+          -150
+        ]
+      ]
+    },
+    {
+      "id": "path_side_bai_boi",
+      "kind": "side",
+      "width_m": 2,
+      "points": [
+        [
+          48,
+          12
+        ],
+        [
+          62,
+          8
+        ],
+        [
+          58,
+          -10
+        ],
+        [
+          30,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "path_short_go_lau",
+      "kind": "shortcut",
+      "width_m": 3,
+      "one_way": true,
+      "points": [
+        [
+          41,
+          -75
+        ],
+        [
+          33,
+          -75
+        ],
+        [
+          10,
+          -80
+        ]
+      ],
+      "_note": "Nhảy xuống bờ dốc từ Đồi gò vào Bãi lau; một chiều"
+    },
+    {
+      "id": "path_short_gate_lever",
+      "kind": "shortcut",
+      "width_m": 3,
+      "legacy": true,
+      "gate": "gate_lever_shortcut",
+      "points": [
+        [
+          20,
+          7
+        ],
+        [
+          34,
+          7
+        ],
+        [
+          34,
+          -56
+        ],
+        [
+          28,
+          -57
+        ]
+      ]
+    },
+    {
+      "id": "path_short_de_tay",
+      "kind": "shortcut",
+      "width_m": 3,
+      "points": [
+        [
+          -40,
+          -140
+        ],
+        [
+          -45,
+          -168
+        ],
+        [
+          -30,
+          -186
+        ]
+      ],
+      "_note": "Bờ đê nối Sân lò với Đồng lầy bắc: vòng tây và vòng đông khép thành vòng quanh bãi lầy"
+    }
+  ],
+  "points": [
+    {
+      "id": "fire_ben_say",
+      "kind": "rest",
+      "x": 6.0,
+      "z": 9.0,
+      "legacy": true,
+      "region": "z_ben_say"
+    },
+    {
+      "id": "fire_cong_lau",
+      "kind": "rest",
+      "x": 2.0,
+      "z": -106.0,
+      "legacy": true,
+      "region": "c24"
+    },
+    {
+      "id": "npc_ba_lai_do",
+      "kind": "hint_npc",
+      "x": -4.0,
+      "z": 22.0,
+      "legacy": true,
+      "region": "z_ben_say"
+    },
+    {
+      "id": "ferry_ben_say",
+      "kind": "ferry_to_hub",
+      "x": 0.0,
+      "z": 31.5,
+      "legacy": true,
+      "region": "z_ben_say"
+    },
+    {
+      "id": "trap_a",
+      "kind": "secret",
+      "x": -18.0,
+      "z": -30.0,
+      "legacy": true,
+      "region": "z_dam_nong"
+    },
+    {
+      "id": "trap_b",
+      "kind": "secret",
+      "x": -2.3,
+      "z": -117.5,
+      "legacy": true,
+      "region": "c24"
+    },
+    {
+      "id": "stake_3",
+      "kind": "secret",
+      "x": 6.0,
+      "z": -76.0,
+      "legacy": true,
+      "region": "z_bai_lau"
+    },
+    {
+      "id": "kiln_p0",
+      "kind": "kiln_piece",
+      "x": -34.0,
+      "z": -111.0,
+      "legacy": true,
+      "region": "z_lo_bo_hoang"
+    },
+    {
+      "id": "kiln_p1",
+      "kind": "kiln_piece",
+      "x": -28.0,
+      "z": -111.0,
+      "legacy": true,
+      "region": "z_lo_bo_hoang"
+    },
+    {
+      "id": "kiln_p2",
+      "kind": "kiln_piece",
+      "x": -31.0,
+      "z": -108.0,
+      "legacy": true,
+      "region": "z_lo_bo_hoang"
+    },
+    {
+      "id": "kiln_p3",
+      "kind": "kiln_piece",
+      "x": -31.0,
+      "z": -114.0,
+      "legacy": true,
+      "region": "z_lo_bo_hoang"
+    },
+    {
+      "id": "kiln_hollow",
+      "kind": "secret",
+      "x": -31.0,
+      "z": -112.6,
+      "legacy": true,
+      "region": "z_lo_bo_hoang"
+    },
+    {
+      "id": "rattan_1",
+      "kind": "gather",
+      "x": 12.0,
+      "z": -20.0,
+      "legacy": true,
+      "region": "z_dam_nong"
+    },
+    {
+      "id": "rattan_2",
+      "kind": "gather",
+      "x": -22.0,
+      "z": -12.0,
+      "legacy": true,
+      "region": "z_dam_nong"
+    },
+    {
+      "id": "rattan_3",
+      "kind": "gather",
+      "x": 21.0,
+      "z": -40.0,
+      "legacy": true,
+      "region": "z_dam_nong"
+    },
+    {
+      "id": "rattan_4",
+      "kind": "gather",
+      "x": -15.0,
+      "z": -64.0,
+      "legacy": true,
+      "region": "z_bai_lau"
+    },
+    {
+      "id": "rattan_5",
+      "kind": "gather",
+      "x": 18.0,
+      "z": -92.0,
+      "legacy": true,
+      "region": "z_bai_lau"
+    },
+    {
+      "id": "rattan_6",
+      "kind": "gather",
+      "x": -11.0,
+      "z": -96.0,
+      "legacy": true,
+      "region": "z_bai_lau"
+    },
+    {
+      "id": "villager",
+      "kind": "call_name",
+      "x": 10.0,
+      "z": -81.0,
+      "legacy": true,
+      "region": "z_bai_lau"
+    },
+    {
+      "id": "gate_lever",
+      "kind": "shortcut",
+      "x": 34.0,
+      "z": -56.0,
+      "legacy": true,
+      "region": "shortcut"
+    },
+    {
+      "id": "trace_1",
+      "kind": "trace",
+      "x": 0.0,
+      "z": -103.0,
+      "legacy": true,
+      "region": "c24"
+    },
+    {
+      "id": "trace_2",
+      "kind": "trace",
+      "x": -2.3,
+      "z": -117.5,
+      "legacy": true,
+      "region": "c24"
+    },
+    {
+      "id": "trace_3",
+      "kind": "trace",
+      "x": 0.5,
+      "z": -113.0,
+      "legacy": true,
+      "region": "c24"
+    },
+    {
+      "id": "dp_cau_ben_say",
+      "kind": "lookout",
+      "x": 0.0,
+      "z": 27.0,
+      "legacy": true,
+      "region": "z_ben_say"
+    },
+    {
+      "id": "dp_cay_go_do",
+      "kind": "lookout",
+      "x": -19.0,
+      "z": -38.0,
+      "legacy": true,
+      "region": "z_dam_nong"
+    },
+    {
+      "id": "dp_hang_coc",
+      "kind": "lookout",
+      "x": -3.0,
+      "z": -60.0,
+      "legacy": true,
+      "region": "z_bai_lau"
+    },
+    {
+      "id": "dp_mieng_lo",
+      "kind": "lookout",
+      "x": -36.0,
+      "z": -104.0,
+      "legacy": true,
+      "region": "z_lo_bo_hoang"
+    },
+    {
+      "id": "dp_cong_bai_lay",
+      "kind": "lookout",
+      "x": 0.0,
+      "z": -119.0,
+      "legacy": true,
+      "region": "z_dau_truong"
+    },
+    {
+      "id": "chest_dam_nong",
+      "kind": "chest",
+      "x": 22.0,
+      "z": -28.0,
+      "legacy": true,
+      "region": "z_dam_nong"
+    },
+    {
+      "id": "chest_bai_lau",
+      "kind": "chest",
+      "x": -20.0,
+      "z": -88.0,
+      "legacy": true,
+      "region": "z_bai_lau"
+    },
+    {
+      "id": "es_to_chim",
+      "kind": "env_secret",
+      "x": -27.0,
+      "z": -42.0,
+      "legacy": true,
+      "region": "z_dam_nong"
+    },
+    {
+      "id": "es_do_ca",
+      "kind": "env_secret",
+      "x": 12.0,
+      "z": 21.0,
+      "legacy": true,
+      "region": "z_ben_say"
+    },
+    {
+      "id": "es_go_kho",
+      "kind": "env_secret",
+      "x": 20.0,
+      "z": -70.0,
+      "legacy": true,
+      "region": "z_bai_lau"
+    },
+    {
+      "id": "furnace",
+      "kind": "furnace",
+      "x": 292.0,
+      "z": -8.0,
+      "legacy": true,
+      "region": "hub"
+    },
+    {
+      "id": "thap",
+      "kind": "thap",
+      "x": 306.0,
+      "z": -9.0,
+      "legacy": true,
+      "region": "hub"
+    },
+    {
+      "id": "drum",
+      "kind": "drum",
+      "x": 300.0,
+      "z": -11.0,
+      "legacy": true,
+      "region": "hub"
+    },
+    {
+      "id": "ferry_hub",
+      "kind": "ferry_to_marsh",
+      "x": 287.0,
+      "z": 0.0,
+      "legacy": true,
+      "region": "hub"
+    },
+    {
+      "id": "fire_go_sim",
+      "kind": "rest",
+      "x": 66,
+      "z": -48,
+      "region": "z_doi_go",
+      "name": {
+        "vi": "Bếp lửa yên ngựa gò",
+        "en": "Knoll Saddle fire"
+      },
+      "checkpoint": "cp_go_sim"
+    },
+    {
+      "id": "fire_san_lo",
+      "kind": "rest",
+      "x": -40,
+      "z": -140,
+      "region": "z_san_lo",
+      "name": {
+        "vi": "Bếp lửa sân lò",
+        "en": "Kiln Yard fire"
+      },
+      "checkpoint": "cp_san_lo"
+    },
+    {
+      "id": "fire_dau_de",
+      "kind": "rest",
+      "x": -8,
+      "z": -182,
+      "region": "z_dong_lay_bac",
+      "name": {
+        "vi": "Bếp lửa đầu đê",
+        "en": "Dike-head fire"
+      },
+      "checkpoint": "cp_dau_de"
+    },
+    {
+      "id": "dp_thuyen_muc",
+      "kind": "lookout",
+      "x": 48,
+      "z": 22,
+      "region": "z_bai_boi",
+      "name": {
+        "vi": "Thuyền mục",
+        "en": "Rotting boat"
+      },
+      "reveal_radius_m": 35
+    },
+    {
+      "id": "dp_dinh_go_sim",
+      "kind": "lookout",
+      "x": 88,
+      "z": -64,
+      "region": "z_doi_go",
+      "name": {
+        "vi": "Đỉnh gò sim",
+        "en": "Myrtle Knoll top"
+      },
+      "reveal_radius_m": 60
+    },
+    {
+      "id": "dp_cay_sung_ba_than",
+      "kind": "lookout",
+      "x": 78,
+      "z": -142,
+      "region": "z_rung_sung",
+      "name": {
+        "vi": "Cây sung ba thân",
+        "en": "Three-trunk fig"
+      },
+      "reveal_radius_m": 35
+    },
+    {
+      "id": "dp_go_noi",
+      "kind": "lookout",
+      "x": 8,
+      "z": -218,
+      "region": "z_dong_lay_bac",
+      "name": {
+        "vi": "Gò nổi giữa lầy",
+        "en": "Hummock in the mire"
+      },
+      "reveal_radius_m": 45
+    },
+    {
+      "id": "dp_cau_tre_gay",
+      "kind": "lookout",
+      "x": -62,
+      "z": -4,
+      "region": "z_rach_nuoc",
+      "name": {
+        "vi": "Cầu tre gãy",
+        "en": "Broken bamboo bridge"
+      },
+      "reveal_radius_m": 35
+    },
+    {
+      "id": "dp_cay_gao_tru",
+      "kind": "lookout",
+      "x": -90,
+      "z": -90,
+      "region": "z_lau_sau",
+      "name": {
+        "vi": "Cây gạo trụi",
+        "en": "Bare kapok tree"
+      },
+      "reveal_radius_m": 45
+    },
+    {
+      "id": "dp_noc_lo_cu",
+      "kind": "lookout",
+      "x": -53,
+      "z": -137,
+      "region": "z_san_lo",
+      "name": {
+        "vi": "Nóc lò cũ",
+        "en": "Old kiln roof"
+      },
+      "reveal_radius_m": 40,
+      "requires_traversal": "climb_lo"
+    },
+    {
+      "id": "chest_bai_boi",
+      "kind": "chest",
+      "x": 62,
+      "z": 8,
+      "region": "z_bai_boi",
+      "name": {
+        "vi": "Rương dưới thuyền úp",
+        "en": "Chest under the upturned boat"
+      }
+    },
+    {
+      "id": "chest_go_sim",
+      "kind": "chest",
+      "x": 106,
+      "z": -98,
+      "region": "z_doi_go",
+      "name": {
+        "vi": "Giỏ mây trên gò bắc",
+        "en": "Rattan basket on the north knoll"
+      }
+    },
+    {
+      "id": "chest_hoc_sung",
+      "kind": "chest",
+      "x": 60,
+      "z": -186,
+      "region": "z_rung_sung",
+      "name": {
+        "vi": "Hộc rễ sung",
+        "en": "Fig-root hollow"
+      },
+      "requires_traversal": "mantle_hoc_sung"
+    },
+    {
+      "id": "chest_dong_lay",
+      "kind": "chest",
+      "x": -34,
+      "z": -214,
+      "region": "z_dong_lay_bac",
+      "name": {
+        "vi": "Rương đầu đàn",
+        "en": "Herd-leader's chest"
+      },
+      "guarded_by": "enc4_dong_lay_dau_dan"
+    },
+    {
+      "id": "chest_coi_rach",
+      "kind": "chest",
+      "x": -98,
+      "z": -36,
+      "region": "z_rach_nuoc",
+      "name": {
+        "vi": "Giỏ trên cù lao",
+        "en": "Basket on the islet"
+      },
+      "requires_traversal": "pv_rach_1"
+    },
+    {
+      "id": "chest_lau_sau",
+      "kind": "chest",
+      "x": -96,
+      "z": -126,
+      "region": "z_lau_sau",
+      "name": {
+        "vi": "Giỏ giữa lau sâu",
+        "en": "Basket deep in the reeds"
+      }
+    },
+    {
+      "id": "chest_san_lo",
+      "kind": "chest",
+      "x": -66,
+      "z": -158,
+      "region": "z_san_lo",
+      "name": {
+        "vi": "Vò đất sau lò",
+        "en": "Clay jar behind the kiln"
+      }
+    },
+    {
+      "id": "es_luoi_rach",
+      "kind": "env_secret",
+      "x": 58,
+      "z": -10,
+      "region": "z_bai_boi",
+      "name": {
+        "vi": "Lưới rách mắc cọc",
+        "en": "Torn net on a stake"
+      }
+    },
+    {
+      "id": "es_to_ong_bo",
+      "kind": "env_secret",
+      "x": 104,
+      "z": -40,
+      "region": "z_doi_go",
+      "name": {
+        "vi": "Tổ ong bỏ",
+        "en": "Abandoned hive"
+      }
+    },
+    {
+      "id": "es_bong_sung",
+      "kind": "env_secret",
+      "x": 100,
+      "z": -170,
+      "region": "z_rung_sung",
+      "name": {
+        "vi": "Bọng cây sung",
+        "en": "Hollow fig trunk"
+      }
+    },
+    {
+      "id": "es_loi_go_noi",
+      "kind": "env_secret",
+      "x": 26,
+      "z": -210,
+      "region": "z_dong_lay_bac",
+      "name": {
+        "vi": "Lối gò nổi",
+        "en": "Hummock path"
+      }
+    },
+    {
+      "id": "es_be_chuoi",
+      "kind": "env_secret",
+      "x": -50,
+      "z": -30,
+      "region": "z_rach_nuoc",
+      "name": {
+        "vi": "Bè chuối mắc cạn",
+        "en": "Stranded banana raft"
+      }
+    },
+    {
+      "id": "es_vong_lau_rap",
+      "kind": "env_secret",
+      "x": -60,
+      "z": -116,
+      "region": "z_lau_sau",
+      "name": {
+        "vi": "Vòng lau rạp",
+        "en": "Ring of flattened reeds"
+      }
+    },
+    {
+      "id": "es_ong_khoi_do",
+      "kind": "env_secret",
+      "x": -30,
+      "z": -150,
+      "region": "z_san_lo",
+      "name": {
+        "vi": "Ống khói đổ",
+        "en": "Fallen chimney"
+      }
+    },
+    {
+      "id": "track_bai_lau",
+      "kind": "track",
+      "x": -14,
+      "z": -72,
+      "region": "z_bai_lau",
+      "name": {
+        "vi": "Vệt nanh trên bùn",
+        "en": "Tusk furrow in the mud"
+      }
+    },
+    {
+      "id": "track_doi_go",
+      "kind": "track",
+      "x": 100,
+      "z": -84,
+      "region": "z_doi_go",
+      "name": {
+        "vi": "Vệt cày trên dốc",
+        "en": "Ploughed slope"
+      }
+    },
+    {
+      "id": "track_rach_nuoc",
+      "kind": "track",
+      "x": -104,
+      "z": -18,
+      "region": "z_rach_nuoc",
+      "name": {
+        "vi": "Cọc bẫy bị húc gãy",
+        "en": "Rammed trap stake"
+      }
+    },
+    {
+      "id": "track_lau_sau",
+      "kind": "track",
+      "x": -98,
+      "z": -72,
+      "region": "z_lau_sau",
+      "name": {
+        "vi": "Lối lau rạp theo vệt",
+        "en": "Trampled reed lane"
+      }
+    },
+    {
+      "id": "rattan_7",
+      "kind": "gather",
+      "x": 45,
+      "z": -140,
+      "region": "z_rung_sung",
+      "name": {
+        "vi": "Mây rừng",
+        "en": "Rattan"
+      }
+    },
+    {
+      "id": "rattan_8",
+      "kind": "gather",
+      "x": -80,
+      "z": -50,
+      "region": "z_rach_nuoc",
+      "name": {
+        "vi": "Mây rừng",
+        "en": "Rattan"
+      }
+    },
+    {
+      "id": "rattan_9",
+      "kind": "gather",
+      "x": -40,
+      "z": -80,
+      "region": "z_lau_sau",
+      "name": {
+        "vi": "Mây rừng",
+        "en": "Rattan"
+      }
+    },
+    {
+      "id": "gai_1",
+      "kind": "gather",
+      "x": 30,
+      "z": 30,
+      "region": "z_bai_boi",
+      "name": {
+        "vi": "Bụi gai",
+        "en": "Ramie clump"
+      },
+      "yields": "mat_soi_gai"
+    },
+    {
+      "id": "gai_2",
+      "kind": "gather",
+      "x": 106,
+      "z": -58,
+      "region": "z_doi_go",
+      "name": {
+        "vi": "Bụi gai",
+        "en": "Ramie clump"
+      },
+      "yields": "mat_soi_gai"
+    },
+    {
+      "id": "gate_nam",
+      "kind": "boss_gate",
+      "x": 0,
+      "z": -119.5,
+      "region": "c24",
+      "name": {
+        "vi": "Cổng bãi lầy nam",
+        "en": "South mire gate"
+      },
+      "opens_when": {
+        "tracks_found_at_least": 2
+      }
+    },
+    {
+      "id": "gate_bac",
+      "kind": "boss_gate",
+      "x": 0,
+      "z": -158,
+      "region": "c_bac",
+      "name": {
+        "vi": "Cổng bãi lầy bắc",
+        "en": "North mire gate"
+      },
+      "opens_when": {
+        "tracks_found_at_least": 2
+      }
+    },
+    {
+      "id": "pv_rach_1",
+      "kind": "traversal",
+      "x": -88,
+      "z": -32,
+      "region": "z_rach_nuoc",
+      "name": {
+        "vi": "Bãi đu sào",
+        "en": "Pole-vault bank"
+      },
+      "traversal": "pole_vault",
+      "to": [
+        -96,
+        -35
+      ],
+      "gap_m": 4.5
+    },
+    {
+      "id": "pv_rach_2",
+      "kind": "traversal",
+      "x": -70,
+      "z": 6,
+      "region": "z_rach_nuoc",
+      "name": {
+        "vi": "Bãi đu sào",
+        "en": "Pole-vault bank"
+      },
+      "traversal": "pole_vault",
+      "to": [
+        -80,
+        4
+      ],
+      "gap_m": 4.0
+    },
+    {
+      "id": "ledge_go_lau",
+      "kind": "traversal",
+      "x": 41,
+      "z": -75,
+      "region": "z_doi_go",
+      "name": {
+        "vi": "Bờ dốc",
+        "en": "Drop-off"
+      },
+      "traversal": "ledge_drop",
+      "to": [
+        33,
+        -75
+      ],
+      "height_m": 2.4
+    },
+    {
+      "id": "climb_lo",
+      "kind": "traversal",
+      "x": -53,
+      "z": -129,
+      "region": "z_san_lo",
+      "name": {
+        "vi": "Dây leo vách lò",
+        "en": "Kiln wall vines"
+      },
+      "traversal": "climb",
+      "height_m": 3.0
+    },
+    {
+      "id": "mantle_hoc_sung",
+      "kind": "traversal",
+      "x": 66,
+      "z": -182,
+      "region": "z_rung_sung",
+      "name": {
+        "vi": "Bờ hộc",
+        "en": "Hollow lip"
+      },
+      "traversal": "mantle",
+      "height_m": 1.2
+    },
+    {
+      "id": "slide_doc_go",
+      "kind": "traversal",
+      "x": 76,
+      "z": -54,
+      "region": "z_doi_go",
+      "name": {
+        "vi": "Dốc trượt",
+        "en": "Slide slope"
+      },
+      "traversal": "slope_slide",
+      "to": [
+        66,
+        -46
+      ]
+    },
+    {
+      "id": "balance_go_rach",
+      "kind": "traversal",
+      "x": -60,
+      "z": -40,
+      "region": "z_rach_nuoc",
+      "name": {
+        "vi": "Thân cây bắc ngang",
+        "en": "Fallen trunk bridge"
+      },
+      "traversal": "balance",
+      "to": [
+        -50,
+        -40
+      ]
+    },
+    {
+      "id": "vault_sung_do",
+      "kind": "traversal",
+      "x": 90,
+      "z": -130,
+      "region": "z_rung_sung",
+      "name": {
+        "vi": "Thân sung đổ",
+        "en": "Fallen fig trunk"
+      },
+      "traversal": "vault",
+      "height_m": 0.9
+    }
+  ],
+  "landmarks_visual": [
+    {
+      "id": "lm4_ong_khoi_lo",
+      "kind": "flag",
+      "x": -53,
+      "z": -137,
+      "height_m": 14,
+      "silhouette": "ống khói lò gạch đất nghiêng, đỉnh gãy",
+      "visible_from": [
+        "z_ben_say",
+        "z_rach_nuoc",
+        "z_lau_sau",
+        "z_bai_lau"
+      ]
+    },
+    {
+      "id": "lm4_cay_gao_tru",
+      "kind": "flag",
+      "x": -90,
+      "z": -90,
+      "height_m": 22,
+      "silhouette": "cây gạo trụi lá, cành chĩa ngang",
+      "visible_from": [
+        "z_rach_nuoc",
+        "z_lau_sau",
+        "z_dam_nong"
+      ]
+    },
+    {
+      "id": "lm4_go_sim_cay_doc",
+      "kind": "flag",
+      "x": 88,
+      "z": -64,
+      "height_m": 9,
+      "silhouette": "một cây sim đơn độc trên đỉnh gò 9 m",
+      "visible_from": [
+        "z_ben_say",
+        "z_bai_boi",
+        "z_dam_nong",
+        "z_bai_lau"
+      ]
+    },
+    {
+      "id": "lm4_cay_sung_ba_than",
+      "kind": "flag",
+      "x": 78,
+      "z": -142,
+      "height_m": 18,
+      "silhouette": "tán sung khổng lồ ba thân, rễ phụ thả xuống",
+      "visible_from": [
+        "z_doi_go",
+        "z_dong_lay_bac"
+      ]
+    },
+    {
+      "id": "lm4_cot_suong_bai_lay",
+      "kind": "flag",
+      "x": 0,
+      "z": -136,
+      "height_m": 25,
+      "silhouette": "cột sương bùn bốc trên bãi lầy, có đàn quạ đen vòng",
+      "visible_from": [
+        "z_bai_lau",
+        "z_dong_lay_bac",
+        "z_san_lo",
+        "z_rung_sung"
+      ]
+    },
+    {
+      "id": "lm4_dan_co",
+      "kind": "breadcrumb",
+      "x": 0,
+      "z": 0,
+      "height_m": 6,
+      "silhouette": "đàn cò bay thấp từ điểm vừa khám phá về phía vệt dấu gần nhất chưa tìm",
+      "dynamic": "nearest_unfound_track",
+      "visible_from": [
+        "z_bai_boi",
+        "z_doi_go",
+        "z_rung_sung",
+        "z_rach_nuoc",
+        "z_lau_sau",
+        "z_bai_lau"
+      ]
+    },
+    {
+      "id": "lm4_vet_bun_kho",
+      "kind": "breadcrumb",
+      "x": 0,
+      "z": 0,
+      "height_m": 0.1,
+      "silhouette": "vệt bùn khô sáng màu (decal) chạy theo đường chính, đứt ở chỗ rẽ phụ",
+      "dynamic": "along_main_paths",
+      "visible_from": [
+        "z_bai_boi",
+        "z_doi_go",
+        "z_rung_sung",
+        "z_dong_lay_bac",
+        "z_rach_nuoc",
+        "z_lau_sau",
+        "z_san_lo"
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "id": "enc_ben_cua_don",
+      "x": -6,
+      "z": 6,
+      "region": "z_ben_say",
+      "legacy": true,
+      "members_from": "enemies.encounters_0_2"
+    },
+    {
+      "id": "enc_dam_cua_doi",
+      "x": -9,
+      "z": -22,
+      "region": "z_dam_nong",
+      "legacy": true,
+      "members_from": "enemies.encounters_0_2"
+    },
+    {
+      "id": "enc_dam_ub_cua",
+      "x": 6,
+      "z": -37,
+      "region": "z_dam_nong",
+      "legacy": true,
+      "members_from": "enemies.encounters_0_2"
+    },
+    {
+      "id": "enc_lau_bo_ngua_phuc",
+      "x": -8,
+      "z": -76,
+      "region": "z_bai_lau",
+      "legacy": true,
+      "members_from": "enemies.encounters_0_2"
+    },
+    {
+      "id": "enc_lau_hon_hop",
+      "x": 1,
+      "z": -91,
+      "region": "z_bai_lau",
+      "legacy": true,
+      "members_from": "enemies.encounters_0_2"
+    },
+    {
+      "id": "enc_lo_ub_tinh_anh",
+      "x": -35,
+      "z": -106,
+      "region": "z_lo_bo_hoang",
+      "legacy": true,
+      "members_from": "enemies.encounters_0_2"
+    },
+    {
+      "id": "enc4_bai_boi_cao_cao",
+      "x": 40,
+      "z": 6,
+      "region": "z_bai_boi",
+      "members": [
+        {
+          "enemy": "en_cao_cao_gai",
+          "count": 2
+        }
+      ],
+      "teaches": "Kẻ quấy nhảy: đòn nhẹ nhanh và đâm thẳng ngắt cú bật"
+    },
+    {
+      "id": "enc4_go_cao_cao_bay",
+      "x": 76,
+      "z": -40,
+      "region": "z_doi_go",
+      "members": [
+        {
+          "enemy": "en_cao_cao_gai",
+          "count": 3
+        }
+      ],
+      "teaches": "Bầy trên dốc: đứng chỗ cao, quét cán khi chúng đáp"
+    },
+    {
+      "id": "enc4_go_cua_cao",
+      "x": 104,
+      "z": -72,
+      "region": "z_doi_go",
+      "members": [
+        {
+          "enemy": "en_cua_cang_bun",
+          "count": 1
+        },
+        {
+          "enemy": "en_cao_cao_gai",
+          "count": 2
+        }
+      ],
+      "teaches": "Khiên trước mặt, kẻ quấy bên sườn"
+    },
+    {
+      "id": "enc4_sung_bo_hung",
+      "x": 86,
+      "z": -156,
+      "region": "z_rung_sung",
+      "members": [
+        {
+          "enemy": "en_bo_hung_bun",
+          "count": 1
+        }
+      ],
+      "teaches": "Né ngang cục bùn lăn, phạt lúc nó mất cục bùn"
+    },
+    {
+      "id": "enc4_sung_bo_hung_ub",
+      "x": 50,
+      "z": -170,
+      "region": "z_rung_sung",
+      "members": [
+        {
+          "enemy": "en_bo_hung_bun",
+          "count": 1
+        },
+        {
+          "enemy": "en_u_bun",
+          "count": 1
+        }
+      ],
+      "teaches": "Ụ Bùn ném bùn làm vũng, bọ hung lăn nhanh hơn trên vũng"
+    },
+    {
+      "id": "enc4_dong_lay_dau_dan",
+      "x": -22,
+      "z": -210,
+      "region": "z_dong_lay_bac",
+      "members": [
+        {
+          "enemy": "en_bo_hung_bun",
+          "count": 2
+        },
+        {
+          "enemy": "en_cua_cang_bun",
+          "count": 1
+        }
+      ],
+      "teaches": "Bài kiểm tra trước boss từ phía bắc; tùy chọn, canh rương"
+    },
+    {
+      "id": "enc4_rach_cua_doi",
+      "x": -70,
+      "z": -22,
+      "region": "z_rach_nuoc",
+      "members": [
+        {
+          "enemy": "en_cua_cang_bun",
+          "count": 2
+        }
+      ],
+      "teaches": "Khiên đôi trên cù lao: đánh hông, dùng nước nông"
+    },
+    {
+      "id": "enc4_rach_ub_xa",
+      "x": -96,
+      "z": -44,
+      "region": "z_rach_nuoc",
+      "members": [
+        {
+          "enemy": "en_u_bun",
+          "count": 1
+        }
+      ],
+      "teaches": "Ụ Bùn ném qua rạch: tìm đường áp sát"
+    },
+    {
+      "id": "enc4_lau_bo_ngua_ba",
+      "x": -78,
+      "z": -110,
+      "region": "z_lau_sau",
+      "members": [
+        {
+          "enemy": "en_bo_ngua_lau",
+          "count": 3
+        }
+      ],
+      "teaches": "Phục kích trong mê lộ lau; nghe tiếng lau, quét chân"
+    },
+    {
+      "id": "enc4_lau_bo_ngua_cao",
+      "x": -45,
+      "z": -72,
+      "region": "z_lau_sau",
+      "members": [
+        {
+          "enemy": "en_bo_ngua_lau",
+          "count": 1
+        },
+        {
+          "enemy": "en_cao_cao_gai",
+          "count": 2
+        }
+      ],
+      "teaches": "Trộn hai kẻ quấy; ưu tiên kẻ đang ở trên không"
+    },
+    {
+      "id": "enc4_san_lo_ub_doi",
+      "x": -48,
+      "z": -156,
+      "region": "z_san_lo",
+      "members": [
+        {
+          "enemy": "en_u_bun",
+          "count": 2
+        }
+      ],
+      "teaches": "Hai Ụ Bùn giữ sân lò: kéo chúng khỏi vũng bùn"
+    }
+  ],
+  "progression": {
+    "label": "SÁNG TẠO",
+    "boss_gates": {
+      "gates": [
+        "gate_nam",
+        "gate_bac"
+      ],
+      "tracks": [
+        "track_bai_lau",
+        "track_doi_go",
+        "track_rach_nuoc",
+        "track_lau_sau"
+      ],
+      "tracks_found_at_least": 2,
+      "_purpose": "Lần theo dấu con thú qua ít nhất một nhánh ngoài đường giữa (nguyên lý theo dấu của Monster Hunter, chỉ nguyên lý). Chờ agent cốt truyện gắn quest/chuỗi."
+    },
+    "fast_travel_rests": [
+      "fire_ben_say",
+      "fire_cong_lau",
+      "fire_go_sim",
+      "fire_san_lo",
+      "fire_dau_de"
+    ]
+  },
+  "pacing": {
+    "_note": "Đo bằng validator: dọc mỗi đường chính/phụ, khoảng cách giữa hai điểm đáng chú ý liên tiếp (trong near_path_m) không quá max_gap_s ở reference_speed_mps.",
+    "reference_speed_mps": 5.0,
+    "max_gap_s": 75,
+    "near_path_m": 14,
+    "interest_kinds": [
+      "rest",
+      "lookout",
+      "chest",
+      "env_secret",
+      "track",
+      "secret",
+      "gather",
+      "traversal",
+      "boss_gate",
+      "spawn",
+      "call_name",
+      "shortcut",
+      "trace",
+      "kiln_piece",
+      "hint_npc",
+      "ferry_to_hub"
+    ]
+  },
+  "targets": {
+    "area_ratio_min": 3.0,
+    "area_ratio_max": 5.0
+  }
+}

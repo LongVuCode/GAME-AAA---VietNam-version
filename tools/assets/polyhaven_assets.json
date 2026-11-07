@@ -1,0 +1,29 @@
+{
+  "_note": "Asset CC0 tu Poly Haven (https://polyhaven.com/license) cho moi truong prototype web Demo 0.4. fetch_polyhaven.py tai ve thu muc ngoai repo, ghi manifest.json (URL, tac gia, ngay, SHA-256). Chi dung vat lieu tu nhien va hinh khoi trung tinh (da, go, cay bui); kien truc (nha san, cau tre, thuyen) tu dung bang Blender (tools/blender).",
+  "resolution": "1k",
+  "textures": [
+    { "id": "brown_mud_02", "role": "terrain_wet_mud", "maps": ["diff", "nor_gl", "rough", "disp"] },
+    { "id": "sparse_grass", "role": "terrain_grass", "maps": ["diff", "nor_gl", "rough", "disp"] },
+    { "id": "dirt_floor", "role": "terrain_path", "maps": ["diff", "nor_gl", "rough", "disp"] },
+    { "id": "mud_cracked_dry_riverbed_002", "role": "terrain_dry_mud", "maps": ["diff", "nor_gl", "rough", "disp"] },
+    { "id": "brown_mud_leaves_01", "role": "terrain_bank", "maps": ["diff", "nor_gl", "rough", "disp"] },
+    { "id": "reed_roof_04", "role": "prop_thatch", "maps": ["diff", "nor_gl", "rough"] },
+    { "id": "weathered_planks", "role": "prop_planks", "maps": ["diff", "nor_gl", "rough"] },
+    { "id": "bamboo_wall_02", "role": "prop_bamboo", "maps": ["diff", "nor_gl", "rough"] },
+    { "id": "bark_willow", "role": "prop_bark", "maps": ["diff", "nor_gl", "rough"] },
+    { "id": "rough_wood", "role": "prop_hewn_wood", "maps": ["diff", "nor_gl", "rough"] },
+    { "id": "clay_plaster", "role": "prop_clay", "maps": ["diff", "nor_gl", "rough"] }
+  ],
+  "models": [
+    { "id": "rock_moss_set_01", "role": "rocks_mossy" },
+    { "id": "dead_tree_trunk", "role": "fallen_log" },
+    { "id": "tree_stump_01", "role": "stump" },
+    { "id": "shrub_03", "alpha_map": true, "role": "shrub" },
+    { "id": "fern_02", "alpha_map": true, "role": "fern" },
+    { "id": "weed_plant_02", "alpha_map": true, "role": "weed" },
+    { "id": "dry_branches_medium_01", "role": "debris_branches" }
+  ],
+  "hdris": [
+    { "id": "overcast_soil_puresky", "role": "sky_ibl", "res": "2k" }
+  ]
+}

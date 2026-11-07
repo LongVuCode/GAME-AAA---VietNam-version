@@ -1,0 +1,14 @@
+{
+  "name": "dongco-asset-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "Post-process GLB exported by tools/blender (meshopt compression, quantization). Not shipped.",
+  "license": "UNLICENSED",
+  "scripts": { "compress": "node compress_glb.mjs" },
+  "devDependencies": {
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "meshoptimizer": "1.3.0"
+  }
+}
