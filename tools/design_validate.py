@@ -25,7 +25,7 @@ DATA_DIR = ROOT / "design" / "data"
 RESEARCH_DIR = ROOT / "research" / "data"
 
 FILES = ("combat_tuning", "weapons", "enemies", "items", "lineage", "secrets", "codex", "strings",
-         "controls", "skills", "map")
+         "controls", "skills", "map", "dialogue", "quests", "cinematics")
 WORLD_JS = ROOT / "prototype" / "web" / "src" / "game" / "world.js"
 
 ALL_LABELS = {"SỬ LIỆU", "SỬ LIỆU-TRANH LUẬN", "HUYỀN THOẠI", "CỔ TÍCH", "SÁNG TẠO", "CHƯA XÁC MINH"}
@@ -706,6 +706,8 @@ def validate(b: dict, research: dict) -> Report:
 
     # ---- Demo 0.3 (DEMO_0_3_DESIGN): gear, skills, map, controls scheme, boss redesign
     check_demo_0_3(b, rep)
+    # ---- Demo 0.4 story integration (research/narrative/STORY_INTEGRATION_0_4.md)
+    check_story_0_4(b, rep)
     return rep
 
 
@@ -1125,6 +1127,257 @@ def check_demo_0_3(b: dict, rep: Report) -> None:
         rep.err(f"map.world_map: format_key {fk!r} not in strings.ui")
 
     check_controls_0_3(b, rep)
+
+
+# ---------------------------------------------------------------- Demo 0.4 story integration
+
+# Worshipped figures never speak (Story Bible v1.2 §2): they appear only through what people tell.
+DIVINE_SPEAKER_WORDS = ("lạc long quân", "long quân", "âu cơ", "gióng", "sơn tinh", "thủy tinh", "tản viên",
+                        "hùng vương", "mị nương", "huyền thiên")
+# A dialogue choice may only change details (CLAUDE.md §3): it sets its own flag_choice_* flag, nothing else.
+CHOICE_EFFECT_KINDS = {"set_flag"}
+CHOICE_FLAG_PREFIX = "flag_choice_"
+QUEST_CONDITION_TYPES = {"inspect", "talk", "non_combat_success", "enter_zone", "boss_freed", "craft",
+                         "interact", "open_chest", "environment_secret"}
+MAIN_QUEST_STEPS = (4, 6)
+COLD_OPEN_MAX_S = 90
+OBJECTIVE_MAX_CHARS = 60
+OFFMAP_ZONE = "offmap_cinematic"
+
+
+def check_story_0_4(b: dict, rep: Report) -> None:
+    dlg, qs, cin = b["dialogue"], b["quests"], b["cinematics"]
+    strings, lineage, items, enemies, mp = b["strings"], b["lineage"], b["items"], b["enemies"], b["map"]
+    ui = strings.get("ui", {})
+    era_ids = {e.get("id") for e in lineage.get("eras", [])}
+
+    speakers = dlg.get("speakers", [])
+    convs = dlg.get("conversations", [])
+    barks = dlg.get("barks", [])
+    songs = dlg.get("songs", [])
+    quests = qs.get("quests", [])
+    cins = cin.get("cinematics", [])
+    for key, lst in (("dialogue.speakers", speakers), ("dialogue.conversations", convs), ("dialogue.barks", barks),
+                     ("dialogue.songs", songs), ("quests.quests", quests), ("cinematics.cinematics", cins)):
+        require_label(lst, key, rep)
+        for o in lst:
+            if isinstance(o, dict) and o.get("era") not in era_ids:
+                rep.err(f"{key}.{o.get('id')}: unknown era {o.get('era')!r}")
+
+    speaker_ids = ids(speakers) | {c.get("id") for c in lineage.get("characters", [])} | {"narration_ve"}
+    for sp in speakers:
+        name = (sp.get("name") or {}).get("vi", "").lower()
+        if any(w in name for w in DIVINE_SPEAKER_WORDS):
+            rep.err(f"dialogue.speakers.{sp.get('id')}: worshipped figures have no lines (Story Bible §2)")
+
+    # Lines: inline {id, speaker, text} or {id, line_ref}; collect ids.
+    seen: dict[str, int] = {}
+    line_ids: set[str] = set()
+    refs: list[tuple[str, str]] = []
+    choice_flags: set[str] = set()
+
+    def note(i: Any) -> None:
+        if isinstance(i, str):
+            seen[i] = seen.get(i, 0) + 1
+
+    def line(o: dict, where: str) -> None:
+        note(o.get("id"))
+        line_ids.add(o.get("id"))
+        if "line_ref" in o:
+            refs.append((o["line_ref"], where))
+            return
+        if o.get("speaker") not in speaker_ids:
+            rep.err(f"{where}.{o.get('id')}: unknown speaker {o.get('speaker')!r}")
+        if not is_loc(o.get("text")):
+            rep.err(f"{where}.{o.get('id')}: line needs text {{vi, en}}")
+
+    for cv in convs:
+        cid = cv.get("id")
+        note(cid)
+        for o in cv.get("lines", []) + cv.get("after_choice", []):
+            line(o, f"dialogue.{cid}")
+        for v in cv.get("variants", []):
+            for o in v.get("lines", []):
+                line(o, f"dialogue.{cid}.variants")
+        for ch in cv.get("choices", []):
+            note(ch.get("id"))
+            if not is_loc(ch.get("text")):
+                rep.err(f"dialogue.{cid}.{ch.get('id')}: choice needs text {{vi, en}}")
+            if not ch.get("response"):
+                rep.err(f"dialogue.{cid}.{ch.get('id')}: choice needs a response")
+            for o in ch.get("response", []):
+                line(o, f"dialogue.{cid}.{ch.get('id')}")
+            for ef in ch.get("effects", []):
+                if ef.get("kind") not in CHOICE_EFFECT_KINDS:
+                    rep.err(f"dialogue.{cid}.{ch.get('id')}: choice effect {ef.get('kind')!r} not allowed (choices change details only)")
+                elif not str(ef.get("flag", "")).startswith(CHOICE_FLAG_PREFIX):
+                    rep.err(f"dialogue.{cid}.{ch.get('id')}: choice may only set {CHOICE_FLAG_PREFIX}* flags, got {ef.get('flag')!r}")
+                else:
+                    choice_flags.add(ef["flag"])
+        if cv.get("choices") and not cv.get("converges_to") and not cv.get("available"):
+            rep.warn(f"dialogue.{cid}: choices without converges_to")
+    for bk in barks:
+        note(bk.get("id"))
+        for o in bk.get("lines", []):
+            line(o, f"dialogue.barks.{bk.get('id')}")
+            if o.get("if_flag") and o["if_flag"] not in choice_flags:
+                rep.err(f"dialogue.barks.{o.get('id')}: if_flag {o['if_flag']!r} is set by no choice")
+    for sg in songs:
+        note(sg.get("id"))
+        if sg.get("singer") not in speaker_ids:
+            rep.err(f"dialogue.songs.{sg.get('id')}: unknown singer {sg.get('singer')!r}")
+        refs.append((sg.get("line_ref"), f"dialogue.songs.{sg.get('id')}"))
+
+    strings_dlg = {d.get("id"): d for d in strings.get("dialogue", [])}
+    for d in strings_dlg:
+        note(d)
+    all_line_refs = line_ids | set(strings_dlg)
+    for r, where in refs:
+        if r not in all_line_refs:
+            rep.err(f"{where}: line_ref {r!r} unknown")
+    # A reused strings.dialogue line must be allowed in the era of the conversation/song that reuses it.
+    for owner in convs + songs:
+        era = owner.get("era")
+        olines = owner.get("lines", []) + owner.get("after_choice", []) + ([owner] if "singer" in owner else [])
+        for o in olines:
+            d = strings_dlg.get(o.get("line_ref"))
+            if d and era not in (d.get("allowed_eras") or [d.get("era")]):
+                rep.err(f"dialogue.{owner.get('id')}: reuses {d['id']} outside its eras ({era})")
+
+    # ---- quests
+    conv_ids = ids(convs)
+    points = set((parse_world_points() or {}).keys())
+    new_pts = qs.get("new_points", [])
+    zones = {z.get("id"): z for z in mp.get("zones", [])}
+    for npnt in new_pts:
+        note(npnt.get("id"))
+        if npnt.get("id") in points:
+            rep.err(f"quests.new_points.{npnt.get('id')}: already in world.js")
+        z = npnt.get("zone")
+        if z == OFFMAP_ZONE:
+            continue
+        if z not in zones:
+            rep.err(f"quests.new_points.{npnt.get('id')}: unknown zone {z!r}")
+        elif not any(in_shape(npnt["x"], npnt["z"], sh) for sh in zones[z].get("shapes", [])):
+            rep.err(f"quests.new_points.{npnt.get('id')}: ({npnt['x']}, {npnt['z']}) outside zone {z}")
+    points |= ids(new_pts) | ids(mp.get("chests", [])) | ids(mp.get("environment_secrets", []))
+    zone_ids = set(zones) | {l.get("id") for l in b["secrets"].get("locations", [])} | {"hub", "hub_bank"}
+    recipes = ids(items.get("recipes", []))
+    enemy_ids = ids(enemies.get("enemies", []))
+    nc_ids = ids(enemies.get("non_combat_encounters", []))
+    known = {"inspect": points, "interact": points, "open_chest": ids(mp.get("chests", [])),
+             "environment_secret": ids(mp.get("environment_secrets", [])), "talk": conv_ids,
+             "non_combat_success": nc_ids, "enter_zone": zone_ids, "boss_freed": enemy_ids, "craft": recipes}
+    xp_ids = {x.get("id") for x in b["skills"].get("xp_sources", [])}
+    gear_ids = ids(items.get("gear_0_3", {}).get("pieces", []))
+    item_ids = ids(items.get("items", []))
+    codex_ids = ids(b["codex"].get("entries", []))
+    step_map: dict[str, dict] = {}
+    mains = [q for q in quests if q.get("kind") == "main"]
+    if len(mains) != 1:
+        rep.err(f"quests: need exactly one main quest, found {len(mains)}")
+    for q in quests:
+        qid = q.get("id")
+        note(qid)
+        if q.get("giver") not in speaker_ids:
+            rep.err(f"quests.{qid}: unknown giver {q.get('giver')!r}")
+        steps = q.get("steps", [])
+        if not steps:
+            rep.err(f"quests.{qid}: no steps")
+        if q.get("kind") == "main" and not MAIN_QUEST_STEPS[0] <= len(steps) <= MAIN_QUEST_STEPS[1]:
+            rep.err(f"quests.{qid}: main quest needs {MAIN_QUEST_STEPS[0]}-{MAIN_QUEST_STEPS[1]} steps, has {len(steps)}")
+        for st in steps:
+            sid = st.get("id")
+            note(sid)
+            step_map[sid] = st
+            for k in ("objective", "why"):
+                if not is_loc(st.get(k)):
+                    rep.err(f"quests.{qid}.{sid}: {k} must be {{vi, en}}")
+            ok = st.get("objective_key")
+            if ok not in ui:
+                rep.err(f"quests.{qid}.{sid}: objective_key {ok!r} not in strings.ui")
+            elif ui[ok] != st.get("objective"):
+                rep.err(f"quests.{qid}.{sid}: objective differs from strings.ui.{ok}")
+            if is_loc(st.get("objective")) and len(st["objective"]["vi"]) > OBJECTIVE_MAX_CHARS:
+                rep.err(f"quests.{qid}.{sid}: objective longer than {OBJECTIVE_MAX_CHARS} characters (one line)")
+            conds = (st.get("complete_when") or {}).get("all", [])
+            if not conds:
+                rep.err(f"quests.{qid}.{sid}: complete_when.all is empty")
+            for c in conds:
+                t = c.get("type")
+                if t not in QUEST_CONDITION_TYPES:
+                    rep.err(f"quests.{qid}.{sid}: unknown condition type {t!r}")
+                elif c.get("ref") not in known[t]:
+                    rep.err(f"quests.{qid}.{sid}: {t} ref {c.get('ref')!r} unknown")
+            for r in (st.get("on_complete") or {}).get("lines", []):
+                if r not in all_line_refs:
+                    rep.err(f"quests.{qid}.{sid}: on_complete line {r!r} unknown")
+        rw = q.get("reward") or {}
+        if rw.get("xp_ref") and rw["xp_ref"] not in xp_ids:
+            rep.err(f"quests.{qid}: xp_ref {rw['xp_ref']!r} not in skills.xp_sources")
+        for it in rw.get("items", []):
+            if it.get("item") not in item_ids:
+                rep.err(f"quests.{qid}: reward item {it.get('item')!r} unknown")
+        if rw.get("codex") and rw["codex"] not in codex_ids:
+            rep.err(f"quests.{qid}: reward codex {rw['codex']!r} unknown")
+        for flag, eff in (rw.get("by_choice") or {}).items():
+            if flag not in choice_flags:
+                rep.err(f"quests.{qid}: reward by_choice flag {flag!r} is set by no choice")
+            for k in ("keep_gear", "lose_gear"):
+                if eff.get(k) and eff[k] not in gear_ids:
+                    rep.err(f"quests.{qid}: {k} {eff[k]!r} unknown")
+    for cv in convs:
+        if cv.get("converges_to") and cv["converges_to"] not in step_map:
+            rep.err(f"dialogue.{cv.get('id')}: converges_to {cv['converges_to']!r} is no quest step")
+
+    # ---- cinematics
+    prompt_keys = set(ui)
+    for c in cins:
+        cid = c.get("id")
+        note(cid)
+        shots = c.get("shots", [])
+        t = 0.0
+        for sh in shots:
+            note(sh.get("id"))
+            if abs(sh.get("t_s", -1) - t) > 1e-6:
+                rep.err(f"cinematics.{cid}.{sh.get('id')}: t_s {sh.get('t_s')} should be {round(t, 2)}")
+            t += sh.get("duration_s", 0)
+            if sh.get("era") and sh["era"] not in era_ids:
+                rep.err(f"cinematics.{cid}.{sh.get('id')}: unknown era {sh['era']!r}")
+            for r in sh.get("line_refs", []):
+                if r not in all_line_refs:
+                    rep.err(f"cinematics.{cid}.{sh.get('id')}: line_ref {r!r} unknown")
+                d = strings_dlg.get(r)
+                se = sh.get("era") or c.get("era")
+                if d and se not in (d.get("allowed_eras") or [d.get("era")]):
+                    rep.err(f"cinematics.{cid}.{sh.get('id')}: {r} shown outside its eras ({se})")
+            for k in ("title_key",):
+                if sh.get(k) and sh[k] not in prompt_keys:
+                    rep.err(f"cinematics.{cid}.{sh.get('id')}: {k} {sh[k]!r} not in strings.ui")
+            ia = sh.get("interactive")
+            if ia and ia.get("prompt_key") not in prompt_keys:
+                rep.err(f"cinematics.{cid}.{sh.get('id')}: prompt_key {ia.get('prompt_key')!r} not in strings.ui")
+            if sh.get("objective_ref") and sh["objective_ref"] not in step_map:
+                rep.err(f"cinematics.{cid}.{sh.get('id')}: objective_ref unknown")
+        if abs(t - c.get("total_s", -1)) > 1e-6:
+            rep.err(f"cinematics.{cid}: shots sum to {round(t, 2)} s, total_s is {c.get('total_s')}")
+        if c.get("role") == "cold_open":
+            if t > COLD_OPEN_MAX_S:
+                rep.err(f"cinematics.{cid}: cold open is {round(t, 2)} s (> {COLD_OPEN_MAX_S} s)")
+            mq = mains[0] if len(mains) == 1 else {}
+            if c.get("objective_ref") not in ids(mq.get("steps", [])):
+                rep.err(f"cinematics.{cid}: cold open must show a main-quest objective")
+            if not is_loc(c.get("dramatic_question")):
+                rep.err(f"cinematics.{cid}: cold open needs a dramatic_question {{vi, en}}")
+        if not c.get("skippable"):
+            rep.err(f"cinematics.{cid}: every cinematic must be skippable (accessibility)")
+        for hs in c.get("then_handoff_steps", []) + c.get("replaces_handoff_steps", []):
+            if hs not in ids(lineage.get("handoff", {}).get("steps", [])):
+                rep.err(f"cinematics.{cid}: handoff step {hs!r} unknown")
+
+    for k, v in seen.items():
+        if v > 1:
+            rep.err(f"story 0.4: duplicate id {k!r} ({v}x)")
 
 
 def main(argv: list[str] | None = None) -> int:

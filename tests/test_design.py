@@ -369,5 +369,104 @@ class SecretGraphUnit(unittest.TestCase):
         self.assertTrue(soft)
 
 
+class StoryIntegration04(unittest.TestCase):
+    """Demo 0.4 story pass: dialogue.json, quests.json, cinematics.json."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.bundle, load_rep = dv.load_bundle()
+        assert not load_rep.errors, load_rep.errors
+        cls.research = dv.load_research()
+
+    def fresh(self):
+        return copy.deepcopy(self.bundle)
+
+    def errors(self, bundle):
+        return dv.validate(bundle, self.research).errors
+
+    def conv(self, b, cid):
+        return next(c for c in b["dialogue"]["conversations"] if c["id"] == cid)
+
+    def test_real_story_data_is_clean(self):
+        self.assertEqual([e for e in self.errors(self.bundle) if "story" in e or e.startswith(("dialogue", "quests", "cinematics"))], [])
+
+    def test_main_quest_has_four_to_six_steps_with_reasons(self):
+        main = [q for q in self.bundle["quests"]["quests"] if q["kind"] == "main"]
+        self.assertEqual(len(main), 1)
+        self.assertTrue(4 <= len(main[0]["steps"]) <= 6)
+        for st in main[0]["steps"]:
+            self.assertTrue(st["why"]["vi"] and st["why"]["en"])
+
+    def test_three_side_quests_tied_to_npcs(self):
+        sides = [q for q in self.bundle["quests"]["quests"] if q["kind"] == "side"]
+        self.assertGreaterEqual(len(sides), 3)
+        npcs = {s["id"] for s in self.bundle["dialogue"]["speakers"]}
+        self.assertTrue(all(q["giver"] in npcs for q in sides))
+
+    def test_cold_open_fits_ninety_seconds(self):
+        cold = next(c for c in self.bundle["cinematics"]["cinematics"] if c["role"] == "cold_open")
+        self.assertLessEqual(sum(s["duration_s"] for s in cold["shots"]), 90)
+
+    def test_long_cold_open_is_error(self):
+        b = self.fresh()
+        cold = next(c for c in b["cinematics"]["cinematics"] if c["role"] == "cold_open")
+        cold["shots"][0]["duration_s"] += 30
+        errs = self.errors(b)
+        self.assertTrue(any("cold open is" in e for e in errs))
+        self.assertTrue(any("shots sum to" in e for e in errs))
+
+    def test_choice_cannot_change_legend_flags(self):
+        b = self.fresh()
+        self.conv(b, "cv_nghe_rescue")["choices"][0]["effects"] = [{"kind": "set_flag", "flag": "flag_boss_lon_loi_freed"}]
+        self.assertTrue(any("flag_choice_" in e for e in self.errors(b)))
+
+    def test_choice_cannot_skip_steps(self):
+        b = self.fresh()
+        self.conv(b, "cv_dot_dam_nong")["choices"][0]["effects"].append({"kind": "complete_step", "ref": "qs_m5_cay"})
+        self.assertTrue(any("not allowed" in e for e in self.errors(b)))
+
+    def test_worshipped_figure_cannot_speak(self):
+        b = self.fresh()
+        b["dialogue"]["speakers"].append({"id": "npc_x", "name": {"vi": "Lạc Long Quân", "en": "Lac Long Quan"},
+                                          "label": "SÁNG TẠO", "era": "era_lac_long_quan"})
+        self.assertTrue(any("worshipped figures" in e for e in self.errors(b)))
+
+    def test_hung_6_line_with_khoen_is_error(self):
+        b = self.fresh()
+        cv = self.conv(b, "cv_handoff_buong")
+        cv["lines"][1]["text"] = {"vi": "Khoen này của bà tổ.", "en": "This khoen was our ancestor's."}
+        self.assertTrue(any("SB11-01" in e for e in self.errors(b)))
+
+    def test_hung_6_shot_cannot_reuse_khoen_ve(self):
+        b = self.fresh()
+        ho = next(c for c in b["cinematics"]["cinematics"] if c["id"] == "cin_handoff")
+        ho["shots"][-1]["line_refs"] = ["dlg_04_ve_after_pry"]
+        self.assertTrue(any("outside its eras" in e for e in self.errors(b)))
+
+    def test_objective_must_match_string_table(self):
+        b = self.fresh()
+        b["strings"]["ui"]["obj_0_4_m1"] = {"vi": "Khác", "en": "Other"}
+        self.assertTrue(any("differs from strings.ui" in e for e in self.errors(b)))
+
+    def test_unknown_refs_are_errors(self):
+        b = self.fresh()
+        main = next(q for q in b["quests"]["quests"] if q["kind"] == "main")
+        main["steps"][0]["complete_when"]["all"][0]["ref"] = "no_such_point"
+        self.conv(b, "cv_cold_open")["lines"].append({"id": "ln_tmp", "line_ref": "dlg_missing"})
+        errs = self.errors(b)
+        self.assertTrue(any("no_such_point" in e for e in errs))
+        self.assertTrue(any("dlg_missing" in e for e in errs))
+
+    def test_new_point_outside_zone_is_error(self):
+        b = self.fresh()
+        b["quests"]["new_points"][0]["x"] = 999
+        self.assertTrue(any("outside zone" in e for e in self.errors(b)))
+
+    def test_every_cinematic_skippable(self):
+        b = self.fresh()
+        b["cinematics"]["cinematics"][0]["skippable"] = False
+        self.assertTrue(any("skippable" in e for e in self.errors(b)))
+
+
 if __name__ == "__main__":
     unittest.main()

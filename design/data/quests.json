@@ -1,0 +1,512 @@
+{
+  "schema_version": 1,
+  "_note": "Story Integration Pass 0.4. Nhiệm vụ chính 6 bước, mỗi bước có lý do (why) và một điều người chơi biết thêm (story_reveal). objective trùng strings.ui[objective_key] (validator so). new_points là điểm đề xuất cho world.js (agent code thêm vào POINTS). Thưởng tham chiếu skills.xp_sources và items; không đổi dữ liệu của file khác. Mọi nội dung [SÁNG TẠO], chờ historian-verifier.",
+  "new_points": [
+    {
+      "id": "npc_nan_ben_say",
+      "kind": "npc",
+      "x": 4,
+      "z": 20,
+      "zone": "z_ben_say",
+      "note": "Năn ngồi ôm chân cạnh bếp lửa Bến Sậy."
+    },
+    {
+      "id": "npc_nghe_ben_say",
+      "kind": "npc",
+      "x": -6,
+      "z": 19.5,
+      "zone": "z_ben_say",
+      "note": "Chỗ Nghệ đứng sau khi được gọi về (game.js đã dời người làng tới (-7, 19))."
+    },
+    {
+      "id": "npc_dot_dam_nong",
+      "kind": "npc",
+      "x": -14,
+      "z": -27,
+      "zone": "z_dam_nong",
+      "note": "Đót đứng cạnh cọc bẫy gãy trap_a, cầm đoạn dây mây đứt."
+    },
+    {
+      "id": "np_thuyen_lat",
+      "kind": "env_story",
+      "x": 3,
+      "z": 40,
+      "zone": "offmap_cinematic",
+      "note": "Thuyền nan cắt lau lật, bó lau trôi, nón Nghệ buộc dải chàm (cảnh mở). Ngoài vùng chơi, chỉ dùng trong cinematic."
+    },
+    {
+      "id": "np_bo_lau_bo",
+      "kind": "env_story",
+      "x": 2,
+      "z": -9,
+      "zone": "z_dam_nong",
+      "note": "Bó lau, liềm bỏ lại dọc lối vào đầm: người cắt lau chạy vội."
+    },
+    {
+      "id": "np_cay_vet_ten",
+      "kind": "env_story",
+      "x": -9,
+      "z": -40,
+      "zone": "z_dam_nong",
+      "note": "Thân cây có vết cọ ngang tầm cổ lợn lòi, vệt xanh ten đồng; vỏ cây tróc, không máu."
+    },
+    {
+      "id": "np_o_bun_xoi",
+      "kind": "env_story",
+      "x": 15,
+      "z": -56,
+      "zone": "z_bai_lau",
+      "note": "Ổ bùn bị cày lật, Ụ Bùn đang 'thở' bọt khí: yêu đầm bị đánh thức."
+    },
+    {
+      "id": "trap_dot_1",
+      "kind": "quest_interact",
+      "x": 18,
+      "z": -18,
+      "zone": "z_dam_nong",
+      "note": "Bẫy còn giương, dây mây buộc vải chàm làm dấu."
+    },
+    {
+      "id": "trap_dot_2",
+      "kind": "quest_interact",
+      "x": -12,
+      "z": -84,
+      "zone": "z_bai_lau",
+      "note": "Bẫy còn giương trong lau."
+    },
+    {
+      "id": "trap_dot_3",
+      "kind": "quest_interact",
+      "x": -24,
+      "z": -118,
+      "zone": "z_lo_bo_hoang",
+      "note": "Bẫy còn giương ở rìa lò bỏ hoang, gần đường vào bãi lầy."
+    }
+  ],
+  "quests": [
+    {
+      "id": "q_main_nguoi_chua_ve",
+      "kind": "main",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "title": {
+        "vi": "Người chưa về",
+        "en": "The One Who Didn't Come Home"
+      },
+      "description": {
+        "vi": "Nghệ, em trai Cói, lạc trong đầm sau khi con lợn lòi già càn qua bãi cắt lau.",
+        "en": "Nghệ, Cói's younger brother, is lost in the marsh after the old boar charged through the reed-cutters."
+      },
+      "giver": "npc_ba_lai_do",
+      "starts_on": "cin_cold_open",
+      "steps": [
+        {
+          "id": "qs_m1_vet_lon_loi",
+          "objective": {
+            "vi": "Lần theo vệt lợn lòi qua Đầm nông",
+            "en": "Follow the boar's trail through the Shallow Marsh"
+          },
+          "objective_key": "obj_0_4_m1",
+          "why": {
+            "vi": "Năn thấy Nghệ chạy cùng hướng với con lợn lòi.",
+            "en": "Năn saw Nghệ run the same way the boar went."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "inspect",
+                "ref": "trap_a"
+              }
+            ]
+          },
+          "on_complete": {
+            "lines": [
+              "bk_s_trap_a"
+            ]
+          },
+          "story_reveal": "Con thú mắc bẫy, lưỡi bẫy theo nó."
+        },
+        {
+          "id": "qs_m2_hoi_dot",
+          "objective": {
+            "vi": "Hỏi chú Đót về cái bẫy gãy",
+            "en": "Ask Uncle Đót about the broken trap"
+          },
+          "objective_key": "obj_0_4_m2",
+          "why": {
+            "vi": "Bẫy của ai, và con thú đang mang theo cái gì?",
+            "en": "Whose trap was it, and what is the beast carrying?"
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "talk",
+                "ref": "cv_dot_dam_nong"
+              }
+            ]
+          },
+          "story_reveal": "Lưỡi bẫy đồng cũ đúc lại, mắc ở cổ con thú."
+        },
+        {
+          "id": "qs_m3_goi_nghe",
+          "objective": {
+            "vi": "Gọi Nghệ ra khỏi sương ở Bãi lau",
+            "en": "Call Nghệ out of the mist in the Reed Beds"
+          },
+          "objective_key": "obj_0_4_m3",
+          "why": {
+            "vi": "Nghệ là em trai Cói; có giọng ai đang gọi cậu vào sâu.",
+            "en": "Nghệ is Cói's brother, and some voice is calling him deeper in."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "non_combat_success",
+                "ref": "nc_nguoi_bi_me"
+              },
+              {
+                "type": "talk",
+                "ref": "cv_nghe_rescue"
+              }
+            ]
+          },
+          "story_reveal": "Con thú không đuổi người; nó đau ở cổ."
+        },
+        {
+          "id": "qs_m4_theo_dau",
+          "objective": {
+            "vi": "Theo dấu con lợn lòi về Bãi lầy lò cũ",
+            "en": "Track the boar to the Old Kiln Mire"
+          },
+          "objective_key": "obj_0_4_m4",
+          "why": {
+            "vi": "Còn đau thì nó còn phá đầm, và người làng còn chưa dám vào cắt lau.",
+            "en": "While it hurts it will keep wrecking the marsh, and no one will dare cut reeds."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "enter_zone",
+                "ref": "z_dau_truong"
+              }
+            ]
+          },
+          "story_reveal": "Ba vết dấu trước bãi lầy (intro_traces)."
+        },
+        {
+          "id": "qs_m5_cay",
+          "objective": {
+            "vi": "Hạ Thế con lợn lòi, cạy thứ đang cứa cổ nó",
+            "en": "Break the boar's Stance and pry out what is cutting its neck"
+          },
+          "objective_key": "obj_0_4_m5",
+          "why": {
+            "vi": "Cái mắc ở cổ làm nó đau mà dữ; gỡ ra thì nó yên.",
+            "en": "What's stuck in its neck makes it wild with pain; pull it out and it will calm."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "boss_freed",
+                "ref": "boss_lon_loi_dam"
+              }
+            ]
+          },
+          "on_complete": {
+            "lines": [
+              "bk_s_freed",
+              "dlg_04_ve_after_pry",
+              "bk_s_blade"
+            ]
+          },
+          "story_reveal": "Thấy lưỡi bẫy; vè kể nguồn ác."
+        },
+        {
+          "id": "qs_m6_lo_duc",
+          "objective": {
+            "vi": "Mang lưỡi bẫy về lò đúc làng ở bến Lau",
+            "en": "Bring the trap blade to the village furnace at Lau Landing"
+          },
+          "objective_key": "obj_0_4_m6",
+          "why": {
+            "vi": "Đồng đúc sai thì đúc lại. Bác Gianh biết đồng này.",
+            "en": "Metal cast wrong gets cast again. Uncle Gianh knows this metal."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "talk",
+                "ref": "cv_gianh_furnace"
+              },
+              {
+                "type": "craft",
+                "ref": "rcp_nanh_dam"
+              }
+            ]
+          },
+          "story_reveal": "Thợ đúc nói nguồn ác trong một đoạn (phép thử V8)."
+        }
+      ],
+      "replaces_objective_keys": [
+        "obj_find_villager",
+        "obj_boss",
+        "obj_return",
+        "obj_craft"
+      ]
+    },
+    {
+      "id": "q_handoff_dai_cham",
+      "kind": "transition",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "title": {
+        "vi": "Dải chàm",
+        "en": "The Indigo Strip"
+      },
+      "description": {
+        "vi": "Khép lại đời Cói bên trống gỗ.",
+        "en": "Close Cói's lifetime by the wooden drum."
+      },
+      "giver": "npc_ba_lai_do",
+      "requires_quest": "q_main_nguoi_chua_ve",
+      "steps": [
+        {
+          "id": "qs_h1_khac_vet",
+          "objective": {
+            "vi": "Khắc vết đầu tiên lên Mũi Sào ở trống gỗ",
+            "en": "Carve the first notch on the Pole-tip at the wooden drum"
+          },
+          "objective_key": "obj_0_4_h1",
+          "why": {
+            "vi": "Mỗi con thú được giải thoát để lại một vết khắc.",
+            "en": "Every beast set free leaves a notch."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "interact",
+                "ref": "drum"
+              }
+            ]
+          },
+          "on_complete": {
+            "cinematic": "cin_handoff"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sq_gio_cua_nan",
+      "kind": "side",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "title": {
+        "vi": "Giỏ của Năn",
+        "en": "Năn's Basket"
+      },
+      "description": {
+        "vi": "Năn đánh rơi cái giỏ có chuông của mẹ trong bãi lau.",
+        "en": "Năn dropped her basket, with her mother's bell, in the reed beds."
+      },
+      "giver": "npc_nan",
+      "starts_on": "cv_nan_ben_say_or_chest",
+      "steps": [
+        {
+          "id": "sq_nan_s1",
+          "objective": {
+            "vi": "Tìm giỏ Năn bỏ quên trong Bãi lau",
+            "en": "Find the basket Năn left in the Reed Beds"
+          },
+          "objective_key": "obj_0_4_s_nan1",
+          "why": {
+            "vi": "Trong giỏ có cái chuông mẹ Năn buộc.",
+            "en": "Her mother's bell is tied to it."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "open_chest",
+                "ref": "chest_bai_lau"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sq_nan_s2",
+          "objective": {
+            "vi": "Mang giỏ về cho Năn ở Bến Sậy",
+            "en": "Bring the basket back to Năn at Sậy Landing"
+          },
+          "objective_key": "obj_0_4_s_nan2",
+          "why": {
+            "vi": "Năn đau chân, không tự đi được.",
+            "en": "Năn's ankle is hurt; she can't go herself."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "talk",
+                "ref": "cv_nan_basket"
+              }
+            ]
+          }
+        }
+      ],
+      "reward": {
+        "xp_ref": "xp_env_secret",
+        "by_choice": {
+          "flag_choice_bell_kept": {
+            "keep_gear": "tr_chuong_dong_nho"
+          },
+          "flag_choice_bell_returned": {
+            "lose_gear": "tr_chuong_dong_nho",
+            "unlock_song": "perf_ve_nan",
+            "extra_xp": 40
+          }
+        }
+      }
+    },
+    {
+      "id": "sq_bay_nha_dot",
+      "kind": "side",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "title": {
+        "vi": "Bẫy nhà chú Đót",
+        "en": "Uncle Đót's Traps"
+      },
+      "description": {
+        "vi": "Đót muốn nhổ hết bẫy còn giương trước khi thêm con thú nào mắc.",
+        "en": "Đót wants every trap still set pulled up before another beast is caught."
+      },
+      "giver": "npc_dot",
+      "starts_on": "cv_dot_dam_nong",
+      "steps": [
+        {
+          "id": "sq_dot_s1",
+          "objective": {
+            "vi": "Nhổ ba bẫy còn giương của chú Đót",
+            "en": "Pull up Uncle Đót's three remaining traps"
+          },
+          "objective_key": "obj_0_4_s_dot1",
+          "why": {
+            "vi": "Mỗi bẫy là một con thú sắp đau.",
+            "en": "Each trap is a beast about to be hurt."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "interact",
+                "ref": "trap_dot_1"
+              },
+              {
+                "type": "interact",
+                "ref": "trap_dot_2"
+              },
+              {
+                "type": "interact",
+                "ref": "trap_dot_3"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sq_dot_s2",
+          "objective": {
+            "vi": "Đưa lưỡi bẫy cho bác Gianh đúc lại",
+            "en": "Give the blades to Uncle Gianh to recast"
+          },
+          "objective_key": "obj_0_4_s_dot2",
+          "why": {
+            "vi": "Đồng đúc sai thì đúc lại thành lưỡi cày.",
+            "en": "Metal cast wrong becomes a ploughshare."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "talk",
+                "ref": "cv_gianh_furnace"
+              }
+            ]
+          }
+        }
+      ],
+      "reward": {
+        "xp_ref": "xp_env_secret",
+        "items": [
+          {
+            "item": "mat_dong_lo_lang",
+            "count": 1
+          }
+        ],
+        "codex": "cx_luoi_bay_nha_dot"
+      }
+    },
+    {
+      "id": "sq_boc_do_nghe",
+      "kind": "side",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "title": {
+        "vi": "Bọc đồ của Nghệ",
+        "en": "Nghệ's Bundle"
+      },
+      "description": {
+        "vi": "Nghệ giấu một bọc vải trên gò khô giữa lau, định làm quà cho chị.",
+        "en": "Nghệ hid a cloth bundle on a dry hummock in the reeds, a gift for his sister."
+      },
+      "giver": "npc_nghe",
+      "starts_on": "cv_nghe_rescue",
+      "steps": [
+        {
+          "id": "sq_nghe_s1",
+          "objective": {
+            "vi": "Tìm bọc vải Nghệ giấu trên gò khô",
+            "en": "Find the bundle Nghệ hid on the dry hummock"
+          },
+          "objective_key": "obj_0_4_s_nghe1",
+          "why": {
+            "vi": "Nghệ bảo có cây lau cắm ngược làm dấu.",
+            "en": "Nghệ says an upside-down reed marks the spot."
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "environment_secret",
+                "ref": "es_go_kho"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sq_nghe_s2",
+          "objective": {
+            "vi": "Hỏi Nghệ về đôi vòng tay",
+            "en": "Ask Nghệ about the bracers"
+          },
+          "objective_key": "obj_0_4_s_nghe2",
+          "why": {
+            "vi": "Đôi vòng ấy ở đâu ra?",
+            "en": "Where did those bracers come from?"
+          },
+          "complete_when": {
+            "all": [
+              {
+                "type": "talk",
+                "ref": "cv_nghe_bracers"
+              }
+            ]
+          }
+        }
+      ],
+      "reward": {
+        "xp_ref": "xp_env_secret"
+      }
+    }
+  ]
+}

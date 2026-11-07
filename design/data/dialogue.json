@@ -1,0 +1,1279 @@
+{
+  "schema_version": 1,
+  "_note": "Story Integration Pass 0.4 (research/narrative/STORY_INTEGRATION_0_4.md). NPC, hội thoại, lựa chọn nhẹ, barks và vè do NPC hát. vi là gốc; en là dịch nháp. Lựa chọn chỉ đặt cờ flag_choice_* và đổi chi tiết lời thoại, không đổi sự kiện truyền thuyết (CLAUDE.md §3); mọi nhánh hội tụ về cùng bước nhiệm vụ (converges_to). Thần không có thoại (Story Bible v1.2 §2): Lạc Long Quân chỉ hiện qua lời người kể. line_ref trỏ tới strings.dialogue. Tên NPC chờ naming_review. Tất cả chờ historian-verifier; tối đa mức B.",
+  "speakers": [
+    {
+      "id": "npc_ba_lai_do",
+      "name": {
+        "vi": "Bà Mơ",
+        "en": "Grandma Mơ"
+      },
+      "role": {
+        "vi": "Bà lái đò ở Bến Sậy, bà nội của Cói và Nghệ",
+        "en": "The old ferrywoman at Sậy Landing, grandmother of Cói and Nghệ"
+      },
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "naming_review": "pending",
+      "voice_note": "Giọng chậm, ít lời, hay nói câu ngắn như dạy nghề. Không than."
+    },
+    {
+      "id": "npc_nghe",
+      "name": {
+        "vi": "Nghệ",
+        "en": "Nghệ"
+      },
+      "role": {
+        "vi": "Em trai Cói, đi cắt lau với người làng",
+        "en": "Cói's younger brother, out cutting reeds with the villagers"
+      },
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "naming_review": "pending",
+      "voice_note": "Thiếu niên, nói nhanh, hay hỏi. Sau khi tỉnh thì run, nói đứt quãng."
+    },
+    {
+      "id": "npc_nan",
+      "name": {
+        "vi": "Năn",
+        "en": "Năn"
+      },
+      "role": {
+        "vi": "Bạn cắt lau của Nghệ, chạy thoát về Bến Sậy",
+        "en": "Nghệ's reed-cutting friend, who made it back to Sậy Landing"
+      },
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "naming_review": "pending",
+      "voice_note": "Cô bé lanh lợi, hay hát; đau chân nên ngồi ở bến."
+    },
+    {
+      "id": "npc_dot",
+      "name": {
+        "vi": "Chú Đót",
+        "en": "Uncle Đót"
+      },
+      "role": {
+        "vi": "Thợ săn đầm, đặt bẫy theo nghề nhà",
+        "en": "A marsh hunter who sets traps, as his family always has"
+      },
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "naming_review": "pending",
+      "voice_note": "Người tốt làm sai mà không biết. Không phải phản diện; không bị đánh, không bị bêu."
+    },
+    {
+      "id": "npc_tho_duc_lang",
+      "name": {
+        "vi": "Bác Gianh",
+        "en": "Uncle Gianh"
+      },
+      "role": {
+        "vi": "Thợ đúc làng ở bến Lau",
+        "en": "The village caster at Lau Landing"
+      },
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "naming_review": "pending",
+      "voice_note": "Người nói ra nguồn ác bằng lời thường. Tôn nghề đúc: thợ đúc là người sửa lỗi, không phải người gây lỗi (V4)."
+    },
+    {
+      "id": "npc_nguoi_gia_ben",
+      "name": {
+        "vi": "Ông Vầu",
+        "en": "Grandpa Vầu"
+      },
+      "role": {
+        "vi": "Người giữ bến già, đời Bương",
+        "en": "The old landing-keeper in Bương's time"
+      },
+      "label": "SÁNG TẠO",
+      "era": "era_hung_vuong_6",
+      "naming_review": "pending",
+      "voice_note": "Kể chuyện nhà như kể chuyện làng. Đời Hùng 6: không chữ khoen/mảnh/chốt."
+    },
+    {
+      "id": "npc_be_sim",
+      "name": {
+        "vi": "Bé Sim",
+        "en": "Little Sim"
+      },
+      "role": {
+        "vi": "Đứa trẻ nhà bến Lau đời Bương, cháu nhiều đời của Nghệ; chỉ hát và hỏi",
+        "en": "A child of the Lau Landing family in Bương's time, a distant descendant of Nghệ; only sings and asks"
+      },
+      "label": "SÁNG TẠO",
+      "era": "era_hung_vuong_6",
+      "naming_review": "pending",
+      "voice_note": "Giọng hát vè; không có lựa chọn phân nhánh."
+    }
+  ],
+  "conversations": [
+    {
+      "id": "cv_cold_open",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "cinematic",
+        "ref": "cin_cold_open"
+      },
+      "lines": [
+        {
+          "id": "ln_co_00_ho",
+          "speaker": "npc_ba_lai_do",
+          "text": {
+            "vi": "Lau đầm trắng xóa mênh mông\nAi đưa người lạc qua sông đêm này",
+            "en": "The marsh reeds stretch white and wide.\nWho will ferry the lost across the river tonight?"
+          },
+          "form": "luc_bat",
+          "review_note": "Câu hò mới, lục bát 6-8. Cần người viết vè người thật đọc lại."
+        },
+        {
+          "id": "ln_co_01",
+          "speaker": "npc_ba_lai_do",
+          "text": {
+            "vi": "Nghe chưa? Ba đêm nay nó phá đầm.",
+            "en": "Hear that? Three nights now it has been tearing up the marsh."
+          }
+        },
+        {
+          "id": "ln_co_02",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Thuyền cắt lau… Nón của thằng Nghệ.",
+            "en": "A reed-cutters' boat… That's Nghệ's hat."
+          }
+        },
+        {
+          "id": "ln_co_03",
+          "speaker": "npc_nan",
+          "text": {
+            "vi": "Chị Cói! Con lợn lòi lao ra, ai cũng chạy. Nghệ chạy vào bãi lau, rồi sương lên. Em gọi mãi không thấy.",
+            "en": "Cói! The boar charged out and everyone ran. Nghệ ran into the reed beds, then the mist came up. I called and called."
+          }
+        },
+        {
+          "id": "ln_co_04",
+          "speaker": "npc_nan",
+          "text": {
+            "vi": "Người ta bảo nó thành tinh rồi.",
+            "en": "People say it has turned into a spirit."
+          }
+        },
+        {
+          "id": "ln_co_05",
+          "speaker": "npc_ba_lai_do",
+          "text": {
+            "vi": "Thành tinh gì. Con thú nào dữ cũng có cớ.",
+            "en": "Spirit, nothing. A beast that turns fierce has its reasons."
+          }
+        },
+        {
+          "id": "ln_co_06",
+          "speaker": "npc_ba_lai_do",
+          "text": {
+            "vi": "Sương ấy từ phía hang đá. Thứ ở hang ấy không phải việc nhà đò. Việc nhà đò là đưa người về.",
+            "en": "That mist comes from the stone cave. What lives there is no business of ferryfolk. Our business is bringing people home."
+          }
+        },
+        {
+          "id": "ln_co_07_ref",
+          "line_ref": "dlg_01_opening"
+        },
+        {
+          "id": "ln_co_08",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Con đi tìm em.",
+            "en": "I'll go and find him."
+          }
+        }
+      ]
+    },
+    {
+      "id": "cv_nan_ben_say",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "talk",
+        "ref": "npc_nan_ben_say"
+      },
+      "available": {
+        "before_flag": "flag_nguoi_bi_me_saved"
+      },
+      "lines": [
+        {
+          "id": "ln_nan_01",
+          "speaker": "npc_nan",
+          "text": {
+            "vi": "Chân em trẹo rồi, không theo chị được.",
+            "en": "I've twisted my ankle. I can't come with you."
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "ch_nan_way",
+          "text": {
+            "vi": "Nghệ chạy hướng nào?",
+            "en": "Which way did Nghệ run?"
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_nan_way"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_nan_02a",
+              "speaker": "npc_nan",
+              "text": {
+                "vi": "Theo hướng con lợn lòi. Nó đi trước, cày nát bùn thành một vệt. Chị cứ theo vệt ấy.",
+                "en": "The same way the boar went. It churned the mud into one long furrow. Just follow it."
+              }
+            }
+          ],
+          "detail_changed": "Đánh dấu cọc bẫy gãy (trap_a) lên bản đồ."
+        },
+        {
+          "id": "ch_nan_stay",
+          "text": {
+            "vi": "Ở đây với bà. Chị đi một mình.",
+            "en": "Stay here with Grandma. I'll go alone."
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_nan_stay"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_nan_02b",
+              "speaker": "npc_nan",
+              "text": {
+                "vi": "Chị ơi, em đánh rơi cái giỏ trong bãi lau. Thấy thì nhặt giúp em nhé.",
+                "en": "Cói, I dropped my basket in the reed beds. Pick it up if you see it?"
+              }
+            }
+          ],
+          "detail_changed": "Mở sớm nhiệm vụ phụ Giỏ của Năn."
+        }
+      ],
+      "converges_to": "qs_m1_vet_lon_loi"
+    },
+    {
+      "id": "cv_dot_dam_nong",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "talk",
+        "ref": "npc_dot_dam_nong"
+      },
+      "lines": [
+        {
+          "id": "ln_dot_01",
+          "speaker": "npc_dot",
+          "text": {
+            "vi": "Cô Cói? Cô cũng đi tìm nó à?",
+            "en": "Cói? You're after it too?"
+          }
+        },
+        {
+          "id": "ln_dot_02",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Tìm em tôi. Cái bẫy gãy kia của chú?",
+            "en": "I'm after my brother. That broken trap — is it yours?"
+          }
+        },
+        {
+          "id": "ln_dot_03",
+          "speaker": "npc_dot",
+          "text": {
+            "vi": "Của tôi. Đêm kia con lợn lòi già mắc vào, giật đứt cả cọc. Lưỡi bẫy theo nó đi mất, mắc ở cổ.",
+            "en": "Mine. Two nights ago the old boar got caught and tore the stake right out. The blade went with it, stuck in its neck."
+          }
+        },
+        {
+          "id": "ln_dot_04",
+          "speaker": "npc_dot",
+          "text": {
+            "vi": "Lưỡi ấy nhà tôi truyền từ đời ông, đồng cũ đúc lại. Tôi không ngờ nó cứa sâu thế.",
+            "en": "That blade came down from my grandfather, old metal cast again. I never thought it would cut so deep."
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "ch_dot_blame",
+          "text": {
+            "vi": "Bẫy của chú làm nó ra thế.",
+            "en": "Your trap did this to it."
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_dot_blamed"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_dot_05a",
+              "speaker": "npc_dot",
+              "text": {
+                "vi": "Tôi biết. Tôi sẽ nhổ hết bẫy còn lại. Cô gửi lưỡi về lò giúp tôi.",
+                "en": "I know. I'll pull up every trap I have left. Take the blades to the furnace for me."
+              }
+            }
+          ],
+          "detail_changed": "Ở lò đúc, Cói tự đưa bó lưỡi bẫy; Đót không đến."
+        },
+        {
+          "id": "ch_dot_ease",
+          "text": {
+            "vi": "Chú đâu có biết.",
+            "en": "You couldn't have known."
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_dot_eased"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_dot_05b",
+              "speaker": "npc_dot",
+              "text": {
+                "vi": "Biết hay không thì nó vẫn đau. Để tôi nhổ hết bẫy còn lại, rồi tự mang lên lò.",
+                "en": "Known or not, it still hurts. Let me pull up the rest, and I'll carry them to the furnace myself."
+              }
+            }
+          ],
+          "detail_changed": "Ở lò đúc, Đót tự đến nộp lưỡi bẫy."
+        }
+      ],
+      "after_choice": [
+        {
+          "id": "ln_dot_06",
+          "speaker": "npc_dot",
+          "text": {
+            "vi": "Thằng Nghệ chạy về phía Bãi lau, chỗ sương lên. Đi đi. Chỗ ấy đừng đứng lâu.",
+            "en": "Nghệ ran toward the reed beds, where the mist is. Go. Don't linger there."
+          }
+        }
+      ],
+      "starts_quest": "sq_bay_nha_dot",
+      "converges_to": "qs_m3_goi_nghe"
+    },
+    {
+      "id": "cv_nghe_rescue",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "non_combat_success",
+        "ref": "nc_nguoi_bi_me"
+      },
+      "lines": [
+        {
+          "id": "ln_ng_01",
+          "speaker": "npc_nghe",
+          "text": {
+            "vi": "Chị… Có ai gọi em vào sâu trong kia. Giọng giống giọng bà.",
+            "en": "Sis… someone was calling me deeper in. It sounded like Grandma."
+          }
+        },
+        {
+          "id": "ln_ng_02",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Bà ở bến. Giọng ấy không phải bà.",
+            "en": "Grandma's at the landing. That wasn't her."
+          }
+        },
+        {
+          "id": "ln_ng_03",
+          "speaker": "npc_nghe",
+          "text": {
+            "vi": "Con lợn lòi… nó không đuổi em. Nó cứ cọ cổ vào gốc cây, kêu như khóc.",
+            "en": "The boar… it didn't chase me. It kept rubbing its neck against the trees, crying out."
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "ch_ng_drive",
+          "text": {
+            "vi": "Chị sẽ đuổi nó ra khỏi đầm.",
+            "en": "I'll drive it out of the marsh."
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_coi_drive"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_ng_04a",
+              "speaker": "npc_nghe",
+              "text": {
+                "vi": "Chị cẩn thận. Nó to bằng con trâu.",
+                "en": "Be careful. It's as big as a buffalo."
+              }
+            }
+          ],
+          "detail_changed": "Lời Cói khi vào bãi lầy: bản 'đuổi đi'."
+        },
+        {
+          "id": "ch_ng_look",
+          "text": {
+            "vi": "Chị sẽ xem cái gì làm nó đau.",
+            "en": "I'll find out what's hurting it."
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_coi_look"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_ng_04b",
+              "speaker": "npc_nghe",
+              "text": {
+                "vi": "Có cái gì xanh xanh như đồng cũ mắc ở cổ nó, chị ạ.",
+                "en": "There's something greenish, like old metal, stuck in its neck."
+              }
+            }
+          ],
+          "detail_changed": "Lời Cói khi vào bãi lầy: bản 'xem cổ mày'; báo trước vị trí lưỡi bẫy."
+        }
+      ],
+      "after_choice": [
+        {
+          "id": "ln_ng_05",
+          "speaker": "npc_nghe",
+          "text": {
+            "vi": "Em về bến với bà.",
+            "en": "I'll go back to Grandma at the landing."
+          }
+        }
+      ],
+      "converges_to": "qs_m4_theo_dau"
+    },
+    {
+      "id": "cv_mo_after_rescue",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "talk",
+        "ref": "npc_ba_lai_do"
+      },
+      "available": {
+        "after_flag": "flag_nguoi_bi_me_saved",
+        "before_flag": "flag_boss_lon_loi_freed"
+      },
+      "lines": [
+        {
+          "id": "ln_mo_01",
+          "speaker": "npc_ba_lai_do",
+          "text": {
+            "vi": "Con đem em về rồi. Còn con thú ấy?",
+            "en": "You brought your brother home. And the beast?"
+          }
+        },
+        {
+          "id": "ln_mo_02",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Nó đau, bà ạ. Có cái gì mắc ở cổ nó.",
+            "en": "It's hurting, Grandma. Something is stuck in its neck."
+          }
+        },
+        {
+          "id": "ln_mo_03",
+          "speaker": "npc_ba_lai_do",
+          "text": {
+            "vi": "Người ta kể thứ ở hang đá phía tây chỉ Lạc Long Quân trị được. Còn cái mắc ở cổ con thú thì tay người gỡ được.",
+            "en": "People say only Lạc Long Quân can deal with what lives in the western cave. But what's stuck in a beast's neck, human hands can pull out."
+          }
+        }
+      ],
+      "review_note": "Lời người kể về thần (không thoại của thần). Cần historian-verifier duyệt cách gọi 'Lạc Long Quân' trong lời dân."
+    },
+    {
+      "id": "cv_gianh_furnace",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "talk",
+        "ref": "npc_tho_duc_lang"
+      },
+      "available": {
+        "after_flag": "flag_boss_lon_loi_freed"
+      },
+      "lines": [
+        {
+          "id": "ln_gi_01",
+          "speaker": "npc_tho_duc_lang",
+          "text": {
+            "vi": "Con mang gì về thế?",
+            "en": "What have you brought back?"
+          }
+        },
+        {
+          "id": "ln_gi_02",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Lưỡi bẫy cạy từ cổ con lợn lòi. Bác xem.",
+            "en": "A trap blade I pried from the boar's neck. Look at it."
+          }
+        },
+        {
+          "id": "ln_gi_03",
+          "speaker": "npc_tho_duc_lang",
+          "text": {
+            "vi": "Đồng này bác biết. Người xưa đúc vụng thành khoen để trói thú, bắt thú giữ bến thay mình. Khoen vỡ, người sau nhặt mảnh đúc lại thành bẫy. Thú mắc vào thì đau, đau thì dữ.",
+            "en": "I know this metal. Long ago someone clumsily cast it into a khoen to bind a beast and make it keep the landing for them. The khoen broke; later folk picked up the pieces and cast them into traps. A beast caught in one hurts, and hurting, turns fierce."
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "ch_gi_charm",
+          "text": {
+            "vi": "Có phải bùa không bác?",
+            "en": "Is it a charm, Uncle?"
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_gianh_charm"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_gi_04a",
+              "speaker": "npc_tho_duc_lang",
+              "text": {
+                "vi": "Bùa gì. Đồng đúc sai thôi. Cái sai là ở người muốn thú giữ bến thay mình.",
+                "en": "No charm. Just metal cast wrong. The wrong was in wanting a beast to keep the landing for you."
+              }
+            }
+          ],
+          "detail_changed": "Nhấn ý 'khoen không phép'."
+        },
+        {
+          "id": "ch_gi_who",
+          "text": {
+            "vi": "Ai đúc khoen ấy?",
+            "en": "Who cast that khoen?"
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_gianh_who"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_gi_04b",
+              "speaker": "npc_tho_duc_lang",
+              "text": {
+                "vi": "Một người lái đò đời xưa, không phải thợ đúc. Không ai nhớ tên, chỉ nhớ cái lỗi.",
+                "en": "A ferryman from long ago, not a caster. Nobody remembers the name, only the mistake."
+              }
+            }
+          ],
+          "detail_changed": "Nhấn ý người làm khoen là lái đò (V4); gieo câu hỏi cho các đời sau."
+        }
+      ],
+      "after_choice": [
+        {
+          "id": "ln_gi_05_ref",
+          "line_ref": "dlg_03_melting"
+        },
+        {
+          "id": "ln_gi_06",
+          "speaker": "npc_tho_duc_lang",
+          "text": {
+            "vi": "Còn cái nanh con thú để lại, bác gắn chuôi cho con.",
+            "en": "And the tusk the beast left behind, I'll set it in a handle for you."
+          }
+        }
+      ],
+      "variants": [
+        {
+          "if_flag": "flag_choice_dot_eased",
+          "if_quest_done": "sq_bay_nha_dot",
+          "lines": [
+            {
+              "id": "ln_gi_07a",
+              "speaker": "npc_dot",
+              "text": {
+                "vi": "Tôi mang hết lưỡi bẫy nhà tôi đến. Bác đúc lại cả đi.",
+                "en": "I've brought every blade my family had. Cast them all again."
+              }
+            }
+          ]
+        },
+        {
+          "if_flag": "flag_choice_dot_blamed",
+          "if_quest_done": "sq_bay_nha_dot",
+          "lines": [
+            {
+              "id": "ln_gi_07b",
+              "speaker": "chr_coi",
+              "text": {
+                "vi": "Chú Đót gửi bác cả bó này.",
+                "en": "Uncle Đót sent you this whole bundle."
+              }
+            }
+          ]
+        }
+      ],
+      "converges_to": "qs_m6_lo_duc"
+    },
+    {
+      "id": "cv_nan_basket",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "talk",
+        "ref": "npc_nan_ben_say"
+      },
+      "available": {
+        "after_quest_step": "sq_nan_s1"
+      },
+      "lines": [
+        {
+          "id": "ln_nb_01",
+          "speaker": "npc_nan",
+          "text": {
+            "vi": "Giỏ của em! Cái chuông ấy mẹ buộc vào để em đi đâu cũng nghe tiếng.",
+            "en": "My basket! Mother tied that bell on so she could hear me wherever I went."
+          }
+        },
+        {
+          "id": "ln_nb_02",
+          "speaker": "npc_nan",
+          "text": {
+            "vi": "Chị đi đầm nhiều hơn em. Chị giữ lấy?",
+            "en": "You're out in the marsh more than me. Will you keep it?"
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "ch_nb_keep",
+          "text": {
+            "vi": "Chị giữ hộ em mùa này.",
+            "en": "I'll keep it for you this season."
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_bell_kept"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_nb_03a",
+              "speaker": "npc_nan",
+              "text": {
+                "vi": "Nghe chuông là em biết chị về.",
+                "en": "When I hear the bell, I'll know you're back."
+              }
+            }
+          ],
+          "detail_changed": "Cói giữ Chuông đồng nhỏ."
+        },
+        {
+          "id": "ch_nb_return",
+          "text": {
+            "vi": "Của mẹ em buộc thì em giữ.",
+            "en": "Your mother tied it on. You keep it."
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_bell_returned"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_nb_03b",
+              "speaker": "npc_nan",
+              "text": {
+                "vi": "Thế em hát cho chị nghe một câu, bà dạy em đấy.",
+                "en": "Then let me sing you a verse. Grandma taught me."
+              }
+            }
+          ],
+          "detail_changed": "Trả chuông; Năn hát vè sau khi bãi lầy yên (perf_ve_nan), cộng kinh nghiệm."
+        }
+      ]
+    },
+    {
+      "id": "cv_nghe_bracers",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "talk",
+        "ref": "npc_nghe_ben_say"
+      },
+      "available": {
+        "after_quest_step": "sq_nghe_s1"
+      },
+      "lines": [
+        {
+          "id": "ln_nv_01",
+          "speaker": "npc_nghe",
+          "text": {
+            "vi": "Chị tìm thấy rồi à? Em đổi ba bó lau lấy đôi vòng ấy, định cho chị mùa nước này.",
+            "en": "You found it? I traded three bundles of reeds for those bracers. They were for you, for the flood season."
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "ch_nv_thanks",
+          "text": {
+            "vi": "Chị đeo ngay đây.",
+            "en": "I'll wear them now."
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_bracers_thanked"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_nv_02a",
+              "speaker": "npc_nghe",
+              "text": {
+                "vi": "Vừa không chị? Em ước chừng theo cổ tay bà.",
+                "en": "Do they fit? I guessed from Grandma's wrists."
+              }
+            }
+          ],
+          "detail_changed": "Lời đáp của Nghệ."
+        },
+        {
+          "id": "ch_nv_scold",
+          "text": {
+            "vi": "Lần sau đừng đi sâu thế, nghe chưa.",
+            "en": "Next time don't go so deep, you hear me?"
+          },
+          "effects": [
+            {
+              "kind": "set_flag",
+              "flag": "flag_choice_bracers_scolded"
+            }
+          ],
+          "response": [
+            {
+              "id": "ln_nv_02b",
+              "speaker": "npc_nghe",
+              "text": {
+                "vi": "Vâng… Nhưng chị vẫn đeo chứ?",
+                "en": "Yes, sis… But you'll still wear them?"
+              }
+            }
+          ],
+          "detail_changed": "Lời đáp của Nghệ."
+        }
+      ]
+    },
+    {
+      "id": "cv_handoff_coi",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "trigger": {
+        "type": "cinematic",
+        "ref": "cin_handoff"
+      },
+      "lines": [
+        {
+          "id": "ln_ho_c1",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Một vết. Cho con lợn lòi già.",
+            "en": "One notch. For the old boar."
+          }
+        },
+        {
+          "id": "ln_ho_c2",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Buộc lại cho nhớ.",
+            "en": "Tied on, so we remember."
+          }
+        }
+      ]
+    },
+    {
+      "id": "cv_handoff_buong",
+      "label": "SÁNG TẠO",
+      "era": "era_hung_vuong_6",
+      "trigger": {
+        "type": "cinematic",
+        "ref": "cin_handoff"
+      },
+      "lines": [
+        {
+          "id": "ln_ho_b0_ref",
+          "line_ref": "dlg_05_handoff"
+        },
+        {
+          "id": "ln_ho_b1",
+          "speaker": "npc_nguoi_gia_ben",
+          "text": {
+            "vi": "Bịt đồng này nhiều đời rồi. Cán thì mỗi đời một cây. Lắp cán của con vào.",
+            "en": "This bronze cap is many generations old. The shaft is new each generation. Fit yours."
+          }
+        },
+        {
+          "id": "ln_ho_b2",
+          "speaker": "npc_be_sim",
+          "text": {
+            "vi": "Vết này của ai hả ông?",
+            "en": "Whose notch is this, Grandpa?"
+          }
+        },
+        {
+          "id": "ln_ho_b3",
+          "speaker": "npc_nguoi_gia_ben",
+          "text": {
+            "vi": "Của bà tổ Cói. Người ta kể bà đánh nhau với một con lợn lòi to bằng con trâu.",
+            "en": "Our ancestor Cói's. They say she fought a boar as big as a buffalo."
+          }
+        },
+        {
+          "id": "ln_ho_b4",
+          "speaker": "npc_be_sim",
+          "text": {
+            "vi": "Con lợn lòi thành tinh ạ?",
+            "en": "Was it a spirit boar?"
+          }
+        },
+        {
+          "id": "ln_ho_b5",
+          "speaker": "npc_nguoi_gia_ben",
+          "text": {
+            "vi": "Không. Nó đau thôi. Bà tổ làm cho nó hết đau.",
+            "en": "No. It was only hurting. She made the hurting stop."
+          }
+        },
+        {
+          "id": "ln_ho_b6",
+          "speaker": "npc_be_sim",
+          "text": {
+            "vi": "Không có bà Cói gọi ông tổ Nghệ ra khỏi sương thì không có nhà mình, ông nhỉ?",
+            "en": "If Cói hadn't called our ancestor Nghệ out of the mist, there'd be no family, would there?"
+          }
+        },
+        {
+          "id": "ln_ho_b7",
+          "speaker": "npc_nguoi_gia_ben",
+          "text": {
+            "vi": "Ừ. Nên nhà mình còn giữ bến.",
+            "en": "That's right. So our family still keeps the landing."
+          }
+        },
+        {
+          "id": "ln_ho_b8",
+          "speaker": "chr_buong",
+          "text": {
+            "vi": "Buộc lại cho nhớ.",
+            "en": "Tied on, so we remember."
+          }
+        },
+        {
+          "id": "ln_ho_b9",
+          "speaker": "npc_nguoi_gia_ben",
+          "text": {
+            "vi": "Hang đá phía tây ngày xưa, người ta kể, Lạc Long Quân dâng nước phá đi, chỗ ấy thành đầm sâu. Việc lớn là của thần. Việc nhà mình là đưa người qua sông.",
+            "en": "The western cave of old — so the telling goes — Lạc Long Quân raised the waters and broke it, and it became a deep marsh. The great deeds belong to the gods. Our family's work is carrying people across the river."
+          },
+          "review_note": "Tóm tắt M003 qua lời người kể; chưa đối chiếu nguyên văn LNCQ. Cần historian-verifier duyệt."
+        }
+      ]
+    },
+    {
+      "id": "cv_demo_hook",
+      "label": "SÁNG TẠO",
+      "era": "era_hung_vuong_6",
+      "trigger": {
+        "type": "cinematic",
+        "ref": "cin_demo_hook"
+      },
+      "lines": [
+        {
+          "id": "ln_hk_1",
+          "speaker": "npc_nguoi_gia_ben",
+          "text": {
+            "vi": "Có người gọi đò. Từ thượng nguồn về, đông lắm.",
+            "en": "Someone's calling for the ferry. Coming down from upriver — a great many of them."
+          }
+        },
+        {
+          "id": "ln_hk_2",
+          "speaker": "chr_buong",
+          "text": {
+            "vi": "Sao đông thế ông?",
+            "en": "Why so many, Grandpa?"
+          }
+        },
+        {
+          "id": "ln_hk_3",
+          "speaker": "npc_nguoi_gia_ben",
+          "text": {
+            "vi": "Có chuyện lớn ở thượng nguồn. Sang đi con. Bến mình có đò.",
+            "en": "Something big is happening upriver. Go across, child. Our landing has a ferry."
+          }
+        }
+      ]
+    }
+  ],
+  "barks": [
+    {
+      "id": "bk_coi_combat",
+      "speaker": "chr_coi",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "lines": [
+        {
+          "id": "bk_c_flee",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Về ổ đi!",
+            "en": "Back to your nest!"
+          },
+          "trigger": "enemy_fled"
+        },
+        {
+          "id": "bk_c_dissipate",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Ngủ tiếp đi.",
+            "en": "Go back to sleep."
+          },
+          "trigger": "enemy_dissipated"
+        },
+        {
+          "id": "bk_c_parry",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Đây!",
+            "en": "There!"
+          },
+          "trigger": "perfect_parry",
+          "cooldown_s": 12
+        },
+        {
+          "id": "bk_c_guard_break",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Hở rồi!",
+            "en": "Opening!"
+          },
+          "trigger": "guard_break",
+          "cooldown_s": 12
+        },
+        {
+          "id": "bk_c_burst",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Nghe trống này!",
+            "en": "Hear the drum!"
+          },
+          "trigger": "drum_burst"
+        },
+        {
+          "id": "bk_c_low_hp",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Chưa được… Nghệ còn chờ.",
+            "en": "Not yet… Nghệ is waiting."
+          },
+          "trigger": "low_health_before_rescue",
+          "cooldown_s": 40
+        },
+        {
+          "id": "bk_c_low_hp2",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Đứng dậy. Bà còn ở bến.",
+            "en": "Get up. Grandma's still at the landing."
+          },
+          "trigger": "low_health_after_rescue",
+          "cooldown_s": 40
+        },
+        {
+          "id": "bk_c_heal",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Một miếng thôi.",
+            "en": "Just one bite."
+          },
+          "trigger": "heal",
+          "cooldown_s": 30
+        }
+      ]
+    },
+    {
+      "id": "bk_coi_story",
+      "speaker": "chr_coi",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "lines": [
+        {
+          "id": "bk_s_trap_a",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Nó giật đứt bẫy… Lưỡi bẫy theo nó đi rồi.",
+            "en": "It tore the trap loose… The blade went with it."
+          },
+          "trigger": "inspect:trap_a"
+        },
+        {
+          "id": "bk_s_tree",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Vệt xanh như đồng cũ. Nó cọ cổ vào đây.",
+            "en": "A greenish smear, like old metal. It rubbed its neck here."
+          },
+          "trigger": "inspect:np_cay_vet_ten"
+        },
+        {
+          "id": "bk_s_boat",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Bó lau bỏ lại. Họ chạy vội lắm.",
+            "en": "Reed bundles left behind. They ran in a hurry."
+          },
+          "trigger": "inspect:np_bo_lau_bo"
+        },
+        {
+          "id": "bk_s_call_1",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Nghệ!",
+            "en": "Nghệ!"
+          },
+          "trigger": "call_name_progress_0"
+        },
+        {
+          "id": "bk_s_call_2",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Nghệ ơi, chị đây!",
+            "en": "Nghệ, it's me!"
+          },
+          "trigger": "call_name_progress_50"
+        },
+        {
+          "id": "bk_s_call_3",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Về thôi, về ăn cơm, bà chờ ở bến!",
+            "en": "Come home, rice is ready, Grandma's waiting at the landing!"
+          },
+          "trigger": "call_name_progress_90"
+        },
+        {
+          "id": "bk_s_arena_drive",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Đi khỏi đầm đi. Tao không muốn đánh mày.",
+            "en": "Leave the marsh. I don't want to fight you."
+          },
+          "trigger": "boss_intro",
+          "if_flag": "flag_choice_coi_drive"
+        },
+        {
+          "id": "bk_s_arena_look",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Đứng yên. Để tao xem cổ mày.",
+            "en": "Hold still. Let me see your neck."
+          },
+          "trigger": "boss_intro",
+          "if_flag": "flag_choice_coi_look"
+        },
+        {
+          "id": "bk_s_stakes",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Cọc bẫy cũ… Dụ nó vào đây.",
+            "en": "Old trap stakes… Lure it in here."
+          },
+          "trigger": "boss_phase2_stakes_revealed"
+        },
+        {
+          "id": "bk_s_pin_start",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Suỵt… Yên nào.",
+            "en": "Shh… Easy now."
+          },
+          "trigger": "pin_tusk_start"
+        },
+        {
+          "id": "bk_s_pin_ok",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Được rồi. Được rồi.",
+            "en": "There. There now."
+          },
+          "trigger": "pin_tusk_success"
+        },
+        {
+          "id": "bk_s_pin_fail",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Ối!",
+            "en": "Ah!"
+          },
+          "trigger": "pin_tusk_fail"
+        },
+        {
+          "id": "bk_s_pry_1",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Một…",
+            "en": "One…"
+          },
+          "trigger": "pry_beat_1"
+        },
+        {
+          "id": "bk_s_pry_2",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Hai…",
+            "en": "Two…"
+          },
+          "trigger": "pry_beat_2"
+        },
+        {
+          "id": "bk_s_pry_3",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Ba!",
+            "en": "Three!"
+          },
+          "trigger": "pry_beat_3"
+        },
+        {
+          "id": "bk_s_pry_miss",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Lại nào. Theo trống.",
+            "en": "Again. With the drum."
+          },
+          "trigger": "pry_beat_miss"
+        },
+        {
+          "id": "bk_s_freed",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Đi đi. Không ai buộc mày nữa.",
+            "en": "Go on. No one's binding you now."
+          },
+          "trigger": "after_pry_silence_before_ve"
+        },
+        {
+          "id": "bk_s_blade",
+          "speaker": "chr_coi",
+          "text": {
+            "vi": "Không phải lưỡi bẫy thường. Đồng này cong như khúc vòng gãy.",
+            "en": "This is no ordinary trap blade. The metal curves like a piece of a broken ring."
+          },
+          "trigger": "after_ve_pick_blade"
+        }
+      ]
+    },
+    {
+      "id": "bk_buong_practice",
+      "speaker": "chr_buong",
+      "label": "SÁNG TẠO",
+      "era": "era_hung_vuong_6",
+      "lines": [
+        {
+          "id": "bk_b_swap_axe",
+          "speaker": "chr_buong",
+          "text": {
+            "vi": "Rìu nặng tay thật.",
+            "en": "This axe is heavy in the hand."
+          },
+          "trigger": "swap_to_axe"
+        },
+        {
+          "id": "bk_b_swap_spear",
+          "speaker": "chr_buong",
+          "text": {
+            "vi": "Giáo của bà tổ, rìu của mình.",
+            "en": "Our ancestor's spear, my own axe."
+          },
+          "trigger": "swap_to_spear"
+        },
+        {
+          "id": "bk_b_dummy",
+          "speaker": "chr_buong",
+          "text": {
+            "vi": "Hình nộm thì không biết né.",
+            "en": "A straw dummy doesn't dodge."
+          },
+          "trigger": "dummy_broken"
+        },
+        {
+          "id": "bk_b_crab",
+          "speaker": "chr_buong",
+          "text": {
+            "vi": "Về sông đi, cua.",
+            "en": "Back to the river, crab."
+          },
+          "trigger": "enemy_fled"
+        }
+      ]
+    }
+  ],
+  "songs": [
+    {
+      "id": "perf_ho_mo",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "singer": "npc_ba_lai_do",
+      "line_ref": "ln_co_00_ho",
+      "trigger": "cold_open_first_shot",
+      "review_note": "Cần người viết vè người thật đọc lại."
+    },
+    {
+      "id": "perf_ve_nan",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "singer": "npc_nan",
+      "line_ref": "dlg_04_ve_after_pry",
+      "trigger": "talk_nan_after_boss",
+      "requires_flags": [
+        "flag_boss_lon_loi_freed",
+        "flag_choice_bell_returned"
+      ],
+      "review_note": "Vè đã có (Story Bible §7), nay do NPC hát ở Bến Sậy. Đời Lạc Long Quân: được dùng chữ khoen."
+    },
+    {
+      "id": "perf_ve_sim",
+      "label": "SÁNG TẠO",
+      "era": "era_hung_vuong_6",
+      "singer": "npc_be_sim",
+      "line_ref": "dlg_06_ve_floor",
+      "trigger": "handoff_after_practice",
+      "review_note": "Vè bản sàn (SB11-01), nay do bé Sim hát. Không chữ khoen/mảnh/chốt."
+    }
+  ]
+}

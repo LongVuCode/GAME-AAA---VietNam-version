@@ -114,6 +114,79 @@
       "review_status": "pending_historian_verifier",
       "notes": "Chưa đối chiếu nguyên văn LNCQ. Demo 0.1 không có trận Hồ Tinh; mục này chỉ để đặt bối cảnh.",
       "unlock_era": "era_lac_long_quan"
+    },
+    {
+      "id": "cx_yeu_dam",
+      "title": {
+        "vi": "Yêu đầm",
+        "en": "Marsh Spirits"
+      },
+      "label": "SÁNG TẠO",
+      "sources": [],
+      "research_refs": [
+        "M002",
+        "M003"
+      ],
+      "text": {
+        "vi": "Yêu đầm là sáng tạo của game: cua, bọ ngựa già và những ụ bùn rễ lau đã nằm trong bùn lâu tới mức đầm mọc lên cả mình chúng — mai thành đá rêu, thân thành lau khô. Dân đầm nói vật sống quá lâu thì \"thành tinh\"; các yêu mà Lạc Long Quân trừ trong Lĩnh Nam chích quái cũng là loài sống lâu năm (theo trích đoạn, chưa đối chiếu nguyên văn). Yêu đầm không theo phe thần hay yêu nào, không ăn người, không do khoen sinh ra. Bị đánh thức thì giữ ổ; thua thì bỏ về bùn, không bị giết.",
+        "en": "Marsh spirits are invented for the game: old crabs, old mantises and mounds of mud and reed roots that have lain in the mire so long the marsh has grown over them — shells turned to mossy stone, bodies to dry reed. Marsh folk say a creature that lives too long \"becomes a spirit\"; the demons Lạc Long Quân overcomes in the Lĩnh Nam chích quái are also long-lived creatures (per excerpts, original text not yet checked). Marsh spirits serve no god or demon, eat no one, and were not made by the khoen. Woken, they defend their beds; beaten, they slip back into the mud and are never killed."
+      },
+      "review_status": "pending_historian_verifier",
+      "unlock_era": "era_lac_long_quan",
+      "notes": "Khái niệm thành tinh: chỉ dùng nghĩa 'sống lâu', KHÔNG dùng nghĩa 'oán khí' (sẽ làm cơn đau/khoen thành phép, trái SB-03). Cơ sở trích đoạn: Ngư Tinh 'sống lâu đời thành tinh', Mộc Tinh cây chiên đàn nghìn năm, Hồ Tinh cáo sống lâu năm; chưa đối chiếu LNCQ. Cần historian-verifier."
+    },
+    {
+      "id": "cx_luoi_bay_nha_dot",
+      "title": {
+        "vi": "Lưỡi bẫy nhà Đót",
+        "en": "The Đót Family's Trap Blades"
+      },
+      "label": "SÁNG TẠO",
+      "sources": [],
+      "research_refs": [],
+      "text": {
+        "vi": "Nhà Đót đặt bẫy đã ba đời. Lưỡi bẫy truyền từ đời ông, đồng cũ đúc lại ở lò bỏ hoang; không ai trong nhà biết đồng ấy từ khoen vỡ mà ra. Khi biết, Đót nhổ hết bẫy còn giương và đem lưỡi lên lò đúc làng để đúc thành lưỡi cày. Cái lỗi truyền qua nhiều đời bằng đồ vật; cái sửa lỗi cũng vậy.",
+        "en": "The Đót family has set traps for three generations. The blades came down from the grandfather, old metal recast at the abandoned kiln; no one in the family knew it came from a broken khoen. Once he knew, Đót pulled up every trap still set and carried the blades to the village furnace to be cast into ploughshares. A mistake passes down the generations through things; so does its mending."
+      },
+      "review_status": "pending_historian_verifier",
+      "unlock_era": "era_lac_long_quan"
+    },
+    {
+      "id": "cx_suong_bai_lau",
+      "title": {
+        "vi": "Sương ở bãi lau",
+        "en": "The Mist in the Reed Beds"
+      },
+      "label": "HUYỀN THOẠI",
+      "sources": [
+        "LNCQ"
+      ],
+      "research_refs": [
+        "M003"
+      ],
+      "text": {
+        "vi": "Theo truyền thuyết trong Lĩnh Nam chích quái, Hồ Tinh ở hang đá hóa thành người hoặc vật để bắt người, và Lạc Long Quân là người trừ nó (chưa đối chiếu nguyên văn). Phần sáng tạo của game: làn sương đứng trên bãi lau và giọng giống người thân gọi người ta vào sâu là dấu hiệu của mối nguy ấy. Cói không đánh thứ ở hang đá; nàng chỉ gọi người về.",
+        "en": "According to a legend in the Lĩnh Nam chích quái, the Fox Spirit of the stone cave took the shape of people or things to seize people, and it was Lạc Long Quân who overcame it (original text not yet checked). Invented for the game: the mist standing over the reed beds, and a voice like a loved one's calling people deeper in, are signs of that danger. Cói does not fight what lives in the cave; she only calls people home."
+      },
+      "review_status": "pending_historian_verifier",
+      "unlock_era": "era_lac_long_quan",
+      "notes": "Tách rõ phần HUYỀN THOẠI (M003) và phần SÁNG TẠO trong cùng mục, theo mẫu cx_ho_tinh. Công trừ yêu thuộc Lạc Long Quân (không cướp công)."
+    },
+    {
+      "id": "cx_dai_cham",
+      "title": {
+        "vi": "Dải chàm trên cán sào",
+        "en": "The Indigo Strip on the Pole"
+      },
+      "label": "SÁNG TẠO",
+      "sources": [],
+      "research_refs": [],
+      "text": {
+        "vi": "Tục riêng của nhà bến Lau, hư cấu: mỗi đời lắp cán tre mới vào Mũi Sào thì buộc thêm một dải vải chàm, như bà tổ Cói đã buộc dải chàm từ nón của em trai Nghệ, đêm nàng gọi được em ra khỏi sương. Người nhà nói: buộc lại cho nhớ.",
+        "en": "A custom of the Lau Landing family, invented for the game: each generation that fits a new bamboo shaft to the Pole-tip ties on another strip of indigo cloth, as their ancestor Cói tied the strip from her brother Nghệ's hat on the night she called him out of the mist. The family says: tie it on, so we remember."
+      },
+      "review_status": "pending_historian_verifier",
+      "unlock_era": "era_hung_vuong_6"
     }
   ],
   "fixed_notice": "codex_notice_level_b"

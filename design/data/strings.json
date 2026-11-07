@@ -1537,6 +1537,138 @@
     "opt_val_north_up": {
       "vi": "Hướng bắc",
       "en": "North"
+    },
+    "obj_0_4_m1": {
+      "vi": "Lần theo vệt lợn lòi qua Đầm nông",
+      "en": "Follow the boar's trail through the Shallow Marsh"
+    },
+    "obj_0_4_m2": {
+      "vi": "Hỏi chú Đót về cái bẫy gãy",
+      "en": "Ask Uncle Đót about the broken trap"
+    },
+    "obj_0_4_m3": {
+      "vi": "Gọi Nghệ ra khỏi sương ở Bãi lau",
+      "en": "Call Nghệ out of the mist in the Reed Beds"
+    },
+    "obj_0_4_m4": {
+      "vi": "Theo dấu con lợn lòi về Bãi lầy lò cũ",
+      "en": "Track the boar to the Old Kiln Mire"
+    },
+    "obj_0_4_m5": {
+      "vi": "Hạ Thế con lợn lòi, cạy thứ đang cứa cổ nó",
+      "en": "Break the boar's Stance and pry out what is cutting its neck"
+    },
+    "obj_0_4_m6": {
+      "vi": "Mang lưỡi bẫy về lò đúc làng ở bến Lau",
+      "en": "Bring the trap blade to the village furnace at Lau Landing"
+    },
+    "obj_0_4_h1": {
+      "vi": "Khắc vết đầu tiên lên Mũi Sào ở trống gỗ",
+      "en": "Carve the first notch on the Pole-tip at the wooden drum"
+    },
+    "obj_0_4_s_nan1": {
+      "vi": "Tìm giỏ Năn bỏ quên trong Bãi lau",
+      "en": "Find the basket Năn left in the Reed Beds"
+    },
+    "obj_0_4_s_nan2": {
+      "vi": "Mang giỏ về cho Năn ở Bến Sậy",
+      "en": "Bring the basket back to Năn at Sậy Landing"
+    },
+    "obj_0_4_s_dot1": {
+      "vi": "Nhổ ba bẫy còn giương của chú Đót",
+      "en": "Pull up Uncle Đót's three remaining traps"
+    },
+    "obj_0_4_s_dot2": {
+      "vi": "Đưa lưỡi bẫy cho bác Gianh đúc lại",
+      "en": "Give the blades to Uncle Gianh to recast"
+    },
+    "obj_0_4_s_nghe1": {
+      "vi": "Tìm bọc vải Nghệ giấu trên gò khô",
+      "en": "Find the bundle Nghệ hid on the dry hummock"
+    },
+    "obj_0_4_s_nghe2": {
+      "vi": "Hỏi Nghệ về đôi vòng tay",
+      "en": "Ask Nghệ about the bracers"
+    },
+    "speaker_npc_nghe": {
+      "vi": "Nghệ",
+      "en": "Nghệ"
+    },
+    "speaker_npc_nan": {
+      "vi": "Năn",
+      "en": "Năn"
+    },
+    "speaker_npc_dot": {
+      "vi": "Chú Đót",
+      "en": "Uncle Đót"
+    },
+    "speaker_npc_be_sim": {
+      "vi": "Bé Sim",
+      "en": "Little Sim"
+    },
+    "prompt_carve_notch": {
+      "vi": "Giữ để khắc vết",
+      "en": "Hold to carve the notch"
+    },
+    "prompt_tie_strip": {
+      "vi": "Giữ để buộc dải chàm",
+      "en": "Hold to tie the indigo strip"
+    },
+    "prompt_fit_shaft": {
+      "vi": "Giữ để lắp cán mới",
+      "en": "Hold to fit the new shaft"
+    },
+    "prompt_pull_trap": {
+      "vi": "Nhổ bẫy",
+      "en": "Pull up the trap"
+    },
+    "cin_skip_hold": {
+      "vi": "Giữ {key} để bỏ qua",
+      "en": "Hold {key} to skip"
+    },
+    "cin_era_llq": {
+      "vi": "Thời Lạc Long Quân, theo lời kể",
+      "en": "In the age of Lạc Long Quân, as the tellings go"
+    },
+    "cin_many_generations_later": {
+      "vi": "Nhiều đời sau",
+      "en": "Many generations later"
+    },
+    "demo_to_be_continued": {
+      "vi": "Còn tiếp: đời Bương",
+      "en": "To be continued: Bương's generation"
+    },
+    "quest_main": {
+      "vi": "Việc chính",
+      "en": "Main task"
+    },
+    "quest_side": {
+      "vi": "Việc phụ",
+      "en": "Side task"
+    },
+    "quest_done": {
+      "vi": "Đã xong",
+      "en": "Done"
+    },
+    "quest_new": {
+      "vi": "Việc mới: {name}",
+      "en": "New task: {name}"
+    },
+    "quest_step_done": {
+      "vi": "Xong: {name}",
+      "en": "Done: {name}"
+    },
+    "quest_why": {
+      "vi": "Vì sao",
+      "en": "Why"
+    },
+    "dialogue_choose": {
+      "vi": "Chọn lời đáp",
+      "en": "Choose a reply"
+    },
+    "msg_trap_pulled": {
+      "vi": "Đã nhổ bẫy ({n}/{max})",
+      "en": "Trap pulled up ({n}/{max})"
     }
   },
   "dialogue": [

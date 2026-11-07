@@ -1,0 +1,688 @@
+{
+  "schema_version": 1,
+  "_note": "Story Integration Pass 0.4. Shot list đơn giản cho camera trong engine. Tọa độ (x, y, z) là mét của prototype/web/src/game/world.js (y lên trên, -z là bắc; HUB_X = 300); agent code chỉnh khung. direction là ghi chú dàn cảnh nội bộ, không phải chuỗi hiển thị. Mỗi shot có era khi khác era của cảnh; validator chặn chữ khoen/mảnh/chốt trong shot đời Hùng 6. Thần không hiện hình, không thoại (Story Bible v1.2 §2). Mọi cảnh bỏ qua được (giữ nút), phụ đề luôn bật.",
+  "cinematics": [
+    {
+      "id": "cin_cold_open",
+      "role": "cold_open",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "trigger": "new_game",
+      "skippable": true,
+      "skip_hold_s": 1.0,
+      "total_s": 90.0,
+      "max_total_s": 90,
+      "dramatic_question": {
+        "vi": "Nghệ ở đâu, và cái gì làm con lợn lòi phá đầm?",
+        "en": "Where is Nghệ, and what is driving the boar to wreck the marsh?"
+      },
+      "objective_ref": "qs_m1_vet_lon_loi",
+      "conversation_ref": "cv_cold_open",
+      "shots": [
+        {
+          "id": "co_s01",
+          "duration_s": 6,
+          "camera": {
+            "kind": "black",
+            "fov_deg": 50
+          },
+          "direction": "Đen. Tiếng lau xào xạc, tiếng nước. Hiện thẻ thời đại.",
+          "line_refs": [],
+          "title_key": "cin_era_llq",
+          "sfx": [
+            "amb_reeds_night",
+            "boar_scream_far"
+          ],
+          "t_s": 0.0
+        },
+        {
+          "id": "co_s02",
+          "duration_s": 12,
+          "camera": {
+            "kind": "wide_dolly",
+            "from": [
+              14,
+              6,
+              60
+            ],
+            "to": [
+              6,
+              4,
+              46
+            ],
+            "look_at": [
+              0,
+              1,
+              38
+            ],
+            "fov_deg": 42
+          },
+          "direction": "Hoàng hôn. Đò của Cói rẽ nước về Bến Sậy; bà Mơ ngồi mũi đò cầm đuốc, hò. Bãi lau phía xa quẫy động, chim vụt bay.",
+          "line_refs": [
+            "ln_co_00_ho",
+            "ln_co_01"
+          ],
+          "music": "mus_cold_open_low",
+          "t_s": 6.0
+        },
+        {
+          "id": "co_s03",
+          "duration_s": 12,
+          "camera": {
+            "kind": "over_shoulder",
+            "subject": "chr_coi",
+            "from": [
+              -1.5,
+              2.2,
+              43
+            ],
+            "look_at": [
+              3,
+              0.3,
+              40
+            ],
+            "fov_deg": 38
+          },
+          "direction": "Thuyền nan lật trôi ngang, bó lau tản trên nước. Cói chống sào móc thuyền lại; trong khoang có chiếc nón buộc dải chàm.",
+          "line_refs": [
+            "ln_co_02"
+          ],
+          "prop_refs": [
+            "np_thuyen_lat"
+          ],
+          "t_s": 18.0
+        },
+        {
+          "id": "co_s04",
+          "duration_s": 10,
+          "camera": {
+            "kind": "close_up",
+            "subject": "chr_coi",
+            "from": [
+              0.6,
+              1.6,
+              41.4
+            ],
+            "look_at": [
+              0,
+              1.5,
+              40.5
+            ],
+            "fov_deg": 30
+          },
+          "direction": "Cận tay Cói gỡ dải chàm khỏi nón, buộc vào cổ tay. Nhạc dừng một nhịp.",
+          "line_refs": [],
+          "t_s": 30.0
+        },
+        {
+          "id": "co_s05",
+          "duration_s": 14,
+          "camera": {
+            "kind": "tracking",
+            "from": [
+              3,
+              2,
+              30
+            ],
+            "to": [
+              1,
+              1.8,
+              26
+            ],
+            "look_at": [
+              0,
+              1,
+              24
+            ],
+            "fov_deg": 40
+          },
+          "direction": "Đò cập Bến Sậy. Năn, bùn tới gối, khập khiễng chạy ra cầu bến.",
+          "line_refs": [
+            "ln_co_03"
+          ],
+          "t_s": 40.0
+        },
+        {
+          "id": "co_s06",
+          "duration_s": 10,
+          "camera": {
+            "kind": "two_shot",
+            "from": [
+              -3,
+              1.7,
+              27
+            ],
+            "look_at": [
+              0,
+              1.4,
+              24.5
+            ],
+            "fov_deg": 36
+          },
+          "direction": "Năn nói, mắt nhìn về đầm; bà Mơ bước lên bến, gạt lời.",
+          "line_refs": [
+            "ln_co_04",
+            "ln_co_05"
+          ],
+          "t_s": 54.0
+        },
+        {
+          "id": "co_s07",
+          "duration_s": 12,
+          "camera": {
+            "kind": "wide_pan",
+            "from": [
+              0,
+              5,
+              26
+            ],
+            "look_at": [
+              -30,
+              3,
+              -90
+            ],
+            "fov_deg": 45
+          },
+          "direction": "Lia về phía bắc: sương trắng nhạt đứng trên bãi lau; xa hơn về phía tây là khối đá tối của hang. Không hiện sinh vật nào.",
+          "line_refs": [
+            "ln_co_06"
+          ],
+          "vfx": [
+            "vfx_illusion_mist_far"
+          ],
+          "t_s": 64.0
+        },
+        {
+          "id": "co_s08",
+          "duration_s": 9,
+          "camera": {
+            "kind": "medium",
+            "subject": "npc_ba_lai_do",
+            "from": [
+              -2,
+              1.6,
+              24
+            ],
+            "look_at": [
+              -1,
+              1.4,
+              22.6
+            ],
+            "fov_deg": 34
+          },
+          "direction": "Bà Mơ trao giáo cho Cói.",
+          "line_refs": [
+            "ln_co_07_ref",
+            "ln_co_08"
+          ],
+          "t_s": 76.0
+        },
+        {
+          "id": "co_s09",
+          "duration_s": 5,
+          "camera": {
+            "kind": "blend_to_gameplay",
+            "subject": "chr_coi",
+            "fov_deg": 60
+          },
+          "direction": "Camera vòng ra sau lưng Cói, nhập vào camera chơi. Hiện mục tiêu một dòng.",
+          "line_refs": [],
+          "objective_ref": "qs_m1_vet_lon_loi",
+          "music": "mus_marsh_explore",
+          "t_s": 85.0
+        }
+      ]
+    },
+    {
+      "id": "cin_handoff",
+      "role": "handoff",
+      "label": "SÁNG TẠO",
+      "era": "era_lac_long_quan",
+      "chapter": "ch_longbien",
+      "to_era": "era_hung_vuong_6",
+      "trigger": "quest_step:qs_h1_khac_vet",
+      "skippable": true,
+      "skip_hold_s": 1.0,
+      "total_s": 114.0,
+      "then_handoff_steps": [
+        "ho_03_thap",
+        "ho_05_skills",
+        "ho_06_slot2",
+        "ho_07_trial"
+      ],
+      "replaces_handoff_steps": [
+        "ho_01_title",
+        "ho_02_line",
+        "ho_04_tool",
+        "ho_08_ve",
+        "ho_09_theme"
+      ],
+      "player_keeps": [
+        "skills",
+        "wp_giao_dong",
+        "bk_nanh_dam",
+        "tool_mui_sao",
+        "notch_of_coi",
+        "custom_dai_cham",
+        "codex"
+      ],
+      "conversation_refs": [
+        "cv_handoff_coi",
+        "cv_handoff_buong"
+      ],
+      "shots": [
+        {
+          "id": "ho_s01",
+          "duration_s": 8,
+          "camera": {
+            "kind": "medium",
+            "subject": "chr_coi",
+            "from": [
+              302,
+              1.5,
+              -14
+            ],
+            "look_at": [
+              300,
+              1.2,
+              -11
+            ],
+            "fov_deg": 35
+          },
+          "direction": "Bến Lau, chạng vạng. Cói ngồi bên trống gỗ, Mũi Sào đặt ngang gối, Nghệ ngồi cạnh.",
+          "line_refs": [],
+          "era": "era_lac_long_quan",
+          "t_s": 0.0
+        },
+        {
+          "id": "ho_s02",
+          "duration_s": 6,
+          "camera": {
+            "kind": "close_up",
+            "subject": "tool_mui_sao",
+            "fov_deg": 28
+          },
+          "direction": "Người chơi giữ nút: Cói khắc vết đầu tiên lên bịt đồng.",
+          "line_refs": [
+            "ln_ho_c1"
+          ],
+          "era": "era_lac_long_quan",
+          "interactive": {
+            "prompt_key": "prompt_carve_notch",
+            "hold_s": 1.2,
+            "fail": "none"
+          },
+          "t_s": 8.0
+        },
+        {
+          "id": "ho_s03",
+          "duration_s": 6,
+          "camera": {
+            "kind": "close_up",
+            "subject": "tool_mui_sao",
+            "fov_deg": 28
+          },
+          "direction": "Người chơi giữ nút: Cói buộc dải chàm của Nghệ vào cán sào.",
+          "line_refs": [
+            "ln_ho_c2"
+          ],
+          "era": "era_lac_long_quan",
+          "interactive": {
+            "prompt_key": "prompt_tie_strip",
+            "hold_s": 1.0,
+            "fail": "none"
+          },
+          "t_s": 14.0
+        },
+        {
+          "id": "ho_s04",
+          "duration_s": 10,
+          "camera": {
+            "kind": "locked_wide",
+            "from": [
+              300,
+              7,
+              30
+            ],
+            "look_at": [
+              300,
+              0,
+              -5
+            ],
+            "fov_deg": 48
+          },
+          "direction": "Tua thời gian, khung cố định trên bến: nước lên ngập bậc bến rồi rút (mùa 1). Cói già đi trong bóng hoàng hôn. Vè câu 1.",
+          "line_refs": [
+            "dlg_06_ve_floor"
+          ],
+          "era": "era_hung_vuong_6",
+          "ve_line_index": 0,
+          "music": "mus_handoff_ve",
+          "t_s": 20.0
+        },
+        {
+          "id": "ho_s05",
+          "duration_s": 10,
+          "camera": {
+            "kind": "locked_wide",
+            "from": [
+              300,
+              7,
+              30
+            ],
+            "look_at": [
+              300,
+              0,
+              -5
+            ],
+            "fov_deg": 48
+          },
+          "direction": "Mùa 2: lau trổ bông trắng rồi bị cắt; mái gianh thay mới. Một bà cụ buộc dải chàm mới lên cán sào. Vè câu 2.",
+          "line_refs": [],
+          "era": "era_hung_vuong_6",
+          "ve_line_index": 1,
+          "t_s": 30.0
+        },
+        {
+          "id": "ho_s06",
+          "duration_s": 10,
+          "camera": {
+            "kind": "locked_wide",
+            "from": [
+              300,
+              7,
+              30
+            ],
+            "look_at": [
+              300,
+              0,
+              -5
+            ],
+            "fov_deg": 48
+          },
+          "direction": "Mùa 3: chiếc đò cũ nằm trên bãi, không người; đò mới hạ nước. Nhà thứ hai dựng lên (hubHouse2). Vè câu 3.",
+          "line_refs": [],
+          "era": "era_hung_vuong_6",
+          "ve_line_index": 2,
+          "t_s": 40.0
+        },
+        {
+          "id": "ho_s07",
+          "duration_s": 8,
+          "camera": {
+            "kind": "locked_wide",
+            "from": [
+              300,
+              7,
+              30
+            ],
+            "look_at": [
+              300,
+              0,
+              -5
+            ],
+            "fov_deg": 48
+          },
+          "direction": "Sáng sớm. Trống gỗ đã lớn hơn. Một chàng trai bước ra bến: Bương. Vè câu 4. Thẻ: 'Nhiều đời sau'.",
+          "line_refs": [],
+          "era": "era_hung_vuong_6",
+          "ve_line_index": 3,
+          "title_key": "cin_many_generations_later",
+          "t_s": 50.0
+        },
+        {
+          "id": "ho_s08",
+          "duration_s": 8,
+          "camera": {
+            "kind": "two_shot",
+            "from": [
+              303,
+              1.6,
+              -9
+            ],
+            "look_at": [
+              300,
+              1.4,
+              -11.5
+            ],
+            "fov_deg": 36
+          },
+          "direction": "Ông Vầu đưa Mũi Sào đã tháo cán cũ.",
+          "line_refs": [
+            "ln_ho_b0_ref",
+            "ln_ho_b1"
+          ],
+          "era": "era_hung_vuong_6",
+          "t_s": 58.0
+        },
+        {
+          "id": "ho_s09",
+          "duration_s": 6,
+          "camera": {
+            "kind": "close_up",
+            "subject": "tool_mui_sao",
+            "fov_deg": 28
+          },
+          "direction": "Người chơi giữ nút: Bương lắp cán tre mới. Thấy vết khắc của Cói và dải chàm đã bạc.",
+          "line_refs": [],
+          "era": "era_hung_vuong_6",
+          "interactive": {
+            "prompt_key": "prompt_fit_shaft",
+            "hold_s": 1.2,
+            "fail": "none"
+          },
+          "t_s": 66.0
+        },
+        {
+          "id": "ho_s10",
+          "duration_s": 14,
+          "camera": {
+            "kind": "three_shot",
+            "from": [
+              297,
+              1.3,
+              -8
+            ],
+            "look_at": [
+              300,
+              1.1,
+              -11
+            ],
+            "fov_deg": 38
+          },
+          "direction": "Bé Sim chạy tới, chỉ vết khắc. Ông Vầu kể.",
+          "line_refs": [
+            "ln_ho_b2",
+            "ln_ho_b3",
+            "ln_ho_b4",
+            "ln_ho_b5"
+          ],
+          "era": "era_hung_vuong_6",
+          "t_s": 72.0
+        },
+        {
+          "id": "ho_s11",
+          "duration_s": 10,
+          "camera": {
+            "kind": "medium",
+            "subject": "npc_be_sim",
+            "fov_deg": 34
+          },
+          "direction": "Bé Sim hỏi; ông Vầu gật.",
+          "line_refs": [
+            "ln_ho_b6",
+            "ln_ho_b7"
+          ],
+          "era": "era_hung_vuong_6",
+          "t_s": 86.0
+        },
+        {
+          "id": "ho_s12",
+          "duration_s": 6,
+          "camera": {
+            "kind": "close_up",
+            "subject": "chr_buong",
+            "fov_deg": 30
+          },
+          "direction": "Người chơi giữ nút: Bương buộc dải chàm mới cạnh dải cũ.",
+          "line_refs": [
+            "ln_ho_b8"
+          ],
+          "era": "era_hung_vuong_6",
+          "interactive": {
+            "prompt_key": "prompt_tie_strip",
+            "hold_s": 1.0,
+            "fail": "none"
+          },
+          "t_s": 96.0
+        },
+        {
+          "id": "ho_s13",
+          "duration_s": 12,
+          "camera": {
+            "kind": "wide_pan",
+            "from": [
+              300,
+              4,
+              -6
+            ],
+            "look_at": [
+              200,
+              3,
+              -40
+            ],
+            "fov_deg": 46
+          },
+          "direction": "Ông Vầu nhìn về thượng nguồn, kể chuyện hang đá. Chỉ có trời và nước, không hình thần.",
+          "line_refs": [
+            "ln_ho_b9"
+          ],
+          "era": "era_hung_vuong_6",
+          "t_s": 102.0
+        }
+      ]
+    },
+    {
+      "id": "cin_demo_hook",
+      "role": "demo_end_hook",
+      "label": "SÁNG TẠO",
+      "era": "era_hung_vuong_6",
+      "chapter": "ch_phudong",
+      "trigger": "after_handoff_step:ho_07_trial",
+      "skippable": true,
+      "skip_hold_s": 1.0,
+      "total_s": 36.0,
+      "open_question": {
+        "vi": "Ai đang chạy về xuôi, và chạy khỏi cái gì?",
+        "en": "Who is fleeing downriver, and from what?"
+      },
+      "then_handoff_steps": [
+        "ho_10_end"
+      ],
+      "conversation_ref": "cv_demo_hook",
+      "shots": [
+        {
+          "id": "hk_s01",
+          "duration_s": 8,
+          "camera": {
+            "kind": "wide",
+            "from": [
+              300,
+              3,
+              36
+            ],
+            "look_at": [
+              300,
+              1,
+              60
+            ],
+            "fov_deg": 44
+          },
+          "direction": "Sau buổi tập ở bãi sông. Bé Sim hát vè bản sàn.",
+          "line_refs": [
+            "dlg_06_ve_floor"
+          ],
+          "era": "era_hung_vuong_6",
+          "t_s": 0.0
+        },
+        {
+          "id": "hk_s02",
+          "duration_s": 10,
+          "camera": {
+            "kind": "slow_push",
+            "from": [
+              300,
+              2,
+              34
+            ],
+            "to": [
+              300,
+              2,
+              38
+            ],
+            "look_at": [
+              300,
+              1,
+              80
+            ],
+            "fov_deg": 40
+          },
+          "direction": "Sương sớm bên kia sông. Nhiều giọng gọi vọng sang: 'Đò ơi!'. Bóng người gánh gồng, đứng chen trên bờ.",
+          "line_refs": [
+            "ln_hk_1"
+          ],
+          "era": "era_hung_vuong_6",
+          "sfx": [
+            "crowd_call_do_oi_far"
+          ],
+          "t_s": 8.0
+        },
+        {
+          "id": "hk_s03",
+          "duration_s": 9,
+          "camera": {
+            "kind": "two_shot",
+            "subject": "chr_buong",
+            "fov_deg": 34
+          },
+          "direction": "Bương quay lại hỏi; ông Vầu đặt Mũi Sào vào tay Bương.",
+          "line_refs": [
+            "ln_hk_2",
+            "ln_hk_3"
+          ],
+          "era": "era_hung_vuong_6",
+          "t_s": 18.0
+        },
+        {
+          "id": "hk_s04",
+          "duration_s": 5,
+          "camera": {
+            "kind": "close_up",
+            "subject": "chr_buong",
+            "fov_deg": 30
+          },
+          "direction": "Bương nắm sào, nhìn sang bờ bên kia.",
+          "line_refs": [
+            "dlg_07_theme_short"
+          ],
+          "era": "era_hung_vuong_6",
+          "t_s": 27.0
+        },
+        {
+          "id": "hk_s05",
+          "duration_s": 4,
+          "camera": {
+            "kind": "black",
+            "fov_deg": 50
+          },
+          "direction": "Đen. Thẻ: 'Còn tiếp: đời Bương'.",
+          "line_refs": [],
+          "era": "era_hung_vuong_6",
+          "title_key": "demo_to_be_continued",
+          "t_s": 32.0
+        }
+      ]
+    }
+  ]
+}
