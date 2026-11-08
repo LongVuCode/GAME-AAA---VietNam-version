@@ -282,6 +282,7 @@ export class Game {
     // Large hitches (tab switch, GC, slow machine) are clamped so the simulation never jumps.
     const realDt = Math.min(MAX_SIM_DT_S, rawDt);  // simulation step (then scaled by hit-stop)
     const wallDt = Math.min(MAX_WALL_DT_S, rawDt); // real time: timers, pry rhythm, UI — never hit-stop/time-scaled
+    this._prevFrameS = rawDt; // duration of the frame that just ended (pry input grace)
     this.frameStart = this.lastNow; this.lastNow = now;
     this.fpsFrames.push(now); while (this.fpsFrames.length && now - this.fpsFrames[0] > 1000) this.fpsFrames.shift();
     this.fps = this.fpsFrames.length;
@@ -1017,9 +1018,11 @@ export class Game {
   updatePry(realDt, i) {
     const { judge, boss } = this.pry;
     const events = [];
+    // Grace = max(INPUT_GRACE_S, one frame): at a low frame rate the press is seen a frame late.
+    judge.grace = Math.max(INPUT_GRACE_S, Math.min(MAX_WALL_DT_S, this._prevFrameS ?? 0) + 0.05);
     if (i.pressed('interact') && !judge.holdMode && !judge.auto) {
       // Judge the press at its event timestamp, not at frame time (frame-rate independent).
-      const lag = Math.max(-INPUT_GRACE_S, Math.min(realDt, (i.pressedAt('interact') - this.frameStart) / 1000));
+      const lag = Math.max(-judge.grace, Math.min(realDt, (i.pressedAt('interact') - this.frameStart) / 1000));
       if (lag <= 0) events.push(...judge.press(lag), ...judge.tick(realDt));
       else events.push(...judge.tick(lag), ...judge.press(0), ...judge.tick(realDt - lag));
     } else {

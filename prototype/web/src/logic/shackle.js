@@ -61,6 +61,10 @@ export class PryJudge {
     this.holdMode = holdMode && pry.hold_option;
     this.auto = auto;
     this.leadIn = leadInS ?? this.interval; // one count-in beat
+    // How late an input event may be handled and still be judged by its timestamp. The game raises it to
+    // one frame when frames are longer than INPUT_GRACE_S (a press is only seen on the next frame), so a
+    // slow frame rate never turns an on-time press into a miss.
+    this.grace = INPUT_GRACE_S;
     this.t = 0;
     this.slot = 0;             // index of the next unconsumed slot
     this.beat = 0;             // beats completed
@@ -111,7 +115,7 @@ export class PryJudge {
     }
     // A slot counts as missed only after window + INPUT_GRACE_S, so a press whose event was handled a
     // frame late is still judged by its own timestamp in press(offset).
-    while (!this.auto && !this.done && this.t > this.slotTime(this.slot) + this.window + INPUT_GRACE_S) {
+    while (!this.auto && !this.done && this.t > this.slotTime(this.slot) + this.window + this.grace) {
       this.slot += 1;
       this._miss(events);
     }
@@ -123,7 +127,7 @@ export class PryJudge {
   press(offsetS = 0) {
     const events = [];
     if (this.done || this.holdMode || this.auto) return events;
-    const at = this.t + Math.max(-INPUT_GRACE_S, offsetS);
+    const at = this.t + Math.max(-this.grace, offsetS);
     const centre = this.slotTime(this.slot);
     this.slot += 1;
     if (Math.abs(at - centre) <= this.window) this._hit(events);

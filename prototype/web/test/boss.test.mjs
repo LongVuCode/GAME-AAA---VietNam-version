@@ -160,3 +160,13 @@ test('QA: pry rhythm runs on real time; hit-stop on beats must not shift later b
   assert.equal(wrong.beat, 2, 'a hit-stop-scaled judge drifts 2 x pry_beat_s and misses beat 3');
   assert.notEqual(wrong.result, 'freed');
 });
+
+test('pry: at a low frame rate (grace raised to one frame) an on-time press seen a frame late still hits', () => {
+  const j = new PryJudge(T.pry);
+  j.grace = 0.55; // a 0.5 s frame (software GL): the press is only handled on the next frame
+  const late = j.window + 0.3, centre = j.slotTime(0);
+  assert.ok(!j.tick(centre + late).some((e) => e.type === 'miss'), 'not a miss before the frame that carries the press');
+  assert.ok(j.press(-late).some((e) => e.type === 'hit'), 'judged at its timestamp (the slot centre)');
+  const k = new PryJudge(T.pry); // default grace (INPUT_GRACE_S): the same slot is already a miss
+  assert.ok(INPUT_GRACE_S < 0.3 && k.tick(centre + late).some((e) => e.type === 'miss'));
+});
