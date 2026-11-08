@@ -128,6 +128,10 @@ export class PryJudge {
     const events = [];
     if (this.done || this.holdMode || this.auto) return events;
     const at = this.t + Math.max(-this.grace, offsetS);
+    // A press nearer to a later slot than to the current one was aimed at that later slot: the slots it
+    // skipped were missed (their auto-miss may still be waiting for the grace), so count them first.
+    while (!this.done && at > this.slotTime(this.slot) + this.interval / 2) { this.slot += 1; this._miss(events); }
+    if (this.done) return events;
     const centre = this.slotTime(this.slot);
     this.slot += 1;
     if (Math.abs(at - centre) <= this.window) this._hit(events);
