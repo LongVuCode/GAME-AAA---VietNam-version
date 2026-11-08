@@ -1,5 +1,7 @@
 # CLAUDE.md — Luật làm việc của dự án (codename: ĐỒNG CỔ)
 
+> **Model AI mới tiếp quản: đọc `AI_CONTEXT.md` trước** (tổng quan, đã làm/đang dở/việc tiếp theo).
+
 > Đây là file luật. Mọi agent hoặc thành viên phải đọc file này trước khi làm việc. Nếu luật mâu thuẫn với yêu cầu tức thời, phải hỏi Product Owner, không tự ý bỏ qua.
 
 ## 1. Ngôn ngữ
