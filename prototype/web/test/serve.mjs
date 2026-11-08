@@ -19,6 +19,8 @@ export function serveDist({ root = join(here, '..', 'dist'), port = 0 } = {}) {
   const base = normalize(root + sep);
   const server = createServer((req, res) => {
     const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    // Browsers request a favicon even though this prototype declares none.
+    if (path === '/favicon.ico') { res.writeHead(204).end(); return; }
     const file = normalize(join(root, path.endsWith('/') ? path + 'index.html' : path));
     if (!file.startsWith(base)) { res.writeHead(403).end(); return; }
     let st; try { st = statSync(file); } catch { res.writeHead(404).end(); return; }

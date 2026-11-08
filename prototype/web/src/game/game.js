@@ -281,13 +281,13 @@ export class Game {
     const rawDt = Math.max(0, (now - this.lastNow) / 1000);
     // Large hitches (tab switch, GC, slow machine) are clamped so the simulation never jumps.
     const realDt = Math.min(MAX_SIM_DT_S, rawDt);  // simulation step (then scaled by hit-stop)
-    const wallDt = Math.min(MAX_WALL_DT_S, rawDt); // real time: timers, pry rhythm, UI — never hit-stop/time-scaled
+    const wallDt = Math.min(MAX_WALL_DT_S, rawDt); // bounded real time for timers/UI; pry keeps rawDt to match input timestamps
     this._prevFrameS = rawDt; // duration of the frame that just ended (pry input grace)
     this.frameStart = this.lastNow; this.lastNow = now;
     this.fpsFrames.push(now); while (this.fpsFrames.length && now - this.fpsFrames[0] > 1000) this.fpsFrames.shift();
     this.fps = this.fpsFrames.length;
     this.input.pollGamepad();
-    if (this.mode === 'playing') this.update(realDt, now / 1000, wallDt);
+    if (this.mode === 'playing') this.update(realDt, now / 1000, wallDt, rawDt);
     else if (this.mode === 'cinematic') { this.playTime += wallDt; this.story.updateCinematic(wallDt, this.input); }
     else if (this.mode === 'dialogue') { this.playTime += wallDt; this.story.updateDialogue(wallDt, this.input); }
     else { this.handleMenuKeys(); this._menuAnim(wallDt); }
@@ -307,7 +307,7 @@ export class Game {
       || (i.pressed('journal') && this.ui.screenName === 'journal') || (i.pressed('skills') && this.ui.screenName === 'skills'))) this.resume();
   }
 
-  update(realDt, nowS, wallDt = realDt) {
+  update(realDt, nowS, wallDt = realDt, pryDt = wallDt) {
     const i = this.input;
     this.playTime += wallDt;
     this.simTime = (this.simTime ?? 0) + realDt; // clamped simulation seconds (tests wait on this, not on wall time)
@@ -329,9 +329,9 @@ export class Game {
     this.gameNow = (this.gameNow ?? 0) + dt;
     const p = this.player;
     this.updateLock(i);
-    // The pry rhythm runs on real time (wallDt), NOT on hit-stop-scaled game time, so it stays in
+    // The pry rhythm uses unclamped elapsed time, NOT simulation or UI time, so it stays in
     // sync with the drum the player hears (QA: hit-stop on beats 1-2 must not shift beat 3).
-    if (this.pry && !this.debugPryFrozen) this.updatePry(wallDt, i);
+    if (this.pry && !this.debugPryFrozen) this.updatePry(pryDt, i);
     this.noAttack = this.boss?.state === 'transition'; // set piece: move / guard / dodge only
     this.input.lockFlick = !!this.lockTarget;
     p.update(dt, this.gameNow, i);
@@ -1019,7 +1019,7 @@ export class Game {
     const { judge, boss } = this.pry;
     const events = [];
     // Grace = max(INPUT_GRACE_S, one frame): at a low frame rate the press is seen a frame late.
-    judge.grace = Math.max(INPUT_GRACE_S, Math.min(MAX_WALL_DT_S, this._prevFrameS ?? 0) + 0.05);
+    judge.grace = Math.max(INPUT_GRACE_S, (this._prevFrameS ?? realDt) + 0.05);
     if (i.pressed('interact') && !judge.holdMode && !judge.auto) {
       // Judge the press at its event timestamp, not at frame time (frame-rate independent).
       const lag = Math.max(-judge.grace, Math.min(realDt, (i.pressedAt('interact') - this.frameStart) / 1000));

@@ -122,7 +122,7 @@ try {
   sto = await ST();
   check('cold open skipped by holding Space; main quest "Người chưa về" starts at step 1', !!s && sto.cinLog[0]?.skipped === true && sto.tracked?.step === 'qs_m1_vet_lon_loi', JSON.stringify({ log: sto.cinLog, tr: sto.tracked }));
   check('game starts (mode playing)', !!s);
-  await sleep(1500);
+  await page.waitForFunction(() => /Người chưa về/i.test(document.querySelector('.h-qtitle')?.textContent ?? '') && /vệt lợn lòi/.test(document.querySelector('.h-obj')?.textContent ?? ''));
   const trackerText = await page.evaluate(() => document.querySelector('.h-qtitle')?.textContent + ' | ' + document.querySelector('.h-obj')?.textContent);
   check('quest tracker (HUD top-right) shows the quest and step 1', /Người chưa về/i.test(trackerText) && /vệt lợn lòi/.test(trackerText), trackerText);
   await shot('03_play_start.png');
@@ -140,7 +140,8 @@ try {
   check('fx: impacts spawn particles and rings (bounded pools)', fx.spawned > spawned0 + 40 && fx.rings > 0 && fx.sparks <= fx.limits[0] && fx.dust <= fx.limits[1], JSON.stringify(fx));
   await shot('03b_fx_impacts_high.png');
   await D('freezeFx', false);
-  await D('setAcc', 'acc_camera_shake', false); await sleep(200);
+  await D('setAcc', 'acc_camera_shake', false);
+  await page.waitForFunction(() => window.__demo.fx().shakeOn === false);
   fx = await D('fx');
   check('fx: camera shake follows the accessibility option', fx.shakeOn === false, JSON.stringify(fx.shakeOn));
   await D('setAcc', 'acc_camera_shake', true);
@@ -457,8 +458,11 @@ try {
     await D('teleport', s.boss.x, s.boss.z + 3.2);
     await D('faceEnemy', bossUid);
     await sleep(200);
-    const promptText = await page.textContent('#prompt');
-    if (attempt === 0) check('pry prompt shown', /Cạy/.test(promptText), promptText);
+    if (attempt === 0) {
+      await page.waitForFunction(() => /Cạy/.test(document.querySelector('#prompt')?.textContent ?? ''));
+      const readyPrompt = await page.textContent('#prompt');
+      check('pry prompt shown', /Cạy/.test(readyPrompt), readyPrompt);
+    }
     await press('e');
     s = await waitFor((x) => !!x.pry, 3000, 30);
     if (!s) { log('pry did not start', JSON.stringify((await S()).boss)); continue; }
