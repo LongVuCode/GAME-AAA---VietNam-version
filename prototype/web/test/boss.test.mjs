@@ -170,3 +170,11 @@ test('pry: at a low frame rate (grace raised to one frame) an on-time press seen
   const k = new PryJudge(T.pry); // default grace (INPUT_GRACE_S): the same slot is already a miss
   assert.ok(INPUT_GRACE_S < 0.3 && k.tick(centre + late).some((e) => e.type === 'miss'));
 });
+
+test('pry: a press aimed at the next slot is judged against it even while the skipped slot awaits its grace', () => {
+  const j = new PryJudge(T.pry);
+  j.grace = 0.9; // long frames: slot 0's auto-miss has not fired yet
+  j.tick(j.slotTime(1) - 0.01);
+  const ev = j.press(0.01); // on the centre of slot 1
+  assert.deepEqual(ev.map((e) => e.type).filter((t) => t === 'hit' || t === 'miss'), ['miss', 'hit']);
+});
