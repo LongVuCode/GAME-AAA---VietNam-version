@@ -403,3 +403,15 @@ export function canopyBlobs(root, items, leafMat) {
   }
   return out;
 }
+
+/** Low-quality trunks: one tapered 6-sided cylinder per tree (instanced, bark material). */
+export function lowTrunks(root, spots, bark) {
+  if (!spots.length) return null;
+  const geo = new THREE.CylinderGeometry(0.22, 0.42, 6.4, 6, 1, true); geo.translate(0, 3.2, 0);
+  const mat = bark ?? new THREE.MeshStandardMaterial({ color: 0x5a4632, roughness: 0.95 });
+  const im = new THREE.InstancedMesh(geo, mat, spots.length);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), p = new THREE.Vector3(), s = new THREE.Vector3();
+  spots.forEach((t, i) => { e.set(0, t.rot, 0); q.setFromEuler(e); p.set(t.x, t.y, t.z); s.setScalar(t.s); im.setMatrixAt(i, m.compose(p, q, s)); });
+  im.computeBoundingSphere(); im.castShadow = false; im.receiveShadow = true; im.name = 'tree_trunk_low'; im.userData.fxShadowTagged = true;
+  root.add(im); return im;
+}

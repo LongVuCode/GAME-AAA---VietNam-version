@@ -52,7 +52,7 @@ export function installHeightFog() {
   if (installed) return; installed = true;
   const C = THREE.ShaderChunk;
   C.fog_pars_vertex = '#ifdef USE_FOG\n varying float vFogDepth;\n varying vec3 vFogWorld;\n#endif';
-  C.fog_vertex = '#ifdef USE_FOG\n vFogDepth = - mvPosition.z;\n vFogWorld = (inverse(viewMatrix) * mvPosition).xyz;\n#endif';
+  C.fog_vertex = '#ifdef USE_FOG\n vFogDepth = - mvPosition.z;\n vFogWorld = cameraPosition + mvPosition.xyz * mat3(viewMatrix);\n#endif';
   C.fog_pars_fragment = `#ifdef USE_FOG
  uniform vec3 fogColor;
  varying float vFogDepth;

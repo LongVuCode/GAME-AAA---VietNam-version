@@ -9,7 +9,7 @@ import { LAYERS } from './field.js';
 export const TERRAIN_LAYERS = LAYERS; // order = layer index in the texture arrays (tools/assets/prepare_textures.py)
 // Tiling in metres per texture repeat, per layer; fallback colours before the textures arrive.
 const TILE_M = [3.2, 2.6, 3.0, 3.6, 2.8];
-const FALLBACK = [0x4a3b2b, 0x626640, 0x6e5a42, 0x77654c, 0x56503a];
+const FALLBACK = [0x4b3d2d, 0x5f5f37, 0x776046, 0x7a684f, 0x59513a]; // mean albedo of each layer (terrain_albedo.jpg): Low preset + before load
 const CHUNK = 64;
 
 export function buildPatchGrid(field, patch) {
@@ -93,8 +93,14 @@ export function buildTerrainMeshes(G, material) {
   const ncx = Math.ceil((G.nx - 1) / CHUNK), ncz = Math.ceil((G.nz - 1) / CHUNK);
   for (let cj = 0; cj < ncz; cj++) for (let ci = 0; ci < ncx; ci++) {
     const lod = new THREE.LOD();
-    const hi = new THREE.Mesh(chunkGeometry(G, ci, cj, 1), material);
-    const lo = new THREE.Mesh(chunkGeometry(G, ci, cj, 4), material);
+    // LOD distance is measured to the LOD object's position: put it at the chunk centre (geometry is
+    // shifted to local space), otherwise every chunk switches by its distance to the world origin.
+    const cx = G.patch.x0 + Math.min(G.nx - 1, ci * CHUNK + CHUNK / 2), cz = G.patch.z0 + Math.min(G.nz - 1, cj * CHUNK + CHUNK / 2);
+    const gHi = chunkGeometry(G, ci, cj, 1), gLo = chunkGeometry(G, ci, cj, 4);
+    for (const g of [gHi, gLo]) { g.translate(-cx, 0, -cz); g.computeBoundingSphere(); }
+    lod.position.set(cx, 0, cz);
+    const hi = new THREE.Mesh(gHi, material);
+    const lo = new THREE.Mesh(gLo, material);
     for (const m of [hi, lo]) { m.receiveShadow = true; m.castShadow = false; m.userData.fxShadowTagged = true; m.userData.fxOwned = true; }
     lod.addLevel(hi, 0); lod.addLevel(lo, 80); lod.addLevel(new THREE.Object3D(), 320); // beyond the fog: nothing
     lod.userData.fxOwned = true;
@@ -135,8 +141,17 @@ const TERRAIN_MAP = /* glsl */`
   w[1] *= 1.0 - 0.85 * sk; w[2] *= 1.0 - 0.7 * sk; w[3] += 0.55 * sk; w[4] += 0.35 * sk; w[0] *= 1.0 - 0.5 * sk;
   vec2 p = vec2(vTW.x, -vTW.z);
   vec2 gx = dFdx(p), gy = dFdy(p); // explicit gradients: sampling happens in per-pixel branches
-  float macro = tNoise(p * 0.045) * 0.6 + tNoise(p * 0.17) * 0.4;
   vec3 alb = vec3(0.0); vec4 nr = vec4(0.0); float cav = 0.0; float sumw = 0.0;
+#ifdef FX_LOW
+  // Low: palette colour of each layer blended by the splat weights (no texture fetch, no loop, one noise
+  // octave). The textured 5-layer blend is fill-bound on weak GPUs / software GL (~1.7 s per frame on
+  // SwiftShader; this path costs about as much as a plain MeshStandardMaterial).
+  float macro = tNoise(p * 0.06);
+  float ws = w[0] + w[1] + w[2] + w[3] + w[4];
+  alb = (uFallback[0] * w[0] + uFallback[1] * w[1] + uFallback[2] * w[2] + uFallback[3] * w[3] + uFallback[4] * w[4]) / max(ws, 1e-4);
+  nr = vec4(0.5, 0.5, 0.9, 1.0); cav = 0.5; sumw = 1.0;
+#else
+  float macro = tNoise(p * 0.045) * 0.6 + tNoise(p * 0.17) * 0.4;
   if (uTexReady > 0.5) {
     float hw[5]; float hmax = -10.0;
     for (int i = 0; i < 5; i++) {
@@ -175,6 +190,7 @@ const TERRAIN_MAP = /* glsl */`
     for (int i = 0; i < 5; i++) alb += uFallback[i] * w[i];
     nr = vec4(0.5, 0.5, 0.85, 1.0); cav = 0.5; sumw = 1.0;
   }
+#endif
   alb *= 0.82 + 0.32 * macro;
   float wet = clamp(vWet, 0.0, 1.0);
   float under = smoothstep(uWaterY + 0.02, uWaterY - 0.25, vTW.y);

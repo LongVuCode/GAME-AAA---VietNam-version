@@ -9,19 +9,20 @@
 import { createRequire } from 'node:module';
 import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { serveDist } from './serve.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const here = dirname(fileURLToPath(import.meta.url));
 const SHOTS = process.env.SHOTS_DIR ?? '/tmp/claude-0/-home-user/c58ad2cd-0dde-5c55-b1e4-0cacdf2a6473/scratchpad/proto-shots';
 mkdirSync(SHOTS, { recursive: true });
-// SMOKE_QUERY adds URL parameters. Default `env=0`: the smoke runs from file:// (no environment assets
-// can load there) on SwiftShader, where the 0.4 terrain/water/mist layer costs ~1.5 s per frame even at
-// Low and the timed bot sections cannot finish; gameplay (walkable regions, ground heights) is the same.
-// The environment itself is checked over HTTP with every asset by test/envshots.mjs. SMOKE_QUERY= (empty) keeps it on.
-const query = process.env.SMOKE_QUERY ?? 'env=0';
-const url = `${pathToFileURL(join(here, '..', 'dist', 'index.html')).href}?debug=1${query ? `&${query}` : ''}`;
+// Served over local HTTP (test/serve.mjs, 127.0.0.1): the 0.4 environment loads its assets (glb, hdr, webp,
+// jpg) by relative URL exactly as the published build does; fetch() cannot read file:// pages.
+// SMOKE_QUERY adds URL parameters (e.g. env=0 to run on the graybox without the environment layer).
+const srv = await serveDist();
+const query = process.env.SMOKE_QUERY ?? '';
+const url = `${srv.url}index.html?debug=1${query ? `&${query}` : ''}`;
 
 const errors = [];
 const external = [];
@@ -36,7 +37,7 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, dev
 page.setDefaultTimeout(180000);
 page.on('console', (m) => { if (m.type() === 'error') errors.push(`console.error: ${m.text()}`); });
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
-page.on('request', (r) => { if (!/^(file|data|blob):/.test(r.url())) external.push(r.url()); });
+page.on('request', (r) => { if (!r.url().startsWith(srv.url) && !/^(file|data|blob):/.test(r.url())) external.push(r.url()); });
 const S = () => page.evaluate(() => window.__demo.state());
 const D = (fn, ...args) => page.evaluate(([f, a]) => window.__demo[f](...a), [fn, args]);
 const shot = async (name) => { await page.screenshot({ path: join(SHOTS, name) }); log('shot', join(SHOTS, name)); };
@@ -663,8 +664,8 @@ try {
   errors.push(`smoke exception: ${e.stack ?? e}`);
 } finally {
   check('no console errors / page errors', errors.length === 0, errors.join('\n'));
-  check('no network requests outside the single file', external.length === 0, external.slice(0, 3).join(', '));
-  await browser.close();
+  check('no network requests outside the page and its dist/assets (local server)', external.length === 0, external.slice(0, 3).join(', '));
+  await browser.close(); await srv.close();
   const failed = checks.filter((c) => !c.ok);
   log(`${checks.length - failed.length}/${checks.length} checks passed`);
   process.exit(failed.length ? 1 : 0);

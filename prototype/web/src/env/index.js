@@ -17,7 +17,7 @@ import { buildPatchGrid, buildTerrainMeshes, terrainMaterial, setTerrainTextures
 import { waterMaterial, waterPlane } from './water.js';
 import { buildFoliage } from './foliage.js';
 import { scatter } from './scatter.js';
-import { PropLibrary, dressLegacy, dressWorld04, instancedTrees, canopyBlobs, hideGrayLayers } from './props.js';
+import { PropLibrary, dressLegacy, dressWorld04, instancedTrees, canopyBlobs, lowTrunks, hideGrayLayers } from './props.js';
 import { Mist } from './mist.js';
 import { ASSETS, loadArrayTexture, loadTexture, loadGLB, loadHDR } from './assets.js';
 
@@ -26,8 +26,8 @@ const LEGACY = { AREAS, SHALLOW_SHEETS, MUD_POOLS_BASE, POINTS, VAULTS, HUB_X, S
 /** Water level of the shallow sheets and mud pools (their hollows are carved below it in env/field.js). */
 const SHEET_Y = -0.03;
 export const ENV_QUALITY = {
-  high: { mist: 36, terrainLod: 110, terrainFar: 320, anisotropy: 8, treeDist: 190, canopyDist: 330 },
-  low: { mist: 6, terrainLod: 45, terrainFar: 170, anisotropy: 1, treeDist: 105, canopyDist: 200 },
+  high: { mist: 36, terrainLod: 110, terrainFar: 320, anisotropy: 8, treeDist: 190, canopyDist: 330, propDist: 1e9 },
+  low: { mist: 4, terrainLod: 30, terrainFar: 150, anisotropy: 1, treeDist: 80, canopyDist: 200, propDist: 70 },
 };
 
 /** Which layout to build: the Demo 0.4 world (design/data/world_0_4.json, the one the game walks on);
@@ -128,8 +128,19 @@ export class Environment {
     this.propsPlaced = dressLegacy(lib, this.world, this.root, hAt, this.layout);
     if (this.source === 'world_0_4') {
       this.propsPlaced.push(...dressWorld04(lib, this.root, hAt, this.layout, this.field));
-      this.trees = instancedTrees(lib, this.root, 'cay_sung', treeSpots(LEGACY));
-      this.trees.push(...canopyBlobs(this.root, canopySpots(LEGACY), lib.mats.shrub_03));
+      const spots = treeSpots(LEGACY);
+      this.trees = instancedTrees(lib, this.root, 'cay_sung', spots);
+      for (const m of this.trees) m.userData.q = 'high';
+      // Low (headless SwiftShader is vertex-bound: ~1 s per 0.5 M instanced triangles): a 6-sided tapered
+      // trunk + two leafy blobs per tree instead of the 1.6 k-triangle trunk and ~22 leaf clumps.
+      const trunkLow = lowTrunks(this.root, spots, lib.mats.bark);
+      if (trunkLow) { trunkLow.userData.q = 'low'; this.trees.push(trunkLow); }
+      // Low: each crown is two leafy blobs instead of ~22 leaf clumps (1 M -> ~0.1 M triangles in view).
+      const crowns = spots.filter((t) => !t.bare).map((t) => { const sb = 2.5 * t.s; return { x: t.x, y: t.y + 6.6 * t.s - 1.6 * sb, z: t.z, s: sb, rot: t.rot, k: (t.x * 0.13 + t.z * 0.07) % 1 }; });
+      for (const m of canopyBlobs(this.root, crowns, lib.mats.shrub_03)) { m.name = 'tree_crown_low'; m.userData.q = 'low'; this.trees.push(m); }
+      const far = canopyBlobs(this.root, canopySpots(LEGACY), lib.mats.shrub_03);
+      for (const m of far) m.userData.q = 'high'; // far-shore canopy: High only (Low keeps the bare shore in the fog)
+      this.trees.push(...far);
     }
     const I = this.items;
     this.scatterMeshes = [
@@ -140,6 +151,9 @@ export class Environment {
       ...lib.instanced(this.root, [1, 2, 3, 4, 5, 6].map((k) => `rock_moss_set_01_rock0${k}`), I.rocks, { sink: 0.3 }),
       ...lib.instanced(this.root, ['tree_stump_01'], I.stumps, { sink: 0.1 }),
     ];
+    for (const m of this.scatterMeshes) m.userData.q = 'high';
+    // Low: no scatter at all (the hand-placed rocks, stumps and props stay, from their LOD1 meshes where
+    // they have one and only within ENV_QUALITY.low.propDist).
     this.scatterMeshes.push(...(this.trees ?? []));
   }
 
@@ -154,10 +168,11 @@ export class Environment {
     for (const t of this.terrain) for (const lod of t.lods) { lod.levels[1].distance = Q.terrainLod; lod.levels[2].distance = Q.terrainFar; }
     for (const f of this.foliage) f.setQuality(this.quality);
     this.mist.setCount(Q.mist);
-    // Low: only the larger scatter (rocks, stumps, shrubs) stays; ground clutter (weeds, ferns, branches) is High only.
-    for (const m of this.scatterMeshes) m.visible = this.quality === 'high' || /rock|stump|shrub|tree_/.test(m.name);
-    // Low: trees stay (they are landmarks / the forest), without leaf shadows.
-    for (const m of this.trees ?? []) m.castShadow = this.quality === 'high' || /_trunk$/.test(m.name);
+    // Per-quality sets (userData.q 'high' | 'low' | 'both'): High = full scatter, CC0 LOD0 and full trees;
+    // Low = rocks/stumps LOD1, simple trunks + blob crowns, no ground clutter, no far-shore canopy.
+    for (const m of this.scatterMeshes) { const q = m.userData.q ?? 'both'; m.visible = q === 'both' || q === this.quality; }
+    // Houses and other prop LODs: Low shows LOD1 from 0 m.
+    this.root.traverse((o) => { if (o.isLOD && !o.userData.fxOwned && o.levels[1]) { o.userData.d1 ??= o.levels[1].distance; o.levels[1].distance = this.quality === 'low' ? 0.01 : o.userData.d1; } });
   }
 
   /** dt real seconds; focus {x, z} (player); mood: atmosphere's current blended values. */
@@ -178,13 +193,22 @@ export class Environment {
       if (focus) u.uPlayer.value.set(focus.x, 0, focus.z);
       f.update(camera);
     }
+    // Low: hand-placed props beyond propDist are skipped (checked every ~0.5 s of camera travel).
+    if (camera && this.propsPlaced.length) {
+      const cp = camera.position, Q = ENV_QUALITY[this.quality];
+      if (!this._propCam || Math.hypot(cp.x - this._propCam.x, cp.z - this._propCam.z) > 4 || this._propQ !== this.quality) {
+        this._propCam = { x: cp.x, z: cp.z }; this._propQ = this.quality;
+        for (const o of this.propsPlaced) if (o && o.parent === this.root) o.visible = Math.hypot(o.position.x - cp.x, o.position.z - cp.z) < Q.propDist;
+      }
+    }
     // Tree cells beyond the fog are skipped (64 m cells, bounding spheres from instancedTrees).
     if (this.trees?.length && camera) {
       const Q = ENV_QUALITY[this.quality], cp = camera.position;
       for (const m of this.trees) {
         const bs = m.boundingSphere; if (!bs) continue;
         const d = Math.hypot(bs.center.x - cp.x, bs.center.z - cp.z) - bs.radius;
-        m.visible = d < (m.name === 'tree_canopy_far' ? Q.canopyDist : Q.treeDist);
+        const q = m.userData.q ?? 'both';
+        m.visible = (q === 'both' || q === this.quality) && d < (m.name === 'tree_canopy_far' ? Q.canopyDist : Q.treeDist);
       }
     }
     if (mood) { this.mist.u.uAmount.value = mood.mist ?? 0.6; this.mist.u.uColor.value.copy(mood.horizon).lerp(mood.fog, 0.5); }
