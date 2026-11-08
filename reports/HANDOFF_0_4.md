@@ -16,3 +16,9 @@ Ngày: 2026-11-08 · Nhánh: `feat/demo-0.4` (chưa gộp vào `main`; `main` đ
 
 ## Môi trường
 Môi trường cloud riêng `GAME-AAA---VietNam-version` mở thêm: api/dl/cdn.polyhaven.com, ambientcg.com, lfs.github.com.
+
+## Cập nhật QA 2026-11-08 — sau bàn giao
+
+Đã xử lý blocker smoke boss/cạy: commit `9f6a426` giữ đồng hồ cạy đồng bộ timestamp phím khi render >0,5 giây; smoke chờ đúng trạng thái UI và server trả 204 cho favicon. **Smoke mới 86/86 đạt với PBR/asset thật**, 159/159 test web, 102/102 test Python, validator 0 lỗi/12 cảnh báo. 8 asset LFS có SHA-256 khớp L-023…L-030; dist 15,27 MiB. Kết quả này thay thế ghi chú smoke chưa xác nhận ở trên. Xem `reports/qa/QA_DEMO04_PRY_CLOCK.md`.
+
+Chưa Publish game, chưa gộp main. Việc tiếp theo: ảnh so sánh môi trường trước/sau và chuẩn bị bản phát hành để PO xem; combat 0.4/model quái vẫn thuộc đợt sau.
