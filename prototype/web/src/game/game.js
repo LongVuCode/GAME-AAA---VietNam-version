@@ -309,6 +309,7 @@ export class Game {
   update(realDt, nowS, wallDt = realDt) {
     const i = this.input;
     this.playTime += wallDt;
+    this.simTime = (this.simTime ?? 0) + realDt; // clamped simulation seconds (tests wait on this, not on wall time)
     // timers (real time)
     for (const t of this.timers) t.t -= wallDt;
     const due = this.timers.filter((t) => t.t <= 0); this.timers = this.timers.filter((t) => t.t > 0);
@@ -1303,7 +1304,7 @@ export class Game {
           pageNow: performance.now(), pry: g.pry ? { slotAtMs: g.lastNow + g.pry.judge.timeToSlot * 1000, timeToSlot: g.pry.judge.timeToSlot, beat: g.pry.judge.beat, window: g.pry.judge.window, interval: g.pry.judge.interval, hold: g.pry.judge.holdMode, auto: g.pry.judge.auto } : null,
           flags: [...g.gen.flags], inventory: g.inv.toJSON(), owned: g.gen.owned, codex: [...g.codex], secret: g.secret.toJSON(),
           skills: g.gen.skills.toJSON(), practiceState: g.practice ? { swaps: g.practice.swaps, done: g.practice.done } : null,
-          pryLog: (g.pryLog ?? []).slice(-12), fps: g.fps, missingStrings: g.i18n.missingKeys(), buildId: g.buildId };
+          pryLog: (g.pryLog ?? []).slice(-12), fps: g.fps, simTime: g.simTime ?? 0, missingStrings: g.i18n.missingKeys(), buildId: g.buildId };
       },
       teleport(x, z, yaw) { g.player.x = x; g.player.z = z; if (yaw != null) { g.player.yaw = yaw; } },
       faceEnemy(uid) {

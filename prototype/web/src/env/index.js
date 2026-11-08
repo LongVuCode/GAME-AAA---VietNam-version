@@ -13,7 +13,7 @@ import { HUB_X, AREAS, SHALLOW_SHEETS, MUD_POOLS_BASE, POINTS, VAULTS, SPAWNS } 
 import { legacyLayout } from './layout.js';
 import { terrainModel, treeSpots, canopySpots } from '../game/world04.js';
 import { createField } from './field.js';
-import { buildPatchGrid, buildTerrainMeshes, terrainMaterial, setTerrainTextures, heightTexture } from './terrain.js';
+import { buildPatchGrid, buildTerrainMeshes, terrainMaterial, terrainMaterialLow, setTerrainTextures, heightTexture } from './terrain.js';
 import { waterMaterial, waterPlane } from './water.js';
 import { buildFoliage } from './foliage.js';
 import { scatter } from './scatter.js';
@@ -27,7 +27,7 @@ const LEGACY = { AREAS, SHALLOW_SHEETS, MUD_POOLS_BASE, POINTS, VAULTS, HUB_X, S
 const SHEET_Y = -0.03;
 export const ENV_QUALITY = {
   high: { mist: 36, terrainLod: 110, terrainFar: 320, anisotropy: 8, treeDist: 190, canopyDist: 330, propDist: 1e9 },
-  low: { mist: 4, terrainLod: 30, terrainFar: 150, anisotropy: 1, treeDist: 80, canopyDist: 200, propDist: 70 },
+  low: { mist: 0, terrainLod: 30, terrainFar: 150, anisotropy: 1, treeDist: 60, canopyDist: 200, propDist: 60 },
 };
 
 /** Which layout to build: the Demo 0.4 world (design/data/world_0_4.json, the one the game walks on);
@@ -137,7 +137,12 @@ export class Environment {
       if (trunkLow) { trunkLow.userData.q = 'low'; this.trees.push(trunkLow); }
       // Low: each crown is two leafy blobs instead of ~22 leaf clumps (1 M -> ~0.1 M triangles in view).
       const crowns = spots.filter((t) => !t.bare).map((t) => { const sb = 2.5 * t.s; return { x: t.x, y: t.y + 6.6 * t.s - 1.6 * sb, z: t.z, s: sb, rot: t.rot, k: (t.x * 0.13 + t.z * 0.07) % 1 }; });
-      for (const m of canopyBlobs(this.root, crowns, lib.mats.shrub_03)) { m.name = 'tree_crown_low'; m.userData.q = 'low'; this.trees.push(m); }
+      const [crownCore, crownShell] = canopyBlobs(this.root, crowns, lib.mats.shrub_03);
+      crownCore.name = 'tree_crown_low'; crownCore.userData.q = 'low'; this.trees.push(crownCore);
+      crownShell.removeFromParent(); crownShell.dispose(); // Low crowns: the solid core only (no alpha-tested shell)
+      const cc = new THREE.Color();
+      for (let i = 0; i < crownCore.count; i++) { const k = (i * 0.618) % 1; crownCore.setColorAt(i, cc.setRGB(0.2 + 0.08 * k, 0.26 + 0.07 * k, 0.12 + 0.04 * k)); }
+      crownCore.instanceColor.needsUpdate = true;
       const far = canopyBlobs(this.root, canopySpots(LEGACY), lib.mats.shrub_03);
       for (const m of far) m.userData.q = 'high'; // far-shore canopy: High only (Low keeps the bare shore in the fog)
       this.trees.push(...far);
@@ -165,7 +170,13 @@ export class Environment {
   setQuality(q) {
     this.quality = q === 'low' ? 'low' : 'high';
     const Q = ENV_QUALITY[this.quality];
-    for (const t of this.terrain) for (const lod of t.lods) { lod.levels[1].distance = Q.terrainLod; lod.levels[2].distance = Q.terrainFar; }
+    // Low: Lambert vertex-colour terrain (the splat shader is fill-bound on weak GPUs / software GL).
+    this.terrainMatLow ??= terrainMaterialLow();
+    const tm = this.quality === 'low' ? this.terrainMatLow : this.terrainMat;
+    for (const t of this.terrain) for (const lod of t.lods) {
+      lod.levels[1].distance = Q.terrainLod; lod.levels[2].distance = Q.terrainFar;
+      for (const l of lod.levels) if (l.object.isMesh) l.object.material = tm;
+    }
     for (const f of this.foliage) f.setQuality(this.quality);
     this.mist.setCount(Q.mist);
     // Per-quality sets (userData.q 'high' | 'low' | 'both'): High = full scatter, CC0 LOD0 and full trees;

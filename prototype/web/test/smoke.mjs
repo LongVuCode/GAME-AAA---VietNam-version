@@ -41,11 +41,20 @@ page.on('request', (r) => { if (!r.url().startsWith(srv.url) && !/^(file|data|bl
 const S = () => page.evaluate(() => window.__demo.state());
 const D = (fn, ...args) => page.evaluate(([f, a]) => window.__demo[f](...a), [fn, args]);
 const shot = async (name) => { await page.screenshot({ path: join(SHOTS, name) }); log('shot', join(SHOTS, name)); };
+// Timeouts are in game time: on software GL a frame can take ~0.5 s and the simulation step is clamped
+// (MAX_SIM_DT_S), so the same budget a 60 fps machine has is measured on simTime (state().simTime),
+// with a wall-clock safety cap (30x) for screens where the simulation does not run.
 async function waitFor(pred, timeoutMs, stepMs = 100) {
-  const t0 = Date.now();
-  while (Date.now() - t0 < timeoutMs) { const s = await S(); if (pred(s)) return s; await sleep(stepMs); }
-  return null;
+  const t0 = Date.now(); let s0 = null;
+  for (;;) {
+    const s = await S(); if (pred(s)) return s;
+    s0 ??= s.simTime;
+    if ((s.simTime - s0) * 1000 >= timeoutMs || Date.now() - t0 >= timeoutMs * 30) return null;
+    await sleep(stepMs);
+  }
 }
+/** Sleep until `ms` of game time (simTime) has passed (wall cap 30x): waits that let the game act. */
+async function simSleep(ms) { await waitFor(() => false, ms, 50); }
 const press = (k) => page.keyboard.press(k);
 const click = async () => { await page.mouse.move(640, 360); await page.mouse.down(); await page.mouse.up(); };
 // Story 0.4 (src/story): read-out, story screenshots (outside the repo), talk through a conversation.
@@ -304,8 +313,8 @@ try {
   const crab = s.enemies[0];
   await D('teleport', crab.x + 1.6, crab.z + 1.6);
   let shotCombat = false, shotFinisher = false, fled = null;
-  const t0 = Date.now();
-  while (Date.now() - t0 < 60000) {
+  const sim0 = (await S()).simTime, w0 = Date.now();
+  while ((await S()).simTime - sim0 < 60 && Date.now() - w0 < 60000 * 30) { // 60 s of game time
     s = await S();
     const e = s.enemies.find((x) => x.uid === crab.uid);
     if (e.state === 'fleeing' || e.state === 'gone') { fled = e; break; }
@@ -453,26 +462,40 @@ try {
     await press('e');
     s = await waitFor((x) => !!x.pry, 3000, 30);
     if (!s) { log('pry did not start', JSON.stringify((await S()).boss)); continue; }
-    let shotPry = false;
-    // Presses are timed on the page clock (slot centre in performance.now() ms); the game judges each
-    // press by its event timestamp, so low headless frame rates do not shift the judgement.
-    for (let guard = 0; guard < 60; guard++) {
-      s = await S();
-      if (!s.pry) break;
-      if (!shotPry && s.pry.beat >= 1) { await D('freezePry', true); await shot('08_pry.png'); await D('freezePry', false); shotPry = true; continue; }
-      const wait = s.pry.slotAtMs - s.pageNow;
-      if (wait > 120) { await sleep(wait - 100); continue; }
-      if (wait < -s.pry.window * 1000) { await sleep(30); continue; }
-      await sleep(Math.max(0, wait - 5));
-      await press('e');
-      await sleep(250);
+    // Presses are timed on the page clock (slot centre in performance.now() ms) and sent like a real
+    // keyboard: the key event carries the time it was pressed (CDP Input.dispatchKeyEvent timestamp), and
+    // the game judges each press by its event timestamp. On software GL a frame takes ~0.3 s, so the page
+    // only reads the key after the slot; a plain page.keyboard.press would be stamped on delivery.
+    const cdp = await page.context().newCDPSession(page);
+    const origin = await page.evaluate(() => performance.timeOrigin);
+    const key = (type, ts) => cdp.send('Input.dispatchKeyEvent', { type, key: 'e', code: 'KeyE', windowsVirtualKeyCode: 69, nativeVirtualKeyCode: 69, ...(type === 'keyDown' ? { text: 'e' } : {}), timestamp: ts });
+    s = await S();
+    if (s.pry && s.pry.beat >= 0) { await D('freezePry', true); await shot('08_pry.png'); await D('freezePry', false); }
+    // The slots lie on a fixed grid (leadIn + n x interval, logic/shackle.js): read it once, then press on
+    // every slot of the grid, like a player keeping time with the drum; a poller stops at the outcome.
+    s = await S();
+    const recv = Date.now(), sent = [];
+    if (s.pry) {
+      const base = s.pry.slotAtMs, step = s.pry.interval * 1000, pageAt = s.pageNow;
+      let over = false;
+      const poll = (async () => { while (!over) { if (!(await S()).pry) over = true; else await sleep(200); } })();
+      for (let k = 0; k < 14 && !over; k++) {
+        const slot = base + k * step, dueIn = slot - pageAt - (Date.now() - recv);
+        if (dueIn < -s.pry.window * 1000) continue;
+        await sleep(Math.max(0, dueIn));
+        if (over) break;
+        const ts = (origin + slot) / 1000;
+        sent.push(key('keyDown', ts), key('keyUp', ts + 0.06)); // not awaited: delivery waits for the busy frame
+      }
+      over = true; await poll; await Promise.all(sent);
     }
+    await cdp.detach();
     s = await S();
     pryOk = s.boss.outcome === 'freed';
     log('pry attempt', attempt + 1, s.boss.outcome, JSON.stringify({ khoen: s.boss.khoen, fps: s.fps, log: s.pryLog }));
   }
   check('pry completed → boss freed (not killed)', pryOk);
-  await sleep(4500);
+  await simSleep(4500); // game time: the verse follows the 3 s silence on the game's real-time timers
   await shot('09_after_pry_ve.png');
   s = await waitFor((x) => x.flags.includes('flag_boss_lon_loi_freed'), 8000);
   check('freed flag set, shed tusk received, no khoen item', !!s && s.inventory.mat_nanh_rung === 1 && !Object.keys(s.inventory).some((k) => /khoen/.test(k)), JSON.stringify(s?.inventory));

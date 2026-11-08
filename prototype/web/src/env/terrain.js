@@ -11,6 +11,7 @@ export const TERRAIN_LAYERS = LAYERS; // order = layer index in the texture arra
 const TILE_M = [3.2, 2.6, 3.0, 3.6, 2.8];
 const FALLBACK = [0x4b3d2d, 0x5f5f37, 0x776046, 0x7a684f, 0x59513a]; // mean albedo of each layer (terrain_albedo.jpg): Low preset + before load
 const CHUNK = 64;
+const LAYER_LIN = FALLBACK.map((h) => { const c = new THREE.Color(h); return [c.r, c.g, c.b]; }); // linear RGB
 
 export function buildPatchGrid(field, patch) {
   const nx = patch.x1 - patch.x0 + 1, nz = patch.z1 - patch.z0 + 1;
@@ -45,7 +46,7 @@ function chunkGeometry(G, ci, cj, step) {
   const cols = Math.floor((i1 - i0) / step) + 1, rows = Math.floor((j1 - j0) / step) + 1;
   const ring = 2 * (cols + rows) - 4; // skirt vertices
   const nv = cols * rows + ring;
-  const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), spl = new Float32Array(nv * 4), wet = new Float32Array(nv);
+  const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), spl = new Float32Array(nv * 4), wet = new Float32Array(nv), col = new Float32Array(nv * 3);
   const H = (i, j) => h[Math.min(nz - 1, Math.max(0, j)) * nx + Math.min(nx - 1, Math.max(0, i))];
   const put = (v, i, j, dy) => {
     const k = j * nx + i;
@@ -54,6 +55,9 @@ function chunkGeometry(G, ci, cj, step) {
     const l = Math.hypot(dx, 2, dz); nor[v * 3] = -dx / l; nor[v * 3 + 1] = 2 / l; nor[v * 3 + 2] = -dz / l;
     spl[v * 4] = surf[k * 6 + 1]; spl[v * 4 + 1] = surf[k * 6 + 2]; spl[v * 4 + 2] = surf[k * 6 + 3]; spl[v * 4 + 3] = surf[k * 6 + 4];
     wet[v] = surf[k * 6 + 5];
+    // Low preset colour (Lambert, no textures): splat-weighted layer means, darker when wet / steep.
+    const sl = 1 - 2 / l, dark = (1 - 0.48 * wet[v]) * (1 - 0.2 * Math.min(1, sl * 4)) * (0.9 + 0.2 * ((i * 7 + j * 13) % 5) / 5);
+    for (let c = 0; c < 3; c++) col[v * 3 + c] = (LAYER_LIN[0][c] * surf[k * 6] + LAYER_LIN[1][c] * surf[k * 6 + 1] + LAYER_LIN[2][c] * surf[k * 6 + 2] + LAYER_LIN[3][c] * surf[k * 6 + 3] + LAYER_LIN[4][c] * surf[k * 6 + 4]) * dark;
   };
   const I = (c) => Math.min(i1, i0 + c * step), J = (r) => Math.min(j1, j0 + r * step);
   for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) put(r * cols + c, I(c), J(r), 0);
@@ -81,10 +85,14 @@ function chunkGeometry(G, ci, cj, step) {
   g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
   g.setAttribute('aSplat', new THREE.BufferAttribute(spl, 4));
   g.setAttribute('aWet', new THREE.BufferAttribute(wet, 1));
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
   g.setIndex(idx);
   g.computeBoundingSphere(); g.computeBoundingBox();
   return g;
 }
+
+/** Low preset terrain material: per-vertex colour (chunkGeometry 'color'), Lambert, no textures. */
+export function terrainMaterialLow() { return new THREE.MeshLambertMaterial({ vertexColors: true }); }
 
 /** One patch -> Group of THREE.LOD chunks. */
 export function buildTerrainMeshes(G, material) {
