@@ -4,7 +4,8 @@
 param(
     [string]$EngineRoot,
     [ValidateSet('Editor', 'Game')][string]$Target = 'Editor',
-    [switch]$PreflightOnly
+    [switch]$PreflightOnly,
+    [switch]$AllowUnverifiedEngine
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
@@ -24,8 +25,13 @@ $versionFile = Join-Path $EngineRoot 'Engine\Build\Build.version'
 if (-not (Test-Path -LiteralPath $buildBat)) { throw 'Build.bat not found in EngineRoot.' }
 $version = Get-Content -LiteralPath $versionFile -Raw | ConvertFrom-Json
 $actualVersion = '{0}.{1}' -f $version.MajorVersion, $version.MinorVersion
-if ($actualVersion -ne [string]$projectData.EngineAssociation) {
-    throw "Project association is $($projectData.EngineAssociation), installed engine is $actualVersion. Send these versions for compatibility review; this script will not convert the project."
+if ($version.MajorVersion -ne 5) { throw 'This project only supports evaluating Unreal Engine 5 installations.' }
+$associationMatches = $actualVersion -eq [string]$projectData.EngineAssociation
+if (-not $associationMatches) {
+    if (-not $AllowUnverifiedEngine) {
+        throw "Project association is $($projectData.EngineAssociation), installed engine is $actualVersion. Use -AllowUnverifiedEngine only for an explicit compatibility trial; no project conversion is performed."
+    }
+    Write-Warning "Compatibility trial with UE $actualVersion; project still declares $($projectData.EngineAssociation). Compile, runtime and package compatibility are not verified."
 }
 $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
 if (-not (Test-Path -LiteralPath $vswhere)) { throw 'vswhere.exe not found. Check the Visual Studio C++ workload installation.' }
@@ -48,6 +54,9 @@ $report = [ordered]@{
     source_commit = $revision
     engine_version = ('{0}.{1}.{2}' -f $version.MajorVersion, $version.MinorVersion, $version.PatchVersion)
     project_association = [string]$projectData.EngineAssociation
+    engine_association_matches = $associationMatches
+    unverified_engine_requested = [bool]$AllowUnverifiedEngine
+    compatibility_status = 'not_verified'
     visual_studio_version = [string]$vs[0].installationVersion
     target = $targetName
     platform = 'Win64'

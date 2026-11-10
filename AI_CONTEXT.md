@@ -137,3 +137,7 @@ PO xác nhận có **30–40 giờ/tuần**. Đã lập `docs/production/ROADMAP
 ## Thực thi P0/P1 2026-11-10
 
 PO đã yêu cầu tiến hành, xác nhận30–40h/tuần và cóUE+VisualStudioC++ trênWindows. Đã có brief mẫu `design/P0_VERTICAL_SLICE_BRIEF.md`, scope/asset/risk register và `docs/production/PM_STATUS_2026_11_10.md`. Đãreviewtĩnh và sửa finding; chưa là mẫuUE chạy được. Helper `tools/ue/Build-Project.ps1` + `P1_WINDOWS_BUILD_HANDOFF.md` + `P1_COMPATIBILITY_MATRIX.md` chờ PO chạy Windows/gửi result.json/build.log. Cloud không cópwsh/UE/GPU, **P1 runtime vẫnblocked**, chưapin5.7 theo bằng chứng, chưabuild/cook/package. Ưu tiên tiếp: xử lýlog thật; không lặp lại hỏi đãcàiUE/VS chưa. Chưa rõversion thực tế/ngân sáchasset. KhôngPublish/merge main.
+
+### Máy Windows: đường dẫn UE đã tìm thấy
+
+PO cung cấp `D:\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe`; dùng EngineRoot `D:\UE_5.8`. Script build có tùy chọn `-AllowUnverifiedEngine` để thử UE5 minor khác association5.7 mà không sửa project; vẫn cần đọc Build.version và log compile. Không hỏi lại vị trí cài UE hoặc dùng đường dẫn ví dụ D:\Epic Games. Chưa có bằng chứng build/runtime UE5.8.

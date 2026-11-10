@@ -43,3 +43,14 @@ Exit 0 ở preflight chỉ chứng minh tìm được công cụ; exit 0 ở bui
 3. Khi compile đạt: mở editor/chạy map, quay 30–60 giây đi/đánh mục tiêu.
 4. Sau đó xác nhận map startup và cook/package target Game; không tự package level chưa tạo.
 5. Lưu log/capture và plugin matrix; lúc đó mới đề xuất pin engine và đóng gate P1.
+
+## Đường dẫn thực tế PO đã cung cấp
+
+PO tìm được `D:\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe`; EngineRoot là `D:\UE_5.8`. Có thể thử preflight với UE5.8 sau khi cập nhật script:
+
+```powershell
+git pull --ff-only origin feat/demo-0.4
+powershell -NoProfile -File .\tools\ue\Build-Project.ps1 -EngineRoot 'D:\UE_5.8' -AllowUnverifiedEngine -PreflightOnly
+```
+
+Nếu preflight đạt, bỏ `-PreflightOnly` để thử compile, vẫn giữ `-AllowUnverifiedEngine`. Flag này cho phép thử UE5 khác minor so với association5.7, không tự đổi `.uproject` và không chứng nhận tương thích. `result.json` ghi rõ version/mismatch và compatibility chưa xác minh. Chưa cần cài lại engine; sửa theo log thực tế trước.
