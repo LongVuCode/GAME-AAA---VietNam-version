@@ -1,0 +1,29 @@
+﻿criterion,component_1,component_2,component_3,component_4,component_5,score_out_of_50,confidence_C_M_T,components_in_order,evidence,next_validation
+Vòng lặp chơi cốt lõi,4,4,3,4,3,18,M,"Mục tiêu, hành động, phản hồi, động lực tiếp tục, độ biến đổi",quests.json; smoke; PO,"Mỗi vòng 10 phút phải trả lời được: muốn gì, làm gì, học được gì, vì sao đi tiếp."
+Điều khiển và độ đáp ứng,7,6,5,5,5,28,M,"Ánh xạ, phản hồi input, buffer/cancel, camera, tùy chỉnh",controls.test.mjs; combat.test.mjs,"Đo input trên máy thật, video camera/target ở góc hẹp; giữ remap."
+Cảm giác chiến đấu,4,5,4,4,3,20,T,"Trọng lượng, va chạm, tiếp xúc animation, phản ứng, tính liền mạch",smoke; anim; PO,Làm một combo/né/đỡ trên rig hoàn chỉnh trước khi thêm 30 chiêu.
+Kẻ địch và bố trí encounter,3,3,2,2,2,12,M,"Vai trò, phối hợp, địa hình, biến đổi, điểm yếu đọc được",enemyAi; boss tests; HANDOFF,Dựng ba encounter dùng cùng quái nhưng yêu cầu quyết định khác nhau.
+Thiết kế boss,5,4,4,4,3,20,M,"Báo hiệu, học quy luật, tiến triển pha, kết nối truyện, cao trào",smoke 86/86; boss.test.mjs,"Playtest lần đầu không debug, ghi tử vong/đòn khó đọc; dựng hình và animation riêng."
+Cân bằng và đường cong học,4,3,3,3,2,15,T,"Dạy cơ chế, tăng độ khó, phản hồi thất bại, công bằng, kiểm chứng",difficulty; tuning; PO,"Cho 5 người mới chơi, ghi chỗ hiểu sai thay vì chỉ tăng HP."
+Chiều sâu RPG/build,5,4,3,3,3,18,M,"Lựa chọn, synergies, đánh đổi, tiến triển, khác biệt lối chơi",inventory tests; skills data,"Chứng minh hai build chơi khác nhau trong cùng encounter, không chỉ khác damage."
+Phần thưởng và kinh tế,3,3,2,2,2,12,M,"Công dụng, dự báo, nhịp thưởng, cân đối nguồn, gắn khám phá",crafting tests; PO,Cho người chơi thấy nhu cầu/công dụng trước khi bắt tìm vật liệu.
+Bố cục level và kết nối,3,2,2,2,1,10,C,"Tuyến, vòng/lối tắt, địa hình, mục đích vùng, kết nối nhiệm vụ",world_0_4; COMBAT_0_4 §6; walkable; PO,"Thiết kế lại graph nhiệm vụ và level, cho graybox playtest trước art."
+Dẫn đường và khả năng đọc không gian,3,3,2,2,2,12,C,"Landmark, ngã rẽ, mục tiêu HUD, liên kết lời chỉ, phục hồi khi lạc",PO; screenshot; smoke UI,Test không hướng dẫn: 4/5 người tự tới mốc đầu; ghi chỗ chạy vòng.
+Khám phá và phát hiện,2,3,2,2,1,10,C,"Tò mò, khám phá có nghĩa, ngạc nhiên, payoff, tự chọn đường",world data; PO,Mỗi nhánh cho một hiểu biết/cách chơi/lối nối mới; bỏ nhánh chỉ có vật nhặt vô nghĩa.
+Thiết kế nhiệm vụ,4,3,3,2,2,14,C,"Động cơ, biến đổi hành động, lựa chọn, hậu quả, gắn thế giới",quests; story smoke; PO,"Dựng chặng cứu người/mở đường có hậu quả nhìn được, không chỉ đổi objective."
+Cốt truyện và truyền đạt,6,4,4,3,3,20,M,"Tiền đề, nhân quả, truyền đạt qua chơi, tiết chế, payoff",STORY_INTEGRATION; cinematic smoke; PO,"Hỏi người chơi trước boss: vì sao tới đây, boss đau vì gì, muốn làm gì?"
+NPC và hội thoại,4,3,3,3,2,15,M,"Cá tính, mục đích, hội thoại, phản ứng, đời sống",dialogue; story smoke; screenshot,Một NPC có công việc và phản ứng theo quest trước khi thêm nhiều cây thoại.
+Kể chuyện qua môi trường,3,3,2,2,2,12,M,"Dấu tích, khả năng suy luận, gắn địa điểm, phản ứng, thống nhất",quests.new_points; screenshot; PO,Dựng một cụm cảnh mà người chơi suy ra sự kiện trước khi đọc chữ.
+Nhịp chơi và thời lượng có giá trị,2,2,2,2,1,9,C,"Luân phiên, khoảng lặng, cao trào, thời lượng hữu ích, tôn trọng thời gian",PO; scope demo; handoff,Ghi timeline hành động/chạy/đọc/chết; cắt filler trước khi thêm thời lượng.
+Môi trường và art direction,4,4,3,3,3,17,C,"Bố cục, vật liệu, ánh sáng, chi tiết có nghĩa, nhất quán",2 cặp ảnh; envshots logs; PO,Một cảnh hoàn chỉnh có foreground/midground/background và hoạt động sống.
+Chất lượng nhân vật người,2,1,1,2,1,7,C,"Silhouette, anatomy/model, vật liệu, mặt/tay, tích hợp",anim/rig.js; ảnh; PO,Hoàn thiện Cói từ model đến animation ở camera thật.
+Thiết kế hình quái,2,2,1,2,2,9,C,"Đặc trưng, anatomy/model, vật liệu, chuyển động, khớp vai trò",creatures_0_4; anim/creatures; PO,"Một quái hoàn thiện với silhouette, hành vi và âm thanh riêng."
+Animation và trình diễn,3,3,3,3,2,14,M,"Locomotion, combat, chuyển trạng thái, tương tác, staging",anim; animation tests; ảnh,"Sửa contact, foot planting, hand grip và pose chuyển trước hiệu ứng điện ảnh."
+Âm thanh và âm nhạc,3,3,2,2,2,12,T,"Thông tin, chất liệu, không gian, nhạc/cảm xúc, phối âm",game/audio.js; README,"Thử Foley/vũ khí/vật liệu/âm môi trường mẫu, rồi listening test trên tai nghe/loa."
+UI và trợ năng hiện có,6,5,5,4,4,24,M,"Thông tin, phân cấp, tương tác, trợ năng, nhất quán",ảnh; controls/UI tests; PO,"Giảm chồng chữ, ưu tiên mục tiêu; test chữ/độ tương phản/tay cầm và người có nhu cầu trợ năng."
+Độ tin cậy kỹ thuật trong phạm vi demo,7,6,5,5,4,27,M,"Luật, luồng hoàn thành, lỗi biên, asset/build, tái lập",QA report; smoke log; manifest,"Ma trận máy, phiên thủ công không hook, stress/save tests trước điểm cao hơn."
+Bản sắc thể hiện trong bản chơi,6,5,4,4,3,22,M,"Chủ đề, cơ chế gắn chủ đề, mỹ thuật, nhân vật, khác biệt",story; boss; art docs; ảnh,"Biến thao tác nghề và đời sống thành hành động xuyên suốt, không chỉ thay tên/vỏ Việt."
+Hiệu năng máy thật,,,,,,NC,,,,Chưa đủ bằng chứng; xem báo cáo
+Save/load bền vững,,,,,,NC,,,,Chưa đủ bằng chứng; xem báo cáo
+Giá trị chơi lại,,,,,,NC,,,,Chưa đủ bằng chứng; xem báo cáo
+Độ xác thực văn hóa/lịch sử,,,,,,NC,,,,Chưa đủ bằng chứng; xem báo cáo
