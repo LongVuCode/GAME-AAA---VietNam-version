@@ -133,3 +133,7 @@ Chưa Publish game, chưa gộp main. Việc tiếp theo: ảnh so sánh môi tr
 ## Kế hoạch sản xuất đề xuất 2026-11-10
 
 PO xác nhận có **30–40 giờ/tuần**. Đã lập `docs/production/ROADMAP_TO_RELEASE_V1.md`, WBS 60 task và lịch vai theo phase (CSV); thêm `.claude/agents/project-manager.md`. PM là phiên chính, xuyên suốt P0–P14, một worker hoạt động và reviewer tuần tự. Baseline đề xuất bắt đầu 16/11/2026, mẫu 15–20 phút 04/04/2027, vùng Lợn Lòi 30/05/2027, cửa sổ bản đủ cuối 2028–đầu 2029. **Chưa duyệt scope/ngân sách art/cố vấn, chưa khởi động phase; ngày là forecast có điều kiện, không là cam kết phát hành.** Không nhầm vùng mở đầu với cả Long Biên/Hồ Tinh hoặc Game 1. Đọc roadmap và actual mới nhất trước khi giao việc.
+
+## Thực thi P0/P1 2026-11-10
+
+PO đã yêu cầu tiến hành, xác nhận30–40h/tuần và cóUE+VisualStudioC++ trênWindows. Đã có brief mẫu `design/P0_VERTICAL_SLICE_BRIEF.md`, scope/asset/risk register và `docs/production/PM_STATUS_2026_11_10.md`. Đãreviewtĩnh và sửa finding; chưa là mẫuUE chạy được. Helper `tools/ue/Build-Project.ps1` + `P1_WINDOWS_BUILD_HANDOFF.md` + `P1_COMPATIBILITY_MATRIX.md` chờ PO chạy Windows/gửi result.json/build.log. Cloud không cópwsh/UE/GPU, **P1 runtime vẫnblocked**, chưapin5.7 theo bằng chứng, chưabuild/cook/package. Ưu tiên tiếp: xử lýlog thật; không lặp lại hỏi đãcàiUE/VS chưa. Chưa rõversion thực tế/ngân sáchasset. KhôngPublish/merge main.
