@@ -129,3 +129,7 @@ Chưa Publish game, chưa gộp main. Việc tiếp theo: ảnh so sánh môi tr
 ## Cập nhật gói xem 2026-11-09
 
 Đã chụp 2 cặp ảnh graybox/PBR cùng bản đồ 0.4 (Bến Sậy, đấu trường boss; High), tạo trang so sánh thanh kéo và ZIP chơi thử kèm license/checksum. Kiểm tra ảnh, gallery, CRC/SHA-256 ZIP và URL asset đạt. Không sửa logic và không chạy lại smoke dài đã đạt. Xem `reports/DEMO_0_4_REPORT.md` (từ reports/ dùng `DEMO_0_4_REPORT.md`). Gói xuất tại `/workspace/demo04-review/`; chưa Publish game/chưa gộp main. Bước tiếp: PO xem gói, chọn bản để phát hành; combat mới/model quái vẫn thuộc đợt sau.
+
+## Kế hoạch sản xuất đề xuất 2026-11-10
+
+PO xác nhận có **30–40 giờ/tuần**. Đã lập `docs/production/ROADMAP_TO_RELEASE_V1.md`, WBS 60 task và lịch vai theo phase (CSV); thêm `.claude/agents/project-manager.md`. PM là phiên chính, xuyên suốt P0–P14, một worker hoạt động và reviewer tuần tự. Baseline đề xuất bắt đầu 16/11/2026, mẫu 15–20 phút 04/04/2027, vùng Lợn Lòi 30/05/2027, cửa sổ bản đủ cuối 2028–đầu 2029. **Chưa duyệt scope/ngân sách art/cố vấn, chưa khởi động phase; ngày là forecast có điều kiện, không là cam kết phát hành.** Không nhầm vùng mở đầu với cả Long Biên/Hồ Tinh hoặc Game 1. Đọc roadmap và actual mới nhất trước khi giao việc.
