@@ -91,11 +91,11 @@ struct FArpgConfig
 	FCraftingDatabase Crafting;
 	std::vector<FSecretGraphDef> Secrets;
 
-	const FWeaponConfig* FindWeapon(const std::string& Id) const;
-	const FMovesetConfig* FindMoveset(const std::string& WeaponId) const;
-	const FDifficultyConfig* FindDifficulty(const std::string& Id) const;
-	const FEnemyConfig* FindEnemy(const std::string& Id) const;
-	const FBossConfig* FindBoss(const std::string& Id) const;
+	ARPGCORE_API const FWeaponConfig* FindWeapon(const std::string& Id) const;
+	ARPGCORE_API const FMovesetConfig* FindMoveset(const std::string& WeaponId) const;
+	ARPGCORE_API const FDifficultyConfig* FindDifficulty(const std::string& Id) const;
+	ARPGCORE_API const FEnemyConfig* FindEnemy(const std::string& Id) const;
+	ARPGCORE_API const FBossConfig* FindBoss(const std::string& Id) const;
 };
 
 /** Semantic checks across all sections (ranges, ordering, cross references, combo ambiguity,

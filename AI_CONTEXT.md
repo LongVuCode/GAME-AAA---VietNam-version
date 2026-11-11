@@ -145,3 +145,7 @@ PO cung cấp `D:\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe`; dùng EngineRo
 ### Build Windows đầu tiên 2026-11-11
 
 Đã nhận result.json/build.log từ PO: UE5.8.4, VS18.11.12328.437, MSVC14.51.36260, SDK10.0.26100.0; Editor target commit2d311a3 buildfailed exit6. Lỗi chặn: FerryEnemy.cpp208 dùng RealDt ngoài scope TickAi. Đã sửa truyền GameDt+RealDt qua declaration/definition/call, giữ nhịp cạy worldtime; testcore3suite HitStop/Shackle/BossEncounter đạt, cần rebuildWindows. Xem PM_STATUS_2026_11_11.md. Không hỏi lại càiUE/VS, không coi warningcompiler là nguyên nhân C2065. UE runtime/package chưa xác minh.
+
+### Rebuild Windows thứ hai 2026-11-11
+
+Commitde1dc3e: RealDt compileerror đãhết, tớiDLLlink còn5LNK2019 FArpgConfig FindWeapon/FindMoveset/FindDifficulty/FindEnemy/FindBoss. Đã thêmARPGCORE_API từngmethod trongConfig.h; địnhnghĩađãcó trongConfig.cpp. ChờrebuildUE5.8.4 để xácnhậnlink, chưaEditorrun/cook/package. Khôngyêucầucài lạiUE/VS.
