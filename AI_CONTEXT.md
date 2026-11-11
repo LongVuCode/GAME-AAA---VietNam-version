@@ -141,3 +141,7 @@ PO đã yêu cầu tiến hành, xác nhận30–40h/tuần và cóUE+VisualStud
 ### Máy Windows: đường dẫn UE đã tìm thấy
 
 PO cung cấp `D:\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe`; dùng EngineRoot `D:\UE_5.8`. Script build có tùy chọn `-AllowUnverifiedEngine` để thử UE5 minor khác association5.7 mà không sửa project; vẫn cần đọc Build.version và log compile. Không hỏi lại vị trí cài UE hoặc dùng đường dẫn ví dụ D:\Epic Games. Chưa có bằng chứng build/runtime UE5.8.
+
+### Build Windows đầu tiên 2026-11-11
+
+Đã nhận result.json/build.log từ PO: UE5.8.4, VS18.11.12328.437, MSVC14.51.36260, SDK10.0.26100.0; Editor target commit2d311a3 buildfailed exit6. Lỗi chặn: FerryEnemy.cpp208 dùng RealDt ngoài scope TickAi. Đã sửa truyền GameDt+RealDt qua declaration/definition/call, giữ nhịp cạy worldtime; testcore3suite HitStop/Shackle/BossEncounter đạt, cần rebuildWindows. Xem PM_STATUS_2026_11_11.md. Không hỏi lại càiUE/VS, không coi warningcompiler là nguyên nhân C2065. UE runtime/package chưa xác minh.

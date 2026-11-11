@@ -85,7 +85,8 @@ protected:
 
 private:
 	bool InitializeFromData();
-	void TickAi(float GameDt);
+	// Keep the pry clock on world time while AI/combat uses hit-stop-scaled time.
+	void TickAi(float GameDt, float RealDt);
 	void TickAttack(float GameDt);
 	bool TryStartAttack(float DistanceCm);
 	void EndAttack(float RecoverSeconds);

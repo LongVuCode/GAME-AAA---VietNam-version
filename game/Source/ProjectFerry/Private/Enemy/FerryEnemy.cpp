@@ -148,7 +148,7 @@ void AFerryEnemy::Tick(float DeltaSeconds)
 	const float RealDt = static_cast<float>(GetWorld()->GetDeltaSeconds());
 	const float GameDt = HitStopClock.Advance(RealDt);
 	FerryCombat::ApplyHitStopDilation(this, HitStopClock.IsStopped(), Data->Core.HitStop.TimeScaleDuringStop);
-	TickAi(GameDt);
+	TickAi(GameDt, RealDt);
 	if (!IsActorBeingDestroyed())
 	{
 		UpdateTelegraphVisual();
@@ -196,7 +196,7 @@ void AFerryEnemy::EnterState(EFerryEnemyState NewState, float Duration)
 	StateTimer = Duration;
 }
 
-void AFerryEnemy::TickAi(float GameDt)
+void AFerryEnemy::TickAi(float GameDt, float RealDt)
 {
 	for (float& Cooldown : Cooldowns)
 	{
