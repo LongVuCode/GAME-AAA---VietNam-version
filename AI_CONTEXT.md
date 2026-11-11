@@ -153,3 +153,7 @@ Commitde1dc3e: RealDt compileerror đãhết, tớiDLLlink còn5LNK2019 FArpgCon
 ### Editor build UE đạt — 2026-11-11
 
 PO logcommit24d40a9: UE5.8.4, ProjectFerryEditor Win64Development **Succeeded exit0**. ArpgCore/ProjectFerry/ProjectFerryEditor DLL đãlink; RealDt và5lookupLNK đãhết. **Không yêu cầu build lại chỉ vì cập nhật docs.** Tiếp: mở existinguproject bằng D:\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe, kiểm logdata, chạy scriptgrayboxtrongEditor rồiPIE. Mapgrayboxold chỉđểtestnền, chưaUE0.5/art/fullwebport. Runtime/Gamecook/package chưađạt, associationvẫn5.7, compilerwarningpreferredversionkhôngblock.
+
+### Editor/PIE đã khởi động — 2026-11-11
+
+POlog:graybox337actors/0dataproblems,design dataOK,PIEinput/giáo/8enemies/boss đãkhởiđộng,exitPIEbìnhthường. Chưaxácminhmanualgameplay/cook/package. Sửa Python: masterM_GB_Color riêng (BasicShapeMaterial khôngcóColor), reparentMIcũ; BonfiredecorativekhôngcòntagFerryCheckpoint đểdừngspamcheckpoint. Cần StopPlay/pull/rerunscript/Play, **khôngC++rebuild**. AqProf/Vtune/PIXmissingkhôngblock.2mocktests+dryrunđạt, UEAPI sửaMaterialchờruntime.

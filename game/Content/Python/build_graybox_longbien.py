@@ -45,8 +45,8 @@ ROOT_FOLDER = "Graybox"
 CUBE = "/Engine/BasicShapes/Cube.Cube"            # 100 cm cube, pivot at centre
 CYLINDER = "/Engine/BasicShapes/Cylinder.Cylinder"  # 100 cm diameter, 100 cm tall, pivot at centre
 CONE = "/Engine/BasicShapes/Cone.Cone"
-BASE_MATERIAL = "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"
-# VERIFY: BasicShapeMaterial exposes a vector parameter named "Color" (true in UE 4.x/5.x samples).
+BASE_MATERIAL = MATERIAL_DIR + "/M_GB_Color"
+# A project-owned master material exposes Color; engine BasicShapeMaterial may not.
 COLOR_PARAM = "Color"
 
 M = 100.0  # metres -> centimetres
@@ -293,8 +293,20 @@ class GrayboxBuilder(object):
     # -- materials ------------------------------------------------------------------------------
     def build_materials(self):
         tools = unreal.AssetToolsHelpers.get_asset_tools()
-        parent = unreal.EditorAssetLibrary.load_asset(BASE_MATERIAL)
         unreal.EditorAssetLibrary.make_directory(MATERIAL_DIR)
+        if unreal.EditorAssetLibrary.does_asset_exist(BASE_MATERIAL):
+            parent = unreal.EditorAssetLibrary.load_asset(BASE_MATERIAL)
+        else:
+            parent = tools.create_asset("M_GB_Color", MATERIAL_DIR, unreal.Material, unreal.MaterialFactoryNew())
+            color = unreal.MaterialEditingLibrary.create_material_expression(
+                parent, unreal.MaterialExpressionVectorParameter, -300, 0)
+            color.set_editor_property("parameter_name", unreal.Name(COLOR_PARAM))
+            color.set_editor_property("default_value", unreal.LinearColor(0.5, 0.5, 0.5, 1.0))
+            if not unreal.MaterialEditingLibrary.connect_material_property(
+                    color, "", unreal.MaterialProperty.MP_BASE_COLOR):
+                raise RuntimeError("could not connect graybox Color to Base Color")
+            unreal.MaterialEditingLibrary.recompile_material(parent)
+            unreal.EditorAssetLibrary.save_loaded_asset(parent)
         for name, rgb in MATERIALS.items():
             path = "%s/%s" % (MATERIAL_DIR, name)
             try:
@@ -303,7 +315,8 @@ class GrayboxBuilder(object):
                 else:
                     mi = tools.create_asset(name, MATERIAL_DIR, unreal.MaterialInstanceConstant,
                                             unreal.MaterialInstanceConstantFactoryNew())
-                    unreal.MaterialEditingLibrary.set_material_instance_parent(mi, parent)
+                # Also migrate instances created by older script versions.
+                unreal.MaterialEditingLibrary.set_material_instance_parent(mi, parent)
                 ok = unreal.MaterialEditingLibrary.set_material_instance_vector_parameter_value(
                     mi, COLOR_PARAM, unreal.LinearColor(rgb[0], rgb[1], rgb[2], 1.0))
                 if not ok:
@@ -389,7 +402,7 @@ class GrayboxBuilder(object):
                        ["FerrySpawn", enemy_id, zone])
         for cp_id, (x, y) in CHECKPOINTS:
             self.mesh(CONE, "Bonfire_%s" % cp_id, "Markers", (x, y, 0.35), (0.7, 0.7, 0.7), "MI_GB_Fire",
-                      ["FerryCheckpoint", cp_id], collide=False)
+                      ["FerryCheckpointVisual", cp_id], collide=False)
             self.point(unreal.TargetPoint, "CP_%s" % cp_id, "Markers", (x + 1.5, y, 1.0), 0.0,
                        ["FerryCheckpoint", cp_id])
         for tag, marker_id, (x, y), mesh_path, size in MARKERS:
