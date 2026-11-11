@@ -307,6 +307,11 @@ class GrayboxBuilder(object):
                 raise RuntimeError("could not connect graybox Color to Base Color")
             unreal.MaterialEditingLibrary.recompile_material(parent)
             unreal.EditorAssetLibrary.save_loaded_asset(parent)
+        try:
+            parameters = unreal.MaterialEditingLibrary.get_vector_parameter_names(parent)
+            unreal.log("[graybox] master vector parameters: %s" % [str(p) for p in parameters])
+        except Exception as exc:  # diagnostic only; preserve compatibility across editor APIs
+            unreal.log_warning("[graybox] could not inspect master parameters (%s)" % exc)
         for name, rgb in MATERIALS.items():
             path = "%s/%s" % (MATERIAL_DIR, name)
             try:
@@ -317,10 +322,19 @@ class GrayboxBuilder(object):
                                             unreal.MaterialInstanceConstantFactoryNew())
                 # Also migrate instances created by older script versions.
                 unreal.MaterialEditingLibrary.set_material_instance_parent(mi, parent)
+                # Refresh inherited parameter metadata after changing an existing instance's parent.
+                unreal.MaterialEditingLibrary.update_material_instance(mi)
                 ok = unreal.MaterialEditingLibrary.set_material_instance_vector_parameter_value(
                     mi, COLOR_PARAM, unreal.LinearColor(rgb[0], rgb[1], rgb[2], 1.0))
-                if not ok:
-                    unreal.log_warning("[graybox] VERIFY: parameter '%s' not found on %s" % (COLOR_PARAM, BASE_MATERIAL))
+                unreal.MaterialEditingLibrary.update_material_instance(mi)
+                actual = unreal.MaterialEditingLibrary.get_material_instance_vector_parameter_value(mi, COLOR_PARAM)
+                matches = all(abs(float(getattr(actual, channel)) - expected) < 0.001
+                              for channel, expected in zip(("r", "g", "b", "a"), (*rgb, 1.0)))
+                if not matches:
+                    unreal.log_warning("[graybox] %s Color mismatch: wanted=%s actual=%s setter_result=%s" %
+                                       (name, rgb, actual, ok))
+                else:
+                    unreal.log("[graybox] %s Color verified" % name)
                 unreal.EditorAssetLibrary.save_loaded_asset(mi)
                 self.materials[name] = mi
             except Exception as exc:  # noqa: BLE001

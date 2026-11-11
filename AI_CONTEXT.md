@@ -157,3 +157,7 @@ PO logcommit24d40a9: UE5.8.4, ProjectFerryEditor Win64Development **Succeeded ex
 ### Editor/PIE đã khởi động — 2026-11-11
 
 POlog:graybox337actors/0dataproblems,design dataOK,PIEinput/giáo/8enemies/boss đãkhởiđộng,exitPIEbìnhthường. Chưaxácminhmanualgameplay/cook/package. Sửa Python: masterM_GB_Color riêng (BasicShapeMaterial khôngcóColor), reparentMIcũ; BonfiredecorativekhôngcòntagFerryCheckpoint đểdừngspamcheckpoint. Cần StopPlay/pull/rerunscript/Play, **khôngC++rebuild**. AqProf/Vtune/PIXmissingkhôngblock.2mocktests+dryrunđạt, UEAPI sửaMaterialchờruntime.
+
+### Runtime log sau sửa checkpoint — 2026-11-11
+
+Logmới chứa cảlượtcũ08:27UTC vàlượtmới08:47UTC: checkpointmới chỉTargetPoint, khônglặpxenkẽ; chếtvàrespawnđãghi nhận. Màuvẫnwarning trênM_GB_Color, **chưađạt**. Chuẩnbị update_material_instance sau reparent/setter vàđọclạiRGBA, diagnosticparamnames; chờrerunPythonEditor(khôngC++build). EOSconnectionwarningschưachặn gameoffline.

@@ -18,7 +18,21 @@ class GrayboxBuilderRegression(unittest.TestCase):
         api = Mock()
         api.EditorAssetLibrary.does_asset_exist.return_value = True
         api.EditorAssetLibrary.load_asset.side_effect = lambda p: parent if p == graybox.BASE_MATERIAL else instance
-        api.MaterialEditingLibrary.set_material_instance_vector_parameter_value.return_value = True
+        api.LinearColor.side_effect = lambda r, g, b, a: SimpleNamespace(r=r, g=g, b=b, a=a)
+        api.MaterialEditingLibrary.get_vector_parameter_names.return_value = ['Color']
+        cache = {'refreshed': False, 'value': SimpleNamespace(r=0, g=0, b=0, a=0)}
+        def reparent(*args):
+            cache['refreshed'] = False
+        def refresh(*args):
+            cache['refreshed'] = True
+        def set_color(mi, name, value):
+            self.assertTrue(cache['refreshed'], 'refresh inherited parameters before setting Color')
+            cache['value'] = value
+            return True
+        api.MaterialEditingLibrary.set_material_instance_parent.side_effect = reparent
+        api.MaterialEditingLibrary.update_material_instance.side_effect = refresh
+        api.MaterialEditingLibrary.set_material_instance_vector_parameter_value.side_effect = set_color
+        api.MaterialEditingLibrary.get_material_instance_vector_parameter_value.side_effect = lambda *args: cache['value']
         builder = graybox.GrayboxBuilder.__new__(graybox.GrayboxBuilder)
         builder.materials = {}
         with patch.object(graybox, 'unreal', api):
