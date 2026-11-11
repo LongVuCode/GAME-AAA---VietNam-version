@@ -1,0 +1,2438 @@
+{
+  "schema_version": 1,
+  "label": "SÁNG TẠO",
+  "status": "layout_interaction_increment_not_final_art",
+  "map_path": "/Game/Maps/L_BenSay_Sample05",
+  "settings": {
+    "interact_radius_cm": 350,
+    "lookout_radius_cm": 600,
+    "subtitle_duration_s": 9,
+    "save_slot": "FerrySample05_v1",
+    "fall_reset_z_cm": -400
+  },
+  "strings": {
+    "objective_start": {
+      "vi": "Hỏi Năn ở bến về dấu Nghệ.",
+      "en": "Ask Năn at the landing about Nghệ."
+    },
+    "objective_route": {
+      "vi": "Tới gò nhìn: tìm cây sung chẻ ba bên bờ đê.",
+      "en": "Reach the lookout: find the three-trunk fig by the bank."
+    },
+    "objective_help": {
+      "vi": "Qua đường bờ cao hoặc bãi thấp, giúp người gánh lau.",
+      "en": "Take the upper bank or marsh path and help the reed carrier."
+    },
+    "objective_bridge": {
+      "vi": "Hạ cầu ván phía bờ đê để mở đường về.",
+      "en": "Lower the plank bridge beside the bank to open the way back."
+    },
+    "objective_return": {
+      "vi": "Qua cầu vừa mở, trở về nói chuyện với Năn.",
+      "en": "Cross the opened bridge and return to Năn."
+    },
+    "objective_complete": {
+      "vi": "Hết vòng mẫu: bạn đã giúp người và mở đường về bến.",
+      "en": "Sample complete: you helped the carrier and opened the route home."
+    },
+    "hint_nan": {
+      "vi": "E / F — nói chuyện với Năn",
+      "en": "E / F — talk to Năn"
+    },
+    "hint_help": {
+      "vi": "E / F — giúp người gánh lau thoát khỏi ván đổ",
+      "en": "E / F — free the reed carrier from the fallen planks"
+    },
+    "hint_bridge": {
+      "vi": "E / F — hạ cầu ván",
+      "en": "E / F — lower the plank bridge"
+    },
+    "talk_nan": {
+      "vi": "Năn: Nghệ đã đi về phía cây sung chẻ ba. Có người gánh lau chưa về; nếu gặp, chị giúp họ nhé.",
+      "en": "Năn: Nghệ went toward the three-trunk fig. A reed carrier is still missing; please help if you find them."
+    },
+    "help_done": {
+      "vi": "Người gánh lau: Cảm ơn cô. Nghệ đã quay lại giúp tôi rồi chạy dọc bờ đê. Cầu bên kia còn vướng dây; cô có thể hạ từ đây.",
+      "en": "Reed carrier: Thank you. Nghệ came back to help me, then ran along the bank. You can lower the bridge from this side."
+    },
+    "bridge_done": {
+      "vi": "Cầu đã hạ. Một đường về bến đã mở — không cần vòng qua bãi thấp nữa.",
+      "en": "The bridge is down. A route home is open; no need to circle through the marsh again."
+    },
+    "return_done": {
+      "vi": "Năn: Người gánh lau đã an toàn rồi. Cảm ơn chị. Hướng Nghệ đi giờ đã rõ hơn. — HẾT MẪU BỐ CỤC / TƯƠNG TÁC —",
+      "en": "Năn: The carrier is safe. Thank you. Now we know more about Nghệ’s route. — END OF LAYOUT / INTERACTION SAMPLE —"
+    },
+    "blocked_bridge": {
+      "vi": "Còn người mắc kẹt ở bờ đê. Hãy giúp họ trước khi hạ cầu.",
+      "en": "Someone is still trapped by the bank. Help them before lowering the bridge."
+    },
+    "save_failed": {
+      "vi": "Không lưu được tiến trình. Bạn vẫn có thể chơi tiếp, nhưng cần kiểm tra log trước khi thoát.",
+      "en": "Progress could not be saved. You can keep playing, but check the log before quitting."
+    },
+    "lookout_label": {
+      "vi": "Gò nhìn — sung chẻ ba",
+      "en": "Lookout — three-trunk fig"
+    },
+    "upper_label": {
+      "vi": "Bờ cao — quan sát rồi chọn đường",
+      "en": "Upper bank — observe and choose"
+    },
+    "lower_label": {
+      "vi": "Bãi thấp — tránh ổ hoặc đối đầu",
+      "en": "Marsh path — avoid the nest or confront it"
+    },
+    "help_label": {
+      "vi": "Có người mắc ở bờ đê",
+      "en": "Someone is trapped beside the bank"
+    },
+    "bridge_label": {
+      "vi": "Cầu ván về Bến Sậy",
+      "en": "Plank bridge to Sậy Landing"
+    },
+    "start_label": {
+      "vi": "BẾN SẬY",
+      "en": "SẬY LANDING"
+    },
+    "controls": {
+      "vi": "WASD đi • Chuột nhìn • E/F tương tác • Space né • Chuột trái/phải đánh • Q đỡ • Tab khóa",
+      "en": "WASD move • Mouse look • E/F interact • Space dodge • LMB/RMB attack • Q parry • Tab lock"
+    }
+  },
+  "palette": {
+    "ground": [
+      0.18,
+      0.25,
+      0.12
+    ],
+    "path": [
+      0.33,
+      0.25,
+      0.13
+    ],
+    "mud": [
+      0.16,
+      0.12,
+      0.07
+    ],
+    "water": [
+      0.04,
+      0.16,
+      0.2
+    ],
+    "wood": [
+      0.21,
+      0.1,
+      0.035
+    ],
+    "thatch": [
+      0.47,
+      0.35,
+      0.13
+    ],
+    "reeds": [
+      0.42,
+      0.44,
+      0.16
+    ],
+    "bark": [
+      0.13,
+      0.085,
+      0.04
+    ],
+    "leaves": [
+      0.08,
+      0.21,
+      0.055
+    ],
+    "rock": [
+      0.22,
+      0.23,
+      0.2
+    ],
+    "skin": [
+      0.55,
+      0.34,
+      0.18
+    ],
+    "cloth": [
+      0.035,
+      0.075,
+      0.16
+    ]
+  },
+  "spawn": {
+    "pos": [
+      0,
+      0,
+      1
+    ],
+    "yaw": 0
+  },
+  "meshes": [
+    {
+      "name": "Water",
+      "shape": "cube",
+      "pos": [
+        55,
+        0,
+        -1.4
+      ],
+      "size": [
+        170,
+        130,
+        0.15
+      ],
+      "material": "water",
+      "collide": false
+    },
+    {
+      "name": "Landing",
+      "shape": "cube",
+      "pos": [
+        0,
+        0,
+        -0.3
+      ],
+      "size": [
+        28,
+        26,
+        0.6
+      ],
+      "material": "ground"
+    },
+    {
+      "name": "ToLookout",
+      "shape": "cube",
+      "pos": [
+        21,
+        0,
+        -0.3
+      ],
+      "size": [
+        20,
+        10,
+        0.6
+      ],
+      "material": "ground"
+    },
+    {
+      "name": "Lookout",
+      "shape": "cube",
+      "pos": [
+        32,
+        0,
+        -0.3
+      ],
+      "size": [
+        12,
+        18,
+        0.6
+      ],
+      "material": "ground"
+    },
+    {
+      "name": "NorthEntry",
+      "shape": "cube",
+      "pos": [
+        32,
+        -16,
+        -0.3
+      ],
+      "size": [
+        10,
+        24,
+        0.6
+      ],
+      "material": "ground"
+    },
+    {
+      "name": "NorthMiddle",
+      "shape": "cube",
+      "pos": [
+        61,
+        -26,
+        0.5
+      ],
+      "size": [
+        18,
+        12,
+        0.6
+      ],
+      "material": "ground"
+    },
+    {
+      "name": "NorthExit",
+      "shape": "cube",
+      "pos": [
+        94,
+        -16,
+        -0.3
+      ],
+      "size": [
+        12,
+        26,
+        0.6
+      ],
+      "material": "ground"
+    },
+    {
+      "name": "LowEntry",
+      "shape": "cube",
+      "pos": [
+        32,
+        17,
+        -0.3
+      ],
+      "size": [
+        10,
+        26,
+        0.6
+      ],
+      "material": "mud"
+    },
+    {
+      "name": "LowPath",
+      "shape": "cube",
+      "pos": [
+        62,
+        28,
+        -0.3
+      ],
+      "size": [
+        64,
+        12,
+        0.6
+      ],
+      "material": "mud"
+    },
+    {
+      "name": "LowExit",
+      "shape": "cube",
+      "pos": [
+        95,
+        17,
+        -0.3
+      ],
+      "size": [
+        12,
+        24,
+        0.6
+      ],
+      "material": "mud"
+    },
+    {
+      "name": "HelpBank",
+      "shape": "cube",
+      "pos": [
+        98,
+        0,
+        -0.3
+      ],
+      "size": [
+        24,
+        22,
+        0.6
+      ],
+      "material": "ground"
+    },
+    {
+      "name": "NorthRampUp",
+      "shape": "cube",
+      "pos": [
+        44,
+        -26,
+        0.1
+      ],
+      "size": [
+        24,
+        12,
+        0.6
+      ],
+      "material": "path",
+      "pitch": 1.909
+    },
+    {
+      "name": "NorthRampDown",
+      "shape": "cube",
+      "pos": [
+        79,
+        -26,
+        0.1
+      ],
+      "size": [
+        22,
+        12,
+        0.6
+      ],
+      "material": "path",
+      "pitch": -2.083
+    },
+    {
+      "name": "BridgeDeck",
+      "shape": "cube",
+      "pos": [
+        63,
+        0,
+        -0.18
+      ],
+      "size": [
+        53,
+        5,
+        0.36
+      ],
+      "material": "wood",
+      "tags": [
+        "FerrySampleBridgeDeck"
+      ]
+    },
+    {
+      "name": "BridgeRaised",
+      "shape": "cube",
+      "pos": [
+        88,
+        0,
+        3.4
+      ],
+      "size": [
+        0.4,
+        5,
+        7
+      ],
+      "material": "wood",
+      "collide": false,
+      "tags": [
+        "FerrySampleBridgeRaised"
+      ]
+    },
+    {
+      "name": "Dock_-7",
+      "shape": "cube",
+      "pos": [
+        -7,
+        -15,
+        -0.1
+      ],
+      "size": [
+        4.5,
+        10,
+        0.3
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "DockPost_-7_-11",
+      "shape": "cylinder",
+      "pos": [
+        -7,
+        -11,
+        -0.1
+      ],
+      "size": [
+        0.25,
+        0.25,
+        2.8
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "DockPost_-7_-19",
+      "shape": "cylinder",
+      "pos": [
+        -7,
+        -19,
+        -0.1
+      ],
+      "size": [
+        0.25,
+        0.25,
+        2.8
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "Dock_-2",
+      "shape": "cube",
+      "pos": [
+        -2,
+        -15,
+        -0.1
+      ],
+      "size": [
+        4.5,
+        10,
+        0.3
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "DockPost_-2_-11",
+      "shape": "cylinder",
+      "pos": [
+        -2,
+        -11,
+        -0.1
+      ],
+      "size": [
+        0.25,
+        0.25,
+        2.8
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "DockPost_-2_-19",
+      "shape": "cylinder",
+      "pos": [
+        -2,
+        -19,
+        -0.1
+      ],
+      "size": [
+        0.25,
+        0.25,
+        2.8
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "Dock_3",
+      "shape": "cube",
+      "pos": [
+        3,
+        -15,
+        -0.1
+      ],
+      "size": [
+        4.5,
+        10,
+        0.3
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "DockPost_3_-11",
+      "shape": "cylinder",
+      "pos": [
+        3,
+        -11,
+        -0.1
+      ],
+      "size": [
+        0.25,
+        0.25,
+        2.8
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "DockPost_3_-19",
+      "shape": "cylinder",
+      "pos": [
+        3,
+        -19,
+        -0.1
+      ],
+      "size": [
+        0.25,
+        0.25,
+        2.8
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "ShelterPost_-9_5",
+      "shape": "cylinder",
+      "pos": [
+        -9,
+        5,
+        1.5
+      ],
+      "size": [
+        0.22,
+        0.22,
+        3
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "ShelterPost_-9_11",
+      "shape": "cylinder",
+      "pos": [
+        -9,
+        11,
+        1.5
+      ],
+      "size": [
+        0.22,
+        0.22,
+        3
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "ShelterPost_-3_5",
+      "shape": "cylinder",
+      "pos": [
+        -3,
+        5,
+        1.5
+      ],
+      "size": [
+        0.22,
+        0.22,
+        3
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "ShelterPost_-3_11",
+      "shape": "cylinder",
+      "pos": [
+        -3,
+        11,
+        1.5
+      ],
+      "size": [
+        0.22,
+        0.22,
+        3
+      ],
+      "material": "wood"
+    },
+    {
+      "name": "ShelterRoof",
+      "shape": "cone",
+      "pos": [
+        -6,
+        8,
+        3.5
+      ],
+      "size": [
+        10,
+        10,
+        2
+      ],
+      "material": "thatch"
+    },
+    {
+      "name": "SupplyBasket",
+      "shape": "cylinder",
+      "pos": [
+        -7,
+        6,
+        0.5
+      ],
+      "size": [
+        1.2,
+        1.2,
+        1
+      ],
+      "material": "thatch"
+    },
+    {
+      "name": "ReedBundle0",
+      "shape": "cylinder",
+      "pos": [
+        -7.0,
+        6,
+        0.9
+      ],
+      "size": [
+        0.08,
+        0.08,
+        2
+      ],
+      "material": "reeds",
+      "pitch": 65
+    },
+    {
+      "name": "ReedBundle1",
+      "shape": "cylinder",
+      "pos": [
+        -6.83,
+        6,
+        0.9
+      ],
+      "size": [
+        0.08,
+        0.08,
+        2
+      ],
+      "material": "reeds",
+      "pitch": 65
+    },
+    {
+      "name": "ReedBundle2",
+      "shape": "cylinder",
+      "pos": [
+        -6.66,
+        6,
+        0.9
+      ],
+      "size": [
+        0.08,
+        0.08,
+        2
+      ],
+      "material": "reeds",
+      "pitch": 65
+    },
+    {
+      "name": "ReedBundle3",
+      "shape": "cylinder",
+      "pos": [
+        -6.49,
+        6,
+        0.9
+      ],
+      "size": [
+        0.08,
+        0.08,
+        2
+      ],
+      "material": "reeds",
+      "pitch": 65
+    },
+    {
+      "name": "ReedBundle4",
+      "shape": "cylinder",
+      "pos": [
+        -6.32,
+        6,
+        0.9
+      ],
+      "size": [
+        0.08,
+        0.08,
+        2
+      ],
+      "material": "reeds",
+      "pitch": 65
+    },
+    {
+      "name": "ReedBundle5",
+      "shape": "cylinder",
+      "pos": [
+        -6.15,
+        6,
+        0.9
+      ],
+      "size": [
+        0.08,
+        0.08,
+        2
+      ],
+      "material": "reeds",
+      "pitch": 65
+    },
+    {
+      "name": "ReedBundle6",
+      "shape": "cylinder",
+      "pos": [
+        -5.98,
+        6,
+        0.9
+      ],
+      "size": [
+        0.08,
+        0.08,
+        2
+      ],
+      "material": "reeds",
+      "pitch": 65
+    },
+    {
+      "name": "FigTrunk0",
+      "shape": "cylinder",
+      "pos": [
+        30,
+        -7,
+        4
+      ],
+      "size": [
+        0.9,
+        0.9,
+        8
+      ],
+      "material": "bark",
+      "roll": -8
+    },
+    {
+      "name": "FigCrown0",
+      "shape": "sphere",
+      "pos": [
+        29,
+        -7,
+        8
+      ],
+      "size": [
+        9,
+        8,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "FigTrunk1",
+      "shape": "cylinder",
+      "pos": [
+        32,
+        -7.7,
+        4
+      ],
+      "size": [
+        0.9,
+        0.9,
+        8
+      ],
+      "material": "bark",
+      "roll": 8
+    },
+    {
+      "name": "FigCrown1",
+      "shape": "sphere",
+      "pos": [
+        33,
+        -8.4,
+        8
+      ],
+      "size": [
+        9,
+        8,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "FigTrunk2",
+      "shape": "cylinder",
+      "pos": [
+        32,
+        -6.3,
+        4
+      ],
+      "size": [
+        0.9,
+        0.9,
+        8
+      ],
+      "material": "bark",
+      "roll": 8
+    },
+    {
+      "name": "FigCrown2",
+      "shape": "sphere",
+      "pos": [
+        33,
+        -5.6,
+        8
+      ],
+      "size": [
+        9,
+        8,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree0",
+      "shape": "cylinder",
+      "pos": [
+        44,
+        -34,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown0",
+      "shape": "sphere",
+      "pos": [
+        44,
+        -34,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree1",
+      "shape": "cylinder",
+      "pos": [
+        56,
+        -36,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown1",
+      "shape": "sphere",
+      "pos": [
+        56,
+        -36,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree2",
+      "shape": "cylinder",
+      "pos": [
+        74,
+        -35,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown2",
+      "shape": "sphere",
+      "pos": [
+        74,
+        -35,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree3",
+      "shape": "cylinder",
+      "pos": [
+        91,
+        -33,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown3",
+      "shape": "sphere",
+      "pos": [
+        91,
+        -33,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree4",
+      "shape": "cylinder",
+      "pos": [
+        36,
+        38,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown4",
+      "shape": "sphere",
+      "pos": [
+        36,
+        38,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree5",
+      "shape": "cylinder",
+      "pos": [
+        47,
+        38,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown5",
+      "shape": "sphere",
+      "pos": [
+        47,
+        38,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree6",
+      "shape": "cylinder",
+      "pos": [
+        65,
+        39,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown6",
+      "shape": "sphere",
+      "pos": [
+        65,
+        39,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree7",
+      "shape": "cylinder",
+      "pos": [
+        81,
+        38,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown7",
+      "shape": "sphere",
+      "pos": [
+        81,
+        38,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree8",
+      "shape": "cylinder",
+      "pos": [
+        105,
+        17,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown8",
+      "shape": "sphere",
+      "pos": [
+        105,
+        17,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree9",
+      "shape": "cylinder",
+      "pos": [
+        109,
+        -15,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown9",
+      "shape": "sphere",
+      "pos": [
+        109,
+        -15,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree10",
+      "shape": "cylinder",
+      "pos": [
+        -12,
+        -5,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown10",
+      "shape": "sphere",
+      "pos": [
+        -12,
+        -5,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Tree11",
+      "shape": "cylinder",
+      "pos": [
+        -12,
+        13,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.5,
+        5.2
+      ],
+      "material": "bark"
+    },
+    {
+      "name": "Crown11",
+      "shape": "sphere",
+      "pos": [
+        -12,
+        13,
+        5.6
+      ],
+      "size": [
+        6,
+        6,
+        4
+      ],
+      "material": "leaves",
+      "collide": false
+    },
+    {
+      "name": "Reeds0",
+      "shape": "cylinder",
+      "pos": [
+        36,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds1",
+      "shape": "cylinder",
+      "pos": [
+        49,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds2",
+      "shape": "cylinder",
+      "pos": [
+        62,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds3",
+      "shape": "cylinder",
+      "pos": [
+        75,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.75
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds4",
+      "shape": "cylinder",
+      "pos": [
+        88,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds5",
+      "shape": "cylinder",
+      "pos": [
+        37,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds6",
+      "shape": "cylinder",
+      "pos": [
+        50,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds7",
+      "shape": "cylinder",
+      "pos": [
+        63,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.75
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds8",
+      "shape": "cylinder",
+      "pos": [
+        76,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds9",
+      "shape": "cylinder",
+      "pos": [
+        89,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds10",
+      "shape": "cylinder",
+      "pos": [
+        38,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds11",
+      "shape": "cylinder",
+      "pos": [
+        51,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.75
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds12",
+      "shape": "cylinder",
+      "pos": [
+        64,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds13",
+      "shape": "cylinder",
+      "pos": [
+        77,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds14",
+      "shape": "cylinder",
+      "pos": [
+        90,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds15",
+      "shape": "cylinder",
+      "pos": [
+        39,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.75
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds16",
+      "shape": "cylinder",
+      "pos": [
+        52,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds17",
+      "shape": "cylinder",
+      "pos": [
+        65,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds18",
+      "shape": "cylinder",
+      "pos": [
+        78,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds19",
+      "shape": "cylinder",
+      "pos": [
+        91,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.75
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds20",
+      "shape": "cylinder",
+      "pos": [
+        40,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds21",
+      "shape": "cylinder",
+      "pos": [
+        53,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds22",
+      "shape": "cylinder",
+      "pos": [
+        66,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds23",
+      "shape": "cylinder",
+      "pos": [
+        79,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.75
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds24",
+      "shape": "cylinder",
+      "pos": [
+        92,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds25",
+      "shape": "cylinder",
+      "pos": [
+        41,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds26",
+      "shape": "cylinder",
+      "pos": [
+        54,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds27",
+      "shape": "cylinder",
+      "pos": [
+        67,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.75
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds28",
+      "shape": "cylinder",
+      "pos": [
+        80,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds29",
+      "shape": "cylinder",
+      "pos": [
+        93,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds30",
+      "shape": "cylinder",
+      "pos": [
+        42,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds31",
+      "shape": "cylinder",
+      "pos": [
+        55,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.75
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds32",
+      "shape": "cylinder",
+      "pos": [
+        68,
+        38.4,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.0
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds33",
+      "shape": "cylinder",
+      "pos": [
+        81,
+        37.0,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.25
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "Reeds34",
+      "shape": "cylinder",
+      "pos": [
+        94,
+        37.7,
+        1
+      ],
+      "size": [
+        0.07,
+        0.07,
+        2.5
+      ],
+      "material": "reeds",
+      "collide": false
+    },
+    {
+      "name": "BankRock0",
+      "shape": "sphere",
+      "pos": [
+        40,
+        -33,
+        0.8
+      ],
+      "size": [
+        4,
+        3,
+        2
+      ],
+      "material": "rock"
+    },
+    {
+      "name": "BankRock1",
+      "shape": "sphere",
+      "pos": [
+        57,
+        -34,
+        0.8
+      ],
+      "size": [
+        4,
+        3,
+        2
+      ],
+      "material": "rock"
+    },
+    {
+      "name": "BankRock2",
+      "shape": "sphere",
+      "pos": [
+        72,
+        -34,
+        0.8
+      ],
+      "size": [
+        4,
+        3,
+        2
+      ],
+      "material": "rock"
+    },
+    {
+      "name": "BankRock3",
+      "shape": "sphere",
+      "pos": [
+        88,
+        -33,
+        0.8
+      ],
+      "size": [
+        4,
+        3,
+        2
+      ],
+      "material": "rock"
+    },
+    {
+      "name": "BankRock4",
+      "shape": "sphere",
+      "pos": [
+        44,
+        36,
+        0.8
+      ],
+      "size": [
+        4,
+        3,
+        2
+      ],
+      "material": "rock"
+    },
+    {
+      "name": "BankRock5",
+      "shape": "sphere",
+      "pos": [
+        61,
+        35,
+        0.8
+      ],
+      "size": [
+        4,
+        3,
+        2
+      ],
+      "material": "rock"
+    },
+    {
+      "name": "BankRock6",
+      "shape": "sphere",
+      "pos": [
+        78,
+        36,
+        0.8
+      ],
+      "size": [
+        4,
+        3,
+        2
+      ],
+      "material": "rock"
+    },
+    {
+      "name": "BankRock7",
+      "shape": "sphere",
+      "pos": [
+        103,
+        -11,
+        0.8
+      ],
+      "size": [
+        4,
+        3,
+        2
+      ],
+      "material": "rock"
+    },
+    {
+      "name": "NanBody",
+      "shape": "cone",
+      "pos": [
+        2,
+        7,
+        0.85
+      ],
+      "size": [
+        0.65,
+        0.5,
+        1.15
+      ],
+      "material": "cloth",
+      "tags": [],
+      "collide": false
+    },
+    {
+      "name": "NanHead",
+      "shape": "sphere",
+      "pos": [
+        2,
+        7,
+        1.65
+      ],
+      "size": [
+        0.38,
+        0.38,
+        0.42
+      ],
+      "material": "skin",
+      "tags": [],
+      "collide": false
+    },
+    {
+      "name": "NanHat",
+      "shape": "cone",
+      "pos": [
+        2,
+        7,
+        1.95
+      ],
+      "size": [
+        0.9,
+        0.9,
+        0.3
+      ],
+      "material": "thatch",
+      "tags": [],
+      "collide": false
+    },
+    {
+      "name": "NanLeg-1",
+      "shape": "cylinder",
+      "pos": [
+        2,
+        6.84,
+        0.28
+      ],
+      "size": [
+        0.13,
+        0.13,
+        0.56
+      ],
+      "material": "cloth",
+      "tags": [],
+      "collide": false
+    },
+    {
+      "name": "NanArm-1",
+      "shape": "cylinder",
+      "pos": [
+        2,
+        6.57,
+        1.05
+      ],
+      "size": [
+        0.12,
+        0.12,
+        0.7
+      ],
+      "material": "skin",
+      "tags": [],
+      "collide": false,
+      "roll": -18
+    },
+    {
+      "name": "NanLeg1",
+      "shape": "cylinder",
+      "pos": [
+        2,
+        7.16,
+        0.28
+      ],
+      "size": [
+        0.13,
+        0.13,
+        0.56
+      ],
+      "material": "cloth",
+      "tags": [],
+      "collide": false
+    },
+    {
+      "name": "NanArm1",
+      "shape": "cylinder",
+      "pos": [
+        2,
+        7.43,
+        1.05
+      ],
+      "size": [
+        0.12,
+        0.12,
+        0.7
+      ],
+      "material": "skin",
+      "tags": [],
+      "collide": false,
+      "roll": 18
+    },
+    {
+      "name": "CarrierBody",
+      "shape": "cone",
+      "pos": [
+        99,
+        4,
+        0.85
+      ],
+      "size": [
+        0.65,
+        0.5,
+        1.15
+      ],
+      "material": "cloth",
+      "tags": [
+        "FerrySampleTrappedVisual"
+      ],
+      "collide": false
+    },
+    {
+      "name": "CarrierHead",
+      "shape": "sphere",
+      "pos": [
+        99,
+        4,
+        1.65
+      ],
+      "size": [
+        0.38,
+        0.38,
+        0.42
+      ],
+      "material": "skin",
+      "tags": [
+        "FerrySampleTrappedVisual"
+      ],
+      "collide": false
+    },
+    {
+      "name": "CarrierHat",
+      "shape": "cone",
+      "pos": [
+        99,
+        4,
+        1.95
+      ],
+      "size": [
+        0.9,
+        0.9,
+        0.3
+      ],
+      "material": "thatch",
+      "tags": [
+        "FerrySampleTrappedVisual"
+      ],
+      "collide": false
+    },
+    {
+      "name": "CarrierLeg-1",
+      "shape": "cylinder",
+      "pos": [
+        99,
+        3.84,
+        0.28
+      ],
+      "size": [
+        0.13,
+        0.13,
+        0.56
+      ],
+      "material": "cloth",
+      "tags": [
+        "FerrySampleTrappedVisual"
+      ],
+      "collide": false
+    },
+    {
+      "name": "CarrierArm-1",
+      "shape": "cylinder",
+      "pos": [
+        99,
+        3.57,
+        1.05
+      ],
+      "size": [
+        0.12,
+        0.12,
+        0.7
+      ],
+      "material": "skin",
+      "tags": [
+        "FerrySampleTrappedVisual"
+      ],
+      "collide": false,
+      "roll": -18
+    },
+    {
+      "name": "CarrierLeg1",
+      "shape": "cylinder",
+      "pos": [
+        99,
+        4.16,
+        0.28
+      ],
+      "size": [
+        0.13,
+        0.13,
+        0.56
+      ],
+      "material": "cloth",
+      "tags": [
+        "FerrySampleTrappedVisual"
+      ],
+      "collide": false
+    },
+    {
+      "name": "CarrierArm1",
+      "shape": "cylinder",
+      "pos": [
+        99,
+        4.43,
+        1.05
+      ],
+      "size": [
+        0.12,
+        0.12,
+        0.7
+      ],
+      "material": "skin",
+      "tags": [
+        "FerrySampleTrappedVisual"
+      ],
+      "collide": false,
+      "roll": 18
+    },
+    {
+      "name": "FallenPlank0",
+      "shape": "cube",
+      "pos": [
+        99.0,
+        3.6,
+        0.9
+      ],
+      "size": [
+        3,
+        0.25,
+        0.2
+      ],
+      "material": "wood",
+      "yaw": 25,
+      "tags": [
+        "FerrySampleHelpObstacle"
+      ]
+    },
+    {
+      "name": "FallenPlank1",
+      "shape": "cube",
+      "pos": [
+        99.4,
+        3.6,
+        1.1
+      ],
+      "size": [
+        3,
+        0.25,
+        0.2
+      ],
+      "material": "wood",
+      "yaw": 42,
+      "tags": [
+        "FerrySampleHelpObstacle"
+      ]
+    },
+    {
+      "name": "FallenPlank2",
+      "shape": "cube",
+      "pos": [
+        99.8,
+        3.6,
+        1.3
+      ],
+      "size": [
+        3,
+        0.25,
+        0.2
+      ],
+      "material": "wood",
+      "yaw": 59,
+      "tags": [
+        "FerrySampleHelpObstacle"
+      ]
+    },
+    {
+      "name": "FreedCarriercone",
+      "shape": "cone",
+      "pos": [
+        97,
+        -4,
+        0.85
+      ],
+      "size": [
+        0.65,
+        0.5,
+        1.15
+      ],
+      "material": "cloth",
+      "tags": [
+        "FerrySampleHelpedVisual"
+      ],
+      "collide": false
+    },
+    {
+      "name": "FreedCarriersphere",
+      "shape": "sphere",
+      "pos": [
+        97,
+        -4,
+        1.65
+      ],
+      "size": [
+        0.38,
+        0.38,
+        0.42
+      ],
+      "material": "skin",
+      "tags": [
+        "FerrySampleHelpedVisual"
+      ],
+      "collide": false
+    },
+    {
+      "name": "FreedCarriercone2",
+      "shape": "cone",
+      "pos": [
+        97,
+        -4,
+        1.95
+      ],
+      "size": [
+        0.9,
+        0.9,
+        0.3
+      ],
+      "material": "thatch",
+      "tags": [
+        "FerrySampleHelpedVisual"
+      ],
+      "collide": false
+    }
+  ],
+  "points": [
+    {
+      "name": "SampleRoot",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "tags": [
+        "FerrySampleRoot"
+      ]
+    },
+    {
+      "name": "NanTalk",
+      "pos": [
+        2,
+        5,
+        1
+      ],
+      "tags": [
+        "FerrySampleInteract",
+        "nan"
+      ]
+    },
+    {
+      "name": "HelpCarrier",
+      "pos": [
+        97,
+        3,
+        1
+      ],
+      "tags": [
+        "FerrySampleInteract",
+        "help"
+      ]
+    },
+    {
+      "name": "BridgeLever",
+      "pos": [
+        91,
+        -2,
+        1
+      ],
+      "tags": [
+        "FerrySampleInteract",
+        "bridge"
+      ]
+    },
+    {
+      "name": "Lookout",
+      "pos": [
+        30,
+        0,
+        1
+      ],
+      "tags": [
+        "FerrySampleLookout"
+      ]
+    },
+    {
+      "name": "Return",
+      "pos": [
+        0,
+        4,
+        1
+      ],
+      "tags": [
+        "FerrySampleReturn"
+      ]
+    },
+    {
+      "name": "StartCheckpoint",
+      "pos": [
+        0,
+        0,
+        1
+      ],
+      "tags": [
+        "FerrySampleCheckpoint",
+        "start",
+        "FerryCheckpoint"
+      ]
+    },
+    {
+      "name": "HelpCheckpoint",
+      "pos": [
+        96,
+        0,
+        1
+      ],
+      "tags": [
+        "FerrySampleCheckpoint",
+        "help",
+        "FerryCheckpoint"
+      ]
+    },
+    {
+      "name": "BridgeCheckpoint",
+      "pos": [
+        91,
+        -3,
+        1
+      ],
+      "tags": [
+        "FerrySampleCheckpoint",
+        "bridge",
+        "FerryCheckpoint"
+      ]
+    },
+    {
+      "name": "NestEnemy",
+      "pos": [
+        61,
+        27,
+        1
+      ],
+      "tags": [
+        "FerrySpawn",
+        "en_cua_cang_bun",
+        "z_dam_nong"
+      ]
+    }
+  ],
+  "labels": [
+    {
+      "key": "start_label",
+      "pos": [
+        -2,
+        5,
+        3
+      ]
+    },
+    {
+      "key": "lookout_label",
+      "pos": [
+        30,
+        -5,
+        3
+      ]
+    },
+    {
+      "key": "upper_label",
+      "pos": [
+        43,
+        -25,
+        2.5
+      ]
+    },
+    {
+      "key": "lower_label",
+      "pos": [
+        43,
+        26,
+        2.5
+      ]
+    },
+    {
+      "key": "help_label",
+      "pos": [
+        98,
+        3,
+        3
+      ]
+    },
+    {
+      "key": "bridge_label",
+      "pos": [
+        91,
+        -2,
+        3
+      ]
+    }
+  ]
+}

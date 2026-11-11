@@ -9,6 +9,7 @@
 #include "FerryGameMode.generated.h"
 
 class AFerryEnemy;
+class UFerrySampleQuestComponent;
 
 UCLASS()
 class PROJECTFERRY_API AFerryGameMode : public AGameModeBase
@@ -27,12 +28,18 @@ public:
 	void NotifyEnemyFinished(AFerryEnemy* Enemy);
 	void NotifyPlayerDied(AController* Controller);
 	bool IsPlayerDead() const { return bPlayerDead; }
+	UFerrySampleQuestComponent* GetSampleQuest() const { return SampleQuest; }
+	void SetSampleCheckpoint(AActor* Marker) { LastCheckpoint = Marker; }
+
+	UFUNCTION(Exec)
+	void FerrySampleReset();
 
 	/** Console: re-reads design/data/*.json (actors spawned afterwards use the new data). VERIFY: Exec on GameMode. */
 	UFUNCTION(Exec)
 	void FerryReloadData();
 
 private:
+	UPROPERTY(VisibleAnywhere) TObjectPtr<UFerrySampleQuestComponent> SampleQuest;
 	void SpawnEnemiesFromMarkers();
 	void RespawnPlayer(TWeakObjectPtr<AController> Controller);
 	void ApplyWorldFlagsToPlayer();

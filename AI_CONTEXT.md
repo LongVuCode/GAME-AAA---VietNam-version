@@ -161,3 +161,7 @@ POlog:graybox337actors/0dataproblems,design dataOK,PIEinput/giáo/8enemies/boss 
 ### Runtime log sau sửa checkpoint — 2026-11-11
 
 Logmới chứa cảlượtcũ08:27UTC vàlượtmới08:47UTC: checkpointmới chỉTargetPoint, khônglặpxenkẽ; chếtvàrespawnđãghi nhận. Màuvẫnwarning trênM_GB_Color, **chưađạt**. Chuẩnbị update_material_instance sau reparent/setter vàđọclạiRGBA, diagnosticparamnames; chờrerunPythonEditor(khôngC++build). EOSconnectionwarningschưachặn gameoffline.
+
+## Mẫu bố cục/tương tác Bến Sậy0.5 — source triển khai 2026-11-11
+
+PO đồngý chuyểntrọngtâm sangmẫu thayvì tiếp tụcchỉnhmàugraybox. Đãcó levelbuilder riêng `game/Content/Python/build_sample_bensay_0_5.py`, data `design/data/ue_sample_0_5.json`, map `/Game/Maps/L_BenSay_Sample05`; C++SampleQuestComponent/SaveGame vàHUD/E-Fhooks chỉbậtởsample. Flow Năn→gònhìn→2nhánh→giúpngười→hạcầu→vềNăn, save riêng FerrySample05_v1. Xem `docs/production/SAMPLE05_FIRST_PLAYABLE.md`. **Chưa build/runtimeUE, chưa đạtP4/15–20phút hay art final; player/quái cònplaceholder**, NPCproxies chưaassetproduction.106Python tests/portableC++progress/dryrun đạt, reviewtĩnh đạt. Lần này cầnC++build rồichạyfilePythonMỚI, khôngyêucầulặplạifilegrayboxcũ. P1cook/package vàassetproduction vẫnchưađạt.

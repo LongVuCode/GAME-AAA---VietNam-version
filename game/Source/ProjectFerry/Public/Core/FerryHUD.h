@@ -23,6 +23,7 @@ public:
 private:
 	void DrawBar(float X, float Y, float W, float H, float Ratio, const FLinearColor& Fill);
 	void DrawLabel(const FText& Text, float X, float Y, const FLinearColor& Color, bool bLarge = false, bool bCentered = false);
+	void DrawWrappedLabel(const FText& Text, float CenterX, float Y);
 	void DrawPlayerPanel(const AFerryCharacter& Player, const UFerryDataSubsystem& Strings);
 	void DrawTargetPanel(const AFerryEnemy& Target);
 	void DrawPry(const AFerryCharacter& Player, const UFerryDataSubsystem& Strings);

@@ -1,5 +1,7 @@
 // FerryHUD.cpp - NOT YET BUILT IN UNREAL ENGINE ("chưa build trong UE").
 #include "Core/FerryHUD.h"
+#include "Core/FerryGameMode.h"
+#include "Sample/FerrySampleQuestComponent.h"
 
 #include "Combat/FerryCombatComponent.h"
 #include "Combat/FerryKhoenComponent.h"
@@ -45,6 +47,31 @@ void AFerryHUD::DrawLabel(const FText& Text, float X, float Y, const FLinearColo
 	DrawText(String, Color, bCentered ? X - W * 0.5f : X, Y, Font, UiScale);
 }
 
+void AFerryHUD::DrawWrappedLabel(const FText& Text, float CenterX, float Y)
+{
+	if (Text.IsEmpty()) return;
+	TArray<FString> Words;
+	Text.ToString().ParseIntoArrayWS(Words);
+	TArray<FString> Lines;
+	FString Line;
+	const float MaxWidth = Canvas->ClipX * 0.8f;
+	float Width = 0.0f, Height = 0.0f;
+	GetTextSize(TEXT("Ag"), Width, Height, SmallFont(), UiScale);
+	const float LineHeight = FMath::Max(Height, 14.0f * UiScale) + 5.0f * UiScale;
+	for (const FString& Word : Words)
+	{
+		const FString Candidate = Line.IsEmpty() ? Word : Line + TEXT(" ") + Word;
+		GetTextSize(Candidate, Width, Height, SmallFont(), UiScale);
+		if (Width > MaxWidth && !Line.IsEmpty()) { Lines.Add(Line); Line = Word; }
+		else Line = Candidate;
+	}
+	if (!Line.IsEmpty()) Lines.Add(Line);
+	DrawRect(FLinearColor(0.015f, 0.02f, 0.025f, 0.8f), CenterX - MaxWidth * 0.5f - 8.0f,
+		Y - 4.0f, MaxWidth + 16.0f, Lines.Num() * LineHeight + 8.0f);
+	for (int32 Index = 0; Index < Lines.Num(); ++Index)
+		DrawLabel(FText::FromString(Lines[Index]), CenterX, Y + Index * LineHeight, TextColor, false, true);
+}
+
 void AFerryHUD::DrawHUD()
 {
 	Super::DrawHUD();
@@ -60,6 +87,16 @@ void AFerryHUD::DrawHUD()
 		return;
 	}
 	DrawPlayerPanel(*Player, *Strings);
+	if (const AFerryGameMode* Mode = GetWorld()->GetAuthGameMode<AFerryGameMode>())
+	{
+		const UFerrySampleQuestComponent* Quest = Mode->GetSampleQuest();
+		if (Quest && Quest->IsActive())
+		{
+			DrawWrappedLabel(Quest->GetObjective(), Canvas->ClipX * 0.5f, Canvas->ClipY * 0.07f);
+			DrawLabel(Quest->GetHint(Player), Canvas->ClipX * 0.5f, Canvas->ClipY * 0.82f, TextColor, false, true);
+			DrawWrappedLabel(Quest->GetSubtitle(), Canvas->ClipX * 0.5f, Canvas->ClipY * 0.18f);
+		}
+	}
 
 	if (const AFerryEnemy* Boss = FindEngagedBoss(*Player))
 	{

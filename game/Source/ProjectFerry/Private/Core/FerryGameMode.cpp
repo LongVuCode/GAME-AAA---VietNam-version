@@ -1,5 +1,6 @@
 // FerryGameMode.cpp - NOT YET BUILT IN UNREAL ENGINE ("chưa build trong UE").
 #include "Core/FerryGameMode.h"
+#include "Sample/FerrySampleQuestComponent.h"
 
 #include "Combat/FerryCombatComponent.h"
 #include "Combat/FerryKhoenComponent.h"
@@ -24,6 +25,7 @@ constexpr float RespawnDelaySeconds = 3.0f;
 
 AFerryGameMode::AFerryGameMode()
 {
+	SampleQuest = CreateDefaultSubobject<UFerrySampleQuestComponent>(TEXT("SampleQuest"));
 	DefaultPawnClass = AFerryCharacter::StaticClass();
 	HUDClass = AFerryHUD::StaticClass();
 	PrimaryActorTick.bCanEverTick = true;
@@ -88,6 +90,8 @@ void AFerryGameMode::SpawnEnemiesFromMarkers()
 void AFerryGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	// Sample progress owns checkpoints; proximity must not overwrite a saved milestone.
+	if (SampleQuest && SampleQuest->IsActive()) return;
 	CheckpointScanTimer -= DeltaSeconds;
 	if (CheckpointScanTimer > 0.0f || bPlayerDead)
 	{
@@ -214,6 +218,7 @@ void AFerryGameMode::RespawnPlayer(TWeakObjectPtr<AController> Controller)
 		RestartPlayer(Controller.Get());
 	}
 	ApplyWorldFlagsToPlayer();
+	if (SampleQuest) SampleQuest->OnPlayerSpawned(Controller->GetPawn());
 	SpawnEnemiesFromMarkers();
 }
 
@@ -224,4 +229,9 @@ void AFerryGameMode::FerryReloadData()
 		const bool bOk = DataSubsystem->Reload();
 		UE_LOG(LogFerry, Log, TEXT("FerryReloadData: %s"), bOk ? TEXT("ok") : TEXT("FAILED (previous data kept)"));
 	}
+}
+
+void AFerryGameMode::FerrySampleReset()
+{
+	if (SampleQuest) SampleQuest->ResetSample();
 }

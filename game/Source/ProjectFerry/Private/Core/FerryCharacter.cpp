@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Core/FerryGameMode.h"
+#include "Sample/FerrySampleQuestComponent.h"
 #include "Enemy/FerryEnemy.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/StaticMesh.h"
@@ -296,6 +297,11 @@ void AFerryCharacter::OnDrum()
 
 void AFerryCharacter::OnPry()
 {
+	if (const AFerryGameMode* Mode = GetWorld()->GetAuthGameMode<AFerryGameMode>())
+	{
+		// Route the existing E binding at event time, avoiding BeginPlay/possession ordering races.
+		if (Mode->GetSampleQuest() && Mode->GetSampleQuest()->IsActive()) { OnInteract(); return; }
+	}
 	if (AFerryEnemy* Boss = PryTarget.Get())
 	{
 		if (Boss->GetKhoen()->IsPrying())
@@ -328,6 +334,11 @@ void AFerryCharacter::OnPry()
 
 void AFerryCharacter::OnInteract()
 {
+	if (Combat && Combat->IsDead()) return;
+	if (AFerryGameMode* Mode = GetWorld()->GetAuthGameMode<AFerryGameMode>())
+	{
+		if (Mode->GetSampleQuest() && Mode->GetSampleQuest()->Interact(this)) return;
+	}
 	const UWorld* World = GetWorld();
 	AActor* Best = nullptr;
 	FName BestTag;

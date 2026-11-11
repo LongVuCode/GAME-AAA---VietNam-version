@@ -475,7 +475,7 @@ def dry_run():
     return problems
 
 
-if unreal is not None:
+if unreal is not None and not globals().get("_FERRY_IMPORT_ONLY", False):
     # Inside the editor the file is executed by "Execute Python Script" / "py <file>"; build directly
     # (VERIFY: __name__ is not guaranteed to be "__main__" on every execution path).
     GrayboxBuilder().run()
