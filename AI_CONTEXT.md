@@ -149,3 +149,7 @@ PO cung cấp `D:\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe`; dùng EngineRo
 ### Rebuild Windows thứ hai 2026-11-11
 
 Commitde1dc3e: RealDt compileerror đãhết, tớiDLLlink còn5LNK2019 FArpgConfig FindWeapon/FindMoveset/FindDifficulty/FindEnemy/FindBoss. Đã thêmARPGCORE_API từngmethod trongConfig.h; địnhnghĩađãcó trongConfig.cpp. ChờrebuildUE5.8.4 để xácnhậnlink, chưaEditorrun/cook/package. Khôngyêucầucài lạiUE/VS.
+
+### Editor build UE đạt — 2026-11-11
+
+PO logcommit24d40a9: UE5.8.4, ProjectFerryEditor Win64Development **Succeeded exit0**. ArpgCore/ProjectFerry/ProjectFerryEditor DLL đãlink; RealDt và5lookupLNK đãhết. **Không yêu cầu build lại chỉ vì cập nhật docs.** Tiếp: mở existinguproject bằng D:\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe, kiểm logdata, chạy scriptgrayboxtrongEditor rồiPIE. Mapgrayboxold chỉđểtestnền, chưaUE0.5/art/fullwebport. Runtime/Gamecook/package chưađạt, associationvẫn5.7, compilerwarningpreferredversionkhôngblock.

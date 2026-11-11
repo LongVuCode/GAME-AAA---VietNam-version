@@ -16,3 +16,7 @@ Ngày: 2026-11-10. Trạng thái: **chưa xác minh trên UE**. Nguồn hiện t
 | GLB/texture web | Có asset + license | Import/format/material/scale/collision và LOD trong UE; chưa chứng minh trực tiếp | tech-art-perf |
 
 Thứ tự: preflight → Editor compile → Editor run/map/input → Game build/cook/package → chạy package → đo baseline. Không dùng “preflight passed” hoặc “CMake passed” làm bằng chứng UE ready. Nếu lỗi, dùng log lỗi đầu thật để sửa; không tự hạ phiên bản hoặc sửa project hàng loạt.
+
+## Bằng chứng cập nhật 2026-11-11
+
+PO buildcommit24d40a9 bằngUE5.8.4/VS18.11.12328.437: ProjectFerryEditor Win64Development compile/link đạt, exit0. Các module ArpgCore/ProjectFerry/ProjectFerryEditor đãlink. Ma trận runtime/plugin API tạo map/Game cook-package vẫnchưa xácminh; đây không phải blanketpinUE5.8.4. EngineAssociationchưađổi.
