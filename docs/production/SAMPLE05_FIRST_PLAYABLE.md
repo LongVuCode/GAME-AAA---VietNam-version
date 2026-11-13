@@ -1,6 +1,6 @@
 # Mẫu Bến Sậy 0.5 — lượt triển khai bố cục/tương tác đầu tiên
 
-Trạng thái: **đã triển khai source, chưa build/run UE trên Windows**. Đây chưa phải gate P4 hoàn tất, chưa xác nhận thời lượng15–20phút, chưa model Cói/Dế hoàn thiện. Mục tiêu lượt này là thay đổi có thể chơi: tuyến mới, mục tiêu, giúp người, hậu quả và lối tắt, thay vì chỉ sửa màu map cũ.
+Trạng thái: **Editor target đã compile/link trên Windows; chưa xác minh tạo level và runtime của mẫu**. Đây chưa phải gate P4 hoàn tất, chưa xác nhận thời lượng15–20phút, chưa model Cói/Dế hoàn thiện. Mục tiêu lượt này là thay đổi có thể chơi: tuyến mới, mục tiêu, giúp người, hậu quả và lối tắt, thay vì chỉ sửa màu map cũ.
 
 ## Có gì mới
 
@@ -73,3 +73,7 @@ Gửi ảnh/video đường bạn đi và `game\Saved\Logs\ProjectFerry.log`. N�
 - Scene hiện133mesh/10marker; dryrun và2testdata/localization/connectivity đạt; testportable progression vẫnđạt. Không chạy lạifullsmokeweb khôngbịảnhhưởng. Các kếtquả này không chứngminh C++/pause/HUD đã chạy trongUE.
 
 Kiểm thêm: mởJ khi gầnquái rồiđóngJ, xácnhậnworlddừng/tiếptụcđúng; textkhôngtrànmàn; mapgrayboxcũ khôngbịJpause; đọcnhật ký khôngthaytiếntrình; sauchết/load đọcđúngmốc. Nếu C++buildfail gửi logtrước, khôngcầntựđoán hoặc cài lạitoolchain.
+
+## Bằng chứng build 2026-11-13
+
+PO gửi result.json/build.log của commit `e09f79a23eae8568b18a74662ed85b10ffdb4447`: UE5.8.4, VS18.11.12328.437, ProjectFerryEditor Win64Development **Succeeded/exit0**,67.42giây tronglog. Điều này xácminh C++/UHT/link của mẫu+nhật ký; chưachứngminh Pythonbuilder/chơi/save/Jpause/Gamepackage. Bước tiếp chạyfilebuilderMỚI trongEditor, khôngbuildlại chỉvìdocs.

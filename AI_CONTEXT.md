@@ -169,3 +169,7 @@ PO đồngý chuyểntrọngtâm sangmẫu thayvì tiếp tụcchỉnhmàugraybo
 ### Tiếp tục usability mẫu0.5 — 2026-11-13
 
 Đãbổsung sourceJnhật kýđọclạichỉdẫntheo6milestone, yêu cầupausethếgiới khiđọc vàJđóng(khôngnhảpausecủahệkhác); HUDwrap/nềntối, textvi/enJSON. ThêmnhãnNăn/cọckéo/taykéo/dây tạiđiểmtươngtáccầu. Scene133mesh/10marker;2testdata vàprogressportable đạt. Chưa nhậnWindowsbuild/runtime từc63dc19; khôngclaimUEcompile hay15–20phút/artfinal. Xem PM_STATUS_2026_11_13.md và SAMPLE05_FIRST_PLAYABLE.md; ưu tiênbuildmộtlượt rồichạybuildermới.
+
+### Mẫu0.5 +nhật ký đã compile — 2026-11-13
+
+POloge09f79a:ProjectFerryEditor Win64Development UE5.8.4 **Succeeded exit0**. Khônghỏilạibuildlog/càitool. Tiếp: mởUE5.8 explicitexistingproject; chạy `build_sample_bensay_0_5.py` (MỚI), kiểmmapL_BenSay_Sample05, E/Fflow vàJpause/save. Chưacóruntimelogmẫumới; khôngclaimmẫuđạtP4 hayartfinal.
