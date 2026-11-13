@@ -77,3 +77,9 @@ Kiểm thêm: mởJ khi gầnquái rồiđóngJ, xácnhậnworlddừng/tiếpt�
 ## Bằng chứng build 2026-11-13
 
 PO gửi result.json/build.log của commit `e09f79a23eae8568b18a74662ed85b10ffdb4447`: UE5.8.4, VS18.11.12328.437, ProjectFerryEditor Win64Development **Succeeded/exit0**,67.42giây tronglog. Điều này xácminh C++/UHT/link của mẫu+nhật ký; chưachứngminh Pythonbuilder/chơi/save/Jpause/Gamepackage. Bước tiếp chạyfilebuilderMỚI trongEditor, khôngbuildlại chỉvìdocs.
+
+## Kiểm chứng runtime đầu tiên 2026-11-13
+
+PO đã tạo level133mesh/10marker và đi đủ6stage. Một lượt từ0→5 mất~95,5giây, nên **chưa đạt mẫu15–20phút**. J đã ghi mởvớiownpause; Stop/Play lại khôi phụcstage5. Chưa testsave quaEditorrestart hoặc toàn bộ pause/deathcases. Ảnh vẫn cóplayer hìnhtrụ: mẫu art chưađạt.
+
+BảnPython sửa kếtiếp dùngSun/SkyLightMovable vàtắtprecomputedlighting tronglevelmới (khôngtắtmessagecảnhbáo); chữ3DchỉgiữởEditor vì font/layout khôngđọcđược tronggame, HUD/Jvẫnvi/en. DừngPlay,pull,chạy lại `build_sample_bensay_0_5.py`; khôngC++buildlại. Cảnh/lighting sau sửa vẫncầnảnhUE đểxácnhận.

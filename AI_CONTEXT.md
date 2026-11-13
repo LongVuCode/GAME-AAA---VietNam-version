@@ -173,3 +173,7 @@ PO đồngý chuyểntrọngtâm sangmẫu thayvì tiếp tụcchỉnhmàugraybo
 ### Mẫu0.5 +nhật ký đã compile — 2026-11-13
 
 POloge09f79a:ProjectFerryEditor Win64Development UE5.8.4 **Succeeded exit0**. Khônghỏilạibuildlog/càitool. Tiếp: mởUE5.8 explicitexistingproject; chạy `build_sample_bensay_0_5.py` (MỚI), kiểmmapL_BenSay_Sample05, E/Fflow vàJpause/save. Chưacóruntimelogmẫumới; khôngclaimmẫuđạtP4 hayartfinal.
+
+### Bằng chứng runtime mẫu0.5 — 2026-11-13
+
+POlog+ảnh:level133mesh/10markers,stage0→5đạt trong~95,5giây(mộtfallreset). **Chưa15–20phút, chưaP4/artđạt**. Jopenedownpause1,PIEreloadgiữstage5; chưaconfirmJclose/processrestartsave. SửaPythonlightingMovableSun/Sky+force_no_precomputed_lighting vàẩn3Dlabeltronggame(vẫnHUD/J). Deltanày chỉcầnrerunbuilder, khôngC++build. Ưutiênnội dung/thửthách cónghĩa vàmodelCói/quái thật, khôngtănggiờbằngfiller. XemPM_STATUS_2026_11_13.md.

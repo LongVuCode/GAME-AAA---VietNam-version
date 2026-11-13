@@ -110,15 +110,22 @@ def build(scene):
                     unreal.Vector(*(v * 100 for v in item['pos'])), unreal.Rotator(yaw=180))
         actor.text_render.set_text(unreal.Text(scene['strings'][item['key']]['vi']))
         actor.text_render.set_world_size(38)
+        # Editor blockout labels use the engine's limited 3D font and are not gameplay UI.
+        # Localized, camera-readable names and guidance are supplied by the HUD/journal.
+        actor.set_actor_hidden_in_game(not scene['settings'].get('show_world_labels', False))
         finish(actor, item['key'], 'Signs', [])
     for cls, name, position in [(unreal.DirectionalLight, 'SampleSun', (40, 0, 30)),
                                (unreal.SkyLight, 'SampleSkyLight', (0, 0, 15)),
                                (unreal.SkyAtmosphere, 'SampleSky', (0, 0, 0))]:
         actor = actors.spawn_actor_from_class(cls, unreal.Vector(*(v * 100 for v in position)))
+        if cls in (unreal.DirectionalLight, unreal.SkyLight):
+            actor.get_component_by_class(unreal.LightComponentBase).set_mobility(unreal.ComponentMobility.MOVABLE)
         if cls == unreal.DirectionalLight:
             actor.set_actor_rotation(unreal.Rotator(pitch=-40, yaw=-25), False)
         finish(actor, name, 'Lighting', [])
     world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    # This generated Lumen sample uses dynamic lights, not unbuilt static lightmaps.
+    world.get_world_settings().set_editor_property('force_no_precomputed_lighting', True)
     world.get_world_settings().set_editor_property('default_game_mode',
                        unreal.load_class(None, '/Script/ProjectFerry.FerryGameMode'))
     if not levels.save_current_level():

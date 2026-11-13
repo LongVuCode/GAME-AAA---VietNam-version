@@ -8,7 +8,8 @@
     "lookout_radius_cm": 600,
     "subtitle_duration_s": 9,
     "save_slot": "FerrySample05_v1",
-    "fall_reset_z_cm": -400
+    "fall_reset_z_cm": -400,
+    "show_world_labels": false
   },
   "strings": {
     "objective_start": {
