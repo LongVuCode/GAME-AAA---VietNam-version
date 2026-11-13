@@ -98,6 +98,42 @@
     "controls": {
       "vi": "WASD đi • Chuột nhìn • E/F tương tác • Space né • Chuột trái/phải đánh • Q đỡ • Tab khóa",
       "en": "WASD move • Mouse look • E/F interact • Space dodge • LMB/RMB attack • Q parry • Tab lock"
+    },
+    "journal_toggle_hint": {
+      "vi": "J — Nhật ký / đọc lại chỉ dẫn",
+      "en": "J — Journal / reread guidance"
+    },
+    "journal_title": {
+      "vi": "NHẬT KÝ CỦA CÓI — J để đóng",
+      "en": "CÓI’S JOURNAL — J to close"
+    },
+    "journal_start": {
+      "vi": "Cói đang tìm Nghệ. Trước tiên hãy hỏi Năn cạnh mái nghỉ ở Bến Sậy. Tới gần người đội nón ở bến, khi hiện lời nhắc thì bấm E hoặc F.",
+      "en": "Cói is looking for Nghệ. First ask Năn beside the shelter at Sậy Landing. Approach the person wearing a hat and press E or F when prompted."
+    },
+    "journal_route": {
+      "vi": "Năn nói Nghệ đã đi về phía cây sung chẻ ba. Rời bến theo dải đất tới cây có ba thân. Chưa cần tìm vật phẩm hay đánh hết quái để tiếp tục.",
+      "en": "Năn said Nghệ went toward the three-trunk fig. Follow the strip of land from the landing to that tree. You do not need to collect items or defeat every enemy."
+    },
+    "journal_help": {
+      "vi": "Từ gò cây sung có hai đường vòng qua mặt nước: bờ cao để quan sát hoặc đường thấp có ổ quái. Chỉ cần chọn một đường, không đi thẳng xuống nước. Tìm người gánh lau bị ván đổ giữ ở bờ đê phía bên kia; tới gần và bấm E hoặc F để giúp.",
+      "en": "From the fig lookout, two paths circle the water: the upper bank for observation or the lower path near a creature nest. Choose either; do not cross the water directly. Find the carrier trapped by fallen planks on the far bank and press E or F to help."
+    },
+    "journal_bridge": {
+      "vi": "Người gánh lau đã an toàn. Tới cọc kéo cạnh cầu ván đang dựng đứng ở mép bờ đê, bấm E hoặc F để hạ cầu. Việc này mở một lối đi thật về bến; không cần nhặt thêm chìa khóa.",
+      "en": "The carrier is safe. Approach the pulling post beside the upright plank bridge and press E or F to lower it. This opens a physical route home; no additional key is needed."
+    },
+    "journal_return": {
+      "vi": "Cầu đã mở. Qua cầu tới gò cây sung, đi tiếp về bến ban đầu rồi nói chuyện với Năn bằng E hoặc F. Bạn có thể trở lại bằng đường cũ nếu muốn; tiến trình không bị mất.",
+      "en": "The bridge is open. Cross to the fig lookout, continue to the starting landing, and talk to Năn with E or F. You may also take an old route; progress is retained."
+    },
+    "journal_complete": {
+      "vi": "Bạn đã giúp người, mở lối tắt và trở về Năn. Đây là điểm kết của lượt mẫu bố cục/tương tác đầu tiên; phần tiếp theo của vùng chưa có trong bản này. Có thể đi xem đường còn lại.",
+      "en": "You helped the carrier, opened the shortcut and returned to Năn. This is the end of the first layout/interaction sample; the rest of the region is not included yet. You can explore the other route."
+    },
+    "nan_label": {
+      "vi": "Năn — E/F nói chuyện",
+      "en": "Năn — E/F to talk"
     }
   },
   "palette": {
@@ -160,6 +196,11 @@
       0.035,
       0.075,
       0.16
+    ],
+    "rope": [
+      0.55,
+      0.39,
+      0.12
     ]
   },
   "spawn": {
@@ -2260,6 +2301,57 @@
         "FerrySampleHelpedVisual"
       ],
       "collide": false
+    },
+    {
+      "name": "BridgePullPost",
+      "shape": "cylinder",
+      "pos": [
+        91,
+        -2,
+        0.7
+      ],
+      "size": [
+        0.24,
+        0.24,
+        1.4
+      ],
+      "material": "wood",
+      "collide": false
+    },
+    {
+      "name": "BridgePullHandle",
+      "shape": "cylinder",
+      "pos": [
+        91,
+        -2,
+        1.25
+      ],
+      "size": [
+        0.12,
+        0.12,
+        0.9
+      ],
+      "material": "rope",
+      "pitch": 65,
+      "collide": false
+    },
+    {
+      "name": "BridgePullRope",
+      "shape": "cylinder",
+      "pos": [
+        89.7,
+        -1,
+        1.4
+      ],
+      "size": [
+        0.04,
+        0.04,
+        3.2
+      ],
+      "material": "rope",
+      "pitch": 55,
+      "yaw": -40,
+      "collide": false
     }
   ],
   "points": [
@@ -2432,6 +2524,14 @@
         91,
         -2,
         3
+      ]
+    },
+    {
+      "key": "nan_label",
+      "pos": [
+        2,
+        5,
+        2.5
       ]
     }
   ]

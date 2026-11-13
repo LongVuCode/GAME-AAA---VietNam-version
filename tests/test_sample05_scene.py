@@ -22,6 +22,7 @@ class SampleScene(unittest.TestCase):
         self.assertTrue(all('FerryCheckpoint' in p['tags'] for p in points if 'FerrySampleCheckpoint' in p['tags']))
         self.assertEqual(self.data['settings']['save_slot'], 'FerrySample05_v1')
         keys = ['objective_start', 'objective_route', 'objective_help', 'objective_bridge', 'objective_return', 'objective_complete', 'hint_nan', 'hint_help', 'hint_bridge', 'talk_nan', 'help_done', 'bridge_done', 'return_done', 'blocked_bridge', 'save_failed']
+        keys += ['journal_toggle_hint', 'journal_title', 'journal_start', 'journal_route', 'journal_help', 'journal_bridge', 'journal_return', 'journal_complete']
         for key in keys:
             self.assertTrue(self.data['strings'][key]['vi'])
             self.assertTrue(self.data['strings'][key]['en'])

@@ -79,6 +79,7 @@ protected:
 	UPROPERTY(Transient) TObjectPtr<UInputAction> DrumAction;
 	UPROPERTY(Transient) TObjectPtr<UInputAction> PryAction;
 	UPROPERTY(Transient) TObjectPtr<UInputAction> InteractAction;
+	UPROPERTY(Transient) TObjectPtr<UInputAction> JournalAction;
 
 private:
 	void BuildDefaultInputMappings();
@@ -95,6 +96,7 @@ private:
 	void OnDrum();
 	void OnPry();
 	void OnInteract();
+	void OnJournal();
 
 	void HandleActionStarted();
 	void HandleDodgeStarted(float DistanceCm, float DurationSeconds);

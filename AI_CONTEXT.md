@@ -165,3 +165,7 @@ Logmới chứa cảlượtcũ08:27UTC vàlượtmới08:47UTC: checkpointmới 
 ## Mẫu bố cục/tương tác Bến Sậy0.5 — source triển khai 2026-11-11
 
 PO đồngý chuyểntrọngtâm sangmẫu thayvì tiếp tụcchỉnhmàugraybox. Đãcó levelbuilder riêng `game/Content/Python/build_sample_bensay_0_5.py`, data `design/data/ue_sample_0_5.json`, map `/Game/Maps/L_BenSay_Sample05`; C++SampleQuestComponent/SaveGame vàHUD/E-Fhooks chỉbậtởsample. Flow Năn→gònhìn→2nhánh→giúpngười→hạcầu→vềNăn, save riêng FerrySample05_v1. Xem `docs/production/SAMPLE05_FIRST_PLAYABLE.md`. **Chưa build/runtimeUE, chưa đạtP4/15–20phút hay art final; player/quái cònplaceholder**, NPCproxies chưaassetproduction.106Python tests/portableC++progress/dryrun đạt, reviewtĩnh đạt. Lần này cầnC++build rồichạyfilePythonMỚI, khôngyêucầulặplạifilegrayboxcũ. P1cook/package vàassetproduction vẫnchưađạt.
+
+### Tiếp tục usability mẫu0.5 — 2026-11-13
+
+Đãbổsung sourceJnhật kýđọclạichỉdẫntheo6milestone, yêu cầupausethếgiới khiđọc vàJđóng(khôngnhảpausecủahệkhác); HUDwrap/nềntối, textvi/enJSON. ThêmnhãnNăn/cọckéo/taykéo/dây tạiđiểmtươngtáccầu. Scene133mesh/10marker;2testdata vàprogressportable đạt. Chưa nhậnWindowsbuild/runtime từc63dc19; khôngclaimUEcompile hay15–20phút/artfinal. Xem PM_STATUS_2026_11_13.md và SAMPLE05_FIRST_PLAYABLE.md; ưu tiênbuildmộtlượt rồichạybuildermới.

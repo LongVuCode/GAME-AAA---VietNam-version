@@ -64,3 +64,12 @@ Gửi ảnh/video đường bạn đi và `game\Saved\Logs\ProjectFerry.log`. N�
 - Testscene kiểm contractmarker/string/save slot, mapriêng và connectivity2nhánh khôngcầnbridge theofootprint2D. Không thay testcollision/navmeshUE.
 - PortableC++20 progression test đạt với `-Wall -Wextra -Werror`: thứ tựthường, cứu trước, khóa cầu, lặp tươngtác/idempotence và stagebất hợp lệ. Không thay testUSaveGame/UHT/runtime.
 - Script dry-run báo130mesh/10marker hợp lệ. Reviewtĩnh độc lập; tấtcả UE API vàcảmgiácchơi vẫn chờ log/bằngchứng máyPO.
+
+## Bổ sung dẫn đường 2026-11-13 — source chờ kiểm tra Windows
+
+- **J** mở/đóng nhật ký để đọc lại mục tiêu và chỉ dẫn theo milestone hiện tại. Thiết kế là tạm dừng thế giới khi mở để người chơi đọc không bị đánh; cần kiểm pause/input thực tế trongUE. Nhật ký không đổi stage hoặc format save.
+- Nội dung giải thích rõ hai đường vòng qua nước và không bắt làm cảhai; sau cứu chỉ cách tới cọc kéo và vềNăn.
+- Có nhãnNăn và cọc/tay kéo/dây cạnhmarker cầu, thay vì yêu cầu tìm một điểm tươngtác vôhình. Không thay modelplayer/quái bằng assetfinal.
+- Scene hiện133mesh/10marker; dryrun và2testdata/localization/connectivity đạt; testportable progression vẫnđạt. Không chạy lạifullsmokeweb khôngbịảnhhưởng. Các kếtquả này không chứngminh C++/pause/HUD đã chạy trongUE.
+
+Kiểm thêm: mởJ khi gầnquái rồiđóngJ, xácnhậnworlddừng/tiếptụcđúng; textkhôngtrànmàn; mapgrayboxcũ khôngbịJpause; đọcnhật ký khôngthaytiếntrình; sauchết/load đọcđúngmốc. Nếu C++buildfail gửi logtrước, khôngcầntựđoán hoặc cài lạitoolchain.

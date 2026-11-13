@@ -64,7 +64,9 @@ bool UFerrySampleQuestComponent::LoadConfiguration()
 	}
 	const TCHAR* Required[] = {TEXT("objective_start"), TEXT("objective_route"), TEXT("objective_help"), TEXT("objective_bridge"),
 		TEXT("objective_return"), TEXT("objective_complete"), TEXT("hint_nan"), TEXT("hint_help"), TEXT("hint_bridge"),
-		TEXT("talk_nan"), TEXT("help_done"), TEXT("bridge_done"), TEXT("return_done"), TEXT("blocked_bridge"), TEXT("save_failed")};
+		TEXT("talk_nan"), TEXT("help_done"), TEXT("bridge_done"), TEXT("return_done"), TEXT("blocked_bridge"), TEXT("save_failed"),
+		TEXT("journal_toggle_hint"), TEXT("journal_title"), TEXT("journal_start"), TEXT("journal_route"),
+		TEXT("journal_help"), TEXT("journal_bridge"), TEXT("journal_return"), TEXT("journal_complete")};
 	for (const TCHAR* Key : Required)
 	{
 		const FFerryLocText* Entry = Strings.Find(FName(Key));
@@ -219,7 +221,7 @@ void UFerrySampleQuestComponent::SetStage(int32 NewStage, const TCHAR* Key)
 bool UFerrySampleQuestComponent::Interact(APawn* Player)
 {
 	if (!bActive) return false;
-	if (bConfigurationFailed) return true;
+	if (bConfigurationFailed || bJournalOpen) return true;
 	AActor* Marker = FindNearestInteraction(Player);
 	if (!Marker) return true;
 	if (Marker->ActorHasTag(TEXT("nan")))
@@ -270,6 +272,7 @@ void UFerrySampleQuestComponent::TickComponent(float DeltaTime, ELevelTick TickT
 void UFerrySampleQuestComponent::ResetSample()
 {
 	if (!bActive || bConfigurationFailed) return;
+	CloseJournal();
 	Stage = 0;
 	bPreserveUnreadableSave = false;
 	ReconstructWorld();
@@ -278,4 +281,49 @@ void UFerrySampleQuestComponent::ResetSample()
 	SubtitleUntil = 0;
 	bRestorePending = true;
 	UE_LOG(LogFerry, Log, TEXT("sample: reset requested; save success=%d"), !bSaveFailed);
+}
+
+FText UFerrySampleQuestComponent::GetJournalToggleHint() const
+{
+	return Text(TEXT("journal_toggle_hint"));
+}
+
+FText UFerrySampleQuestComponent::GetJournalText() const
+{
+	const TCHAR* Keys[] = {TEXT("journal_start"), TEXT("journal_route"), TEXT("journal_help"),
+		TEXT("journal_bridge"), TEXT("journal_return"), TEXT("journal_complete")};
+	return FText::Format(NSLOCTEXT("ProjectFerry", "SampleJournalLayout", "{0}\n\n{1}\n\n{2}\n\n{3}"),
+		Text(TEXT("journal_title")), GetObjective(), Text(Keys[FMath::Clamp(Stage, 0, 5)]), GetJournalToggleHint());
+}
+
+void UFerrySampleQuestComponent::ToggleJournal()
+{
+	if (!bActive || bConfigurationFailed) return;
+	if (bJournalOpen) { CloseJournal(); return; }
+	// Keep an existing pause owned by another menu/system. Only release a pause we requested.
+	if (!UGameplayStatics::IsGamePaused(this))
+	{
+		bJournalOwnsPause = UGameplayStatics::SetGamePaused(this, true);
+		if (!bJournalOwnsPause)
+		{
+			UE_LOG(LogFerry, Warning, TEXT("sample: journal could not pause world; not opened"));
+			return;
+		}
+	}
+	bJournalOpen = true;
+	UE_LOG(LogFerry, Log, TEXT("sample: journal opened, owns pause=%d"), bJournalOwnsPause);
+}
+
+void UFerrySampleQuestComponent::CloseJournal()
+{
+	bJournalOpen = false;
+	if (bJournalOwnsPause && GetWorld() && UGameplayStatics::IsGamePaused(this))
+		UGameplayStatics::SetGamePaused(this, false);
+	bJournalOwnsPause = false;
+}
+
+void UFerrySampleQuestComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	CloseJournal();
+	Super::EndPlay(EndPlayReason);
 }

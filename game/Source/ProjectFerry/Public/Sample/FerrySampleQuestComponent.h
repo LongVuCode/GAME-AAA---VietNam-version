@@ -15,6 +15,7 @@ class PROJECTFERRY_API UFerrySampleQuestComponent : public UActorComponent
 public:
 	UFerrySampleQuestComponent();
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	bool IsActive() const { return bActive; }
 	/** Returns true in the sample, including when no target is close, so legacy debug interaction cannot run. */
@@ -22,6 +23,10 @@ public:
 	FText GetObjective() const;
 	FText GetHint(const APawn* Player) const;
 	FText GetSubtitle() const;
+	FText GetJournalText() const;
+	FText GetJournalToggleHint() const;
+	bool IsJournalOpen() const { return bJournalOpen; }
+	void ToggleJournal();
 	void ResetSample();
 	void OnPlayerSpawned(APawn* Player);
 
@@ -36,8 +41,11 @@ private:
 	void UpdateCheckpoint();
 	FName CheckpointId() const;
 	void ShowSubtitle(const TCHAR* Key);
+	void CloseJournal();
 
 	bool bActive = false;
+	bool bJournalOpen = false;
+	bool bJournalOwnsPause = false;
 	bool bConfigurationFailed = false;
 	bool bRestorePending = false;
 	bool bSaveFailed = false;

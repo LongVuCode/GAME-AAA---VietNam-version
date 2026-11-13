@@ -125,6 +125,8 @@ void AFerryCharacter::BuildDefaultInputMappings()
 	DrumAction = MakeAction(TEXT("IA_Drum"), EInputActionValueType::Boolean);
 	PryAction = MakeAction(TEXT("IA_Pry"), EInputActionValueType::Boolean);
 	InteractAction = MakeAction(TEXT("IA_Interact"), EInputActionValueType::Boolean);
+	JournalAction = MakeAction(TEXT("IA_Journal"), EInputActionValueType::Boolean);
+	JournalAction->bTriggerWhenPaused = true;
 
 	UInputMappingContext* Context = MappingContext;
 	// Each MapKey result is used before the next MapKey call (the mapping array may reallocate).
@@ -174,6 +176,7 @@ void AFerryCharacter::BuildDefaultInputMappings()
 	Map(PryAction, EKeys::E);
 	Map(PryAction, EKeys::Gamepad_RightTrigger);
 	Map(InteractAction, EKeys::F);
+	Map(JournalAction, EKeys::J);
 	Map(InteractAction, EKeys::Gamepad_FaceButton_Bottom);
 }
 
@@ -219,6 +222,7 @@ void AFerryCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	Input->BindAction(DrumAction, ETriggerEvent::Started, this, &AFerryCharacter::OnDrum);
 	Input->BindAction(PryAction, ETriggerEvent::Started, this, &AFerryCharacter::OnPry);
 	Input->BindAction(InteractAction, ETriggerEvent::Started, this, &AFerryCharacter::OnInteract);
+	Input->BindAction(JournalAction, ETriggerEvent::Started, this, &AFerryCharacter::OnJournal);
 }
 
 // --- Input handlers -------------------------------------------------------------------------------------
@@ -569,5 +573,15 @@ void AFerryCharacter::UpdatePry()
 		UE_LOG(LogFerry, Log, TEXT("pry ended (%s)"), *UEnum::GetValueAsString(Boss->GetKhoen()->GetOutcome()));
 		PryTarget.Reset();
 		Combat->SetActionLock(false, false);
+	}
+}
+
+void AFerryCharacter::OnJournal()
+{
+	if (const AFerryGameMode* Mode = GetWorld()->GetAuthGameMode<AFerryGameMode>())
+	{
+		UFerrySampleQuestComponent* Quest = Mode->GetSampleQuest();
+		// A dead pawn cannot open a menu, but may close one already open to release its pause.
+		if (Quest && (Quest->IsJournalOpen() || !(Combat && Combat->IsDead()))) Quest->ToggleJournal();
 	}
 }
