@@ -30,6 +30,8 @@ public:
 	bool IsPlayerDead() const { return bPlayerDead; }
 	UFerrySampleQuestComponent* GetSampleQuest() const { return SampleQuest; }
 	void SetSampleCheckpoint(AActor* Marker) { LastCheckpoint = Marker; }
+	/** Refresh only the opt-in level06 encounter; skips living/finished markers. */
+	void RefreshRealisticEncounter();
 
 	UFUNCTION(Exec)
 	void FerrySampleReset();
@@ -40,7 +42,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere) TObjectPtr<UFerrySampleQuestComponent> SampleQuest;
-	void SpawnEnemiesFromMarkers();
+	void SpawnEnemiesFromMarkers(bool bOnlyRealisticBoss = false);
 	void RespawnPlayer(TWeakObjectPtr<AController> Controller);
 	void ApplyWorldFlagsToPlayer();
 

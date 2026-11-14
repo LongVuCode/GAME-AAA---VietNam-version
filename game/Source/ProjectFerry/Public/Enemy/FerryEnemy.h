@@ -18,6 +18,7 @@
 #include "FerryEnemy.generated.h"
 
 class UFerryKhoenComponent;
+class UFerryRealisticVisualComponent;
 class UMaterialInstanceDynamic;
 class UStaticMeshComponent;
 
@@ -76,6 +77,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Ferry")
 	TObjectPtr<UFerryKhoenComponent> Khoen;
+
+	UPROPERTY(VisibleAnywhere, Category = "Ferry")
+	TObjectPtr<UFerryRealisticVisualComponent> RealisticVisual;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Ferry")
 	FName EnemyId;

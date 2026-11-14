@@ -1,0 +1,258 @@
+{
+  "status": "source_fbx_verified_not_unreal",
+  "blender": "5.3.0",
+  "static": {
+    "Terrain06": {
+      "bounds_m": [
+        [
+          -300.0,
+          -500.0,
+          -1.8582598876953125
+        ],
+        [
+          900.0,
+          500.0,
+          27.7889208984375
+        ]
+      ],
+      "vertices": 48441,
+      "uv_layers": 1
+    },
+    "FigTree": {
+      "bounds_m": [
+        [
+          -4.073987426757813,
+          -4.061778564453125,
+          0.0
+        ],
+        [
+          4.073987426757813,
+          4.061778564453125,
+          11.10960205078125
+        ]
+      ],
+      "vertices": 63319,
+      "uv_layers": 1
+    },
+    "cau_tre": {
+      "bounds_m": [
+        [
+          -1.0106358337402344,
+          -1.6500001525878907,
+          0.0
+        ],
+        [
+          1.0106358337402344,
+          1.6500001525878907,
+          2.387456970214844
+        ]
+      ],
+      "vertices": 796,
+      "uv_layers": 1
+    },
+    "shrub_03_a": {
+      "bounds_m": [
+        [
+          -0.1003113842010498,
+          -0.07560385227203369,
+          0.0
+        ],
+        [
+          0.1003113842010498,
+          0.07560385227203369,
+          0.402782096862793
+        ]
+      ],
+      "vertices": 652,
+      "uv_layers": 1
+    }
+  },
+  "characters": {
+    "Coi_Custom": {
+      "idle": {
+        "file": "Coi_idle.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "7a60dac65929eb03f913ab396aea0578993af7e62a39a719512d027bcda0030e"
+      },
+      "walk": {
+        "file": "Coi_walk.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "5e0aec31ca737a909f11496a1639e3fc04e86547e39c07719d696708160bcd98"
+      },
+      "run": {
+        "file": "Coi_run.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "b525d7a7b3f07ee6b9b2355f6b6e27d08a45a0b20f2506e777ec514ab747eed0"
+      },
+      "spear_light": {
+        "file": "Coi_spear_light.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "3010eecc6fe71d2b34064af147261f6e470e258887c46d2f42d5679db69c39c0"
+      },
+      "spear_heavy": {
+        "file": "Coi_spear_heavy.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "05939a4576c842f6da917768e14e7c8c9d7fcc537d41f613750f662e669cfdcd"
+      },
+      "dodge": {
+        "file": "Coi_dodge.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "e5a75375e5df8ac0a21ef7f5d5599662c2d54a9fa0be20a34cf6c00ce13a6595"
+      },
+      "parry": {
+        "file": "Coi_parry.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "1f9d4d13eaa7b4a5f4ac88fbaf37c6e5d45463dd1ba9481b67dbcb59ec4c4676"
+      },
+      "hit": {
+        "file": "Coi_hit.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "201dd2b96cf19d20a29354ceb98cd5b76090306a1d4285bba76cdb309111228e"
+      },
+      "interact": {
+        "file": "Coi_interact.fbx",
+        "bones": 18,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "1bcdb60f489dd0ad1585761c31700644f64ff131125d9613d6ba0806c3381bc7"
+      }
+    },
+    "Stoneback_Custom": {
+      "idle": {
+        "file": "Stoneback_idle.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "e03ebbab4634c82328468bf6e38a4dc42c9f4d8ed004658771ff833d96edad49"
+      },
+      "walk": {
+        "file": "Stoneback_walk.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "08f53704bfc0e30fbbb9b36d98e2740282f110e6ca6f67808261bf14d8e87beb"
+      },
+      "attack": {
+        "file": "Stoneback_attack.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "5fcfc0a6a339a042436e1013eaf27f3694bb3ff81b4f9c2a77c4480a2ca39977"
+      },
+      "stagger": {
+        "file": "Stoneback_stagger.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "340376c8a7ea90f75daf4dfffb431a88f20568e3c7d27f75e9df38ff46179071"
+      },
+      "retreat": {
+        "file": "Stoneback_retreat.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "3c30e6a05b349c02e6d86340244970dc76b9a0665d7db5f0886ded049986d9f3"
+      }
+    },
+    "MarshBoar_Custom": {
+      "idle": {
+        "file": "Boar_idle.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "17f1a629974e5332c38355a3b17e332be4593f1aaa725752721fa040418e7c26"
+      },
+      "walk": {
+        "file": "Boar_walk.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "7fb8413d308ded8d0969a5548719300e439261d06d784412dd66d5b46ffd9362"
+      },
+      "charge": {
+        "file": "Boar_charge.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "e09cd43815b69e8bdc5d535d6eb8ba6526a81531567a62c8b0ec70325166dfba"
+      },
+      "tusk": {
+        "file": "Boar_tusk.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "a63fe0085eb357273fc8efe5c68b8e5666e3a9c84e4665cd84cafe8d069348c6"
+      },
+      "stagger": {
+        "file": "Boar_stagger.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "c7aaabd34f47461ad38139b67e1bc59df114aa08880d4e51b9f3bea02ca0742a"
+      },
+      "freed": {
+        "file": "Boar_freed.fbx",
+        "bones": 9,
+        "frame_range": [
+          2.0,
+          38.0
+        ],
+        "pose_signature": "84644e525d1b27290d4b4912d8f90ebf01f2fe946b146c96b744a56614dafb76"
+      }
+    }
+  }
+}

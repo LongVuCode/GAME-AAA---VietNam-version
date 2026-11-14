@@ -191,6 +191,10 @@ void AFerryHUD::DrawTargetPanel(const AFerryEnemy& Target)
 	const float W = 600.0f * UiScale;
 	const float X = (Canvas->ClipX - W) * 0.5f;
 	float Y = 60.0f * UiScale;
+	if (const AFerryGameMode* Mode = GetWorld()->GetAuthGameMode<AFerryGameMode>())
+	{
+		if (Mode->GetSampleQuest() && Mode->GetSampleQuest()->IsActive()) Y = Canvas->ClipY * 0.32f;
+	}
 	DrawLabel(Target.GetDisplayName(), Canvas->ClipX * 0.5f, Y - 30.0f * UiScale, TextColor, false, true);
 	DrawBar(X, Y, W, 14.0f * UiScale, Target.GetHealthRatio(), HealthColor);
 	Y += 20.0f * UiScale;

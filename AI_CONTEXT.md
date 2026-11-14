@@ -177,3 +177,11 @@ POloge09f79a:ProjectFerryEditor Win64Development UE5.8.4 **Succeeded exit0**. Kh
 ### Bằng chứng runtime mẫu0.5 — 2026-11-13
 
 POlog+ảnh:level133mesh/10markers,stage0→5đạt trong~95,5giây(mộtfallreset). **Chưa15–20phút, chưaP4/artđạt**. Jopenedownpause1,PIEreloadgiữstage5; chưaconfirmJclose/processrestartsave. SửaPythonlightingMovableSun/Sky+force_no_precomputed_lighting vàẩn3Dlabeltronggame(vẫnHUD/J). Deltanày chỉcầnrerunbuilder, khôngC++build. Ưutiênnội dung/thửthách cónghĩa vàmodelCói/quái thật, khôngtănggiờbằngfiller. XemPM_STATUS_2026_11_13.md.
+
+## Thực thi Realistic06 — 14/11/2026
+
+PO yêu cầu làm lại màn primitive, map rộng, realistic, model/motion riêng; đã tiếp tục triển khai source **chưa nghiệm thu hoàn chỉnh**. Map mới `/Game/Maps/L_BenSay_Realistic06`, importer `game/Content/Python/build_realistic_level_0_6.py`, chạy gộp build+Editor bằng `tools/ue/Build-RealisticLevel.ps1 -EngineRoot 'D:\UE_5.8' -AllowUnverifiedEngine` sau gitpull+lfs và đóngEditor. Không chạy nhầm hai builder cũ. Startupmap chỉ đổi sau buildlevelthànhcông.
+
+Đã có source terrain1.200×1.000m,39staticFBX+PBRtexture từCC0 đã đăng ký,4.168placements cóinstancing/LOD/cull trongbuilder; Cói/Dế/LợnLòi customrig+20clipFBX/GLB, animation theoacceptedactions/states. Vòngquest cứu người→hạcầu→giảithoátboss→trảNăn; save riêngFerryRealistic06_v1, không lấystage5cũ. NPCtạm dùnglạimeshCói. NhịphácạyEđãkhôngbịsampleinteractionchặn. L031..33 đăngkýasset; model/terrainAI PLACEHOLDER_AI, khôngpháthành.
+
+110Python+19CTestcoređạt;4testsource mới và2portableprogresstestđạt;Bpy reimport4static/20clip đạt (`reports/qa/REALISTIC06_ART_CHECK.json`). Reviewerrealistic_qa đạt cóđiềukiệnchosource; motion/HUD/materialname/bounds/texturemissing/journalfindingđãsửa. **ChưaUEcompile/import/PIE/performance/package vớithayđổimới. Artvẫncáchđiệu,cảnhcònthưa,chưađápmứcsiêurealistic và1–3giờnộidung.** Ảnh `reports/art/realistic06/` làBlender sourcegeometry,khôngphảiUE. PM/status/handoff/report ngày14/11 cóđườngdẫntrong docs/production vàreports/qa; bước tiếpưu tiênlogWindows,khônglặpsmokewebkhôngliênquan. KhôngPublish/mergemain.

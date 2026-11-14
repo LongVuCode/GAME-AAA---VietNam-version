@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Core/FerryGameMode.h"
 #include "Sample/FerrySampleQuestComponent.h"
+#include "Presentation/FerryRealisticVisualComponent.h"
 #include "Enemy/FerryEnemy.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/StaticMesh.h"
@@ -88,6 +89,7 @@ AFerryCharacter::AFerryCharacter()
 	}
 
 	Combat = CreateDefaultSubobject<UFerryCombatComponent>(TEXT("Combat"));
+	RealisticVisual = CreateDefaultSubobject<UFerryRealisticVisualComponent>(TEXT("RealisticVisual"));
 }
 
 void AFerryCharacter::BeginPlay()
@@ -102,6 +104,7 @@ void AFerryCharacter::BeginPlay()
 	Combat->OnActionStarted.AddUObject(this, &AFerryCharacter::HandleActionStarted);
 	Combat->OnDodgeStarted.AddUObject(this, &AFerryCharacter::HandleDodgeStarted);
 	Combat->OnDied.AddUObject(this, &AFerryCharacter::HandleDied);
+	RealisticVisual->InitializeVisual();
 }
 
 // --- Input setup -------------------------------------------------------------------------------------
@@ -304,7 +307,11 @@ void AFerryCharacter::OnPry()
 	if (const AFerryGameMode* Mode = GetWorld()->GetAuthGameMode<AFerryGameMode>())
 	{
 		// Route the existing E binding at event time, avoiding BeginPlay/possession ordering races.
-		if (Mode->GetSampleQuest() && Mode->GetSampleQuest()->IsActive()) { OnInteract(); return; }
+		if (Mode->GetSampleQuest() && Mode->GetSampleQuest()->IsActive())
+		{
+			const bool bRealisticPry = Mode->GetSampleQuest()->IsRealisticLevel() && (PryTarget.IsValid() || FindPryCandidate() != nullptr);
+			if (!bRealisticPry) { OnInteract(); return; }
+		}
 	}
 	if (AFerryEnemy* Boss = PryTarget.Get())
 	{
@@ -326,6 +333,7 @@ void AFerryCharacter::OnPry()
 		Candidate->NotifyPryStarted();
 		const FFerryPresentationTuning* Tuning = Combat->GetTuning();
 		Combat->SetActionLock(true, Tuning != nullptr && Tuning->bPlayerInvulnerableDuringPry);
+		RealisticVisual->PlayAction(TEXT("interact"), Khoen->GetBeatInterval() * FMath::Max(Khoen->GetPryBeats(), 1));
 		FaceTowards(Candidate->GetActorLocation());
 		UE_LOG(LogFerry, Log, TEXT("pry started"));
 	}

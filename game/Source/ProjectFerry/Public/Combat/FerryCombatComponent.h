@@ -28,6 +28,8 @@ DECLARE_MULTICAST_DELEGATE(FOnFerryPlayerDied);
 DECLARE_MULTICAST_DELEGATE(FOnFerryActionStarted);
 /** A dodge started; the owner moves the character (distance / duration from data). */
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnFerryDodgeStarted, float /*DistanceCm*/, float /*DurationSeconds*/);
+/** Presentation follows accepted actions, including buffered combo starts, never raw key presses. */
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnFerryVisualAction, FName /*Action*/, float /*DurationSeconds*/);
 
 UCLASS(ClassGroup = (Ferry), meta = (BlueprintSpawnableComponent))
 class PROJECTFERRY_API UFerryCombatComponent : public UActorComponent
@@ -90,6 +92,7 @@ public:
 	FOnFerryPlayerDied OnDied;
 	FOnFerryActionStarted OnActionStarted;
 	FOnFerryDodgeStarted OnDodgeStarted;
+	FOnFerryVisualAction OnVisualAction;
 
 private:
 	void SweepHit(const ArpgCore::FAttackData& Attack, float RangeM, float ArcDeg, bool bHeavy);

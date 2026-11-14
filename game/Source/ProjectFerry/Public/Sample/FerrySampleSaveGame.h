@@ -12,4 +12,5 @@ class PROJECTFERRY_API UFerrySampleSaveGame : public USaveGame
 public:
 	UPROPERTY(SaveGame) int32 SchemaVersion = 1;
 	UPROPERTY(SaveGame) int32 Stage = 0;
+	UPROPERTY(SaveGame) bool bRealisticBossFreed = false;
 };

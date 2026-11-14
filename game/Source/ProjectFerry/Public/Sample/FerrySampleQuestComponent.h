@@ -6,6 +6,7 @@
 #include "FerrySampleQuestComponent.generated.h"
 
 class APawn;
+class AFerryEnemy;
 
 /** Small, marker-driven quest for the new sample map only. Values/text live in ue_sample_0_5.json. */
 UCLASS()
@@ -18,6 +19,10 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	bool IsActive() const { return bActive; }
+	bool IsRealisticLevel() const { return bRealisticLevel; }
+	bool HasRealisticBossBeenFreed() const { return bRealisticLevel && bRealisticBossFreed; }
+	bool ShouldSpawnRealisticBoss() const;
+	void NotifyRealisticBossFreed(const AFerryEnemy* Enemy);
 	/** Returns true in the sample, including when no target is close, so legacy debug interaction cannot run. */
 	bool Interact(APawn* Player);
 	FText GetObjective() const;
@@ -44,6 +49,8 @@ private:
 	void CloseJournal();
 
 	bool bActive = false;
+	bool bRealisticLevel = false;
+	bool bRealisticBossFreed = false;
 	bool bJournalOpen = false;
 	bool bJournalOwnsPause = false;
 	bool bConfigurationFailed = false;

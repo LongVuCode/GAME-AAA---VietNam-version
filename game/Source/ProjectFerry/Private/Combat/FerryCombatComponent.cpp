@@ -142,6 +142,10 @@ void UFerryCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	{
 		HitThisAction.Reset();
 		OnActionStarted.Broadcast();
+		const ArpgCore::FComboMove& Started = Graph.GetMove(Result.StartedMove);
+		const FFerryMoveView* StartedView = WeaponView != nullptr ? WeaponView->Moves.Find(FerryCombat::ToName(Started.Id)) : nullptr;
+		OnVisualAction.Broadcast(StartedView && StartedView->bHeavyInput ? FName(TEXT("spear_heavy")) : FName(TEXT("spear_light")),
+			Started.Timing.Startup + Started.Timing.Active + Started.Timing.Recovery);
 	}
 	if (Result.bHitWindowOpened && Runner->GetCurrentMove() != ArpgCore::FComboGraph::RootNode)
 	{
@@ -235,6 +239,7 @@ void UFerryCombatComponent::TickBurst(float GameDt)
 		Attack.Weight = Burst.Weight;
 		HitThisAction.Reset(); // every burst hit may strike the same target again
 		OnActionStarted.Broadcast();
+		OnVisualAction.Broadcast(TEXT("spear_heavy"), BurstInterval);
 		SweepHit(Attack, WeaponView != nullptr ? WeaponView->BurstRangeM : 2.0f, 120.0f, true);
 		--BurstHitsLeft;
 		BurstTimer += BurstInterval;
@@ -288,7 +293,9 @@ bool UFerryCombatComponent::PressParry()
 	{
 		return false;
 	}
-	return Defense->StartParry();
+	const bool bStarted = Defense->StartParry();
+	if (bStarted) OnVisualAction.Broadcast(TEXT("parry"), 0.0f);
+	return bStarted;
 }
 
 void UFerryCombatComponent::ReleaseParry()
@@ -418,6 +425,7 @@ void UFerryCombatComponent::ApplyHitTaken(const ArpgCore::FDamageResult& Damage,
 		{
 			ResetRunner(); // interrupt the current move
 			BurstHitsLeft = 0;
+			OnVisualAction.Broadcast(TEXT("hit"), StunRemaining);
 		}
 	}
 	TriggerHitStop(ArpgCore::ComputeHitStopDuration(Core.HitStop, Attack.Weight));

@@ -34,6 +34,11 @@ AFerryGameMode::AFerryGameMode()
 void AFerryGameMode::StartPlay()
 {
 	Super::StartPlay();
+	if (SampleQuest && SampleQuest->HasRealisticBossBeenFreed())
+	{
+		WorldFlags.Add(TEXT("flag_boss_lon_loi_freed"));
+		ApplyWorldFlagsToPlayer();
+	}
 	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
 	{
 		if (It->ActorHasTag(CheckpointTag))
@@ -44,7 +49,7 @@ void AFerryGameMode::StartPlay()
 	SpawnEnemiesFromMarkers();
 }
 
-void AFerryGameMode::SpawnEnemiesFromMarkers()
+void AFerryGameMode::SpawnEnemiesFromMarkers(bool bOnlyRealisticBoss)
 {
 	const UFerryDataSubsystem* DataSubsystem = UFerryDataSubsystem::Get(this);
 	if (DataSubsystem == nullptr || !DataSubsystem->IsLoaded())
@@ -68,6 +73,17 @@ void AFerryGameMode::SpawnEnemiesFromMarkers()
 			continue;
 		}
 		const FName EnemyId = Marker->Tags[1]; // build_graybox_longbien.py writes [FerrySpawn, <enemy id>, <zone id>]
+		if (bOnlyRealisticBoss && EnemyId != FName(TEXT("boss_lon_loi_dam"))) continue;
+		if (SampleQuest && SampleQuest->IsRealisticLevel())
+		{
+			if (EnemyId == FName(TEXT("boss_lon_loi_dam")) && !SampleQuest->ShouldSpawnRealisticBoss()) continue;
+			bool bAlreadyAlive = false;
+			for (TActorIterator<AFerryEnemy> EnemyIt(GetWorld()); EnemyIt; ++EnemyIt)
+			{
+				if (!EnemyIt->IsActorBeingDestroyed() && EnemyIt->SpawnMarker.Get() == Marker) { bAlreadyAlive = true; break; }
+			}
+			if (bAlreadyAlive) continue;
+		}
 		const FTransform Transform(Marker->GetActorRotation(), Marker->GetActorLocation() + FVector(0.0f, 0.0f, 100.0f));
 		AFerryEnemy* Enemy = GetWorld()->SpawnActorDeferred<AFerryEnemy>(AFerryEnemy::StaticClass(), Transform, nullptr, nullptr,
 			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
@@ -140,6 +156,7 @@ void AFerryGameMode::ReleaseAttackToken(AFerryEnemy* Enemy)
 void AFerryGameMode::NotifyEnemyFinished(AFerryEnemy* Enemy)
 {
 	ReleaseAttackToken(Enemy);
+	if (SampleQuest) SampleQuest->NotifyRealisticBossFreed(Enemy);
 	const UFerryDataSubsystem* DataSubsystem = UFerryDataSubsystem::Get(this);
 	const FFerryEnemyView* View = (DataSubsystem != nullptr && DataSubsystem->IsLoaded())
 		? DataSubsystem->GetData()->FindEnemy(Enemy->GetEnemyId()) : nullptr;
@@ -234,4 +251,16 @@ void AFerryGameMode::FerryReloadData()
 void AFerryGameMode::FerrySampleReset()
 {
 	if (SampleQuest) SampleQuest->ResetSample();
+	if (SampleQuest && SampleQuest->IsRealisticLevel())
+	{
+		FinishedMarkers.Reset();
+		WorldFlags.Remove(TEXT("flag_boss_lon_loi_freed"));
+		GetWorldTimerManager().ClearTimer(RespawnTimer);
+		if (APlayerController* Player = GetWorld()->GetFirstPlayerController()) RespawnPlayer(TWeakObjectPtr<AController>(Player));
+	}
+}
+
+void AFerryGameMode::RefreshRealisticEncounter()
+{
+	if (SampleQuest && SampleQuest->IsRealisticLevel()) SpawnEnemiesFromMarkers(true);
 }

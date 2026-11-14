@@ -1,5 +1,7 @@
 // FerryEnemy.cpp - NOT YET BUILT IN UNREAL ENGINE ("chưa build trong UE").
 #include "Enemy/FerryEnemy.h"
+#include "Presentation/FerryRealisticVisualComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 #include "AIController.h"
 #include "Combat/FerryCombatComponent.h"
@@ -8,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Core/FerryGameMode.h"
+#include "Sample/FerrySampleQuestComponent.h"
 #include "Data/FerryDataSubsystem.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/StaticMesh.h"
@@ -61,6 +64,7 @@ AFerryEnemy::AFerryEnemy()
 	BodyVisual->SetRelativeScale3D(FVector(0.8f, 0.8f, 1.8f)); // 100 cm cylinder -> capsule size
 
 	Khoen = CreateDefaultSubobject<UFerryKhoenComponent>(TEXT("Khoen"));
+	RealisticVisual = CreateDefaultSubobject<UFerryRealisticVisualComponent>(TEXT("RealisticVisual"));
 }
 
 void AFerryEnemy::SetEnemyId(FName InEnemyId, int32 InSpawnIndex)
@@ -80,6 +84,7 @@ void AFerryEnemy::BeginPlay()
 		return;
 	}
 	UpdateTelegraphVisual();
+	RealisticVisual->InitializeVisual();
 }
 
 bool AFerryEnemy::InitializeFromData()
@@ -100,7 +105,10 @@ bool AFerryEnemy::InitializeFromData()
 	if (const ArpgCore::FBossConfig* Boss = Data->Core.FindBoss(Id))
 	{
 		bIsBoss = true;
-		Khoen->InitializeBoss(*Boss, Difficulty, DataSubsystem->IsKhoenEnabled());
+		const AFerryGameMode* Mode = GetWorld()->GetAuthGameMode<AFerryGameMode>();
+		// Level06's mandatory release objective requires the pry rules even if a legacy debug cvar disables khoen.
+		const bool bRealisticRelease = Mode && Mode->GetSampleQuest() && Mode->GetSampleQuest()->IsRealisticLevel();
+		Khoen->InitializeBoss(*Boss, Difficulty, bRealisticRelease || DataSubsystem->IsKhoenEnabled());
 		Khoen->OnPryEvent.AddUObject(this, &AFerryEnemy::HandlePryResult);
 		Attacks = Boss->Attacks;
 		VisualScale = 2.0f;
@@ -194,6 +202,11 @@ void AFerryEnemy::EnterState(EFerryEnemyState NewState, float Duration)
 {
 	State = NewState;
 	StateTimer = Duration;
+	if (!RealisticVisual->IsReady()) return;
+	if (NewState == EFerryEnemyState::Staggered || NewState == EFerryEnemyState::Prying || NewState == EFerryEnemyState::PhaseTransition)
+		RealisticVisual->PlayAction(TEXT("stagger"), Duration);
+	else if (NewState == EFerryEnemyState::Leaving)
+		RealisticVisual->PlayAction(bIsBoss ? FName(TEXT("freed")) : FName(TEXT("retreat")));
 }
 
 void AFerryEnemy::TickAi(float GameDt, float RealDt)
@@ -219,7 +232,7 @@ void AFerryEnemy::TickAi(float GameDt, float RealDt)
 			{
 				EndAttack(0.0f);
 			}
-			State = EFerryEnemyState::Prying;
+			if (State != EFerryEnemyState::Prying) EnterState(EFerryEnemyState::Prying);
 		}
 		else if (Khoen->IsStaggered())
 		{
@@ -227,7 +240,7 @@ void AFerryEnemy::TickAi(float GameDt, float RealDt)
 			{
 				EndAttack(0.0f);
 			}
-			State = EFerryEnemyState::Staggered;
+			if (State != EFerryEnemyState::Staggered) EnterState(EFerryEnemyState::Staggered);
 		}
 		else if (State == EFerryEnemyState::Staggered || State == EFerryEnemyState::Prying)
 		{
@@ -320,6 +333,7 @@ void AFerryEnemy::TickAi(float GameDt, float RealDt)
 		{
 			const float Alpha = FMath::Clamp(StateTimer / DissipateSeconds, 0.05f, 1.0f);
 			BodyVisual->SetRelativeScale3D(LeaveStartScale * FVector(1.0f, 1.0f, Alpha)); // sinks back into the mud
+			if (RealisticVisual->IsReady()) GetMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, Alpha));
 		}
 		else if (Player != nullptr)
 		{
@@ -399,6 +413,10 @@ bool AFerryEnemy::TryStartAttack(float DistanceCm)
 	HitsResolved = 0;
 	Cooldowns[Pick] = Attack.Cooldown;
 	EnterState(EFerryEnemyState::Attack);
+	const FFerryEnemyAttackView* SelectedView = View->Attacks.Find(FerryCombat::ToName(Attack.Id));
+	const FName VisualAction = !bIsBoss ? FName(TEXT("attack")) : SelectedView && SelectedView->RangeM >= LungeMinRangeM ? FName(TEXT("charge")) : FName(TEXT("tusk"));
+	RealisticVisual->PlayAction(VisualAction,
+		Timing.Startup + Timing.Active + Timing.Recovery);
 	return true;
 }
 
@@ -598,7 +616,7 @@ void AFerryEnemy::NotifyPryStarted()
 	{
 		EndAttack(0.0f);
 	}
-	State = EFerryEnemyState::Prying;
+	if (State != EFerryEnemyState::Prying) EnterState(EFerryEnemyState::Prying);
 }
 
 void AFerryEnemy::HandlePryResult(EFerryPryResult Result)

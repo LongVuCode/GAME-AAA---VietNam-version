@@ -1,0 +1,4 @@
+# Optional source-art regeneration on Linux Python 3.13; not needed for UE Editor imports.
+bpy==5.3.0
+numpy==2.5.4
+Pillow==13.0.0

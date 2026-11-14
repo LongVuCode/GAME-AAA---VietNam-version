@@ -2,6 +2,10 @@
 
 #include "Sample/FerrySampleSaveGame.h"
 #include "Sample/FerrySampleProgress.h"
+#include "Sample/FerryRealisticProgress.h"
+#include "Combat/FerryKhoenComponent.h"
+#include "Enemy/FerryEnemy.h"
+#include "Presentation/FerryRealisticVisualComponent.h"
 #include "Core/FerryGameMode.h"
 #include "Data/FerryDataSubsystem.h"
 #include "Dom/JsonObject.h"
@@ -33,7 +37,7 @@ AActor* UFerrySampleQuestComponent::FindMarker(FName Tag, FName Id) const
 
 bool UFerrySampleQuestComponent::LoadConfiguration()
 {
-	const FString Path = FPaths::Combine(FFerryDesignDataLoader::ResolveDataDirectory(), TEXT("ue_sample_0_5.json"));
+	const FString Path = FPaths::Combine(FFerryDesignDataLoader::ResolveDataDirectory(), bRealisticLevel ? TEXT("ue_realistic_0_6.json") : TEXT("ue_sample_0_5.json"));
 	FString Json;
 	TSharedPtr<FJsonObject> Root;
 	if (!FFileHelper::LoadFileToString(Json, *Path)
@@ -51,7 +55,8 @@ bool UFerrySampleQuestComponent::LoadConfiguration()
 	if ((*Settings)->TryGetNumberField(TEXT("subtitle_duration_s"), Value) && Value > 0) SubtitleSeconds = static_cast<float>(Value);
 	if ((*Settings)->TryGetNumberField(TEXT("fall_reset_z_cm"), Value)) FallResetZCm = static_cast<float>(Value);
 	FString ConfigSlot;
-	if ((*Settings)->TryGetStringField(TEXT("save_slot"), ConfigSlot) && ConfigSlot == TEXT("FerrySample05_v1")) SaveSlot = ConfigSlot;
+	SaveSlot = bRealisticLevel ? TEXT("FerryRealistic06_v1") : TEXT("FerrySample05_v1");
+	if (!(*Settings)->TryGetStringField(TEXT("save_slot"), ConfigSlot) || ConfigSlot != SaveSlot) return false;
 	// A fixed, isolated slot prevents malformed data from targeting unrelated saves.
 	for (const auto& Pair : (*StringObject)->Values)
 	{
@@ -76,6 +81,14 @@ bool UFerrySampleQuestComponent::LoadConfiguration()
 			return false;
 		}
 	}
+	if (bRealisticLevel)
+	{
+		for (const TCHAR* Key : {TEXT("objective_boss"), TEXT("journal_boss"), TEXT("blocked_boss"), TEXT("boss_freed")})
+		{
+			const FFerryLocText* Entry = Strings.Find(FName(Key));
+			if (!Entry || Entry->Vi.IsEmpty() || Entry->En.IsEmpty()) return false;
+		}
+	}
 	return true;
 }
 
@@ -83,6 +96,7 @@ void UFerrySampleQuestComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	if (!FindMarker(TEXT("FerrySampleRoot"))) { SetComponentTickEnabled(false); return; }
+	bRealisticLevel = FindMarker(TEXT("FerryRealisticRoot")) != nullptr;
 	bActive = true;
 	if (!LoadConfiguration())
 	{
@@ -94,7 +108,12 @@ void UFerrySampleQuestComponent::BeginPlay()
 	if (UGameplayStatics::DoesSaveGameExist(SaveSlot, 0))
 	{
 		const UFerrySampleSaveGame* Save = Cast<UFerrySampleSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlot, 0));
-		if (Save && Save->SchemaVersion == 1 && FerrySampleProgress::IsValid(Save->Stage)) Stage = Save->Stage;
+		if (Save && Save->SchemaVersion == 1 && FerrySampleProgress::IsValid(Save->Stage)
+			&& (!bRealisticLevel || FerryRealisticProgress::IsValid(Save->Stage, Save->bRealisticBossFreed)))
+		{
+			Stage = Save->Stage;
+			bRealisticBossFreed = bRealisticLevel && Save->bRealisticBossFreed;
+		}
 		else
 		{
 			bSaveFailed = true;
@@ -104,7 +123,7 @@ void UFerrySampleQuestComponent::BeginPlay()
 	}
 	ReconstructWorld();
 	bRestorePending = true;
-	UE_LOG(LogFerry, Log, TEXT("sample: active, stage=%d"), Stage);
+	UE_LOG(LogFerry, Log, TEXT("sample: active, stage=%d, slot=%s, realistic=%d, boss_freed=%d"), Stage, *SaveSlot, bRealisticLevel, bRealisticBossFreed);
 }
 
 FText UFerrySampleQuestComponent::Text(const TCHAR* Key) const
@@ -129,6 +148,7 @@ FText UFerrySampleQuestComponent::GetSubtitle() const
 FText UFerrySampleQuestComponent::GetObjective() const
 {
 	if (bConfigurationFailed) return NSLOCTEXT("ProjectFerry", "SampleConfigurationError", "Sample configuration unavailable. Check LogFerry and ue_sample_0_5.json.");
+	if (bRealisticLevel && Stage == 4 && !bRealisticBossFreed) return Text(TEXT("objective_boss"));
 	const TCHAR* Keys[] = {TEXT("objective_start"), TEXT("objective_route"), TEXT("objective_help"),
 		TEXT("objective_bridge"), TEXT("objective_return"), TEXT("objective_complete")};
 	return Text(Keys[FMath::Clamp(Stage, 0, 5)]);
@@ -170,6 +190,7 @@ bool UFerrySampleQuestComponent::SaveProgress()
 	UFerrySampleSaveGame* Save = Cast<UFerrySampleSaveGame>(UGameplayStatics::CreateSaveGameObject(UFerrySampleSaveGame::StaticClass()));
 	if (!Save) { bSaveFailed = true; return false; }
 	Save->Stage = Stage;
+	Save->bRealisticBossFreed = bRealisticLevel && bRealisticBossFreed;
 	const bool bSaved = UGameplayStatics::SaveGameToSlot(Save, SaveSlot, 0);
 	bSaveFailed = !bSaved;
 	if (!bSaved) UE_LOG(LogFerry, Error, TEXT("sample: save failed, stage %d is only in memory"), Stage);
@@ -213,6 +234,8 @@ void UFerrySampleQuestComponent::SetStage(int32 NewStage, const TCHAR* Key)
 		Stage = FMath::Clamp(NewStage, 0, 5);
 		ReconstructWorld();
 		SaveProgress();
+		if (bRealisticLevel)
+			if (AFerryGameMode* Mode = Cast<AFerryGameMode>(GetOwner())) Mode->RefreshRealisticEncounter();
 		UE_LOG(LogFerry, Log, TEXT("sample: stage=%d"), Stage);
 	}
 	ShowSubtitle(Key);
@@ -224,9 +247,11 @@ bool UFerrySampleQuestComponent::Interact(APawn* Player)
 	if (bConfigurationFailed || bJournalOpen) return true;
 	AActor* Marker = FindNearestInteraction(Player);
 	if (!Marker) return true;
+	if (UFerryRealisticVisualComponent* Visual = Player->FindComponentByClass<UFerryRealisticVisualComponent>()) Visual->PlayAction(TEXT("interact"));
 	if (Marker->ActorHasTag(TEXT("nan")))
 	{
-		if (Stage >= 4) SetStage(FerrySampleProgress::Next(Stage, FerrySampleProgress::EAction::TalkToNan), TEXT("return_done"));
+		if (bRealisticLevel && Stage >= 4 && !FerryRealisticProgress::CanReturn(Stage, bRealisticBossFreed)) ShowSubtitle(TEXT("blocked_boss"));
+		else if (Stage >= 4) SetStage(FerrySampleProgress::Next(Stage, FerrySampleProgress::EAction::TalkToNan), TEXT("return_done"));
 		else if (Stage < 3) SetStage(FerrySampleProgress::Next(Stage, FerrySampleProgress::EAction::TalkToNan), TEXT("talk_nan"));
 		else ShowSubtitle(TEXT("help_done"));
 	}
@@ -274,6 +299,7 @@ void UFerrySampleQuestComponent::ResetSample()
 	if (!bActive || bConfigurationFailed) return;
 	CloseJournal();
 	Stage = 0;
+	bRealisticBossFreed = false;
 	bPreserveUnreadableSave = false;
 	ReconstructWorld();
 	SaveProgress();
@@ -293,7 +319,22 @@ FText UFerrySampleQuestComponent::GetJournalText() const
 	const TCHAR* Keys[] = {TEXT("journal_start"), TEXT("journal_route"), TEXT("journal_help"),
 		TEXT("journal_bridge"), TEXT("journal_return"), TEXT("journal_complete")};
 	return FText::Format(NSLOCTEXT("ProjectFerry", "SampleJournalLayout", "{0}\n\n{1}\n\n{2}\n\n{3}"),
-		Text(TEXT("journal_title")), GetObjective(), Text(Keys[FMath::Clamp(Stage, 0, 5)]), GetJournalToggleHint());
+		Text(TEXT("journal_title")), GetObjective(), Text(bRealisticLevel && Stage == 4 && !bRealisticBossFreed ? TEXT("journal_boss") : Keys[FMath::Clamp(Stage, 0, 5)]), GetJournalToggleHint());
+}
+
+bool UFerrySampleQuestComponent::ShouldSpawnRealisticBoss() const
+{
+	return bActive && !bConfigurationFailed && bRealisticLevel && FerryRealisticProgress::CanSpawnBoss(Stage, bRealisticBossFreed);
+}
+
+void UFerrySampleQuestComponent::NotifyRealisticBossFreed(const AFerryEnemy* Enemy)
+{
+	if (!ShouldSpawnRealisticBoss() || !Enemy || Enemy->GetEnemyId() != FName(TEXT("boss_lon_loi_dam"))
+		|| !Enemy->GetKhoen() || Enemy->GetKhoen()->GetOutcome() != EFerryBossOutcome::Freed) return;
+	bRealisticBossFreed = true;
+	SaveProgress();
+	ShowSubtitle(TEXT("boss_freed"));
+	UE_LOG(LogFerry, Log, TEXT("realistic06: boss freed; return to Nan milestone enabled"));
 }
 
 void UFerrySampleQuestComponent::ToggleJournal()

@@ -15,6 +15,7 @@
 class AFerryEnemy;
 class UCameraComponent;
 class UFerryCombatComponent;
+class UFerryRealisticVisualComponent;
 class UInputAction;
 class UInputMappingContext;
 class USpringArmComponent;
@@ -66,6 +67,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Ferry")
 	TObjectPtr<UFerryCombatComponent> Combat;
+
+	UPROPERTY(VisibleAnywhere, Category = "Ferry")
+	TObjectPtr<UFerryRealisticVisualComponent> RealisticVisual;
 
 	// Runtime-created Enhanced Input objects (Transient: never saved).
 	UPROPERTY(Transient) TObjectPtr<UInputMappingContext> MappingContext;

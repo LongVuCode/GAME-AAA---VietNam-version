@@ -1,0 +1,441 @@
+{
+  "generator": "tools/blender/build_character_pack.py",
+  "blender": "5.3.0",
+  "seed": 20261113,
+  "classification": "PLACEHOLDER_AI",
+  "release_use": "INTERNAL_PROTOTYPE_ONLY",
+  "notes": [
+    "Custom procedural models, own skeletons; not AAA/final character art.",
+    "Procedural shader bump is preview-only; exported materials retain base PBR colors.",
+    "FBX coordinates -Y forward/+Z up, apply_unit_scale true/global_scale1. Verify UE bounding boxes, skin and clips before claiming runtime."
+  ],
+  "assets": [
+    {
+      "asset": "Coi_Custom",
+      "skeleton": "Coi_Rig",
+      "units": "meters; FBX apply_unit_scale=True, global_scale=1; verify UE import scale",
+      "height_m": 1.76,
+      "meshes": 34,
+      "vertices": 63560,
+      "triangles": 126556,
+      "bones": [
+        "root",
+        "pelvis",
+        "spine",
+        "chest",
+        "neck",
+        "head",
+        "upper_arm.L",
+        "forearm.L",
+        "hand.L",
+        "upper_arm.R",
+        "forearm.R",
+        "hand.R",
+        "thigh.L",
+        "shin.L",
+        "foot.L",
+        "thigh.R",
+        "shin.R",
+        "foot.R"
+      ],
+      "clips": [
+        {
+          "name": "Coi_idle",
+          "motion": "idle",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_idle.fbx"
+        },
+        {
+          "name": "Coi_walk",
+          "motion": "walk",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_walk.fbx"
+        },
+        {
+          "name": "Coi_run",
+          "motion": "run",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_run.fbx"
+        },
+        {
+          "name": "Coi_spear_light",
+          "motion": "spear_light",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_spear_light.fbx"
+        },
+        {
+          "name": "Coi_spear_heavy",
+          "motion": "spear_heavy",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_spear_heavy.fbx"
+        },
+        {
+          "name": "Coi_dodge",
+          "motion": "dodge",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_dodge.fbx"
+        },
+        {
+          "name": "Coi_parry",
+          "motion": "parry",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_parry.fbx"
+        },
+        {
+          "name": "Coi_hit",
+          "motion": "hit",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_hit.fbx"
+        },
+        {
+          "name": "Coi_interact",
+          "motion": "interact",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Coi_interact.fbx"
+        }
+      ],
+      "files": [
+        "Coi_Custom.fbx",
+        "Coi_Custom.glb",
+        "Coi_idle.fbx",
+        "Coi_walk.fbx",
+        "Coi_run.fbx",
+        "Coi_spear_light.fbx",
+        "Coi_spear_heavy.fbx",
+        "Coi_dodge.fbx",
+        "Coi_parry.fbx",
+        "Coi_hit.fbx",
+        "Coi_interact.fbx"
+      ],
+      "classification": "PLACEHOLDER_AI",
+      "commercial_ready": false
+    },
+    {
+      "asset": "Stoneback_Custom",
+      "skeleton": "Stoneback_Rig",
+      "units": "meters; FBX apply_unit_scale=True, global_scale=1; verify UE import scale",
+      "height_m": 0.775,
+      "meshes": 43,
+      "vertices": 6370,
+      "triangles": 12568,
+      "bones": [
+        "root",
+        "body",
+        "head",
+        "front_shovel.L",
+        "front_shovel.R",
+        "leg0.L",
+        "leg1.L",
+        "leg0.R",
+        "leg1.R"
+      ],
+      "clips": [
+        {
+          "name": "Stoneback_idle",
+          "motion": "idle",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Stoneback_idle.fbx"
+        },
+        {
+          "name": "Stoneback_walk",
+          "motion": "walk",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Stoneback_walk.fbx"
+        },
+        {
+          "name": "Stoneback_attack",
+          "motion": "attack",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Stoneback_attack.fbx"
+        },
+        {
+          "name": "Stoneback_stagger",
+          "motion": "stagger",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Stoneback_stagger.fbx"
+        },
+        {
+          "name": "Stoneback_retreat",
+          "motion": "retreat",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Stoneback_retreat.fbx"
+        }
+      ],
+      "files": [
+        "Stoneback_Custom.fbx",
+        "Stoneback_Custom.glb",
+        "Stoneback_idle.fbx",
+        "Stoneback_walk.fbx",
+        "Stoneback_attack.fbx",
+        "Stoneback_stagger.fbx",
+        "Stoneback_retreat.fbx"
+      ],
+      "classification": "PLACEHOLDER_AI",
+      "commercial_ready": false
+    },
+    {
+      "asset": "MarshBoar_Custom",
+      "skeleton": "Boar_Rig",
+      "units": "meters; FBX apply_unit_scale=True, global_scale=1; verify UE import scale",
+      "height_m": 2.311,
+      "meshes": 86,
+      "vertices": 69166,
+      "triangles": 137988,
+      "bones": [
+        "root",
+        "body",
+        "chest",
+        "head",
+        "jaw",
+        "leg0.L",
+        "leg0.R",
+        "leg1.L",
+        "leg1.R"
+      ],
+      "clips": [
+        {
+          "name": "Boar_idle",
+          "motion": "idle",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Boar_idle.fbx"
+        },
+        {
+          "name": "Boar_walk",
+          "motion": "walk",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Boar_walk.fbx"
+        },
+        {
+          "name": "Boar_charge",
+          "motion": "charge",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Boar_charge.fbx"
+        },
+        {
+          "name": "Boar_tusk",
+          "motion": "tusk",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Boar_tusk.fbx"
+        },
+        {
+          "name": "Boar_stagger",
+          "motion": "stagger",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Boar_stagger.fbx"
+        },
+        {
+          "name": "Boar_freed",
+          "motion": "freed",
+          "start": 1,
+          "end": 37,
+          "fps": 30,
+          "duration_s": 1.2,
+          "keyed_pose_samples": 7,
+          "file": "Boar_freed.fbx"
+        }
+      ],
+      "files": [
+        "MarshBoar_Custom.fbx",
+        "MarshBoar_Custom.glb",
+        "Boar_idle.fbx",
+        "Boar_walk.fbx",
+        "Boar_charge.fbx",
+        "Boar_tusk.fbx",
+        "Boar_stagger.fbx",
+        "Boar_freed.fbx"
+      ],
+      "classification": "PLACEHOLDER_AI",
+      "commercial_ready": false
+    }
+  ],
+  "file_checksums": {
+    "Boar_charge.fbx": {
+      "sha256": "9f73720fc707b0e1d49588e1ac3294b5ab2aac8ec5d8ae0dec67f6fcdc59dab3",
+      "bytes": 92156
+    },
+    "Boar_freed.fbx": {
+      "sha256": "30aec24c5b6926d181e92aa3f77529e133f3b8247269f4e9a28618ba4a9ea13a",
+      "bytes": 91708
+    },
+    "Boar_idle.fbx": {
+      "sha256": "8a48170e5747a1e8a1e35e628d4373afd8de3c756ef11b288427b757ead2963c",
+      "bytes": 90796
+    },
+    "Boar_stagger.fbx": {
+      "sha256": "10f87f6a28e3c506cd274978cb50e1a23fae8c31836b0d6673de7f5d236ae606",
+      "bytes": 93564
+    },
+    "Boar_tusk.fbx": {
+      "sha256": "c8b1dec9653bce960faf720230b10715a113507de8a94d9c188a9f34902766b3",
+      "bytes": 91196
+    },
+    "Boar_walk.fbx": {
+      "sha256": "6d5d9d4d3be8aad20d43155f2d3b0d9f228a0ea0f311e3af5ae3874c69b2c39b",
+      "bytes": 91500
+    },
+    "Coi_Custom.fbx": {
+      "sha256": "54ef4509c702799b915795cff5e871132dc90efc9689c15ed43ef9f6c0e68b15",
+      "bytes": 5582796
+    },
+    "Coi_Custom.glb": {
+      "sha256": "39be3338bdb510278f60d96bf72ac0bc104ed54a7e77014298faa10023fd8c4f",
+      "bytes": 4208048
+    },
+    "Coi_dodge.fbx": {
+      "sha256": "8fb1010d55440e20e100c8dcf2e047840ba82ae488175d8ba1fc06519baf67de",
+      "bytes": 169852
+    },
+    "Coi_hit.fbx": {
+      "sha256": "26ddb6948417b47a89e49aed24bc2ac2efeeab7d1773ca326e3484c1f99252e4",
+      "bytes": 165148
+    },
+    "Coi_idle.fbx": {
+      "sha256": "36e9cef1db3d5bb903a39a1360753f2bb3d1a7ff91ccaf9aa543ff446dd085d1",
+      "bytes": 164092
+    },
+    "Coi_interact.fbx": {
+      "sha256": "3e2f49f08382ab4596823370266289f3a9f9f301ba2ab7d3ef48150a69e2e6ed",
+      "bytes": 165004
+    },
+    "Coi_parry.fbx": {
+      "sha256": "3b36e65ffc5821529c6987ceb69d801694f45bedfb5976412b03987442bbb12b",
+      "bytes": 162924
+    },
+    "Coi_run.fbx": {
+      "sha256": "535de5c87ae5e059a8e60f29f0c16ebb399498d56f6f98bf11e4e6cfee3e1fd9",
+      "bytes": 166588
+    },
+    "Coi_spear_heavy.fbx": {
+      "sha256": "c2f044cb47a17e06036c405baf5d83df056b2a28e3fa81f0a1b888cb124adf7f",
+      "bytes": 166012
+    },
+    "Coi_spear_light.fbx": {
+      "sha256": "0dfe6b14066ea0cc31d13ac6b141460dc2e647972d50bc8e41a9c6ad3c7823f6",
+      "bytes": 166156
+    },
+    "Coi_walk.fbx": {
+      "sha256": "bc6d7f3c43bae87e877e678eba696eb365e5d5dc745199d14875eeabce882e8a",
+      "bytes": 166636
+    },
+    "MarshBoar_Custom.fbx": {
+      "sha256": "1506b17c60a71a0fec8225e6a59242024ed0a05208d15b3a36c187b66a13cea6",
+      "bytes": 4888012
+    },
+    "MarshBoar_Custom.glb": {
+      "sha256": "644eb991bde8e066c2e4fdb26ada555b5ff71ea58f8b1eaf832e20c338b41314",
+      "bytes": 4572596
+    },
+    "Stoneback_Custom.fbx": {
+      "sha256": "a405964e27560f92cd0afa3f9ddc9fef51d50e5cedb2f75a1f1dc167ff5e31ad",
+      "bytes": 1155116
+    },
+    "Stoneback_Custom.glb": {
+      "sha256": "e1ffa1de6f390f69f89eaac0e138ef68164e9f552d115371de9b2fc844dbb04c",
+      "bytes": 484228
+    },
+    "Stoneback_attack.fbx": {
+      "sha256": "87862dd0d09c13f96176d5940aa03f263c0a68b0f475c277b7edb0f5b7810392",
+      "bytes": 93004
+    },
+    "Stoneback_idle.fbx": {
+      "sha256": "acbae8eb69d2ef8f54c345a1537b91ec57f8ad26f551571c7464de3fea7854d2",
+      "bytes": 92428
+    },
+    "Stoneback_retreat.fbx": {
+      "sha256": "3347ee33574f63f3e6b47f644332402450a88e0ed1103b030f7bbb12b05c98dc",
+      "bytes": 92924
+    },
+    "Stoneback_stagger.fbx": {
+      "sha256": "20e78221dd2b053cbecd18d4521afa1a9710156b7bae3d6cbd56383e5602d23c",
+      "bytes": 92684
+    },
+    "Stoneback_walk.fbx": {
+      "sha256": "a70ad175376e2f13009ec5748439f689670ad9374a5337a337340ba6b6ef61c6",
+      "bytes": 93484
+    },
+    "character_contact_sheet.png": {
+      "sha256": "e2b70c0bdf5f82c2dbb519440fb114c31f13ae46ae7c091740a492ca27697e7d",
+      "bytes": 1609788
+    },
+    "coi_detail.png": {
+      "sha256": "5f004043cf077af119dae79e22f8c111eae3869ba26bacdc8a08211cefda880f",
+      "bytes": 944122
+    }
+  }
+}

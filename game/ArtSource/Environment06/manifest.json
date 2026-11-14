@@ -1,0 +1,1465 @@
+{
+  "schema_version": 2,
+  "generator": "tools/blender/build_realistic_environment.py",
+  "static_fbx_import": {
+    "convert_scene": false,
+    "convert_scene_unit": false,
+    "units": "raw XYZ centimetres, Z up"
+  },
+  "terrain_bounds_m": [
+    -300,
+    900,
+    -500,
+    500
+  ],
+  "terrain_vertices": 48441,
+  "terrain_quads": 48000,
+  "source_license": "L-023,L-024,L-027,L-028; see L-031,L-032",
+  "assets": {
+    "Terrain06": {
+      "file": "Terrain06.fbx",
+      "materials": [
+        "Terrain_mud",
+        "Terrain_grass",
+        "Terrain_path",
+        "Terrain_dry_mud",
+        "Terrain_bank"
+      ],
+      "bounds_m": [
+        [
+          -300.0,
+          -500.0,
+          -1.858259916305542
+        ],
+        [
+          900.0,
+          500.0,
+          27.788921356201172
+        ]
+      ],
+      "vertices": 48441,
+      "triangles": 96000
+    },
+    "River06": {
+      "file": "River06.fbx",
+      "materials": [
+        "RiverWater"
+      ],
+      "bounds_m": [
+        [
+          -300.0,
+          -29.999032974243164,
+          -1.3953832387924194
+        ],
+        [
+          900.0,
+          29.998428344726562,
+          9.264065742492676
+        ]
+      ],
+      "vertices": 482,
+      "triangles": 480
+    },
+    "FigTree": {
+      "file": "FigTree.fbx",
+      "materials": [
+        "shrub_03",
+        "bark"
+      ],
+      "bounds_m": [
+        [
+          -4.0739874839782715,
+          -4.061778545379639,
+          0.0
+        ],
+        [
+          4.0739874839782715,
+          4.061778545379639,
+          11.109601974487305
+        ]
+      ],
+      "vertices": 63319,
+      "triangles": 59120
+    },
+    "dead_tree_trunk": {
+      "file": "dead_tree_trunk.fbx",
+      "materials": [
+        "dead_tree_trunk"
+      ],
+      "bounds_m": [
+        [
+          -1.524195671081543,
+          -0.1373157650232315,
+          0.0
+        ],
+        [
+          1.524195671081543,
+          0.1373157650232315,
+          0.289888858795166
+        ]
+      ],
+      "vertices": 2069,
+      "triangles": 3000
+    },
+    "dry_branches_medium_01_a": {
+      "file": "dry_branches_medium_01_a.fbx",
+      "materials": [
+        "dry_branches_medium_01"
+      ],
+      "bounds_m": [
+        [
+          -0.159469336271286,
+          -0.6483042240142822,
+          0.0
+        ],
+        [
+          0.1594693511724472,
+          0.6483042240142822,
+          0.33955490589141846
+        ]
+      ],
+      "vertices": 798,
+      "triangles": 700
+    },
+    "dry_branches_medium_01_b": {
+      "file": "dry_branches_medium_01_b.fbx",
+      "materials": [
+        "dry_branches_medium_01"
+      ],
+      "bounds_m": [
+        [
+          -0.0745449885725975,
+          -0.519263505935669,
+          0.0
+        ],
+        [
+          0.0745449885725975,
+          0.519263505935669,
+          0.14186367392539978
+        ]
+      ],
+      "vertices": 728,
+      "triangles": 700
+    },
+    "dry_branches_medium_01_c": {
+      "file": "dry_branches_medium_01_c.fbx",
+      "materials": [
+        "dry_branches_medium_01"
+      ],
+      "bounds_m": [
+        [
+          -0.06389626860618591,
+          -0.3900314271450043,
+          0.0
+        ],
+        [
+          0.06389623880386353,
+          0.3900314271450043,
+          0.1425524652004242
+        ]
+      ],
+      "vertices": 729,
+      "triangles": 700
+    },
+    "fern_02_a": {
+      "file": "fern_02_a.fbx",
+      "materials": [
+        "fern_02"
+      ],
+      "bounds_m": [
+        [
+          -0.27663394808769226,
+          -0.30661511421203613,
+          0.0
+        ],
+        [
+          0.27663394808769226,
+          0.3066151738166809,
+          0.28680551052093506
+        ]
+      ],
+      "vertices": 380,
+      "triangles": 500
+    },
+    "fern_02_b": {
+      "file": "fern_02_b.fbx",
+      "materials": [
+        "fern_02"
+      ],
+      "bounds_m": [
+        [
+          -0.49486440420150757,
+          -0.44375744462013245,
+          0.0
+        ],
+        [
+          0.49486440420150757,
+          0.44375744462013245,
+          0.4340163469314575
+        ]
+      ],
+      "vertices": 496,
+      "triangles": 500
+    },
+    "fern_02_c": {
+      "file": "fern_02_c.fbx",
+      "materials": [
+        "fern_02"
+      ],
+      "bounds_m": [
+        [
+          -0.43723422288894653,
+          -0.3831120431423187,
+          0.0
+        ],
+        [
+          0.43723416328430176,
+          0.3831120431423187,
+          0.35070011019706726
+        ]
+      ],
+      "vertices": 497,
+      "triangles": 500
+    },
+    "fern_02_d": {
+      "file": "fern_02_d.fbx",
+      "materials": [
+        "fern_02"
+      ],
+      "bounds_m": [
+        [
+          -0.2863902449607849,
+          -0.2964133024215698,
+          0.0
+        ],
+        [
+          0.2863902449607849,
+          0.2964133024215698,
+          0.21307164430618286
+        ]
+      ],
+      "vertices": 389,
+      "triangles": 500
+    },
+    "rock_moss_set_01_rock01": {
+      "file": "rock_moss_set_01_rock01.fbx",
+      "materials": [
+        "rock_moss_set_01"
+      ],
+      "bounds_m": [
+        [
+          -1.115494966506958,
+          -1.695177674293518,
+          0.0
+        ],
+        [
+          1.1154948472976685,
+          1.6951775550842285,
+          1.4830152988433838
+        ]
+      ],
+      "vertices": 940,
+      "triangles": 1200
+    },
+    "rock_moss_set_01_rock02": {
+      "file": "rock_moss_set_01_rock02.fbx",
+      "materials": [
+        "rock_moss_set_01"
+      ],
+      "bounds_m": [
+        [
+          -1.324011206626892,
+          -1.6366950273513794,
+          0.0
+        ],
+        [
+          1.324011206626892,
+          1.6366949081420898,
+          1.2380480766296387
+        ]
+      ],
+      "vertices": 999,
+      "triangles": 1200
+    },
+    "rock_moss_set_01_rock03": {
+      "file": "rock_moss_set_01_rock03.fbx",
+      "materials": [
+        "rock_moss_set_01"
+      ],
+      "bounds_m": [
+        [
+          -1.0533533096313477,
+          -1.0398516654968262,
+          0.0
+        ],
+        [
+          1.0533533096313477,
+          1.0398516654968262,
+          1.0936332941055298
+        ]
+      ],
+      "vertices": 808,
+      "triangles": 1199
+    },
+    "rock_moss_set_01_rock04": {
+      "file": "rock_moss_set_01_rock04.fbx",
+      "materials": [
+        "rock_moss_set_01"
+      ],
+      "bounds_m": [
+        [
+          -1.0660793781280518,
+          -0.9882553815841675,
+          0.0
+        ],
+        [
+          1.0660793781280518,
+          0.9882553219795227,
+          1.7617785930633545
+        ]
+      ],
+      "vertices": 852,
+      "triangles": 1200
+    },
+    "rock_moss_set_01_rock05": {
+      "file": "rock_moss_set_01_rock05.fbx",
+      "materials": [
+        "rock_moss_set_01"
+      ],
+      "bounds_m": [
+        [
+          -0.908257246017456,
+          -1.4962725639343262,
+          0.0
+        ],
+        [
+          0.908257246017456,
+          1.4962726831436157,
+          1.2132928371429443
+        ]
+      ],
+      "vertices": 771,
+      "triangles": 1199
+    },
+    "rock_moss_set_01_rock06": {
+      "file": "rock_moss_set_01_rock06.fbx",
+      "materials": [
+        "rock_moss_set_01"
+      ],
+      "bounds_m": [
+        [
+          -1.0687624216079712,
+          -1.3822829723358154,
+          0.0
+        ],
+        [
+          1.0687623023986816,
+          1.3822829723358154,
+          1.2528165578842163
+        ]
+      ],
+      "vertices": 790,
+      "triangles": 1200
+    },
+    "shrub_03_a": {
+      "file": "shrub_03_a.fbx",
+      "materials": [
+        "shrub_03"
+      ],
+      "bounds_m": [
+        [
+          -0.10031138360500336,
+          -0.07560385018587112,
+          0.0
+        ],
+        [
+          0.10031138360500336,
+          0.07560385018587112,
+          0.4027821123600006
+        ]
+      ],
+      "vertices": 652,
+      "triangles": 599
+    },
+    "shrub_03_b": {
+      "file": "shrub_03_b.fbx",
+      "materials": [
+        "shrub_03"
+      ],
+      "bounds_m": [
+        [
+          -0.09216362237930298,
+          -0.06128283590078354,
+          0.0
+        ],
+        [
+          0.09216362237930298,
+          0.06128283590078354,
+          0.35250675678253174
+        ]
+      ],
+      "vertices": 641,
+      "triangles": 600
+    },
+    "shrub_03_c": {
+      "file": "shrub_03_c.fbx",
+      "materials": [
+        "shrub_03"
+      ],
+      "bounds_m": [
+        [
+          -0.047919392585754395,
+          -0.056577134877443314,
+          0.0
+        ],
+        [
+          0.047919392585754395,
+          0.056577134877443314,
+          0.3043859899044037
+        ]
+      ],
+      "vertices": 613,
+      "triangles": 600
+    },
+    "shrub_03_d": {
+      "file": "shrub_03_d.fbx",
+      "materials": [
+        "shrub_03"
+      ],
+      "bounds_m": [
+        [
+          -0.05639171600341797,
+          -0.04464619606733322,
+          0.0
+        ],
+        [
+          0.05639171600341797,
+          0.04464619606733322,
+          0.25555452704429626
+        ]
+      ],
+      "vertices": 618,
+      "triangles": 599
+    },
+    "tree_stump_01": {
+      "file": "tree_stump_01.fbx",
+      "materials": [
+        "tree_stump_01"
+      ],
+      "bounds_m": [
+        [
+          -0.7122766375541687,
+          -0.7949578762054443,
+          0.0
+        ],
+        [
+          0.7122766375541687,
+          0.7949578762054443,
+          0.5735768675804138
+        ]
+      ],
+      "vertices": 1264,
+      "triangles": 1500
+    },
+    "weed_plant_02_a_LOD0": {
+      "file": "weed_plant_02_a_LOD0.fbx",
+      "materials": [
+        "weed_plant_02"
+      ],
+      "bounds_m": [
+        [
+          -0.10990580916404724,
+          -0.14594867825508118,
+          0.0
+        ],
+        [
+          0.10990580916404724,
+          0.14594867825508118,
+          0.0716937780380249
+        ]
+      ],
+      "vertices": 378,
+      "triangles": 320
+    },
+    "weed_plant_02_b_LOD0": {
+      "file": "weed_plant_02_b_LOD0.fbx",
+      "materials": [
+        "weed_plant_02"
+      ],
+      "bounds_m": [
+        [
+          -0.09401562809944153,
+          -0.09912191331386566,
+          0.0
+        ],
+        [
+          0.09401559829711914,
+          0.09912191331386566,
+          0.06701702624559402
+        ]
+      ],
+      "vertices": 399,
+      "triangles": 319
+    },
+    "weed_plant_02_c_LOD0": {
+      "file": "weed_plant_02_c_LOD0.fbx",
+      "materials": [
+        "weed_plant_02.001"
+      ],
+      "bounds_m": [
+        [
+          -0.07127273082733154,
+          -0.07152597606182098,
+          0.0
+        ],
+        [
+          0.07127273082733154,
+          0.07152597606182098,
+          0.054907817393541336
+        ]
+      ],
+      "vertices": 332,
+      "triangles": 320
+    },
+    "weed_plant_02_d_LOD0": {
+      "file": "weed_plant_02_d_LOD0.fbx",
+      "materials": [
+        "weed_plant_02"
+      ],
+      "bounds_m": [
+        [
+          -0.07766497135162354,
+          -0.054102614521980286,
+          0.0
+        ],
+        [
+          0.07766497135162354,
+          0.054102614521980286,
+          0.03889528661966324
+        ]
+      ],
+      "vertices": 381,
+      "triangles": 319
+    },
+    "weed_plant_02_e_LOD0": {
+      "file": "weed_plant_02_e_LOD0.fbx",
+      "materials": [
+        "weed_plant_02"
+      ],
+      "bounds_m": [
+        [
+          -0.06017935276031494,
+          -0.030630575492978096,
+          0.0
+        ],
+        [
+          0.06017947196960449,
+          0.030630575492978096,
+          0.04018816351890564
+        ]
+      ],
+      "vertices": 403,
+      "triangles": 319
+    },
+    "cau_tre": {
+      "file": "cau_tre.fbx",
+      "materials": [
+        "bamboo_culm",
+        "planks",
+        "woven_bamboo"
+      ],
+      "bounds_m": [
+        [
+          -1.0106358528137207,
+          -1.6500000953674316,
+          0.0
+        ],
+        [
+          1.0106358528137207,
+          1.6500000953674316,
+          2.3874568939208984
+        ]
+      ],
+      "vertices": 796,
+      "triangles": 584
+    },
+    "coc_ben": {
+      "file": "coc_ben.fbx",
+      "materials": [
+        "hewn_wood",
+        "woven_bamboo"
+      ],
+      "bounds_m": [
+        [
+          -0.13684719800949097,
+          -0.13092592358589172,
+          0.0
+        ],
+        [
+          0.13684719800949097,
+          0.13092592358589172,
+          2.155803918838501
+        ]
+      ],
+      "vertices": 115,
+      "triangles": 108
+    },
+    "coc_gay": {
+      "file": "coc_gay.fbx",
+      "materials": [
+        "hewn_wood"
+      ],
+      "bounds_m": [
+        [
+          -0.10339276492595673,
+          -0.10949890315532684,
+          0.0
+        ],
+        [
+          0.10339276492595673,
+          0.10949890315532684,
+          1.12404465675354
+        ]
+      ],
+      "vertices": 76,
+      "triangles": 56
+    },
+    "coc_nhon": {
+      "file": "coc_nhon.fbx",
+      "materials": [
+        "hewn_wood"
+      ],
+      "bounds_m": [
+        [
+          -0.0896642804145813,
+          -0.08079403638839722,
+          0.0
+        ],
+        [
+          0.0896642804145813,
+          0.08079403638839722,
+          1.7509114742279053
+        ]
+      ],
+      "vertices": 45,
+      "triangles": 35
+    },
+    "lo_bo_hoang": {
+      "file": "lo_bo_hoang.fbx",
+      "materials": [
+        "clay"
+      ],
+      "bounds_m": [
+        [
+          -3.1494040489196777,
+          -2.747258424758911,
+          0.0
+        ],
+        [
+          3.1494040489196777,
+          2.747258424758911,
+          2.621443748474121
+        ]
+      ],
+      "vertices": 829,
+      "triangles": 1000
+    },
+    "lo_duc": {
+      "file": "lo_duc.fbx",
+      "materials": [
+        "clay"
+      ],
+      "bounds_m": [
+        [
+          -2.0851004123687744,
+          -1.7312945127487183,
+          0.0
+        ],
+        [
+          2.0851004123687744,
+          1.7312945127487183,
+          3.046548843383789
+        ]
+      ],
+      "vertices": 893,
+      "triangles": 1444
+    },
+    "nha_san": {
+      "file": "nha_san.fbx",
+      "materials": [
+        "hewn_wood",
+        "planks",
+        "woven_bamboo",
+        "thatch",
+        "bamboo_culm"
+      ],
+      "bounds_m": [
+        [
+          -5.448168754577637,
+          -3.0237860679626465,
+          0.0
+        ],
+        [
+          5.448168754577637,
+          3.0237860679626465,
+          7.0372114181518555
+        ]
+      ],
+      "vertices": 3509,
+      "triangles": 4010
+    },
+    "ruong_may": {
+      "file": "ruong_may.fbx",
+      "materials": [
+        "woven_bamboo",
+        "bamboo_culm"
+      ],
+      "bounds_m": [
+        [
+          -0.44999998807907104,
+          -0.3100161850452423,
+          0.0
+        ],
+        [
+          0.44999998807907104,
+          0.3100161850452423,
+          0.5200536251068115
+        ]
+      ],
+      "vertices": 96,
+      "triangles": 48
+    },
+    "ruong_may_nap": {
+      "file": "ruong_may_nap.fbx",
+      "materials": [
+        "woven_bamboo"
+      ],
+      "bounds_m": [
+        [
+          -0.4699999988079071,
+          -0.32000795006752014,
+          0.0
+        ],
+        [
+          0.4699999988079071,
+          0.32000797986984253,
+          0.12002808600664139
+        ]
+      ],
+      "vertices": 24,
+      "triangles": 12
+    },
+    "thap_gom": {
+      "file": "thap_gom.fbx",
+      "materials": [
+        "clay_jar"
+      ],
+      "bounds_m": [
+        [
+          -0.7168126106262207,
+          -0.720329999923706,
+          0.0
+        ],
+        [
+          0.7168126106262207,
+          0.720329999923706,
+          1.1000052690505981
+        ]
+      ],
+      "vertices": 405,
+      "triangles": 728
+    },
+    "thuyen_doc_moc": {
+      "file": "thuyen_doc_moc.fbx",
+      "materials": [
+        "hewn_wood",
+        "hewn_wood_inner"
+      ],
+      "bounds_m": [
+        [
+          -0.3797479271888733,
+          -2.799999952316284,
+          0.0
+        ],
+        [
+          0.3797479271888733,
+          2.799999952316284,
+          0.6002136468887329
+        ]
+      ],
+      "vertices": 1156,
+      "triangles": 1623
+    },
+    "trong_go": {
+      "file": "trong_go.fbx",
+      "materials": [
+        "hewn_wood",
+        "hide",
+        "woven_bamboo"
+      ],
+      "bounds_m": [
+        [
+          -0.9200000166893005,
+          -0.9200000166893005,
+          0.0
+        ],
+        [
+          0.9200000166893005,
+          0.9200000166893005,
+          1.5904514789581299
+        ]
+      ],
+      "vertices": 514,
+      "triangles": 568
+    }
+  },
+  "materials": {
+    "Terrain_mud": {
+      "color": "mud_color.png",
+      "normal": "mud_normal.png",
+      "roughness": "mud_roughness.png",
+      "normal_dx": true,
+      "masked": false
+    },
+    "Terrain_grass": {
+      "color": "grass_color.png",
+      "normal": "grass_normal.png",
+      "roughness": "grass_roughness.png",
+      "normal_dx": true,
+      "masked": false
+    },
+    "Terrain_path": {
+      "color": "path_color.png",
+      "normal": "path_normal.png",
+      "roughness": "path_roughness.png",
+      "normal_dx": true,
+      "masked": false
+    },
+    "Terrain_dry_mud": {
+      "color": "dry_mud_color.png",
+      "normal": "dry_mud_normal.png",
+      "roughness": "dry_mud_roughness.png",
+      "normal_dx": true,
+      "masked": false
+    },
+    "Terrain_bank": {
+      "color": "bank_color.png",
+      "normal": "bank_normal.png",
+      "roughness": "bank_roughness.png",
+      "normal_dx": true,
+      "masked": false
+    },
+    "RiverWater": {
+      "base_color": [
+        0.04,
+        0.12,
+        0.11
+      ],
+      "roughness_value": 0.19,
+      "metallic_value": 0.12,
+      "masked": false
+    },
+    "bark": {
+      "color": "asset_bark_diff.png",
+      "normal": "asset_bark_nor.png",
+      "arm": "asset_bark_rough.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "dead_tree_trunk": {
+      "color": "asset_dead_tree_trunk_diff_1k.png",
+      "normal": "asset_dead_tree_trunk_nor_gl_1k.png",
+      "arm": "asset_dead_tree_trunk_arm_1k.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "dry_branches_medium_01": {
+      "color": "asset_dry_branches_medium_01_diff_1k.png",
+      "normal": "asset_dry_branches_medium_01_nor_gl_1k.png",
+      "arm": "asset_dry_branches_medium_01_arm_1k.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "fern_02": {
+      "color": "asset_fern_02_diffa.png",
+      "normal": "asset_fern_02_nor_gl_1k.png",
+      "arm": "asset_fern_02_arm_1k.png",
+      "normal_dx": false,
+      "masked": true,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "rock_moss_set_01": {
+      "color": "asset_rock_moss_set_01_diff_1k.png",
+      "normal": "asset_rock_moss_set_01_nor_gl_1k.png",
+      "arm": "asset_rock_moss_set_01_rough_1k.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "shrub_03": {
+      "color": "asset_shrub_03_diffa.png",
+      "normal": "asset_shrub_03_nor_gl_1k.png",
+      "arm": "asset_shrub_03_arm_1k.png",
+      "normal_dx": false,
+      "masked": true,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "tree_stump_01": {
+      "color": "asset_tree_stump_01_diff_1k.png",
+      "normal": "asset_tree_stump_01_nor_gl_1k.png",
+      "arm": "asset_tree_stump_01_arm_1k.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "weed_plant_02": {
+      "color": "asset_weed_plant_02_diffa.png",
+      "normal": "asset_weed_plant_02_nor_gl_1k.png",
+      "arm": "asset_weed_plant_02_arm_1k.png",
+      "normal_dx": false,
+      "masked": true,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "weed_plant_02.001": {
+      "color": "asset_weed_plant_02_diffa.png",
+      "normal": "asset_weed_plant_02_nor_gl_1k.png",
+      "arm": "asset_weed_plant_02_arm_1k.png",
+      "normal_dx": false,
+      "masked": true,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "bamboo_culm": {
+      "color": "asset_bamboo_culm_diff.png",
+      "normal": "asset_bamboo_culm_nor.png",
+      "arm": "asset_bamboo_culm_rough.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "clay": {
+      "color": "asset_clay_diff.png",
+      "normal": "asset_clay_nor.png",
+      "arm": "asset_clay_rough.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "clay_jar": {
+      "color": null,
+      "normal": null,
+      "arm": null,
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.20507873594760895,
+        0.11443537473678589,
+        0.05951123684644699
+      ]
+    },
+    "hewn_wood": {
+      "color": "asset_hewn_wood_diff.png",
+      "normal": "asset_hewn_wood_nor.png",
+      "arm": "asset_hewn_wood_rough.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "hewn_wood_inner": {
+      "color": "asset_hewn_wood_diff.png",
+      "normal": "asset_hewn_wood_nor.png",
+      "arm": "asset_hewn_wood_rough.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "hide": {
+      "color": null,
+      "normal": null,
+      "arm": null,
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.6104955673217773,
+        0.4969329833984375,
+        0.2917706370353699
+      ]
+    },
+    "planks": {
+      "color": "asset_planks_diff.png",
+      "normal": "asset_planks_nor.png",
+      "arm": "asset_planks_rough.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "thatch": {
+      "color": "asset_thatch_diff.png",
+      "normal": "asset_thatch_nor.png",
+      "arm": "asset_thatch_rough.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    },
+    "woven_bamboo": {
+      "color": "asset_woven_bamboo_diff.png",
+      "normal": "asset_woven_bamboo_nor.png",
+      "arm": "asset_woven_bamboo_rough.png",
+      "normal_dx": false,
+      "masked": false,
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929
+      ]
+    }
+  },
+  "file_checksums": {
+    "FigTree.fbx": {
+      "sha256": "7ddc3395d30bc6f89da4a35a87f3996b34335edcffe565b8e92d7f6f735ffc36",
+      "bytes": 2394700
+    },
+    "River06.fbx": {
+      "sha256": "ad0d3ddf9ab2b983289f078ddfb3a0afd9b3c71457663f5cc11d0485488d94a7",
+      "bytes": 24508
+    },
+    "Terrain06.fbx": {
+      "sha256": "acd0bc4e73880a518394c82149895d09a93d9408e3297e3a4338450d33234476",
+      "bytes": 1884700
+    },
+    "cau_tre.fbx": {
+      "sha256": "ebfd3d08ea89b3df4155df67e7ab2da5c3856504b3a5a0f398fc6fccfa4622ab",
+      "bytes": 51164
+    },
+    "coc_ben.fbx": {
+      "sha256": "a139511553685d2e45e0f1c05f5e83c9ed3c8c6831e8536d4cef02211fab226b",
+      "bytes": 27100
+    },
+    "coc_gay.fbx": {
+      "sha256": "5cf8a73c491e55a59c84bf9a61f12f432989526a3c89b91f57f83401fa9408dd",
+      "bytes": 22300
+    },
+    "coc_nhon.fbx": {
+      "sha256": "fbe7b3696c8eb7554032777fa2d0d228e01ad24ce4b72055b5b975cea07f3c4b",
+      "bytes": 21324
+    },
+    "dead_tree_trunk.fbx": {
+      "sha256": "1b0114560958dcb953f83858b26ad18d633768d69f74b7c42c4ba907eaed7f3e",
+      "bytes": 126332
+    },
+    "dry_branches_medium_01_a.fbx": {
+      "sha256": "539d63fe18043cd661d98830130d35c33427ce5133057814fbe619108ed3dcaf",
+      "bytes": 56476
+    },
+    "dry_branches_medium_01_b.fbx": {
+      "sha256": "92115a5de95af7f244deebec44a27f67ed0703c37082db368ac3deea2fd5d890",
+      "bytes": 53772
+    },
+    "dry_branches_medium_01_c.fbx": {
+      "sha256": "b7095b11ab25beeb0b5d99a61b34920ebe6882325be3c83256d464b793cc998c",
+      "bytes": 53820
+    },
+    "fern_02_a.fbx": {
+      "sha256": "a5417990c98567c663f3441a9249d1b624edd4273416cf3530ede65b77a1ab67",
+      "bytes": 39484
+    },
+    "fern_02_b.fbx": {
+      "sha256": "638515e12274e378ed8555dd45232fe25c1c7b4f9d6a7acb44a9d81a68538ad7",
+      "bytes": 43356
+    },
+    "fern_02_c.fbx": {
+      "sha256": "77e39c490b89c2cf6798201b41d478ad812d7186e435d11049ae45513a765e47",
+      "bytes": 43500
+    },
+    "fern_02_d.fbx": {
+      "sha256": "478baf9cda5e0852071f1aae7ec3eddc655ac6a590b3aa7d7043a8c113230f5b",
+      "bytes": 39516
+    },
+    "lo_bo_hoang.fbx": {
+      "sha256": "114faf7a702c5d69292c3a963db5153bce56acb24eabb4f4ca84a9d614724bc8",
+      "bytes": 54652
+    },
+    "lo_duc.fbx": {
+      "sha256": "87bf0bd2a7674d27f9cb62e05ec7a017ce75e47bbf03e3a05cc16826a522567b",
+      "bytes": 62620
+    },
+    "nha_san.fbx": {
+      "sha256": "8d6788f4cf5ee763be52c467e3ff590883580e39dd9ad918651307a94a37f932",
+      "bytes": 163388
+    },
+    "rock_moss_set_01_rock01.fbx": {
+      "sha256": "1e06da8ec520e4bbc666dfc81648fbbde1654e770f70a003995bb02e6327cac9",
+      "bytes": 67452
+    },
+    "rock_moss_set_01_rock02.fbx": {
+      "sha256": "816d21e946389ec0592ea659f6ef13ef6f5b0e485afaa960e659851ee548d8fd",
+      "bytes": 68812
+    },
+    "rock_moss_set_01_rock03.fbx": {
+      "sha256": "cc940952473e9e963a5e71755e3ae81a4290e18cbd77d983571e3eb2371bbd72",
+      "bytes": 63228
+    },
+    "rock_moss_set_01_rock04.fbx": {
+      "sha256": "4ca6c889f5793c388af04696eece516079a00668c4638953acdbe059389afc2f",
+      "bytes": 64364
+    },
+    "rock_moss_set_01_rock05.fbx": {
+      "sha256": "063d7fa29f96c5893b3bfa4a43054ef9109f0f05d71694bade721b07f0064dbc",
+      "bytes": 60764
+    },
+    "rock_moss_set_01_rock06.fbx": {
+      "sha256": "c1e16e97d46da384287fb5b64d4c8fc498a01135d6d3d206571b671df2df759f",
+      "bytes": 61628
+    },
+    "ruong_may.fbx": {
+      "sha256": "4a1a47f245580381ea48f3cbdb5a4568ce6fb2485d90ac8da5c9849d68549133",
+      "bytes": 24092
+    },
+    "ruong_may_nap.fbx": {
+      "sha256": "0c2e2fc84d259e74c0083af1023426082d0661a17695b4f05902b0c16973da45",
+      "bytes": 20060
+    },
+    "shrub_03_a.fbx": {
+      "sha256": "5e8c2d99e3d7d3b7eeda589b6c8477e745646a6cc879870940c11604d2446b92",
+      "bytes": 49164
+    },
+    "shrub_03_b.fbx": {
+      "sha256": "6f9f540183315b3c1e42ed53a6be0eacd6c68e4eb4e24127b87c43edc8ac5570",
+      "bytes": 48780
+    },
+    "shrub_03_c.fbx": {
+      "sha256": "a693347c22e31928c88c2fbcb9e62842d2964610da79408dd6199c4b00e1b34b",
+      "bytes": 47772
+    },
+    "shrub_03_d.fbx": {
+      "sha256": "a0f7b995657f649aef8c7a678e7dc4d724a9f9c1f5e5a9a0328675aac7800f03",
+      "bytes": 48076
+    },
+    "textures/asset_bamboo_culm_diff.png": {
+      "sha256": "bb83ef5ef6273dc5a1ea2fa2fc1eb217fef1a98ebc77ace42bd7cb3f2428feaf",
+      "bytes": 93447
+    },
+    "textures/asset_bamboo_culm_nor.png": {
+      "sha256": "1685738e430b7fd754d606082a70e4b4ee5b655825d1052d17a965fa3d9bfaab",
+      "bytes": 54826
+    },
+    "textures/asset_bamboo_culm_rough.png": {
+      "sha256": "d0fc82252674f2b87731dfed72fbbabdccf4c60313b47bfc8a84afe04ab69d8f",
+      "bytes": 32697
+    },
+    "textures/asset_bark_diff.png": {
+      "sha256": "744c5da375472cce6ab1480bee173280f7eb4e95815666b5ea1e6337f9156f6a",
+      "bytes": 399694
+    },
+    "textures/asset_bark_nor.png": {
+      "sha256": "a16e194abbf1932c111ead676068bc71eb97437346d040d2bd8be81c9de49595",
+      "bytes": 647626
+    },
+    "textures/asset_bark_rough.png": {
+      "sha256": "a4af83fae758c3e49cc4af012505d6481adaa4f379241dcba1243add07f44a49",
+      "bytes": 17390
+    },
+    "textures/asset_clay_diff.png": {
+      "sha256": "bc27c382047a8a60147184137f224afcb5e917a7882367d865d0c2dcf2e1d7f3",
+      "bytes": 27513
+    },
+    "textures/asset_clay_nor.png": {
+      "sha256": "5b2ff631cd5108cdb8d3ac5072a114ec484fc0d045af3b80932301b38998db76",
+      "bytes": 274824
+    },
+    "textures/asset_clay_rough.png": {
+      "sha256": "d31212e00550edc327df7e90824e260a704b1d97a628d0174c4091f944c97ebf",
+      "bytes": 36776
+    },
+    "textures/asset_dead_tree_trunk_arm_1k.png": {
+      "sha256": "39b5bed29d92d218c9aa914c6b98f2b55c6c1c6bef465fc4b3ecc2ace90af8dd",
+      "bytes": 1141970
+    },
+    "textures/asset_dead_tree_trunk_diff_1k.png": {
+      "sha256": "99f6a8af854e7673c253628fbf90863094b10442105c7a453cd1b69f797f5aba",
+      "bytes": 1290362
+    },
+    "textures/asset_dead_tree_trunk_nor_gl_1k.png": {
+      "sha256": "eacafdea381d120c087be55d3d155fdae8b482a01138d4b2d2ddbb89751b8d23",
+      "bytes": 1913025
+    },
+    "textures/asset_dry_branches_medium_01_arm_1k.png": {
+      "sha256": "6f457992e3a821c1276dfd85f9042cf921d8cd4ba63d69252330aba17a2ec27a",
+      "bytes": 382008
+    },
+    "textures/asset_dry_branches_medium_01_diff_1k.png": {
+      "sha256": "8a95cafc2d3b5b7d570185fc79711e685fb2160ff0f5f75aa1125c7262730208",
+      "bytes": 421566
+    },
+    "textures/asset_dry_branches_medium_01_nor_gl_1k.png": {
+      "sha256": "8c2b2d6d634f8b7b43bcf7c013fda9f252ed8e73e868070f50289716ccdb146a",
+      "bytes": 551887
+    },
+    "textures/asset_fern_02_arm_1k.png": {
+      "sha256": "efc193bc50df601b5620c20fafc775986dada652bcb0c6dc5415a2dbb4bf3981",
+      "bytes": 140059
+    },
+    "textures/asset_fern_02_diffa.png": {
+      "sha256": "ea5e0b4617bb4187718b67311f16539ca430171c54fd65c57408d545406661da",
+      "bytes": 197544
+    },
+    "textures/asset_fern_02_nor_gl_1k.png": {
+      "sha256": "ee07e35b87fc9f3732950941691337133f5ce6e0f820a03f67696198de2697ba",
+      "bytes": 158230
+    },
+    "textures/asset_hewn_wood_diff.png": {
+      "sha256": "b98f79ef62136d921e289e3b421c99379e9d578f331f7af75658968d7ab37b97",
+      "bytes": 1551988
+    },
+    "textures/asset_hewn_wood_nor.png": {
+      "sha256": "ca3125f9ba08cc8345728d898ffef32eeaf4da388f7513f8e755ddcea36e6501",
+      "bytes": 1735128
+    },
+    "textures/asset_hewn_wood_rough.png": {
+      "sha256": "4435bbce90490d0d7b8dfef47aee08321b34949a6a682809bf4913e4ee74f3d6",
+      "bytes": 300136
+    },
+    "textures/asset_planks_diff.png": {
+      "sha256": "539504c79cac13d8572dade826e30680a8ecf410a93d7dae863aa70908279959",
+      "bytes": 886376
+    },
+    "textures/asset_planks_nor.png": {
+      "sha256": "53a9fbc5444f702e4398a772aea703f456827ae470dd63ad9ae4ad7e5df69acd",
+      "bytes": 679811
+    },
+    "textures/asset_planks_rough.png": {
+      "sha256": "38d7c15daccb999a4656d368c63c2c565b6f5df4e75b3361add53314d8789aec",
+      "bytes": 42526
+    },
+    "textures/asset_rock_moss_set_01_diff_1k.png": {
+      "sha256": "774de9dc5c80ed34eecc537b2dc2583d33d3dcde234447087d2738a69af1cec3",
+      "bytes": 1054145
+    },
+    "textures/asset_rock_moss_set_01_nor_gl_1k.png": {
+      "sha256": "15ccd44a082f74edd378632f4a5c82821aba62d5f27648c600e32f55212cdaee",
+      "bytes": 1319561
+    },
+    "textures/asset_rock_moss_set_01_rough_1k.png": {
+      "sha256": "3e486dcbb5fc1ac9c1e8f7681580591441aba91a9ea80399719222e8b34c2c34",
+      "bytes": 285287
+    },
+    "textures/asset_shrub_03_arm_1k.png": {
+      "sha256": "c57864bda22e976e35062657319160ae7e797059dee27c2985a4d46b52eeb2d6",
+      "bytes": 518689
+    },
+    "textures/asset_shrub_03_diffa.png": {
+      "sha256": "0b95e92207f1b48c351019eda522dff7b4eaec64eec55f0dc3f22bc371fc75f6",
+      "bytes": 739800
+    },
+    "textures/asset_shrub_03_nor_gl_1k.png": {
+      "sha256": "0e31b18dd75244b75e319fe3170890b2a665eecd8d111dd62bd13943c308e4af",
+      "bytes": 987469
+    },
+    "textures/asset_thatch_diff.png": {
+      "sha256": "fb394d225c32c45678cb367295a63ef31bdb10c5db77d37c83718439c0b31dde",
+      "bytes": 2136622
+    },
+    "textures/asset_thatch_nor.png": {
+      "sha256": "6414ddf99c6eab5f007d2e76c4fe6952435f06dead5203e1f82629a30e5f11a5",
+      "bytes": 2244816
+    },
+    "textures/asset_thatch_rough.png": {
+      "sha256": "9951f29e674d65250096c5458df4a85c094941e5100eda9d170f3f45a335ec83",
+      "bytes": 969713
+    },
+    "textures/asset_tree_stump_01_arm_1k.png": {
+      "sha256": "236c161c6668204038e25f27414db739cb30104f747569346b5541fe1904b3ca",
+      "bytes": 1357098
+    },
+    "textures/asset_tree_stump_01_diff_1k.png": {
+      "sha256": "0eb0e1098c0b89c210f4ebd4165e72b15e30c58e4500c9cba7b47bba7e7cd1b4",
+      "bytes": 1905330
+    },
+    "textures/asset_tree_stump_01_nor_gl_1k.png": {
+      "sha256": "6c3f0545c6df8c36668e3df943075722d33e1d6cd163e809fcfcd671d50941d7",
+      "bytes": 2222934
+    },
+    "textures/asset_weed_plant_02_arm_1k.png": {
+      "sha256": "75a5f6bef8a18010fff7ee8fdbf48747e5fd12723bb1d77c7a04dff7ae7ff9b9",
+      "bytes": 257658
+    },
+    "textures/asset_weed_plant_02_diffa.png": {
+      "sha256": "b07a0b64c9872f128c07af1c1f58225290b70e8061c8ad5a7b0367accf939a22",
+      "bytes": 366356
+    },
+    "textures/asset_weed_plant_02_nor_gl_1k.png": {
+      "sha256": "271960353d762b5cb2cfca7dd0ee4de5fb0e6aa3c696fdabe1220d019025cbbc",
+      "bytes": 348748
+    },
+    "textures/asset_woven_bamboo_diff.png": {
+      "sha256": "5da2ddec69ae1c256466e3651fa993375c4ad0162c74b0597c6c7275686f807e",
+      "bytes": 1616930
+    },
+    "textures/asset_woven_bamboo_nor.png": {
+      "sha256": "44066a915e28e8f993d022deb8a0f2160039507ba7980c43af5880cccfe19f70",
+      "bytes": 1733952
+    },
+    "textures/asset_woven_bamboo_rough.png": {
+      "sha256": "e9e43b0f4c53b3de6ff87b46648638aecc030577ed14695c806ad04c1947d432",
+      "bytes": 1472678
+    },
+    "textures/bank_color.png": {
+      "sha256": "7f0a885d4427fe35321a9c2d7ed22fb2f512e09ce912e475301d9302ed392ca5",
+      "bytes": 2362752
+    },
+    "textures/bank_normal.png": {
+      "sha256": "b1909c12dc844972f85c36e8d49d3e29247203cf0baa4dbad2a47250d184ffac",
+      "bytes": 2529594
+    },
+    "textures/bank_roughness.png": {
+      "sha256": "58aaa4d5c888b82713781e65ad1c10edea8557dd444d734ae25b2eb61b78c304",
+      "bytes": 818194
+    },
+    "textures/dry_mud_color.png": {
+      "sha256": "c7337870f146488695ff65f754dc46389947037dd2055c69640c6941371da116",
+      "bytes": 1186656
+    },
+    "textures/dry_mud_normal.png": {
+      "sha256": "44f2101295c982d78a3a499bf400a05c5e69bb820fd26ab3c93569b178caa824",
+      "bytes": 2355566
+    },
+    "textures/dry_mud_roughness.png": {
+      "sha256": "65fe12aeb2a141260ceb06abef3c3ea2b9ec9999663192506c2b4a89f98c35ad",
+      "bytes": 788690
+    },
+    "textures/grass_color.png": {
+      "sha256": "2d23a959336b20f7709d32481bba878f1b4523e60677bf9a6e6d2f2879c8c945",
+      "bytes": 2210191
+    },
+    "textures/grass_normal.png": {
+      "sha256": "e31a7837c71dca2e22c3c825dea8145dc5c620f3238fc3811726227bba49b969",
+      "bytes": 2485230
+    },
+    "textures/grass_roughness.png": {
+      "sha256": "de40af2f1a667a987b42dfe17c3b1faf99c6161cb049b536d902ec4fa59ce0e0",
+      "bytes": 807598
+    },
+    "textures/mud_color.png": {
+      "sha256": "e60654f4ce5863e941fe97b05c927a348cea8f4e78207666f95a2b37c9d9e837",
+      "bytes": 1475605
+    },
+    "textures/mud_normal.png": {
+      "sha256": "d881101ae5f0aaa900c5d0814c39ffdbd928649259247adcabef86c4873672e0",
+      "bytes": 2547285
+    },
+    "textures/mud_roughness.png": {
+      "sha256": "882ea3854c71af55eb3639845fc1212d5217b953f775fb746e50ee3f8377b47e",
+      "bytes": 739585
+    },
+    "textures/path_color.png": {
+      "sha256": "0320f234741ab99931c9fd2f79fa1f19ae4c35a9a5e7e421eb86a498387b606e",
+      "bytes": 1232560
+    },
+    "textures/path_normal.png": {
+      "sha256": "105cf229b6eb9c5050933e37cfaec511dcac180c5914dedf5a277d4bed94a14d",
+      "bytes": 2031943
+    },
+    "textures/path_roughness.png": {
+      "sha256": "5478cfc447cda5ddff3220bf97ffdfb249686a77cac99029c490a6a2a34cce81",
+      "bytes": 720234
+    },
+    "thap_gom.fbx": {
+      "sha256": "c3f97ed2e32aea12f914ac609620a65ca329ace8fc612a0b8e8615dfee62de37",
+      "bytes": 30876
+    },
+    "thuyen_doc_moc.fbx": {
+      "sha256": "252045c803665f4cac7714296c7f442690ac799311f96f45c7da0991f3d318d8",
+      "bytes": 71740
+    },
+    "tree_stump_01.fbx": {
+      "sha256": "fc32064e3dfb6436621a443d6ee293a04495434132d8dcbf900592cb52cf5f6f",
+      "bytes": 83260
+    },
+    "trong_go.fbx": {
+      "sha256": "aa08bab3665480445a924f7f4098976398cf13ad402cbce24e3dd4e7ca5b3e99",
+      "bytes": 41804
+    },
+    "weed_plant_02_a_LOD0.fbx": {
+      "sha256": "aedbc737d9854a41c70f42086b5634445685854589bd0981d05a097f7b916ee7",
+      "bytes": 37180
+    },
+    "weed_plant_02_b_LOD0.fbx": {
+      "sha256": "8ccb381fde119ac45d333d67e0ce1761def84f83bbcf2b597302a55557103477",
+      "bytes": 37772
+    },
+    "weed_plant_02_c_LOD0.fbx": {
+      "sha256": "147f9e96acb2da95cf99cb9aa78f862f7f4a0a9611743a6c1e0e72b954fe8d1c",
+      "bytes": 34412
+    },
+    "weed_plant_02_d_LOD0.fbx": {
+      "sha256": "83965b3b87361122dad9833d9adaf7e302a91bba2548008983145eda013c65da",
+      "bytes": 36636
+    },
+    "weed_plant_02_e_LOD0.fbx": {
+      "sha256": "6c75c8e0184c823c1d96eb080853dc44fa04d2b8557c78126d52884849b2218a",
+      "bytes": 37436
+    }
+  }
+}
